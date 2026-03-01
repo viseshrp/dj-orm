@@ -19,12 +19,12 @@
 - All Django 5.2 database backends: SQLite, PostgreSQL, MySQL, Oracle.
 - The `contrib.postgres` extension fields/functions/indexes/lookups/constraints.
 - The `contrib.contenttypes` framework (ContentType model, GenericForeignKey/GenericRelation).
-- The `contrib.gis` (GeoDjango) database layer (fields, functions, lookups, backends).
+- The `contrib.gis` (GeoDjango) database layer (fields, functions, lookups, backends). **Deferred to a later milestone** — see §10.7.
 - The app registry (`djo.apps`) and settings infrastructure (`djo.conf`).
 - The signal dispatcher (`djo.dispatch`).
-- The system check framework (trimmed to ORM/DB-relevant checks).
+- The system check framework — retained only because ORM and migrations already depend on it internally (model validation, DB backend checks). No web-oriented check modules are included.
 - The test infrastructure needed to run the kept tests (`djo.test`).
-- DB-related management commands: `makemigrations`, `migrate`, `showmigrations`, `sqlmigrate`, `sqlflush`, `sqlsequencereset`, `squashmigrations`, `optimizemigration`, `inspectdb`, `dbshell`, `flush`, `loaddata`, `dumpdata`, `diffsettings`.
+- DB and data-operations management commands (see §5 for full rationale). This intentionally goes beyond strict "migrations-only" to include data import/export and DB maintenance commands that ORM-focused users commonly need. This choice brings `djo/core/serializers/` and fixture infrastructure into scope.
 - A CLI entry point (`djo`) that dispatches to the management command framework.
 
 ### What djo is NOT
@@ -126,11 +126,11 @@ djo showmigrations
 ### 3.5 Using a settings module
 
 ```bash
-export DJO_SETTINGS_MODULE=myproject.settings
+export DJANGO_SETTINGS_MODULE=myproject.settings
 djo migrate
 ```
 
-The environment variable changes from `DJANGO_SETTINGS_MODULE` to `DJO_SETTINGS_MODULE`.
+The `DJANGO_SETTINGS_MODULE` environment variable is **unchanged** from Django. This is part of operational API parity — the env var name is not a Python import path, so the namespace rename does not apply to it.
 
 ---
 
@@ -167,7 +167,7 @@ The environment variable changes from `DJANGO_SETTINGS_MODULE` to `DJO_SETTINGS_
 | `djo/contrib/__init__.py` | Container |
 | `djo/contrib/contenttypes/` | ContentType model, GenericForeignKey — ORM feature; remove `admin.py`, `views.py`, `forms.py` |
 | `djo/contrib/postgres/` | PostgreSQL-specific fields, functions, lookups, indexes, constraints; remove `forms/`, `templates/`, `jinja2/` |
-| `djo/contrib/gis/` | GeoDjango — DB layer only: `db/`, `geos/`, `gdal/`, `measure.py`, `geometry.py`, `ptr.py`, `management/`, `serializers/`, `utils/`; remove `admin/`, `feeds.py`, `forms/`, `sitemaps/`, `shortcuts.py`, `static/`, `templates/`, `views.py` |
+| `djo/contrib/gis/` | **Deferred to a later milestone.** GeoDjango requires native GEOS/GDAL/PROJ libraries and has a heavy local-setup burden. Keeping it out of the initial release reduces risk. When added: retain only DB layer (`db/`, `geos/`, `gdal/`, `measure.py`, `geometry.py`, `ptr.py`, `management/`, `serializers/`, `utils/`); remove `admin/`, `feeds.py`, `forms/`, `sitemaps/`, `shortcuts.py`, `static/`, `templates/`, `views.py`. |
 | `djo/test/` | Test utilities (`TestCase`, `TransactionTestCase`, etc.) — needed by the test suite; remove `client.py`, `selenium.py`, `html.py` |
 | `djo/_ext/` | **New.** Fork-specific glue/patch code lives here (see §9) |
 
@@ -237,7 +237,13 @@ Keep the file as-is. Settings that relate to removed subsystems (e.g., `TEMPLATE
 
 ## 5. Management Commands
 
-### 5.1 Retained commands
+### 5.1 Scope decision: "DB-ops mode" (not strict migrations-only)
+
+This project intentionally keeps data-management commands beyond strict migration commands. The rationale: ORM-focused users routinely need fixture import/export and DB maintenance operations, and the incremental dependency cost (`djo/core/serializers/`, fixture plumbing) is modest. **This is a deliberate scope choice**, not something that happened "because it's low-cost." Accepting this scope means `djo/core/serializers/` and its transitive dependencies are permanently in-scope for maintenance.
+
+If a future maintainer wants to narrow scope to strict migrations-only, the commands to cut are: `dumpdata`, `loaddata`, `flush`, `sqlflush`, `sqlsequencereset`, `diffsettings`. That would also allow removing `djo/core/serializers/`.
+
+### 5.2 Retained commands
 
 | Command | Rationale |
 |---|---|
@@ -249,14 +255,14 @@ Keep the file as-is. Settings that relate to removed subsystems (e.g., `TEMPLATE
 | `optimizemigration` | Migration maintenance |
 | `inspectdb` | DB introspection |
 | `dbshell` | Interactive DB shell — low-cost, no non-ORM deps |
-| `flush` | DB reset — useful for testing |
-| `loaddata` | Fixture loading — depends on serializers (retained) |
-| `dumpdata` | Fixture dumping — depends on serializers (retained) |
-| `sqlflush` | SQL generation |
-| `sqlsequencereset` | Sequence management |
-| `diffsettings` | Settings debugging — low-cost, no non-ORM deps |
+| `flush` | DB reset — useful for testing (DB-ops) |
+| `loaddata` | Fixture loading — depends on serializers (DB-ops) |
+| `dumpdata` | Fixture dumping — depends on serializers (DB-ops) |
+| `sqlflush` | SQL generation (DB-ops) |
+| `sqlsequencereset` | Sequence management (DB-ops) |
+| `diffsettings` | Settings debugging — near-zero cost (DB-ops) |
 
-### 5.2 Removed commands
+### 5.3 Removed commands
 
 | Command | Reason |
 |---|---|
@@ -276,16 +282,18 @@ Keep the file as-is. Settings that relate to removed subsystems (e.g., `TEMPLATE
 
 ## 6. System Checks Policy
 
+The system check framework is retained **only because ORM and migrations already depend on it** — model validation, DB backend validation, and management command checks are wired through it internally. We are not keeping checks as a general-purpose feature. The `check` management command is removed; users who want to run ORM checks programmatically can call `djo.core.checks.run_checks(tags=[Tags.models, Tags.database])`.
+
 ### 6.1 Retained check modules
 
 | Module | Tags | Reason |
 |---|---|---|
-| `djo/core/checks/__init__.py` | — | Framework infrastructure |
-| `djo/core/checks/registry.py` | — | Check registration system |
-| `djo/core/checks/messages.py` | — | Check message classes |
-| `djo/core/checks/database.py` | `database` | DB backend validation |
-| `djo/core/checks/model_checks.py` | `models` | Model validation |
-| `djo/core/checks/commands.py` | `commands` | Management command checks |
+| `djo/core/checks/__init__.py` | — | Framework infrastructure (ORM/migrations depend on it) |
+| `djo/core/checks/registry.py` | — | Check registration system (ORM/migrations depend on it) |
+| `djo/core/checks/messages.py` | — | Check message classes (ORM/migrations depend on it) |
+| `djo/core/checks/database.py` | `database` | DB backend validation (called during migrate) |
+| `djo/core/checks/model_checks.py` | `models` | Model validation (called during migrate, makemigrations) |
+| `djo/core/checks/commands.py` | `commands` | Management command checks (near-zero incremental cost) |
 
 ### 6.2 Removed check modules
 
@@ -316,7 +324,11 @@ All test directories that test ORM, database, migrations, model fields, queryset
 
 **Complete list of kept test directories:**
 
-`aggregation`, `aggregation_regress`, `annotations`, `backends`, `base`, `basic`, `bulk_create`, `composite_pk`, `constraints`, `contenttypes_tests`, `custom_columns`, `custom_lookups`, `custom_managers`, `custom_methods`, `custom_migration_operations`, `custom_pk`, `datatypes`, `dates`, `datetimes`, `db_functions`, `db_typecasts`, `db_utils`, `dbshell`, `defer`, `defer_regress`, `delete`, `delete_regress`, `distinct_on_fields`, `empty`, `empty_models`, `expressions`, `expressions_case`, `expressions_window`, `extra_regress`, `field_deconstruction`, `field_defaults`, `field_subclassing`, `filtered_relation`, `fixtures`, `fixtures_model_package`, `fixtures_regress`, `force_insert_update`, `foreign_object`, `from_db_value`, `generic_relations`, `generic_relations_regress`, `get_earliest_or_latest`, `get_or_create`, `gis_tests`, `indexes`, `inspectdb`, `introspection`, `invalid_models_tests`, `known_related_objects`, `lookup`, `m2m_and_m2o`, `m2m_intermediary`, `m2m_multiple`, `m2m_recursive`, `m2m_regress`, `m2m_signals`, `m2m_through`, `m2m_through_regress`, `m2o_recursive`, `managers_regress`, `many_to_many`, `many_to_one`, `many_to_one_null`, `max_lengths`, `migrate_signals`, `migration_test_data_persistence`, `migrations`, `migrations2`, `model_enums`, `model_fields`, `model_indexes`, `model_inheritance`, `model_inheritance_regress`, `model_meta`, `model_options`, `model_package`, `model_regress`, `model_utils`, `multiple_database`, `mutually_referential`, `nested_foreign_keys`, `no_models`, `null_fk`, `null_fk_ordering`, `null_queries`, `one_to_one`, `or_lookups`, `order_with_respect_to`, `ordering`, `postgres_tests`, `prefetch_related`, `properties`, `proxy_model_inheritance`, `proxy_models`, `queries`, `queryset_pickle`, `raw_query`, `reserved_names`, `reverse_lookup`, `save_delete_hooks`, `schema`, `select_for_update`, `select_related`, `select_related_onetoone`, `select_related_regress`, `serializers`, `signals`, `str`, `string_lookup`, `swappable_models`, `timezones`, `transaction_hooks`, `transactions`, `unmanaged_models`, `update`, `update_only_fields`, `validation`, `validators`, `xor_lookups`
+`aggregation`, `aggregation_regress`, `annotations`, `backends`, `base`, `basic`, `bulk_create`, `composite_pk`, `constraints`, `contenttypes_tests`, `custom_columns`, `custom_lookups`, `custom_managers`, `custom_methods`, `custom_migration_operations`, `custom_pk`, `datatypes`, `dates`, `datetimes`, `db_functions`, `db_typecasts`, `db_utils`, `dbshell`, `defer`, `defer_regress`, `delete`, `delete_regress`, `distinct_on_fields`, `empty`, `empty_models`, `expressions`, `expressions_case`, `expressions_window`, `extra_regress`, `field_deconstruction`, `field_defaults`, `field_subclassing`, `filtered_relation`, `fixtures`, `fixtures_model_package`, `fixtures_regress`, `force_insert_update`, `foreign_object`, `from_db_value`, `generic_relations`, `generic_relations_regress`, `get_earliest_or_latest`, `get_or_create`, `indexes`, `inspectdb`, `introspection`, `invalid_models_tests`, `known_related_objects`, `lookup`, `m2m_and_m2o`, `m2m_intermediary`, `m2m_multiple`, `m2m_recursive`, `m2m_regress`, `m2m_signals`, `m2m_through`, `m2m_through_regress`, `m2o_recursive`, `managers_regress`, `many_to_many`, `many_to_one`, `many_to_one_null`, `max_lengths`, `migrate_signals`, `migration_test_data_persistence`, `migrations`, `migrations2`, `model_enums`, `model_fields`, `model_indexes`, `model_inheritance`, `model_inheritance_regress`, `model_meta`, `model_options`, `model_package`, `model_regress`, `model_utils`, `multiple_database`, `mutually_referential`, `nested_foreign_keys`, `no_models`, `null_fk`, `null_fk_ordering`, `null_queries`, `one_to_one`, `or_lookups`, `order_with_respect_to`, `ordering`, `postgres_tests`, `prefetch_related`, `properties`, `proxy_model_inheritance`, `proxy_models`, `queries`, `queryset_pickle`, `raw_query`, `reserved_names`, `reverse_lookup`, `save_delete_hooks`, `schema`, `select_for_update`, `select_related`, `select_related_onetoone`, `select_related_regress`, `serializers`, `signals`, `str`, `string_lookup`, `swappable_models`, `timezones`, `transaction_hooks`, `transactions`, `unmanaged_models`, `update`, `update_only_fields`, `validation`, `validators`, `xor_lookups`
+
+**Deferred (GIS milestone):**
+
+- `gis_tests/` — deferred along with `contrib.gis` (see §10.7).
 
 **Partially kept:**
 
@@ -377,17 +389,18 @@ If a retained ORM test fails because it depends on a removed subsystem (e.g., it
 
 ### 8.1 Package metadata
 
+> **Source of truth:** `requires-python`, dependency version pins, and Python-version classifiers must be **derived from upstream Django 5.2's `pyproject.toml`** at fork time (not hand-entered). Only change the package name, module paths, and description. If upstream updates version bounds in a patch release, the rebase picks them up automatically.
+
 ```toml
 [project]
 name = "djo"
 description = "Django ORM, migrations, and database backends as a standalone library."
-requires-python = ">= 3.10"
+requires-python = ">= 3.10"  # copied from upstream Django 5.2
 dependencies = [
-    "sqlparse>=0.3.1",
-    "tzdata; sys_platform == 'win32'",
+    "asgiref>=3.8.1",    # copied from upstream; required for async ORM API
+    "sqlparse>=0.3.1",   # copied from upstream
+    "tzdata; sys_platform == 'win32'",  # copied from upstream
 ]
-# Note: asgiref removed from core deps (it's for ASGI which is removed)
-# If any retained code actually imports asgiref, add it back.
 
 [project.scripts]
 djo = "djo.core.management:execute_from_command_line"
@@ -411,7 +424,7 @@ The `djo` console script replaces `django-admin`. It invokes `djo.core.managemen
 
 ### 8.4 Environment variable
 
-`DJANGO_SETTINGS_MODULE` → `DJO_SETTINGS_MODULE`. This is the one environment variable rename. The settings machinery in `djo/conf/__init__.py` must reference `DJO_SETTINGS_MODULE` instead of `DJANGO_SETTINGS_MODULE`.
+`DJANGO_SETTINGS_MODULE` is **kept unchanged**. The env var is part of Django's operational contract (tooling, deployment scripts, muscle memory) and is not a Python import path, so the namespace rename does not apply. The settings machinery in `djo/conf/__init__.py` continues to read `DJANGO_SETTINGS_MODULE`.
 
 ---
 
@@ -421,21 +434,21 @@ The `djo` console script replaces `django-admin`. It invokes `djo.core.managemen
 
 The fork's changes over upstream Django fall into exactly these categories:
 
-1. **Mechanical namespace rename** (`django` → `djo`): done via automated tooling, applied as a single rebase-able commit.
+1. **Mechanical namespace rename** (`django` → `djo`): done via automated tooling (import-path-aware, not blanket `sed` — see §9.6), applied as a single rebase-able commit.
 2. **File/directory deletions**: removing web-framework packages (forms, http, etc.). These are clean deletions — easy to re-apply after a rebase.
 3. **Check framework trimming**: removing import lines in `__init__.py` for deleted check modules.
 4. **Management command pruning**: deleting command files.
-5. **`setup()` function simplification**: removing URL prefix and logging config from `djo/__init__.py`.
-6. **pyproject.toml changes**: package metadata.
-7. **Fork-specific glue in `djo/_ext/`**: any patches that can't be expressed as simple deletions.
+5. **pyproject.toml changes**: package metadata.
+6. **Fork-specific glue in `djo/_ext/`**: any patches that can't be expressed as simple deletions.
+
+`djo.setup()` is **not** simplified or modified beyond the namespace rename. It remains semantically identical to `django.setup()`. If the URL-prefix or logging code paths become dead/unreachable after subsystem removal, they will be removed in a later pass — but not as part of the initial fork spec.
 
 ### 9.2 djo/_ext/ package
 
 All fork-specific logic that goes beyond mechanical rename or deletion lives in `djo/_ext/`. This includes:
 
 - `djo/_ext/__init__.py`
-- `djo/_ext/setup.py` — fork-specific `setup()` adjustments (simplified setup without URL/logging if needed).
-- Any monkey-patches or compatibility shims needed to make stripped-down imports work.
+- Any monkey-patches or compatibility shims needed to make stripped-down imports work (e.g., stubbing an import that a retained module makes into a deleted module at runtime).
 
 Upstream-derived modules should **not** be edited with bespoke logic. If a module needs behavioral changes, it should call into `djo._ext` or the modification should be a minimal, clearly-commented one-liner.
 
@@ -466,7 +479,6 @@ Topic commits are structured to be individually re-applicable:
 - `[prune] Remove web-related test directories`
 - `[packaging] Update pyproject.toml for djo`
 - `[ext] Add djo/_ext/ fork glue`
-- `[setup] Simplify djo.setup()`
 
 Each commit is self-contained and can be cherry-picked or rebased independently.
 
@@ -479,7 +491,29 @@ Most upstream changes will be in files we don't touch (views, admin, templates, 
 - `djo/core/management/` — upstream may change command infrastructure.
 - `djo/utils/` — upstream may change utilities.
 
-The rename commit is the most conflict-prone. Using `sed`-based mechanical transforms makes it reproducible.
+The rename commit is the most conflict-prone. Using an import-path-aware rename script (see §9.6) makes it reproducible.
+
+### 9.6 Namespace rename tooling
+
+**Do not use blanket `sed` over all tokens.** A naive `sed 's/django/djo/g'` will corrupt comments, documentation strings, license text, locale data, and serialization constants (e.g., `DJANGO_VERSION_PICKLE_KEY`'s string value `"django-version"`).
+
+**Required approach — AST-aware rewriter (`scripts/rename_namespace.py`):**
+
+Use a Python AST-based rewriter (e.g., `libcst` or `rope`) that only rewrites:
+- `import` statements and `from … import` statements referencing `django.*`.
+- Dotted-name string literals that match known module paths (`django.db.*`, `django.conf.*`, etc.).
+- Targeted field-level edits in `pyproject.toml` (package name, console script, version attr) — not a blanket replace.
+
+The rewriter must **not** touch:
+- `DJANGO_SETTINGS_MODULE` (env var, not a Python path).
+- Serialization constants whose *string value* contains `django` (e.g., `"django-version"`).
+- Comments, license text, locale `.po` files, or documentation.
+
+**Mandatory post-step:** After every rename pass, run the verification grep from IMPLEMENTATION_PLAN.md §1.3.4 and manually review every remaining `django` occurrence in `.py` files. The script must fail-loud if unexpected residuals are found.
+
+The script (`scripts/rename_namespace.py`) must be checked into the repo and be idempotent so it can be re-run on every upstream rebase.
+
+> **Emergency fallback only:** If `libcst`/`rope` are genuinely unavailable, narrowly-targeted sed rules (import-shaped patterns only, with allowlists/blocklists) may be used as a one-time escape hatch — never as the default workflow.
 
 ---
 
@@ -487,7 +521,7 @@ The rename commit is the most conflict-prone. Using `sed`-based mechanical trans
 
 ### 10.1 `asgiref` dependency
 
-Django 5.2 uses `asgiref` for async support in the ORM (`QuerySet.aiterator()`, `Model.asave()`, etc.). Even though we remove the ASGI web stack, **`asgiref` must remain a dependency** because the async ORM methods depend on `asgiref.sync.sync_to_async`. This is a correction from the user's implicit assumption that removing web features means removing `asgiref`.
+Django 5.2 uses `asgiref` for async support in the ORM (`QuerySet.aiterator()`, `Model.asave()`, etc.). Even though we remove the ASGI web stack, **`asgiref` is a required dependency** because the async ORM methods depend on `asgiref.sync.sync_to_async`. Dropping async ORM methods would be a massive parity break and is not recommended. The packaging section (§8.1) lists `asgiref` in `dependencies`.
 
 ### 10.2 `djo/core/files/` retention
 
@@ -497,9 +531,9 @@ Django 5.2 uses `asgiref` for async support in the ORM (`QuerySet.aiterator()`, 
 
 The Django ORM uses `gettext_lazy` and translation utilities throughout model field definitions (`verbose_name`, `help_text`, etc.) and migration files. The translation utility (`djo/utils/translation/`) must be retained even though we remove the i18n management commands (`makemessages`, `compilemessages`) and the full i18n middleware.
 
-### 10.4 `dumpdata` / `loaddata` / `flush` retention
+### 10.4 `dumpdata` / `loaddata` / `flush` retention (DB-ops scope)
 
-These are DB-related management commands that operate on model data and fixtures. They depend on `djo/core/serializers/` which is a retained module. Including them adds value for ORM-only users. The user's spec mentioned only migration commands, but these are data-management commands that fit squarely within "DB operations."
+These are data-management commands that operate on model data and fixtures. They depend on `djo/core/serializers/` which becomes a permanently in-scope module. This is a deliberate scope expansion from "strict migrations-only" to "DB-ops mode." The rationale and opt-out path are documented in §5.1.
 
 ### 10.5 `diffsettings` retention
 
@@ -513,3 +547,22 @@ Removed as specified. However, users can still run ORM-relevant checks programma
 from djo.core.checks import run_checks, Tags
 errors = run_checks(tags=[Tags.models, Tags.database])
 ```
+
+### 10.7 GeoDjango (`contrib.gis`) deferral
+
+GeoDjango's DB layer (spatial fields, functions, lookups, PostGIS/SpatiaLite backends) is a legitimate ORM feature. However, it requires native C libraries (GEOS, GDAL, PROJ) that make local setup painful — especially on macOS where dynamic linking, `brew` paths, and environment variables are common friction points.
+
+**Decision:** Defer `contrib.gis` to a later milestone. The initial release ships without it. When adding GIS support:
+
+- Keep only the DB layer: `db/`, `geos/`, `gdal/`, `measure.py`, `geometry.py`, `ptr.py`, `management/`, `serializers/`, `utils/`.
+- Remove web parts: `admin/`, `feeds.py`, `forms/`, `sitemaps/`, `shortcuts.py`, `static/`, `templates/`, `views.py`.
+- Document GEOS/GDAL/PROJ as hard prerequisites.
+- Add `gis_tests/` back to the test suite at that point.
+
+This does **not** affect API parity for non-GIS users.
+
+### 10.8 `djo.setup()` is unchanged
+
+`djo.setup()` is kept **semantically identical** to `django.setup()` (namespace-only rename). The URL-prefix and logging code paths remain even if they reference modules from deleted subsystems. If those code paths fail at runtime (e.g., because `djo.urls` was deleted), they should be guarded with try/except in `djo/_ext/` rather than modifying `setup()` itself. This preserves API parity and avoids subtle edge-case breakage in tests or user code that calls `setup(set_prefix=True)`.
+
+If a future audit proves specific code paths are genuinely dead/unreachable after subsystem removal, they can be removed in a later maintenance pass — but that cleanup is not part of the initial fork spec.
