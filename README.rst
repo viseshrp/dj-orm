@@ -1,55 +1,53 @@
-======
-Django
-======
+===
+djo
+===
 
-Django is a high-level Python web framework that encourages rapid development
-and clean, pragmatic design. Thanks for checking it out.
+``djo`` is Django's ORM, migrations framework, and database backend stack
+packaged as a standalone library under the ``djo`` namespace.
 
-All documentation is in the "``docs``" directory and online at
-https://docs.djangoproject.com/en/stable/. If you're just getting started,
-here's how we recommend you read the docs:
+It keeps the retained Django public APIs and behavior intact, with one
+namespace change:
 
-* First, read ``docs/intro/install.txt`` for instructions on installing Django.
+* ``django.*`` imports become ``djo.*``
 
-* Next, work through the tutorials in order (``docs/intro/tutorial01.txt``,
-  ``docs/intro/tutorial02.txt``, etc.).
+What is included
+================
 
-* If you want to set up an actual deployment server, read
-  ``docs/howto/deployment/index.txt`` for instructions.
+* ORM models, fields, querysets, expressions, and managers
+* Migration generation and execution
+* Built-in database backends
+* ``djo.contrib.contenttypes``
+* ``djo.contrib.postgres``
+* Database-focused management commands such as ``migrate``,
+  ``makemigrations``, ``showmigrations``, ``dumpdata``, and ``loaddata``
 
-* You'll probably want to read through the topical guides (in ``docs/topics``)
-  next; from there you can jump to the HOWTOs (in ``docs/howto``) for specific
-  problems, and check out the reference (``docs/ref``) for gory details.
+What is not included
+====================
 
-* See ``docs/README`` for instructions on building an HTML version of the docs.
+* HTTP, URLs, views, middleware, templates, or forms
+* Auth, admin, sessions, messages, staticfiles, sitemaps, or other web-facing
+  contrib apps
+* Any compatibility ``django`` namespace
 
-Docs are updated rigorously. If you find any problems in the docs, or think
-they should be clarified in any way, please take 30 seconds to fill out a
-ticket here: https://code.djangoproject.com/newticket
+Minimal setup
+=============
 
-To get more help:
+.. code-block:: python
 
-* Join the ``#django`` channel on ``irc.libera.chat``. Lots of helpful people
-  hang out there. `Webchat is available <https://web.libera.chat/#django>`_.
+    import djo
+    from djo.conf import settings
 
-* Join the `Django Discord community <https://chat.djangoproject.com>`_.
+    settings.configure(
+        DATABASES={
+            "default": {
+                "ENGINE": "djo.db.backends.sqlite3",
+                "NAME": ":memory:",
+            }
+        },
+        DEFAULT_AUTO_FIELD="djo.db.models.BigAutoField",
+        INSTALLED_APPS=[],
+    )
+    djo.setup()
 
-* Join the community on the `Django Forum <https://forum.djangoproject.com/>`_.
-
-To contribute to Django:
-
-* Check out https://docs.djangoproject.com/en/dev/internals/contributing/ for
-  information about getting involved.
-
-To run Django's test suite:
-
-* Follow the instructions in the "Unit tests" section of
-  ``docs/internals/contributing/writing-code/unit-tests.txt``, published online at
-  https://docs.djangoproject.com/en/dev/internals/contributing/writing-code/unit-tests/#running-the-unit-tests
-
-Supporting the Development of Django
-====================================
-
-Django's development depends on your contributions.
-
-If you depend on Django, remember to support the Django Software Foundation: https://www.djangoproject.com/fundraising/
+For the full fork contract and implementation details, see ``SPEC.md`` and
+``IMPLEMENTATION_PLAN.md`` in the repository root.
