@@ -131,15 +131,9 @@ class LazySettings (LazyObject ):
         Useful when the app is being served at a subpath and manually prefixing
         subpath to STATIC_URL and MEDIA_URL in settings is inconvenient.
         """
-        # Don't apply prefix to absolute paths and URLs.
-        if value .startswith (("http://","https://","/")):
-            return value 
-        try :
-            from djo .urls import get_script_prefix 
-        except ImportError :
-            return value 
+        from djo ._ext .setup_helpers import add_script_prefix_if_available 
 
-        return "%s%s"%(get_script_prefix (),value )
+        return add_script_prefix_if_available (value )
 
     @property 
     def configured (self ):

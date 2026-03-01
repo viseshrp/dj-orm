@@ -12,7 +12,7 @@ def setup (set_prefix =True ):
     Set the thread-local urlresolvers script prefix if `set_prefix` is True.
     """
     from djo .apps import apps 
-    from djo ._ext .setup import set_script_prefix_if_available 
+    from djo ._ext .setup_helpers import set_script_prefix_if_available 
     from djo .conf import settings 
     from djo .utils .log import configure_logging 
 
