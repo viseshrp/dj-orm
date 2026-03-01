@@ -77,10 +77,12 @@ git mv django djo
 
 #### 1.3.2 Source code replacements
 
+> **Note:** The sed commands below are a **reference fallback**. The preferred approach is an import-path-aware Python rewriter — see §1.7 and SPEC.md §9.6. If the sed fallback is used, the mandatory post-step is the verification grep in §1.3.4.
+
 The replacements must be applied in a specific order to avoid partial matches:
 
 ```bash
-# Create the rename script: scripts/rename_namespace.sh
+# Create the rename script: scripts/rename_namespace.py
 # This script is idempotent and can be re-run after a rebase.
 
 # Order matters: longer strings first to avoid partial replacement issues.
@@ -115,10 +117,9 @@ find djo tests -name '*.py' -type f -exec sed -i '' \
   -e 's/"django"/"djo"/g' \
   {} +
 
-# 3. DJANGO_SETTINGS_MODULE → DJO_SETTINGS_MODULE
-find djo tests -name '*.py' -type f -exec sed -i '' \
-  -e 's/DJANGO_SETTINGS_MODULE/DJO_SETTINGS_MODULE/g' \
-  {} +
+# 3. DJANGO_SETTINGS_MODULE is KEPT UNCHANGED (not renamed)
+#    The env var is not a Python import path; renaming it breaks operational parity.
+#    Do NOT apply any sed rule for DJANGO_SETTINGS_MODULE.
 
 # 4. django-admin → djo (CLI entry point references)
 find djo tests -name '*.py' -type f -exec sed -i '' \
@@ -139,13 +140,11 @@ sed -i '' \
 # 7. Test settings files
 find tests -name 'test_*.py' -maxdepth 1 -exec sed -i '' \
   -e 's/django\./djo./g' \
-  -e 's/DJANGO_SETTINGS_MODULE/DJO_SETTINGS_MODULE/g' \
   {} +
 
 # 8. runtests.py
 sed -i '' \
   -e 's/django\./djo./g' \
-  -e 's/DJANGO_SETTINGS_MODULE/DJO_SETTINGS_MODULE/g' \
   -e 's/import django/import djo/g' \
   -e 's/from django/from djo/g' \
   tests/runtests.py
@@ -199,30 +198,21 @@ In `djo/db/utils.py` there is a constant `DJANGO_VERSION_PICKLE_KEY`. This is us
 
 ### 1.5 Special consideration: `djo.setup()`
 
-The `setup()` function in `djo/__init__.py` currently:
-1. Configures logging
-2. Sets URL script prefix
-3. Populates the app registry
+`djo.setup()` is kept **semantically identical** to `django.setup()` — namespace-only rename, no logic changes. The URL-prefix code path, logging configuration, and app-registry population all remain as upstream wrote them. If the URL-prefix code path fails at runtime (because `djo.urls` was deleted), guard it with a `try/except` in `djo/_ext/` rather than modifying `setup()` directly. See SPEC.md §10.8 for the full rationale.
 
-Simplify it:
+**Do not** simplify, trim, or change the default value of `set_prefix`. Keeping the signature and body identical to upstream means any user code that calls `djo.setup(set_prefix=True)` behaves the same way, and future upstream rebases have zero conflicts in this function.
 
-```python
-def setup(set_prefix=False):
-    """
-    Configure the settings (this happens as a side effect of accessing the
-    first setting) and populate the app registry.
-    """
-    from djo.apps import apps
-    from djo.conf import settings
-    from djo.utils.log import configure_logging
+### 1.6 Special consideration: `DJANGO_SETTINGS_MODULE`
 
-    configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)
-    apps.populate(settings.INSTALLED_APPS)
-```
+`DJANGO_SETTINGS_MODULE` is **kept unchanged** — it is an environment variable, not a Python import path, so the namespace rename does not apply. The settings machinery in `djo/conf/__init__.py` continues to read `DJANGO_SETTINGS_MODULE`. Do not add any `DJO_SETTINGS_MODULE` alias. See SPEC.md §8.4.
 
-Remove the URL prefix logic entirely (no `djo.urls` module exists). Keep logging configuration as it's useful for any application. Change `set_prefix` default to `False` (it has no effect since URL system is removed, but keeping the parameter avoids signature breakage in case any code passes it).
+### 1.7 Rename tooling recommendation
 
-### 1.6 Expected failures at this stage
+The sed commands in §1.3.2 are an **emergency-only fallback**. The **only supported rename method** is an import-path-aware Python rewriter (`libcst` or `rope`) implemented as `scripts/rename_namespace.py`. That script rewrites imports, dotted-name string literals matching known module paths, and targeted `pyproject.toml` fields — nothing else. See SPEC.md §9.6 for the full specification.
+
+If the sed fallback is ever used, the mandatory post-step is the verification grep in §1.3.4. Every remaining `django` occurrence in `.py` files must be manually reviewed, and the sed usage must be treated as a one-time escape, not a recurring workflow.
+
+### 1.8 Expected failures at this stage
 
 1. **Import errors for deleted-but-still-referenced modules**: After rename but before pruning, everything still exists so there should be no import errors. But tests for web features will have namespace-updated imports. These tests will be deleted in Phase 2.
 
@@ -232,7 +222,9 @@ Remove the URL prefix logic entirely (no `djo.urls` module exists). Keep logging
 
 4. **Test data/fixtures**: Some test fixture files (JSON, XML) may contain `django.contrib.contenttypes` references. These need updating.
 
-### 1.7 Verification
+5. **`DJANGO_SETTINGS_MODULE`**: Verify the sed script did NOT rename this env var. It must remain `DJANGO_SETTINGS_MODULE`.
+
+### 1.9 Verification
 
 ```bash
 # Quick syntax check
@@ -244,20 +236,21 @@ python runtests.py --settings=test_sqlite basic -v0
 cd ..
 ```
 
-### 1.8 Commit
+### 1.10 Commit
 
 ```
 [namespace] Rename django → djo in all source files
 
 Mechanical find-and-replace of the Python package namespace from
-'django' to 'djo'. Applied via scripts/rename_namespace.sh for
+'django' to 'djo'. Applied via scripts/rename_namespace.py for
 reproducibility during upstream rebases.
 
 - Renamed django/ directory to djo/
 - Updated all Python imports
-- Updated DJANGO_SETTINGS_MODULE → DJO_SETTINGS_MODULE
+- DJANGO_SETTINGS_MODULE kept unchanged (operational parity)
 - Updated pyproject.toml, test configs
 - Preserved DJANGO_VERSION_PICKLE_KEY string value for pickle compat
+- setup() left semantically identical to upstream
 ```
 
 ---
@@ -325,15 +318,10 @@ rm -rf djo/contrib/postgres/forms/
 rm -rf djo/contrib/postgres/templates/
 rm -rf djo/contrib/postgres/jinja2/
 
-# gis: remove web-facing parts
-rm -rf djo/contrib/gis/admin/
-rm -f  djo/contrib/gis/feeds.py
-rm -rf djo/contrib/gis/forms/
-rm -rf djo/contrib/gis/sitemaps/
-rm -f  djo/contrib/gis/shortcuts.py
-rm -rf djo/contrib/gis/static/
-rm -rf djo/contrib/gis/templates/
-rm -f  djo/contrib/gis/views.py
+# gis: DEFERRED to later milestone (see SPEC.md §10.7)
+# Delete the entire contrib/gis/ for now. It will be re-added when
+# the GIS milestone is implemented.
+rm -rf djo/contrib/gis/
 ```
 
 #### 2.2.5 Conf cleanups
@@ -405,7 +393,7 @@ Common fixes needed:
 
 3. **`djo/contrib/postgres/__init__.py`** — may reference forms. Update to remove those references.
 
-4. **`djo/contrib/gis/__init__.py`** — may reference admin/views. Update.
+4. **`djo/contrib/gis/`** — deleted entirely in §2.2.4 (deferred to GIS milestone). No fixup needed.
 
 5. **`djo/test/testcases.py`** — imports `Client` from `djo.test.client`. Either stub the client or remove the `Client` integration from `TestCase`. The DB test infrastructure (`TransactionTestCase`, `TestCase`) should still work for direct ORM testing — they primarily manage DB transactions and fixtures. Remove/stub the HTTP client integration:
    - Remove `self.client` from `SimpleTestCase.__init__`
@@ -463,8 +451,7 @@ non-ORM Django subsystems.
 Retained: db/, apps/, conf/, core/management/, core/checks/,
 core/serializers/, core/exceptions.py, core/validators.py,
 core/files/, dispatch/, utils/ (subset), test/ (DB parts),
-contrib/contenttypes (ORM parts), contrib/postgres (ORM parts),
-contrib/gis (DB layer).
+contrib/contenttypes (ORM parts), contrib/postgres (ORM parts).
 ```
 
 ---
@@ -718,6 +705,9 @@ rm -rf test_client/ test_client_regress/
 rm -rf urlpatterns/ urlpatterns_reverse/ user_commands/ view_tests/
 rm -rf absolute_url_overrides/
 
+# GIS tests (deferred to GIS milestone — see SPEC.md §10.7)
+rm -rf gis_tests/
+
 # Infrastructure tests (not ORM)
 rm -rf app_loading/ bash_completion/ import_error_package/
 rm -rf test_runner/ test_runner_apps/ sphinx/ requirements/
@@ -893,12 +883,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "djo"
 dynamic = ["version"]
-requires-python = ">= 3.10"
+requires-python = ">= 3.10"  # derived from upstream Django 5.2's pyproject.toml
 dependencies = [
-    "asgiref>=3.8.1",
-    "sqlparse>=0.3.1",
-    "tzdata; sys_platform == 'win32'",
+    "asgiref>=3.8.1",    # from upstream; required for async ORM API
+    "sqlparse>=0.3.1",   # from upstream
+    "tzdata; sys_platform == 'win32'",  # from upstream
 ]
+# All version bounds above are copied from upstream Django 5.2.
+# On rebase, re-derive them from the new upstream tag's pyproject.toml.
 authors = [
   {name = "djo contributors"},
 ]
@@ -1076,7 +1068,7 @@ which code is original vs. modified.
 At minimum:
 
 - `djo/_ext/__init__.py` — docstring only.
-- `djo/_ext/setup_helpers.py` — if `setup()` needs fork-specific adjustments beyond the simple trim done in Phase 1.
+- `djo/_ext/setup_helpers.py` — if `setup()` needs fork-specific runtime guards (e.g., try/except around URL-prefix code that references deleted modules). See §1.5.
 
 Most likely `_ext/` will remain nearly empty in the initial release. It's a convention for future changes.
 
@@ -1130,10 +1122,10 @@ git rebase --onto ${NEW_TAG} <original-tag> djo/main
 
 #### 8.2.3 Resolve conflicts
 
-1. **Namespace rename conflicts**: If upstream added new files or new `from django.x import y` lines in retained modules, the sed-based rename script can be re-run:
+1. **Namespace rename conflicts**: If upstream added new files or new `from django.x import y` lines in retained modules, re-run the AST-aware rename script:
    ```bash
    # Re-run the rename script on any conflicting files
-   bash scripts/rename_namespace.sh
+   python scripts/rename_namespace.py
    ```
 
 2. **Deletion conflicts**: Files we deleted that upstream modified → just delete them again.
@@ -1163,40 +1155,20 @@ git push origin djo/main --tags
 
 ### 8.3 Automated rename script
 
-Create `scripts/rename_namespace.sh` that contains all the sed commands from Phase 1. This script can be re-run on any new upstream code to apply the namespace transform:
+Create `scripts/rename_namespace.py` — a Python script that performs the namespace rename using an **AST-aware rewriter** (`libcst` or `rope`). This is the **only supported rename method**. See SPEC.md §9.6.
 
-```bash
-#!/usr/bin/env bash
-# scripts/rename_namespace.sh
-# Mechanically rename 'django' namespace to 'djo' in all source files.
-# Idempotent — safe to run multiple times.
-# Run from repo root.
+The script must:
 
-set -euo pipefail
+1. Rename the `django/` directory to `djo/` (if not already done).
+2. Rewrite `import django…` / `from django… import` statements and dotted-name string literals that match known module paths (`django.db.*`, `django.conf.*`, etc.).
+3. Update `pyproject.toml` with targeted field-level edits (package name, `known_first_party`, console script entry point, version attr) — **not** a blanket find-and-replace.
+4. **NOT** rename `DJANGO_SETTINGS_MODULE` (env var, not a Python path).
+5. **NOT** rename serialization-format constants like `DJANGO_VERSION_PICKLE_KEY`'s string value `"django-version"`.
+6. Run the verification grep from §1.3.4 and fail-loud if any `from django.` or `import django.` lines remain in `.py` files.
 
-if [ -d "django" ] && [ ! -d "djo" ]; then
-    git mv django djo
-fi
+The script must be checked into the repo (`scripts/rename_namespace.py`) and be idempotent so it can be re-run on every upstream rebase.
 
-# Python source files in djo/ and tests/
-find djo tests -name '*.py' -type f -exec sed -i '' \
-    -e 's/from django\b/from djo/g' \
-    -e 's/import django\b/import djo/g' \
-    -e "s/'django\./'djo./g" \
-    -e 's/"django\./"djo./g' \
-    -e "s/'django'/'djo'/g" \
-    -e 's/"django"/"djo"/g' \
-    -e 's/DJANGO_SETTINGS_MODULE/DJO_SETTINGS_MODULE/g' \
-    -e 's/django-admin/djo/g' \
-    {} +
-
-# Config files  
-sed -i '' \
-    -e 's/django/djo/g' \
-    pyproject.toml
-
-echo "Namespace rename complete."
-```
+> **Emergency fallback only:** If `libcst`/`rope` are unavailable in the CI environment, the narrowly-targeted sed rules from §1.3.2 may be used as a one-time escape hatch, with §1.3.4 verification mandatory. Do not use blanket `sed 's/django/djo/g'` on any file.
 
 ### 8.4 Conflict minimization principles
 
@@ -1225,7 +1197,7 @@ echo "Namespace rename complete."
 | 5 | Test pruning | All retained tests pass with `runtests.py --settings=test_sqlite` |
 | 6 | Packaging | `pip install -e .` works, `djo migrate --help` works |
 | 7 | Fork glue | `djo/_ext/` exists |
-| 8 | Upstream workflow | `scripts/rename_namespace.sh` runs successfully |
+| 8 | Upstream workflow | `scripts/rename_namespace.py` runs successfully |
 
 ---
 
@@ -1284,9 +1256,9 @@ Each backend's `__init__.py` (e.g., `djo/db/backends/sqlite3/__init__.py`) may i
 
 The migration autodetector (`djo/db/migrations/autodetector.py`) should be self-contained within `djo.db`. Verify no web imports.
 
-### T9: GIS backend
+### T9: GIS backend (deferred)
 
-GeoDjango's DB backends (`djo/contrib/gis/db/`) extend the base backends. After removing GIS web features (admin, views, etc.), verify the GIS DB layer still imports cleanly:
+GeoDjango is **deferred to a later milestone** (see SPEC.md §10.7). The entire `djo/contrib/gis/` directory is deleted in Phase 2 and `gis_tests/` is deleted in Phase 5. When the GIS milestone lands, verify the GIS DB layer imports cleanly:
 
 ```bash
 python -c "from djo.contrib.gis.db.backends.postgis.base import DatabaseWrapper; print('OK')"
@@ -1366,14 +1338,7 @@ djo/contrib/contenttypes/forms.py
 djo/contrib/postgres/forms/
 djo/contrib/postgres/templates/
 djo/contrib/postgres/jinja2/
-djo/contrib/gis/admin/
-djo/contrib/gis/feeds.py
-djo/contrib/gis/forms/
-djo/contrib/gis/sitemaps/
-djo/contrib/gis/shortcuts.py
-djo/contrib/gis/static/
-djo/contrib/gis/templates/
-djo/contrib/gis/views.py
+djo/contrib/gis/                  # entire directory (deferred to GIS milestone)
 
 # Conf
 djo/conf/app_template/
@@ -1410,7 +1375,7 @@ djo/**/*.py          — django→djo
 tests/**/*.py        — django→djo
 
 # Structural modifications
-djo/__init__.py              — simplify setup()
+djo/__init__.py              — namespace rename only (setup() unchanged)
 djo/core/checks/__init__.py  — remove imports of deleted check modules
 djo/test/__init__.py          — remove imports of client, selenium, html
 djo/test/testcases.py         — remove HTTP client integration
@@ -1425,7 +1390,7 @@ tests/runtests.py             — update imports, settings reference
 
 ```
 djo/_ext/__init__.py           — fork extension package
-scripts/rename_namespace.sh    — reproducible rename script
+scripts/rename_namespace.py    — AST-aware reproducible rename script
 SPEC.md                        — this specification
 IMPLEMENTATION_PLAN.md         — this plan
 ```
