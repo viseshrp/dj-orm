@@ -22,6 +22,7 @@
 - The `contrib.gis` (GeoDjango) database layer (fields, functions, lookups, backends). **Deferred to a later milestone** — see §10.7.
 - The app registry (`djo.apps`) and settings infrastructure (`djo.conf`).
 - The signal dispatcher (`djo.dispatch`).
+- All ORM model signals (`djo.db.models.signals`): `pre_init`, `post_init`, `pre_save`, `post_save`, `pre_delete`, `post_delete`, `m2m_changed`, `class_prepared`, `pre_migrate`, `post_migrate`. These are core ORM extension points and must be fully preserved.
 - The system check framework — retained only because ORM and migrations already depend on it internally (model validation, DB backend checks). No web-oriented check modules are included.
 - The test infrastructure needed to run the kept tests (`djo.test`).
 - DB and data-operations management commands (see §5 for full rationale). This intentionally goes beyond strict "migrations-only" to include data import/export and DB maintenance commands that ORM-focused users commonly need. This choice brings `djo/core/serializers/` and fixture infrastructure into scope.
@@ -149,7 +150,7 @@ The `DJANGO_SETTINGS_MODULE` environment variable is **unchanged** from Django. 
 | `djo/core/checks/` | System check framework — trimmed (see §6) |
 | `djo/core/management/` | Management command infrastructure — trimmed (see §5) |
 | `djo/core/serializers/` | Model serializers (JSON, JSONL, XML, Python, PyYAML) — used by `dumpdata`/`loaddata`/migrations |
-| `djo/core/signals.py` | `request_started`, `request_finished`, `setting_changed` signals — kept because `djo.db` connects to them |
+| `djo/core/signals.py` | `request_started`, `request_finished`, `got_request_exception`, `setting_changed` — kept because `djo.db.__init__` connects `reset_queries`/`close_old_connections` to `request_started`/`request_finished`, and `setting_changed` is used by caches/connection handlers. See §4.5 for signal-hookup policy. |
 | `djo/core/validators.py` | Field validators — used by model fields |
 | `djo/core/files/` | Needed by `FileField`/`ImageField` |
 | `djo/core/signing.py` | May be transitively imported; keep if low-cost, stub if not |
@@ -161,8 +162,8 @@ The `DJANGO_SETTINGS_MODULE` environment variable is **unchanged** from Django. 
 | `djo/db/backends/oracle/` | Oracle backend |
 | `djo/db/backends/dummy/` | Dummy backend |
 | `djo/db/migrations/` | Complete migration framework |
-| `djo/db/models/` | Complete models package |
-| `djo/dispatch/` | Signal dispatcher — used by ORM signals |
+| `djo/db/models/` | Complete models package (includes `djo/db/models/signals.py` — all ORM model signals) |
+| `djo/dispatch/` | Signal dispatcher — the `Signal` class and `receiver` decorator; used by ORM model signals and `djo/core/signals.py` |
 | `djo/utils/` | Utility modules — see §4.3 for detail |
 | `djo/contrib/__init__.py` | Container |
 | `djo/contrib/contenttypes/` | ContentType model, GenericForeignKey — ORM feature; remove `admin.py`, `views.py`, `forms.py` |
@@ -232,6 +233,29 @@ The `djo/utils/` package has many modules. The ORM/migrations/backends import a 
 ### 4.4 djo/conf/global_settings.py
 
 Keep the file as-is. Settings that relate to removed subsystems (e.g., `TEMPLATES`, `MIDDLEWARE`, `ROOT_URLCONF`, `STATIC_URL`) remain defined with their default values — this is harmless and matches Django behavior where unused settings are simply ignored. Do **not** add validation that rejects unknown/unused settings.
+
+### 4.5 Signals policy
+
+Signals are a core ORM extension mechanism. The policy is: **preserve all signal definitions and all signal hookups that serve ORM/DB functionality; only strip hookups that are exclusive to removed subsystems.**
+
+**Fully retained (no changes):**
+
+| Signal | Module | Reason |
+|---|---|---|
+| `pre_init` / `post_init` | `djo.db.models.signals` | Model instance lifecycle |
+| `pre_save` / `post_save` | `djo.db.models.signals` | Model save hooks |
+| `pre_delete` / `post_delete` | `djo.db.models.signals` | Model deletion hooks |
+| `m2m_changed` | `djo.db.models.signals` | Many-to-many relationship changes |
+| `class_prepared` | `djo.db.models.signals` | App-registry model registration |
+| `pre_migrate` / `post_migrate` | `djo.db.models.signals` | Migration lifecycle |
+| `setting_changed` | `djo.core.signals` | Used by connection handlers and test infrastructure (`override_settings`) |
+| `request_started` / `request_finished` | `djo.core.signals` | `djo.db.__init__` connects `reset_queries` and `close_old_connections` to these; see below |
+
+**`request_started` / `request_finished` hookups in `djo/db/__init__.py`:** These connections (`signals.request_started.connect(reset_queries)`, etc.) are ORM-serving — they reset query logs and close stale DB connections. In a non-web context the signals simply never fire unless the user sends them explicitly, which is harmless. **Keep these hookups as-is.**
+
+**`got_request_exception`:** Defined in `djo.core.signals`. No ORM code connects to it, but it's a one-liner and removing it would be a public API deletion with zero benefit. **Keep the definition; do not add any new connections to it.**
+
+**Signal hookups to strip:** If any signal `.connect()` call in a retained module routes exclusively to a deleted subsystem (e.g., a hypothetical `signals.request_finished.connect(flush_sessions)`), remove that `.connect()` call. The signal *definition* stays; only the dead hookup is removed.
 
 ---
 
