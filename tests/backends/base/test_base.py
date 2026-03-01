@@ -76,13 +76,13 @@ class DatabaseWrapperLoggingTests (TransactionTestCase ):
                 self .assertEqual (conn .queries_log [-3 ]["sql"],"BEGIN")
                 self .assertRegex (
                 cm .output [0 ],
-                r"DEBUG:djo.db.backends:\\(\\d+.\\d{3}\\) "
+                r"DEBUG:djo.db.backends:\(\d+\.\d{3}\) "
                 rf"BEGIN; args=None; alias={DEFAULT_DB_ALIAS }",
                 )
                 self .assertEqual (conn .queries_log [-1 ]["sql"],"COMMIT")
                 self .assertRegex (
                 cm .output [-1 ],
-                r"DEBUG:djo.db.backends:\\(\\d+.\\d{3}\\) "
+                r"DEBUG:djo.db.backends:\(\d+\.\d{3}\) "
                 rf"COMMIT; args=None; alias={DEFAULT_DB_ALIAS }",
                 )
 
@@ -98,7 +98,7 @@ class DatabaseWrapperLoggingTests (TransactionTestCase ):
                 self .assertEqual (conn .queries_log [-1 ]["sql"],"ROLLBACK")
                 self .assertRegex (
                 cm .output [-1 ],
-                r"DEBUG:djo.db.backends:\\(\\d+.\\d{3}\\) "
+                r"DEBUG:djo.db.backends:\(\d+\.\d{3}\) "
                 rf"ROLLBACK; args=None; alias={DEFAULT_DB_ALIAS }",
                 )
 

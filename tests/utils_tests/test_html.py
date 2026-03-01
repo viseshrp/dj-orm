@@ -316,13 +316,13 @@ class TestUtilsHtml (SimpleTestCase ):
             def encode (self ,o ):
                 return '{"hello": "world"}'
 
-        self .assertHTMLEqual (
+        self .assertEqual (
         json_script ({},encoder =CustomDjangoJSONEncoder ),
         '<script type="application/json">{"hello": "world"}</script>',
         )
 
     def test_json_script_without_id (self ):
-        self .assertHTMLEqual (
+        self .assertEqual (
         json_script ({"key":"value"}),
         '<script type="application/json">{"key": "value"}</script>',
         )
@@ -361,7 +361,7 @@ class TestUtilsHtml (SimpleTestCase ):
         (
         "http://example.com/?q=http://example.com/?x=1%26q=django",
         "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
-        "djo",
+        "django",
         ),
         (
         "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"

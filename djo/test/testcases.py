@@ -437,11 +437,11 @@ class SimpleTestCase (unittest .TestCase ):
         """
         Perform pre-test setup:
         * Create a test client.
-        * Clear the mail test outbox.
         """
-        cls .client =cls .client_class ()
-        cls .async_client =cls .async_client_class ()
-        mail .outbox =[]
+        cls .client =cls .client_class ()if cls .client_class is not None else None 
+        cls .async_client =(
+        cls .async_client_class ()if cls .async_client_class is not None else None 
+        )
 
     def _post_teardown (self ):
         """Perform post-test things."""

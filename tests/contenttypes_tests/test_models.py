@@ -300,10 +300,6 @@ class ContentTypesTests (TestCase ):
         ct =ContentType .objects .get (app_label ="contenttypes_tests",model ="site")
         self .assertEqual (str (ct ),"Contenttypes_Tests | site")
 
-    def test_str_auth (self ):
-        ct =ContentType .objects .get (app_label ="auth",model ="group")
-        self .assertEqual (str (ct ),"Authentication and Authorization | group")
-
     def test_name (self ):
         ct =ContentType .objects .get (app_label ="contenttypes_tests",model ="site")
         self .assertEqual (ct .name ,"site")

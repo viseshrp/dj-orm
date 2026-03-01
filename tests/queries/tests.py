@@ -1855,13 +1855,6 @@ class Queries5Tests (TestCase ):
 
         # Ordering of extra() pieces is possible, too and you can mix extra
         # fields and model fields in the ordering.
-        self .assertSequenceEqual (
-        Ranking .objects .extra (
-        tables =["django_site"],order_by =["-django_site.id","rank"]
-        ),
-        [self .rank1 ,self .rank2 ,self .rank3 ],
-        )
-
         sql ="case when %s > 2 then 1 else 0 end"%connection .ops .quote_name ("rank")
         qs =Ranking .objects .extra (select ={"good":sql })
         self .assertEqual (

@@ -28,7 +28,6 @@ else :
     from djo .db import connection ,connections 
     from djo .test import TestCase ,TransactionTestCase 
     from djo .test .runner import get_max_test_processes ,parallel_type 
-    from djo .test .selenium import SeleniumTestCase ,SeleniumTestCaseBase 
     from djo .test .utils import NullTimeKeeper ,TimeKeeper ,get_runner 
     from djo .utils .deprecation import (
     RemovedInDjango60Warning ,
@@ -37,6 +36,24 @@ else :
     from djo .utils .functional import classproperty 
     from djo .utils .log import DEFAULT_LOGGING 
     from djo .utils .version import PY312 ,PYPY 
+
+try :
+    from djo .test .selenium import SeleniumTestCase ,SeleniumTestCaseBase 
+except ImportError :
+    class SeleniumTestCase :
+        screenshots =False 
+
+    class SeleniumTestCaseBase :
+        selenium_hub =None 
+        external_host =None 
+        headless =False 
+        browsers =[]
+
+        @staticmethod 
+        def import_webdriver (browser ):
+            raise ImproperlyConfigured (
+            "Selenium support is not available in this fork."
+            )
 
 
 try :
@@ -65,8 +82,6 @@ if not PYPY :
 
 RUNTESTS_DIR =os .path .abspath (os .path .dirname (__file__ ))
 
-TEMPLATE_DIR =os .path .join (RUNTESTS_DIR ,"templates")
-
 # Add variables enabling coverage to trace code in subprocesses.
 os .environ ["RUNTESTS_DIR"]=RUNTESTS_DIR 
 os .environ ["COVERAGE_PROCESS_START"]=os .path .join (RUNTESTS_DIR ,".coveragerc")
@@ -81,29 +96,14 @@ SUBDIRS_TO_SKIP ={
 
 ALWAYS_INSTALLED_APPS =[
 "djo.contrib.contenttypes",
-"djo.contrib.auth",
-"djo.contrib.sites",
-"djo.contrib.sessions",
-"djo.contrib.messages",
-"djo.contrib.admin.apps.SimpleAdminConfig",
-"djo.contrib.staticfiles",
 ]
 
-ALWAYS_MIDDLEWARE =[
-"djo.contrib.sessions.middleware.SessionMiddleware",
-"djo.middleware.common.CommonMiddleware",
-"djo.middleware.csrf.CsrfViewMiddleware",
-"djo.contrib.auth.middleware.AuthenticationMiddleware",
-"djo.contrib.messages.middleware.MessageMiddleware",
-]
+ALWAYS_MIDDLEWARE =[]
 
 # Need to add the associated contrib app to INSTALLED_APPS in some cases to
 # avoid "RuntimeError: Model class X doesn't declare an explicit app_label
 # and isn't in an application in INSTALLED_APPS."
 CONTRIB_TESTS_TO_APPS ={
-"deprecation":["djo.contrib.flatpages","djo.contrib.redirects"],
-"flatpages_tests":["djo.contrib.flatpages"],
-"redirects_tests":["djo.contrib.redirects"],
 }
 
 
@@ -134,6 +134,11 @@ def get_test_modules (gis_enabled ):
                 ):
                     continue 
                 test_module =f .name 
+                if (
+                test_module =="postgres_tests"
+                and connection .vendor !="postgresql"
+                ):
+                    continue 
                 if dirname :
                     test_module =dirname +"."+test_module 
                 yield test_module 
@@ -197,42 +202,18 @@ def setup_collect_tests (start_at ,start_after ,test_labels =None ):
     TMPDIR =os .environ ["TMPDIR"]
     state ={
     "INSTALLED_APPS":settings .INSTALLED_APPS ,
-    "ROOT_URLCONF":getattr (settings ,"ROOT_URLCONF",""),
-    "TEMPLATES":settings .TEMPLATES ,
     "LANGUAGE_CODE":settings .LANGUAGE_CODE ,
-    "STATIC_URL":settings .STATIC_URL ,
-    "STATIC_ROOT":settings .STATIC_ROOT ,
     "MIDDLEWARE":settings .MIDDLEWARE ,
     }
 
     # Redirect some settings for the duration of these tests.
     settings .INSTALLED_APPS =ALWAYS_INSTALLED_APPS 
-    settings .ROOT_URLCONF ="urls"
-    settings .STATIC_URL ="static/"
-    settings .STATIC_ROOT =os .path .join (TMPDIR ,"static")
-    settings .TEMPLATES =[
-    {
-    "BACKEND":"djo.template.backends.django.DjangoTemplates",
-    "DIRS":[TEMPLATE_DIR ],
-    "APP_DIRS":True ,
-    "OPTIONS":{
-    "context_processors":[
-    "djo.template.context_processors.request",
-    "djo.contrib.auth.context_processors.auth",
-    "djo.contrib.messages.context_processors.messages",
-    ],
-    },
-    }
-    ]
     settings .LANGUAGE_CODE ="en"
-    settings .SITE_ID =1 
     settings .MIDDLEWARE =ALWAYS_MIDDLEWARE 
     settings .MIGRATION_MODULES ={
     # This lets us skip creating migrations for the test models as many of
     # them depend on one of the following contrib applications.
-    "auth":None ,
     "contenttypes":None ,
-    "sessions":None ,
     }
     log_config =copy .deepcopy (DEFAULT_LOGGING )
     # Filter out non-error logging so we don't have to capture it in lots of

@@ -134,7 +134,10 @@ class LazySettings (LazyObject ):
         # Don't apply prefix to absolute paths and URLs.
         if value .startswith (("http://","https://","/")):
             return value 
-        from djo .urls import get_script_prefix 
+        try :
+            from djo .urls import get_script_prefix 
+        except ImportError :
+            return value 
 
         return "%s%s"%(get_script_prefix (),value )
 

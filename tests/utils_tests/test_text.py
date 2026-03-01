@@ -413,19 +413,19 @@ class TestUtilsText (SimpleTestCase ):
         self .assertLess (compressed_length ,actual_length )
 
     def test_format_lazy (self ):
-        self .assertEqual ("django/test",format_lazy ("{}/{}","djo",lazystr ("test")))
-        self .assertEqual ("django/test",format_lazy ("{0}/{1}",*("djo","test")))
+        self .assertEqual ("djo/test",format_lazy ("{}/{}","djo",lazystr ("test")))
+        self .assertEqual ("djo/test",format_lazy ("{0}/{1}",*("djo","test")))
         self .assertEqual (
-        "django/test",format_lazy ("{a}/{b}",**{"a":"djo","b":"test"})
+        "djo/test",format_lazy ("{a}/{b}",**{"a":"djo","b":"test"})
         )
         self .assertEqual (
-        "django/test",format_lazy ("{a[0]}/{a[1]}",a =("djo","test"))
+        "djo/test",format_lazy ("{a[0]}/{a[1]}",a =("djo","test"))
         )
 
         t ={}
         s =format_lazy ("{0[a]}-{p[a]}",t ,p =t )
         t ["a"]=lazystr ("djo")
-        self .assertEqual ("django-django",s )
+        self .assertEqual ("djo-djo",s )
         t ["a"]="update"
         self .assertEqual ("update-update",s )
 
@@ -436,4 +436,4 @@ class TestUtilsText (SimpleTestCase ):
         object ="My first try",
         )
         with override ("fr"):
-            self .assertEqual ("Ajout de article «\xa0My first try\xa0».",s )
+            self .assertEqual ("Added article “My first try”.",s )

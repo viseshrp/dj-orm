@@ -26,6 +26,7 @@ def get_connection_copy ():
     test_connection .settings_dict =copy .deepcopy (
     connections [DEFAULT_DB_ALIAS ].settings_dict 
     )
+    test_connection .connection =None 
     return test_connection 
 
 

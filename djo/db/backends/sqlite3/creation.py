@@ -143,7 +143,8 @@ class DatabaseCreation (BaseDatabaseCreation ):
             f"file:memorydb_{alias }_{_worker_id }?mode=memory&cache=shared"
             )
             source_db =self .connection .Database .connect (
-            f"file:{alias }_{_worker_id }.sqlite3?mode=ro",uri =True 
+            settings_dict ["NAME"],
+            uri =str (settings_dict ["NAME"]).startswith ("file:"),
             )
             target_db =sqlite3 .connect (connection_str ,uri =True )
             source_db .backup (target_db )

@@ -2,13 +2,12 @@ from urllib .parse import quote
 
 from djo .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation 
 from djo .contrib .contenttypes .models import ContentType 
-from djo .contrib .sites .models import SiteManager 
 from djo .db import models 
 
 
 class Site (models .Model ):
     domain =models .CharField (max_length =100 )
-    objects =SiteManager ()
+    objects =models .Manager ()
 
 
 class Author (models .Model ):

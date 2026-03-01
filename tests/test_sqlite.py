@@ -1,3 +1,5 @@
+import os 
+
 # This is an example test settings file for use with the Django test suite.
 #
 # The 'sqlite3' backend requires only the ENGINE setting (an in-
@@ -15,18 +17,15 @@
 DATABASES ={
 "default":{
 "ENGINE":"djo.db.backends.sqlite3",
+"TEST":{"NAME":os .path .join (os .environ .get ("TMPDIR",os .getcwd ()),"test_default.sqlite3")},
 },
 "other":{
 "ENGINE":"djo.db.backends.sqlite3",
+"TEST":{"NAME":os .path .join (os .environ .get ("TMPDIR",os .getcwd ()),"test_other.sqlite3")},
 },
 }
 
 SECRET_KEY ="django_tests_secret_key"
-
-# Use a fast hasher to speed up tests.
-PASSWORD_HASHERS =[
-"djo.contrib.auth.hashers.MD5PasswordHasher",
-]
 
 DEFAULT_AUTO_FIELD ="djo.db.models.AutoField"
 
