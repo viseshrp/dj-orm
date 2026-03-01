@@ -1,10 +1,9 @@
 import logging 
 import logging .config # needed when logging_config doesn't start with logging.config
+import traceback 
 from copy import copy 
 
 from djo .conf import settings 
-from djo .core import mail 
-from djo .core .mail import get_connection 
 from djo .core .management .color import color_style 
 from djo .utils .module_loading import import_string 
 
@@ -87,9 +86,11 @@ class AdminEmailHandler (logging .Handler ):
         super ().__init__ ()
         self .include_html =include_html 
         self .email_backend =email_backend 
-        self .reporter_class =import_string (
-        reporter_class or settings .DEFAULT_EXCEPTION_REPORTER 
-        )
+        reporter_path =reporter_class or settings .DEFAULT_EXCEPTION_REPORTER 
+        try :
+            self .reporter_class =import_string (reporter_path )
+        except ImportError :
+            self .reporter_class =ExceptionReporterFallback 
 
     def emit (self ,record ):
     # Early return when no email will be sent.
@@ -135,11 +136,19 @@ class AdminEmailHandler (logging .Handler ):
         self .send_mail (subject ,message ,fail_silently =True ,html_message =html_message )
 
     def send_mail (self ,subject ,message ,*args ,**kwargs ):
+        try :
+            from djo .core import mail 
+        except ImportError :
+            return 
         mail .mail_admins (
         subject ,message ,*args ,connection =self .connection (),**kwargs 
         )
 
     def connection (self ):
+        try :
+            from djo .core .mail import get_connection 
+        except ImportError :
+            return None 
         return get_connection (backend =self .email_backend ,fail_silently =True )
 
     def format_subject (self ,subject ):
@@ -212,6 +221,21 @@ class ServerFormatter (logging .Formatter ):
 
     def uses_server_time (self ):
         return self ._fmt .find ("{server_time}")>=0 
+
+
+class ExceptionReporterFallback :
+    def __init__ (self ,request ,is_email ,exc_type ,exc_value ,tb ):
+        self .exc_type =exc_type 
+        self .exc_value =exc_value 
+        self .tb =tb 
+
+    def get_traceback_text (self ):
+        return "".join (
+        traceback .format_exception (self .exc_type ,self .exc_value ,self .tb )
+        )
+
+    def get_traceback_html (self ):
+        return self .get_traceback_text ()
 
 
 def log_response (

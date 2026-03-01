@@ -5,7 +5,15 @@ Internationalization support.
 from contextlib import ContextDecorator 
 from decimal import ROUND_UP ,Decimal 
 
-from djo .utils .autoreload import autoreload_started ,file_changed 
+try :
+    from djo .utils .autoreload import autoreload_started ,file_changed 
+except ImportError :
+    class _SignalShim :
+        def connect (self ,*args ,**kwargs ):
+            return None 
+
+    autoreload_started =_SignalShim ()
+    file_changed =_SignalShim ()
 from djo .utils .functional import lazy 
 from djo .utils .regex_helper import _lazy_re_compile 
 

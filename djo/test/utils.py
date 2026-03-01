@@ -19,14 +19,11 @@ from asgiref .sync import iscoroutinefunction
 from djo .apps import apps 
 from djo .apps .registry import Apps 
 from djo .conf import UserSettingsHolder ,settings 
-from djo .core import mail 
 from djo .core .exceptions import ImproperlyConfigured 
 from djo .core .signals import request_started ,setting_changed 
 from djo .db import DEFAULT_DB_ALIAS ,connections ,reset_queries 
 from djo .db .models .options import Options 
-from djo .template import Template 
 from djo .test .signals import template_rendered 
-from djo .urls import get_script_prefix ,set_script_prefix 
 from djo .utils .translation import deactivate 
 from djo .utils .version import PYPY 
 
@@ -34,6 +31,20 @@ try :
     import jinja2 
 except ImportError :
     jinja2 =None 
+
+try :
+    from djo .template import Template 
+except ImportError :
+    Template =None 
+
+try :
+    from djo .urls import get_script_prefix ,set_script_prefix 
+except ImportError :
+    def get_script_prefix ():
+        return "/"
+
+    def set_script_prefix (prefix ):
+        return None 
 
 
 __all__ =(
@@ -136,20 +147,11 @@ def setup_test_environment (debug =None ):
     saved_data =SimpleNamespace ()
     _TestState .saved_data =saved_data 
 
-    saved_data .allowed_hosts =settings .ALLOWED_HOSTS 
-    # Add the default host of the test client.
-    settings .ALLOWED_HOSTS =[*settings .ALLOWED_HOSTS ,"testserver"]
-
     saved_data .debug =settings .DEBUG 
     settings .DEBUG =debug 
-
-    saved_data .email_backend =settings .EMAIL_BACKEND 
-    settings .EMAIL_BACKEND ="djo.core.mail.backends.locmem.EmailBackend"
-
-    saved_data .template_render =Template ._render 
-    Template ._render =instrumented_test_render 
-
-    mail .outbox =[]
+    if Template is not None :
+        saved_data .template_render =Template ._render 
+        Template ._render =instrumented_test_render 
 
     deactivate ()
 
@@ -161,13 +163,11 @@ def teardown_test_environment ():
     """
     saved_data =_TestState .saved_data 
 
-    settings .ALLOWED_HOSTS =saved_data .allowed_hosts 
     settings .DEBUG =saved_data .debug 
-    settings .EMAIL_BACKEND =saved_data .email_backend 
-    Template ._render =saved_data .template_render 
+    if Template is not None :
+        Template ._render =saved_data .template_render 
 
     del _TestState .saved_data 
-    del mail .outbox 
 
 
 def setup_databases (
@@ -857,24 +857,9 @@ def freeze_time (t ):
 
 
 def require_jinja2 (test_func ):
-    """
-    Decorator to enable a Jinja2 template engine in addition to the regular
-    Django template engine for a test or skip it if Jinja2 isn't available.
-    """
-    test_func =skipIf (jinja2 is None ,"this test requires jinja2")(test_func )
-    return override_settings (
-    TEMPLATES =[
-    {
-    "BACKEND":"djo.template.backends.django.DjangoTemplates",
-    "APP_DIRS":True ,
-    },
-    {
-    "BACKEND":"djo.template.backends.jinja2.Jinja2",
-    "APP_DIRS":True ,
-    "OPTIONS":{"keep_trailing_newline":True },
-    },
-    ]
-    )(test_func )
+    return skipIf (True ,"jinja2 template backend is not available in this fork")(
+    test_func 
+    )
 
 
 class override_script_prefix (TestContextDecorator ):

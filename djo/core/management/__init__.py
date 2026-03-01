@@ -23,7 +23,15 @@ CommandParser ,
 handle_default_options ,
 )
 from djo .core .management .color import color_style 
-from djo .utils import autoreload 
+try :
+    from djo .utils import autoreload 
+except ImportError :
+    class _AutoreloadShim :
+        @staticmethod 
+        def check_errors (func ):
+            return func 
+
+    autoreload =_AutoreloadShim ()
 
 
 def find_commands (management_dir ):

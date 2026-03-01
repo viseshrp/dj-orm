@@ -29,22 +29,14 @@ from asgiref .sync import async_to_sync ,iscoroutinefunction
 
 from djo .apps import apps 
 from djo .conf import settings 
-from djo .core import mail 
 from djo .core .exceptions import ImproperlyConfigured ,ValidationError 
 from djo .core .files import locks 
-from djo .core .handlers .wsgi import WSGIHandler ,get_path_info 
 from djo .core .management import call_command 
 from djo .core .management .color import no_style 
 from djo .core .management .sql import emit_post_migrate_signal 
-from djo .core .servers .basehttp import ThreadedWSGIServer ,WSGIRequestHandler 
 from djo .core .signals import setting_changed 
 from djo .db import DEFAULT_DB_ALIAS ,connection ,connections ,transaction 
 from djo .db .backends .base .base import NO_DB_ALIAS ,BaseDatabaseWrapper 
-from djo .forms .fields import CharField 
-from djo .http import QueryDict 
-from djo .http .request import split_domain_port ,validate_host 
-from djo .test .client import AsyncClient ,Client 
-from djo .test .html import HTMLParseError ,parse_html 
 from djo .test .signals import template_rendered 
 from djo .test .utils import (
 CaptureQueriesContext ,
@@ -55,7 +47,64 @@ override_settings ,
 )
 from djo .utils .functional import classproperty 
 from djo .utils .version import PY311 
-from djo .views .static import serve 
+
+try :
+    from djo .forms .fields import CharField 
+except ImportError :
+    class CharField :
+        pass 
+
+
+try :
+    from djo .http import QueryDict 
+    from djo .http .request import split_domain_port ,validate_host 
+except ImportError :
+    class QueryDict (dict ):
+        pass 
+
+    def split_domain_port (netloc ):
+        return netloc ,""
+
+    def validate_host (domain ,allowed_hosts ):
+        return True 
+
+
+try :
+    from djo .test .client import AsyncClient ,Client 
+except ImportError :
+    AsyncClient =None 
+    Client =None 
+
+
+try :
+    from djo .test .html import HTMLParseError ,parse_html 
+except ImportError :
+    class HTMLParseError (AssertionError ):
+        pass 
+
+    def parse_html (html ):
+        raise HTMLParseError ("HTML parsing is not available in this fork.")
+
+
+try :
+    from djo .core .handlers .wsgi import WSGIHandler ,get_path_info 
+    from djo .core .servers .basehttp import ThreadedWSGIServer ,WSGIRequestHandler 
+    from djo .views .static import serve 
+except ImportError :
+    class WSGIHandler :
+        pass 
+
+    class WSGIRequestHandler :
+        pass 
+
+    class ThreadedWSGIServer :
+        pass 
+
+    def get_path_info (environ ):
+        return environ .get ("PATH_INFO","")
+
+    def serve (*args ,**kwargs ):
+        raise ImproperlyConfigured ("Static serving is not available in this fork.")
 
 logger =logging .getLogger ("djo.test")
 

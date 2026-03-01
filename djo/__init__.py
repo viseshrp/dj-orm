@@ -12,13 +12,11 @@ def setup (set_prefix =True ):
     Set the thread-local urlresolvers script prefix if `set_prefix` is True.
     """
     from djo .apps import apps 
+    from djo ._ext .setup import set_script_prefix_if_available 
     from djo .conf import settings 
-    from djo .urls import set_script_prefix 
     from djo .utils .log import configure_logging 
 
     configure_logging (settings .LOGGING_CONFIG ,settings .LOGGING )
     if set_prefix :
-        set_script_prefix (
-        "/"if settings .FORCE_SCRIPT_NAME is None else settings .FORCE_SCRIPT_NAME 
-        )
+        set_script_prefix_if_available (settings .FORCE_SCRIPT_NAME )
     apps .populate (settings .INSTALLED_APPS )

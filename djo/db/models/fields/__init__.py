@@ -8,7 +8,10 @@ from base64 import b64decode ,b64encode
 from collections .abc import Iterable 
 from functools import partialmethod ,total_ordering 
 
-from djo import forms 
+try :
+    from djo import forms 
+except ImportError :
+    forms =None 
 from djo .apps import apps 
 from djo .conf import settings 
 from djo .core import checks ,exceptions ,validators 
@@ -113,6 +116,10 @@ def _empty (of_cls ):
 
 def return_None ():
     return None 
+
+
+def _forms_unavailable ():
+    raise ImportError ("djo.forms is not available in this fork.")
 
 
 @total_ordering 
@@ -1123,6 +1130,8 @@ class Field (RegisterLookupMixin ):
             if choices_form_class is not None :
                 form_class =choices_form_class 
             else :
+                if forms is None :
+                    _forms_unavailable ()
                 form_class =forms .TypedChoiceField 
                 # Many of the subclass-specific formfield arguments (min_value,
                 # max_value) don't apply for choice fields, so be sure to only pass
@@ -1144,6 +1153,8 @@ class Field (RegisterLookupMixin ):
                     del kwargs [k ]
         defaults .update (kwargs )
         if form_class is None :
+            if forms is None :
+                _forms_unavailable ()
             form_class =forms .CharField 
         return form_class (**defaults )
 
@@ -1194,6 +1205,8 @@ class BooleanField (Field ):
             include_blank =not (self .has_default ()or "initial"in kwargs )
             defaults ={"choices":self .get_choices (include_blank =include_blank )}
         else :
+            if forms is None :
+                _forms_unavailable ()
             form_class =forms .NullBooleanField if self .null else forms .BooleanField 
             # In HTML checkboxes, 'required' means "must be checked" which is
             # different from the choices case ("must select some value").
