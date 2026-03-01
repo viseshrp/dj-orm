@@ -1,5 +1,5 @@
-from django.db import models
+from djo .db import models 
 
 
-class SomeObject(models.Model):
-    name = models.CharField(max_length=255)
+class SomeObject (models .Model ):
+    name =models .CharField (max_length =255 )

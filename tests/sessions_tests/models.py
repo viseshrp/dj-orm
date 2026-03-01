@@ -4,43 +4,43 @@ real-world applications, it gives you the option of querying the database for
 all active sessions for a particular account.
 """
 
-from django.contrib.sessions.backends.db import SessionStore as DBStore
-from django.contrib.sessions.base_session import AbstractBaseSession
-from django.db import models
+from djo .contrib .sessions .backends .db import SessionStore as DBStore 
+from djo .contrib .sessions .base_session import AbstractBaseSession 
+from djo .db import models 
 
 
-class CustomSession(AbstractBaseSession):
+class CustomSession (AbstractBaseSession ):
     """
     A session model with a column for an account ID.
     """
 
-    account_id = models.IntegerField(null=True, db_index=True)
+    account_id =models .IntegerField (null =True ,db_index =True )
 
-    @classmethod
-    def get_session_store_class(cls):
-        return SessionStore
+    @classmethod 
+    def get_session_store_class (cls ):
+        return SessionStore 
 
 
-class SessionStore(DBStore):
+class SessionStore (DBStore ):
     """
     A database session store, that handles updating the account ID column
     inside the custom session model.
     """
 
-    @classmethod
-    def get_model_class(cls):
-        return CustomSession
+    @classmethod 
+    def get_model_class (cls ):
+        return CustomSession 
 
-    def create_model_instance(self, data):
-        obj = super().create_model_instance(data)
+    def create_model_instance (self ,data ):
+        obj =super ().create_model_instance (data )
 
-        try:
-            account_id = int(data.get("_auth_user_id"))
-        except (ValueError, TypeError):
-            account_id = None
-        obj.account_id = account_id
+        try :
+            account_id =int (data .get ("_auth_user_id"))
+        except (ValueError ,TypeError ):
+            account_id =None 
+        obj .account_id =account_id 
 
-        return obj
+        return obj 
 
-    def get_session_cookie_age(self):
-        return 60 * 60 * 24  # One day.
+    def get_session_cookie_age (self ):
+        return 60 *60 *24 # One day.

@@ -1,8 +1,8 @@
-from django.core.management.base import BaseCommand
+from djo .core .management .base import BaseCommand 
 
 
-class Command(BaseCommand):
-    requires_system_checks = []
+class Command (BaseCommand ):
+    requires_system_checks =[]
 
-    def handle(self, *args, **options):
-        pass
+    def handle (self ,*args ,**options ):
+        pass 

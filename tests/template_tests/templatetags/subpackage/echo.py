@@ -1,8 +1,8 @@
-from django import template
+from djo import template 
 
-register = template.Library()
+register =template .Library ()
 
 
-@register.simple_tag
-def echo2(arg):
-    return arg
+@register .simple_tag 
+def echo2 (arg ):
+    return arg 

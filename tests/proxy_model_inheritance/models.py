@@ -1,19 +1,19 @@
-from django.db import models
+from djo .db import models 
 
 
-class ConcreteModel(models.Model):
-    pass
+class ConcreteModel (models .Model ):
+    pass 
 
 
-class ProxyModel(ConcreteModel):
-    class Meta:
-        proxy = True
+class ProxyModel (ConcreteModel ):
+    class Meta :
+        proxy =True 
 
 
-class ConcreteModelSubclass(ProxyModel):
-    pass
+class ConcreteModelSubclass (ProxyModel ):
+    pass 
 
 
-class ConcreteModelSubclassProxy(ConcreteModelSubclass):
-    class Meta:
-        proxy = True
+class ConcreteModelSubclassProxy (ConcreteModelSubclass ):
+    class Meta :
+        proxy =True 

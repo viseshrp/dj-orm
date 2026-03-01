@@ -1,14 +1,14 @@
-from django.db import connection, migrations
+from djo .db import connection ,migrations 
 
-if connection.features.supports_raster:
-    from django.contrib.postgres.operations import CreateExtension
+if connection .features .supports_raster :
+    from djo .contrib .postgres .operations import CreateExtension 
 
-    class Migration(migrations.Migration):
-        operations = [
-            CreateExtension("postgis_raster"),
+    class Migration (migrations .Migration ):
+        operations =[
+        CreateExtension ("postgis_raster"),
         ]
 
-else:
+else :
 
-    class Migration(migrations.Migration):
-        operations = []
+    class Migration (migrations .Migration ):
+        operations =[]

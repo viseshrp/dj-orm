@@ -6,107 +6,107 @@ To define a one-to-one relationship, use ``OneToOneField()``.
 In this example, a ``Place`` optionally can be a ``Restaurant``.
 """
 
-from django.db import models
+from djo .db import models 
 
 
-class Place(models.Model):
-    name = models.CharField(max_length=50)
-    address = models.CharField(max_length=80)
+class Place (models .Model ):
+    name =models .CharField (max_length =50 )
+    address =models .CharField (max_length =80 )
 
-    def __str__(self):
-        return "%s the place" % self.name
-
-
-class Restaurant(models.Model):
-    place = models.OneToOneField(Place, models.CASCADE, primary_key=True)
-    serves_hot_dogs = models.BooleanField(default=False)
-    serves_pizza = models.BooleanField(default=False)
-
-    def __str__(self):
-        return "%s the restaurant" % self.place.name
+    def __str__ (self ):
+        return "%s the place"%self .name 
 
 
-class Bar(models.Model):
-    place = models.OneToOneField(Place, models.CASCADE)
-    serves_cocktails = models.BooleanField(default=True)
+class Restaurant (models .Model ):
+    place =models .OneToOneField (Place ,models .CASCADE ,primary_key =True )
+    serves_hot_dogs =models .BooleanField (default =False )
+    serves_pizza =models .BooleanField (default =False )
+
+    def __str__ (self ):
+        return "%s the restaurant"%self .place .name 
 
 
-class UndergroundBar(models.Model):
-    place = models.OneToOneField(Place, models.SET_NULL, null=True)
-    serves_cocktails = models.BooleanField(default=True)
+class Bar (models .Model ):
+    place =models .OneToOneField (Place ,models .CASCADE )
+    serves_cocktails =models .BooleanField (default =True )
 
 
-class Waiter(models.Model):
-    restaurant = models.ForeignKey(Restaurant, models.CASCADE)
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return "%s the waiter at %s" % (self.name, self.restaurant)
+class UndergroundBar (models .Model ):
+    place =models .OneToOneField (Place ,models .SET_NULL ,null =True )
+    serves_cocktails =models .BooleanField (default =True )
 
 
-class Favorites(models.Model):
-    name = models.CharField(max_length=50)
-    restaurants = models.ManyToManyField(Restaurant)
+class Waiter (models .Model ):
+    restaurant =models .ForeignKey (Restaurant ,models .CASCADE )
+    name =models .CharField (max_length =50 )
+
+    def __str__ (self ):
+        return "%s the waiter at %s"%(self .name ,self .restaurant )
 
 
-class ManualPrimaryKey(models.Model):
-    primary_key = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=50)
+class Favorites (models .Model ):
+    name =models .CharField (max_length =50 )
+    restaurants =models .ManyToManyField (Restaurant )
 
 
-class RelatedModel(models.Model):
-    link = models.OneToOneField(ManualPrimaryKey, models.CASCADE)
-    name = models.CharField(max_length=50)
+class ManualPrimaryKey (models .Model ):
+    primary_key =models .CharField (max_length =10 ,primary_key =True )
+    name =models .CharField (max_length =50 )
 
 
-class MultiModel(models.Model):
-    link1 = models.OneToOneField(Place, models.CASCADE)
-    link2 = models.OneToOneField(ManualPrimaryKey, models.CASCADE)
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return "Multimodel %s" % self.name
+class RelatedModel (models .Model ):
+    link =models .OneToOneField (ManualPrimaryKey ,models .CASCADE )
+    name =models .CharField (max_length =50 )
 
 
-class Target(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+class MultiModel (models .Model ):
+    link1 =models .OneToOneField (Place ,models .CASCADE )
+    link2 =models .OneToOneField (ManualPrimaryKey ,models .CASCADE )
+    name =models .CharField (max_length =50 )
+
+    def __str__ (self ):
+        return "Multimodel %s"%self .name 
 
 
-class Pointer(models.Model):
-    other = models.OneToOneField(Target, models.CASCADE, primary_key=True)
+class Target (models .Model ):
+    name =models .CharField (max_length =50 ,unique =True )
 
 
-class Pointer2(models.Model):
-    other = models.OneToOneField(Target, models.CASCADE, related_name="second_pointer")
+class Pointer (models .Model ):
+    other =models .OneToOneField (Target ,models .CASCADE ,primary_key =True )
 
 
-class HiddenPointer(models.Model):
-    target = models.OneToOneField(Target, models.CASCADE, related_name="hidden+")
+class Pointer2 (models .Model ):
+    other =models .OneToOneField (Target ,models .CASCADE ,related_name ="second_pointer")
 
 
-class ToFieldPointer(models.Model):
-    target = models.OneToOneField(
-        Target, models.CASCADE, to_field="name", primary_key=True
+class HiddenPointer (models .Model ):
+    target =models .OneToOneField (Target ,models .CASCADE ,related_name ="hidden+")
+
+
+class ToFieldPointer (models .Model ):
+    target =models .OneToOneField (
+    Target ,models .CASCADE ,to_field ="name",primary_key =True 
     )
 
 
-# Test related objects visibility.
-class SchoolManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(is_public=True)
+    # Test related objects visibility.
+class SchoolManager (models .Manager ):
+    def get_queryset (self ):
+        return super ().get_queryset ().filter (is_public =True )
 
 
-class School(models.Model):
-    is_public = models.BooleanField(default=False)
-    objects = SchoolManager()
+class School (models .Model ):
+    is_public =models .BooleanField (default =False )
+    objects =SchoolManager ()
 
 
-class DirectorManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(is_temp=False)
+class DirectorManager (models .Manager ):
+    def get_queryset (self ):
+        return super ().get_queryset ().filter (is_temp =False )
 
 
-class Director(models.Model):
-    is_temp = models.BooleanField(default=False)
-    school = models.OneToOneField(School, models.CASCADE)
-    objects = DirectorManager()
+class Director (models .Model ):
+    is_temp =models .BooleanField (default =False )
+    school =models .OneToOneField (School ,models .CASCADE )
+    objects =DirectorManager ()

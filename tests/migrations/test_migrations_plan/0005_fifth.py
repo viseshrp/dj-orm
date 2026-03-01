@@ -1,22 +1,22 @@
-from django.db import migrations
+from djo .db import migrations 
 
 
-def grow_tail(x, y):
-    pass
+def grow_tail (x ,y ):
+    pass 
 
 
-def feed(x, y):
+def feed (x ,y ):
     """Feed salamander."""
-    pass
+    pass 
 
 
-class Migration(migrations.Migration):
-    dependencies = [
-        ("migrations", "0004_fourth"),
+class Migration (migrations .Migration ):
+    dependencies =[
+    ("migrations","0004_fourth"),
     ]
 
-    operations = [
-        migrations.RunPython(migrations.RunPython.noop),
-        migrations.RunPython(grow_tail),
-        migrations.RunPython(feed, migrations.RunPython.noop),
+    operations =[
+    migrations .RunPython (migrations .RunPython .noop ),
+    migrations .RunPython (grow_tail ),
+    migrations .RunPython (feed ,migrations .RunPython .noop ),
     ]

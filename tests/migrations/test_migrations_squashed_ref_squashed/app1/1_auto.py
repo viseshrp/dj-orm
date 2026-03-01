@@ -1,5 +1,5 @@
-from django.db import migrations
+from djo .db import migrations 
 
 
-class Migration(migrations.Migration):
-    pass
+class Migration (migrations .Migration ):
+    pass 

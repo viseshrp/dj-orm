@@ -1,9 +1,9 @@
-from django.db import migrations
+from djo .db import migrations 
 
 
-class Migration(migrations.Migration):
-    dependencies = [
-        ("migrations", "0003_third"),
+class Migration (migrations .Migration ):
+    dependencies =[
+    ("migrations","0003_third"),
     ]
 
-    operations = [migrations.RunSQL("SELECT * FROM migrations_author WHERE id = 1")]
+    operations =[migrations .RunSQL ("SELECT * FROM migrations_author WHERE id = 1")]

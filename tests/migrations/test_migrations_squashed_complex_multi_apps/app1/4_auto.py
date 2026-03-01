@@ -1,7 +1,7 @@
-from django.db import migrations
+from djo .db import migrations 
 
 
-class Migration(migrations.Migration):
-    dependencies = [("app1", "3_auto")]
+class Migration (migrations .Migration ):
+    dependencies =[("app1","3_auto")]
 
-    operations = [migrations.RunPython(migrations.RunPython.noop)]
+    operations =[migrations .RunPython (migrations .RunPython .noop )]

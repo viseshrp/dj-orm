@@ -1,15 +1,15 @@
-from django.forms import ColorInput
+from djo .forms import ColorInput 
 
-from .base import WidgetTest
+from .base import WidgetTest 
 
 
-class ColorInputTest(WidgetTest):
-    widget = ColorInput()
+class ColorInputTest (WidgetTest ):
+    widget =ColorInput ()
 
-    def test_render(self):
-        self.check_html(
-            self.widget,
-            "color",
-            "",
-            html="<input type='color' name='color'>",
+    def test_render (self ):
+        self .check_html (
+        self .widget ,
+        "color",
+        "",
+        html ="<input type='color' name='color'>",
         )

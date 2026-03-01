@@ -1,31 +1,31 @@
-from django.apps import apps
-from django.contrib.sites.models import Site
-from django.core.cache import cache
-from django.test import TestCase, modify_settings, override_settings
+from djo .apps import apps 
+from djo .contrib .sites .models import Site 
+from djo .core .cache import cache 
+from djo .test import TestCase ,modify_settings ,override_settings 
 
-from .models import I18nTestModel, TestModel
+from .models import I18nTestModel ,TestModel 
 
 
-@modify_settings(INSTALLED_APPS={"append": "django.contrib.sitemaps"})
-@override_settings(ROOT_URLCONF="sitemaps_tests.urls.http")
-class SitemapTestsBase(TestCase):
-    protocol = "http"
-    sites_installed = apps.is_installed("django.contrib.sites")
-    domain = "example.com" if sites_installed else "testserver"
+@modify_settings (INSTALLED_APPS ={"append":"djo.contrib.sitemaps"})
+@override_settings (ROOT_URLCONF ="sitemaps_tests.urls.http")
+class SitemapTestsBase (TestCase ):
+    protocol ="http"
+    sites_installed =apps .is_installed ("djo.contrib.sites")
+    domain ="example.com"if sites_installed else "testserver"
 
-    @classmethod
-    def setUpTestData(cls):
-        # Create an object for sitemap content.
-        TestModel.objects.create(name="Test Object")
-        cls.i18n_model = I18nTestModel.objects.create(name="Test Object")
+    @classmethod 
+    def setUpTestData (cls ):
+    # Create an object for sitemap content.
+        TestModel .objects .create (name ="Test Object")
+        cls .i18n_model =I18nTestModel .objects .create (name ="Test Object")
 
-    def setUp(self):
-        self.base_url = "%s://%s" % (self.protocol, self.domain)
-        cache.clear()
+    def setUp (self ):
+        self .base_url ="%s://%s"%(self .protocol ,self .domain )
+        cache .clear ()
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    @classmethod 
+    def setUpClass (cls ):
+        super ().setUpClass ()
         # This cleanup is necessary because contrib.sites cache
         # makes tests interfere with each other, see #11505
-        Site.objects.clear_cache()
+        Site .objects .clear_cache ()

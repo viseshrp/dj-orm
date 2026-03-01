@@ -1,8 +1,8 @@
-from django import template
+from djo import template 
 
-register = template.Library()
+register =template .Library ()
 
 
-@register.simple_tag
-def go_boom():
-    raise Exception("boom")
+@register .simple_tag 
+def go_boom ():
+    raise Exception ("boom")

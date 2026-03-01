@@ -1,8 +1,8 @@
-from django import template
+from djo import template 
 
-register = template.Library()
+register =template .Library ()
 
 
-@register.simple_tag()
-def annotated_tag_function(val: int):
-    return val
+@register .simple_tag ()
+def annotated_tag_function (val :int ):
+    return val 

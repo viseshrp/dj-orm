@@ -1,7 +1,7 @@
-from django.urls import path
+from djo .urls import path 
 
-from .models import site
+from .models import site 
 
-urlpatterns = [
-    path("admin/", site.urls),
+urlpatterns =[
+path ("admin/",site .urls ),
 ]

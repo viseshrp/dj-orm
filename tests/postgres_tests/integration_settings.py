@@ -1,5 +1,5 @@
-SECRET_KEY = "abcdefg"
+SECRET_KEY ="abcdefg"
 
-INSTALLED_APPS = [
-    "django.contrib.postgres",
+INSTALLED_APPS =[
+"djo.contrib.postgres",
 ]

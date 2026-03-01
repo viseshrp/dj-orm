@@ -1,28 +1,28 @@
-from django.urls import include, path
-from django.views import View
+from djo .urls import include ,path 
+from djo .views import View 
 
 
-def view1(request):
-    pass
+def view1 (request ):
+    pass 
 
 
-def view2(request):
-    pass
+def view2 (request ):
+    pass 
 
 
-class View3(View):
-    pass
+class View3 (View ):
+    pass 
 
 
-nested = (
-    [
-        path("view1/", view1, name="view1"),
-        path("view3/", View3.as_view(), name="view3"),
-    ],
-    "backend",
+nested =(
+[
+path ("view1/",view1 ,name ="view1"),
+path ("view3/",View3 .as_view (),name ="view3"),
+],
+"backend",
 )
 
-urlpatterns = [
-    path("some/path/", include(nested, namespace="nested")),
-    path("view2/", view2, name="view2"),
+urlpatterns =[
+path ("some/path/",include (nested ,namespace ="nested")),
+path ("view2/",view2 ,name ="view2"),
 ]

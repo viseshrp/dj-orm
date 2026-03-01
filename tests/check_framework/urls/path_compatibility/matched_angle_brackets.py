@@ -1,5 +1,5 @@
-from django.urls import path
+from djo .urls import path 
 
-urlpatterns = [
-    path("<int:angle_bracket>", lambda x: x),
+urlpatterns =[
+path ("<int:angle_bracket>",lambda x :x ),
 ]

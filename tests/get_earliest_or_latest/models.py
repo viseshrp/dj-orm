@@ -1,38 +1,38 @@
-from django.db import models
+from djo .db import models 
 
 
-class Article(models.Model):
-    headline = models.CharField(max_length=100)
-    pub_date = models.DateField()
-    expire_date = models.DateField()
+class Article (models .Model ):
+    headline =models .CharField (max_length =100 )
+    pub_date =models .DateField ()
+    expire_date =models .DateField ()
 
-    class Meta:
-        get_latest_by = "pub_date"
+    class Meta :
+        get_latest_by ="pub_date"
 
 
-class Person(models.Model):
-    name = models.CharField(max_length=30)
-    birthday = models.DateField()
+class Person (models .Model ):
+    name =models .CharField (max_length =30 )
+    birthday =models .DateField ()
     # Note that this model doesn't have "get_latest_by" set.
 
 
-class Comment(models.Model):
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    likes_count = models.PositiveIntegerField()
+class Comment (models .Model ):
+    article =models .ForeignKey (Article ,on_delete =models .CASCADE )
+    likes_count =models .PositiveIntegerField ()
 
 
-# Ticket #23555 - model with an intentionally broken QuerySet.__iter__ method.
+    # Ticket #23555 - model with an intentionally broken QuerySet.__iter__ method.
 
 
-class IndexErrorQuerySet(models.QuerySet):
+class IndexErrorQuerySet (models .QuerySet ):
     """
     Emulates the case when some internal code raises an unexpected
     IndexError.
     """
 
-    def __iter__(self):
-        raise IndexError
+    def __iter__ (self ):
+        raise IndexError 
 
 
-class IndexErrorArticle(Article):
-    objects = IndexErrorQuerySet.as_manager()
+class IndexErrorArticle (Article ):
+    objects =IndexErrorQuerySet .as_manager ()

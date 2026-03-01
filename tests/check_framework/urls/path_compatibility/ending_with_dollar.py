@@ -1,5 +1,5 @@
-from django.urls import path
+from djo .urls import path 
 
-urlpatterns = [
-    path("ending-with-dollar$", lambda x: x),
+urlpatterns =[
+path ("ending-with-dollar$",lambda x :x ),
 ]

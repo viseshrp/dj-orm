@@ -1,8 +1,8 @@
-from django.urls import include, path
+from djo .urls import include ,path 
 
-from . import urlconf_inner
+from .import urlconf_inner 
 
-urlpatterns = [
-    path("test/me/", urlconf_inner.inner_view, name="outer"),
-    path("inner_urlconf/", include(urlconf_inner.__name__)),
+urlpatterns =[
+path ("test/me/",urlconf_inner .inner_view ,name ="outer"),
+path ("inner_urlconf/",include (urlconf_inner .__name__ )),
 ]

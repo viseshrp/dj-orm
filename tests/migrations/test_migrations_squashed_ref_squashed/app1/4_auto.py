@@ -1,5 +1,5 @@
-from django.db import migrations
+from djo .db import migrations 
 
 
-class Migration(migrations.Migration):
-    dependencies = [("app1", "2_squashed_3")]
+class Migration (migrations .Migration ):
+    dependencies =[("app1","2_squashed_3")]

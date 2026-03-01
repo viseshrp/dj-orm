@@ -1,9 +1,9 @@
-from django.urls import path, register_converter
+from djo .urls import path ,register_converter 
 
-from . import converters, views
+from .import converters ,views 
 
-register_converter(converters.DynamicConverter, "dynamic")
+register_converter (converters .DynamicConverter ,"dynamic")
 
-urlpatterns = [
-    path("dynamic/<dynamic:value>/", views.empty_view, name="dynamic"),
+urlpatterns =[
+path ("dynamic/<dynamic:value>/",views .empty_view ,name ="dynamic"),
 ]

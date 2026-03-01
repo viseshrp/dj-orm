@@ -1,5 +1,5 @@
-from django.contrib import admin
+from djo .contrib import admin 
 
 
-class CustomAdminSite(admin.AdminSite):
-    pass
+class CustomAdminSite (admin .AdminSite ):
+    pass 

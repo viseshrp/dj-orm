@@ -1,8 +1,8 @@
-from django.db import models
+from djo .db import models 
 
 
-class Foo(models.Model):
-    name = models.CharField(max_length=255)
+class Foo (models .Model ):
+    name =models .CharField (max_length =255 )
 
-    class Meta:
-        app_label = "another_app_waiting_migration"
+    class Meta :
+        app_label ="another_app_waiting_migration"

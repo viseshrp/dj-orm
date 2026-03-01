@@ -1,29 +1,29 @@
-from django import forms
-from django.http import HttpResponse
-from django.template import Context, Template
-from django.views.generic.edit import UpdateView
+from djo import forms 
+from djo .http import HttpResponse 
+from djo .template import Context ,Template 
+from djo .views .generic .edit import UpdateView 
 
-from .models import Article
-
-
-class ArticleForm(forms.ModelForm):
-    content = forms.CharField(strip=False, widget=forms.Textarea)
-
-    class Meta:
-        model = Article
-        fields = "__all__"
+from .models import Article 
 
 
-class ArticleFormView(UpdateView):
-    model = Article
-    success_url = "/"
-    form_class = ArticleForm
+class ArticleForm (forms .ModelForm ):
+    content =forms .CharField (strip =False ,widget =forms .Textarea )
+
+    class Meta :
+        model =Article 
+        fields ="__all__"
 
 
-def form_view(request):
-    class Form(forms.Form):
-        number = forms.FloatField()
+class ArticleFormView (UpdateView ):
+    model =Article 
+    success_url ="/"
+    form_class =ArticleForm 
 
-    template = Template("<html>{{ form }}</html>")
-    context = Context({"form": Form()})
-    return HttpResponse(template.render(context))
+
+def form_view (request ):
+    class Form (forms .Form ):
+        number =forms .FloatField ()
+
+    template =Template ("<html>{{ form }}</html>")
+    context =Context ({"form":Form ()})
+    return HttpResponse (template .render (context ))

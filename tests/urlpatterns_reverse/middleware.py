@@ -1,41 +1,41 @@
-from django.http import HttpResponse, StreamingHttpResponse
-from django.urls import reverse
-from django.utils.deprecation import MiddlewareMixin
+from djo .http import HttpResponse ,StreamingHttpResponse 
+from djo .urls import reverse 
+from djo .utils .deprecation import MiddlewareMixin 
 
-from . import urlconf_inner
-
-
-class ChangeURLconfMiddleware(MiddlewareMixin):
-    def process_request(self, request):
-        request.urlconf = urlconf_inner.__name__
+from .import urlconf_inner 
 
 
-class NullChangeURLconfMiddleware(MiddlewareMixin):
-    def process_request(self, request):
-        request.urlconf = None
+class ChangeURLconfMiddleware (MiddlewareMixin ):
+    def process_request (self ,request ):
+        request .urlconf =urlconf_inner .__name__ 
 
 
-class ReverseInnerInResponseMiddleware(MiddlewareMixin):
-    def process_response(self, *args, **kwargs):
-        return HttpResponse(reverse("inner"))
+class NullChangeURLconfMiddleware (MiddlewareMixin ):
+    def process_request (self ,request ):
+        request .urlconf =None 
 
 
-class ReverseOuterInResponseMiddleware(MiddlewareMixin):
-    def process_response(self, *args, **kwargs):
-        return HttpResponse(reverse("outer"))
+class ReverseInnerInResponseMiddleware (MiddlewareMixin ):
+    def process_response (self ,*args ,**kwargs ):
+        return HttpResponse (reverse ("inner"))
 
 
-class ReverseInnerInStreaming(MiddlewareMixin):
-    def process_view(self, *args, **kwargs):
-        def stream():
-            yield reverse("inner")
-
-        return StreamingHttpResponse(stream())
+class ReverseOuterInResponseMiddleware (MiddlewareMixin ):
+    def process_response (self ,*args ,**kwargs ):
+        return HttpResponse (reverse ("outer"))
 
 
-class ReverseOuterInStreaming(MiddlewareMixin):
-    def process_view(self, *args, **kwargs):
-        def stream():
-            yield reverse("outer")
+class ReverseInnerInStreaming (MiddlewareMixin ):
+    def process_view (self ,*args ,**kwargs ):
+        def stream ():
+            yield reverse ("inner")
 
-        return StreamingHttpResponse(stream())
+        return StreamingHttpResponse (stream ())
+
+
+class ReverseOuterInStreaming (MiddlewareMixin ):
+    def process_view (self ,*args ,**kwargs ):
+        def stream ():
+            yield reverse ("outer")
+
+        return StreamingHttpResponse (stream ())

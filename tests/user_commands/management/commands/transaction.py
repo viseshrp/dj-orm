@@ -1,10 +1,10 @@
-from django.core.management.base import BaseCommand
+from djo .core .management .base import BaseCommand 
 
 
-class Command(BaseCommand):
-    help = "Say hello."
-    args = ""
-    output_transaction = True
+class Command (BaseCommand ):
+    help ="Say hello."
+    args =""
+    output_transaction =True 
 
-    def handle(self, *args, **options):
+    def handle (self ,*args ,**options ):
         return "Hello!"

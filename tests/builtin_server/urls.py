@@ -1,7 +1,7 @@
-from django.urls import path
+from djo .urls import path 
 
-from . import views
+from .import views 
 
-urlpatterns = [
-    path("fileresponse/", views.file_response),
+urlpatterns =[
+path ("fileresponse/",views .file_response ),
 ]

@@ -1,10 +1,10 @@
-from django.apps import AppConfig
+from djo .apps import AppConfig 
 
 
-class CheckDefaultPKConfig(AppConfig):
-    name = "check_framework"
+class CheckDefaultPKConfig (AppConfig ):
+    name ="check_framework"
 
 
-class CheckPKConfig(AppConfig):
-    name = "check_framework"
-    default_auto_field = "django.db.models.BigAutoField"
+class CheckPKConfig (AppConfig ):
+    name ="check_framework"
+    default_auto_field ="djo.db.models.BigAutoField"

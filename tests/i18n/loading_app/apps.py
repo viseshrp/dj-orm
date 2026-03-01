@@ -1,5 +1,5 @@
-from django.apps import AppConfig
+from djo .apps import AppConfig 
 
 
-class LoadingAppConfig(AppConfig):
-    name = "i18n.loading_app"
+class LoadingAppConfig (AppConfig ):
+    name ="i18n.loading_app"

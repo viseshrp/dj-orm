@@ -1,9 +1,9 @@
-from django.contrib.auth.backends import ModelBackend
+from djo .contrib .auth .backends import ModelBackend 
 
 
-class TestClientBackend(ModelBackend):
-    pass
+class TestClientBackend (ModelBackend ):
+    pass 
 
 
-class BackendWithoutGetUserMethod:
-    pass
+class BackendWithoutGetUserMethod :
+    pass 

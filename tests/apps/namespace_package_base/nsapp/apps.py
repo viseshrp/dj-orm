@@ -1,9 +1,9 @@
-import os
+import os 
 
-from django.apps import AppConfig
+from djo .apps import AppConfig 
 
 
-class NSAppConfig(AppConfig):
-    default = False
-    name = "nsapp"
-    path = os.path.dirname(__file__)
+class NSAppConfig (AppConfig ):
+    default =False 
+    name ="nsapp"
+    path =os .path .dirname (__file__ )

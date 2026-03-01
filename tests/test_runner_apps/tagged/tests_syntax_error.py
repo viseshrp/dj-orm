@@ -1,11 +1,11 @@
-from unittest import TestCase
+from unittest import TestCase 
 
-from django.test import tag
-
-
-@tag('syntax_error')
-class SyntaxErrorTestCase(TestCase):
-    pass
+from djo .test import tag 
 
 
-1syntax_error  # NOQA
+@tag ('syntax_error')
+class SyntaxErrorTestCase (TestCase ):
+    pass 
+
+
+1 syntax_error # NOQA

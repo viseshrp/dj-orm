@@ -15,36 +15,36 @@ from the default generated name, use the ``db_table`` parameter on the
 
 """
 
-from django.db import models
+from djo .db import models 
 
 
-class Author(models.Model):
-    Author_ID = models.AutoField(primary_key=True, db_column="Author ID")
-    first_name = models.CharField(max_length=30, db_column="firstname")
-    last_name = models.CharField(max_length=30, db_column="last")
+class Author (models .Model ):
+    Author_ID =models .AutoField (primary_key =True ,db_column ="Author ID")
+    first_name =models .CharField (max_length =30 ,db_column ="firstname")
+    last_name =models .CharField (max_length =30 ,db_column ="last")
 
-    class Meta:
-        db_table = "my_author_table"
-        ordering = ("last_name", "first_name")
+    class Meta :
+        db_table ="my_author_table"
+        ordering =("last_name","first_name")
 
-    def __str__(self):
-        return "%s %s" % (self.first_name, self.last_name)
+    def __str__ (self ):
+        return "%s %s"%(self .first_name ,self .last_name )
 
 
-class Article(models.Model):
-    Article_ID = models.AutoField(primary_key=True, db_column="Article ID")
-    headline = models.CharField(max_length=100)
-    authors = models.ManyToManyField(Author, db_table="my_m2m_table")
-    primary_author = models.ForeignKey(
-        Author,
-        models.SET_NULL,
-        db_column="Author ID",
-        related_name="primary_set",
-        null=True,
+class Article (models .Model ):
+    Article_ID =models .AutoField (primary_key =True ,db_column ="Article ID")
+    headline =models .CharField (max_length =100 )
+    authors =models .ManyToManyField (Author ,db_table ="my_m2m_table")
+    primary_author =models .ForeignKey (
+    Author ,
+    models .SET_NULL ,
+    db_column ="Author ID",
+    related_name ="primary_set",
+    null =True ,
     )
 
-    class Meta:
-        ordering = ("headline",)
+    class Meta :
+        ordering =("headline",)
 
-    def __str__(self):
-        return self.headline
+    def __str__ (self ):
+        return self .headline 

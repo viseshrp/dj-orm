@@ -1,5 +1,5 @@
-from django.db import models
+from djo .db import models 
 
 
-class FileModel(models.Model):
-    testfile = models.FileField(upload_to="test_upload")
+class FileModel (models .Model ):
+    testfile =models .FileField (upload_to ="test_upload")

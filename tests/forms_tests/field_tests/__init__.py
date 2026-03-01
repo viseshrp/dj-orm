@@ -1,9 +1,9 @@
-from django import forms
+from djo import forms 
 
 
-class FormFieldAssertionsMixin:
-    def assertWidgetRendersTo(self, field, to):
-        class Form(forms.Form):
-            f = field
+class FormFieldAssertionsMixin :
+    def assertWidgetRendersTo (self ,field ,to ):
+        class Form (forms .Form ):
+            f =field 
 
-        self.assertHTMLEqual(str(Form()["f"]), to)
+        self .assertHTMLEqual (str (Form ()["f"]),to )

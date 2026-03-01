@@ -1,7 +1,7 @@
-from django.urls import path
+from djo .urls import path 
 
-from . import widgetadmin
+from .import widgetadmin 
 
-urlpatterns = [
-    path("", widgetadmin.site.urls),
+urlpatterns =[
+path ("",widgetadmin .site .urls ),
 ]

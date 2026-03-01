@@ -1,10 +1,10 @@
-from django.core.cache.backends.locmem import LocMemCache
+from djo .core .cache .backends .locmem import LocMemCache 
 
 
-class LiberalKeyValidationMixin:
-    def validate_key(self, key):
-        pass
+class LiberalKeyValidationMixin :
+    def validate_key (self ,key ):
+        pass 
 
 
-class CacheClass(LiberalKeyValidationMixin, LocMemCache):
-    pass
+class CacheClass (LiberalKeyValidationMixin ,LocMemCache ):
+    pass 

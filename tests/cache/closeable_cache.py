@@ -1,12 +1,12 @@
-from django.core.cache.backends.locmem import LocMemCache
+from djo .core .cache .backends .locmem import LocMemCache 
 
 
-class CloseHookMixin:
-    closed = False
+class CloseHookMixin :
+    closed =False 
 
-    def close(self, **kwargs):
-        self.closed = True
+    def close (self ,**kwargs ):
+        self .closed =True 
 
 
-class CacheClass(CloseHookMixin, LocMemCache):
-    pass
+class CacheClass (CloseHookMixin ,LocMemCache ):
+    pass 

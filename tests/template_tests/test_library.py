@@ -1,232 +1,232 @@
-import functools
-import unittest
+import functools 
+import unittest 
 
-from django.template import Library
-from django.template.base import Node
-from django.test import SimpleTestCase
-from django.utils.version import PY314
+from djo .template import Library 
+from djo .template .base import Node 
+from djo .test import SimpleTestCase 
+from djo .utils .version import PY314 
 
 
-class FilterRegistrationTests(SimpleTestCase):
-    def setUp(self):
-        self.library = Library()
+class FilterRegistrationTests (SimpleTestCase ):
+    def setUp (self ):
+        self .library =Library ()
 
-    def test_filter(self):
-        @self.library.filter
-        def func():
+    def test_filter (self ):
+        @self .library .filter 
+        def func ():
             return ""
 
-        self.assertEqual(self.library.filters["func"], func)
+        self .assertEqual (self .library .filters ["func"],func )
 
-    def test_filter_parens(self):
-        @self.library.filter()
-        def func():
+    def test_filter_parens (self ):
+        @self .library .filter ()
+        def func ():
             return ""
 
-        self.assertEqual(self.library.filters["func"], func)
+        self .assertEqual (self .library .filters ["func"],func )
 
-    def test_filter_name_arg(self):
-        @self.library.filter("name")
-        def func():
+    def test_filter_name_arg (self ):
+        @self .library .filter ("name")
+        def func ():
             return ""
 
-        self.assertEqual(self.library.filters["name"], func)
+        self .assertEqual (self .library .filters ["name"],func )
 
-    def test_filter_name_kwarg(self):
-        @self.library.filter(name="name")
-        def func():
+    def test_filter_name_kwarg (self ):
+        @self .library .filter (name ="name")
+        def func ():
             return ""
 
-        self.assertEqual(self.library.filters["name"], func)
+        self .assertEqual (self .library .filters ["name"],func )
 
-    def test_filter_call(self):
-        def func():
+    def test_filter_call (self ):
+        def func ():
             return ""
 
-        self.library.filter("name", func)
-        self.assertEqual(self.library.filters["name"], func)
+        self .library .filter ("name",func )
+        self .assertEqual (self .library .filters ["name"],func )
 
-    def test_filter_invalid(self):
-        msg = "Unsupported arguments to Library.filter: (None, '')"
-        with self.assertRaisesMessage(ValueError, msg):
-            self.library.filter(None, "")
+    def test_filter_invalid (self ):
+        msg ="Unsupported arguments to Library.filter: (None, '')"
+        with self .assertRaisesMessage (ValueError ,msg ):
+            self .library .filter (None ,"")
 
 
-class InclusionTagRegistrationTests(SimpleTestCase):
-    def setUp(self):
-        self.library = Library()
+class InclusionTagRegistrationTests (SimpleTestCase ):
+    def setUp (self ):
+        self .library =Library ()
 
-    def test_inclusion_tag(self):
-        @self.library.inclusion_tag("template.html")
-        def func():
+    def test_inclusion_tag (self ):
+        @self .library .inclusion_tag ("template.html")
+        def func ():
             return ""
 
-        self.assertIn("func", self.library.tags)
+        self .assertIn ("func",self .library .tags )
 
-    def test_inclusion_tag_name(self):
-        @self.library.inclusion_tag("template.html", name="name")
-        def func():
+    def test_inclusion_tag_name (self ):
+        @self .library .inclusion_tag ("template.html",name ="name")
+        def func ():
             return ""
 
-        self.assertIn("name", self.library.tags)
+        self .assertIn ("name",self .library .tags )
 
-    def test_inclusion_tag_wrapped(self):
-        @self.library.inclusion_tag("template.html")
-        @functools.lru_cache(maxsize=32)
-        def func():
+    def test_inclusion_tag_wrapped (self ):
+        @self .library .inclusion_tag ("template.html")
+        @functools .lru_cache (maxsize =32 )
+        def func ():
             return ""
 
-        func_wrapped = self.library.tags["func"].__wrapped__
-        self.assertIs(func_wrapped, func)
-        self.assertTrue(hasattr(func_wrapped, "cache_info"))
+        func_wrapped =self .library .tags ["func"].__wrapped__ 
+        self .assertIs (func_wrapped ,func )
+        self .assertTrue (hasattr (func_wrapped ,"cache_info"))
 
-    @unittest.skipUnless(PY314, "Deferred annotations are Python 3.14+ only")
-    def test_inclusion_tag_deferred_annotation(self):
-        @self.library.inclusion_tag("template.html")
-        def func(arg: SomeType):  # NOQA: F821
+    @unittest .skipUnless (PY314 ,"Deferred annotations are Python 3.14+ only")
+    def test_inclusion_tag_deferred_annotation (self ):
+        @self .library .inclusion_tag ("template.html")
+        def func (arg :SomeType ):# NOQA: F821
             return ""
 
-        self.assertIn("func", self.library.tags)
+        self .assertIn ("func",self .library .tags )
 
 
-class SimpleTagRegistrationTests(SimpleTestCase):
-    def setUp(self):
-        self.library = Library()
+class SimpleTagRegistrationTests (SimpleTestCase ):
+    def setUp (self ):
+        self .library =Library ()
 
-    def test_simple_tag(self):
-        @self.library.simple_tag
-        def func():
+    def test_simple_tag (self ):
+        @self .library .simple_tag 
+        def func ():
             return ""
 
-        self.assertIn("func", self.library.tags)
+        self .assertIn ("func",self .library .tags )
 
-    def test_simple_tag_parens(self):
-        @self.library.simple_tag()
-        def func():
+    def test_simple_tag_parens (self ):
+        @self .library .simple_tag ()
+        def func ():
             return ""
 
-        self.assertIn("func", self.library.tags)
+        self .assertIn ("func",self .library .tags )
 
-    def test_simple_tag_name_kwarg(self):
-        @self.library.simple_tag(name="name")
-        def func():
+    def test_simple_tag_name_kwarg (self ):
+        @self .library .simple_tag (name ="name")
+        def func ():
             return ""
 
-        self.assertIn("name", self.library.tags)
+        self .assertIn ("name",self .library .tags )
 
-    @unittest.skipUnless(PY314, "Deferred annotations are Python 3.14+ only")
-    def test_tag_deferred_annotation(self):
-        @self.library.simple_tag
-        def func(parser, token: SomeType):  # NOQA: F821
-            return Node()
+    @unittest .skipUnless (PY314 ,"Deferred annotations are Python 3.14+ only")
+    def test_tag_deferred_annotation (self ):
+        @self .library .simple_tag 
+        def func (parser ,token :SomeType ):# NOQA: F821
+            return Node ()
 
-        self.assertIn("func", self.library.tags)
+        self .assertIn ("func",self .library .tags )
 
-    def test_simple_tag_invalid(self):
-        msg = "Invalid arguments provided to simple_tag"
-        with self.assertRaisesMessage(ValueError, msg):
-            self.library.simple_tag("invalid")
+    def test_simple_tag_invalid (self ):
+        msg ="Invalid arguments provided to simple_tag"
+        with self .assertRaisesMessage (ValueError ,msg ):
+            self .library .simple_tag ("invalid")
 
-    def test_simple_tag_wrapped(self):
-        @self.library.simple_tag
-        @functools.lru_cache(maxsize=32)
-        def func():
+    def test_simple_tag_wrapped (self ):
+        @self .library .simple_tag 
+        @functools .lru_cache (maxsize =32 )
+        def func ():
             return ""
 
-        func_wrapped = self.library.tags["func"].__wrapped__
-        self.assertIs(func_wrapped, func)
-        self.assertTrue(hasattr(func_wrapped, "cache_info"))
+        func_wrapped =self .library .tags ["func"].__wrapped__ 
+        self .assertIs (func_wrapped ,func )
+        self .assertTrue (hasattr (func_wrapped ,"cache_info"))
 
 
-class SimpleBlockTagRegistrationTests(SimpleTestCase):
-    def setUp(self):
-        self.library = Library()
+class SimpleBlockTagRegistrationTests (SimpleTestCase ):
+    def setUp (self ):
+        self .library =Library ()
 
-    def test_simple_block_tag(self):
-        @self.library.simple_block_tag
-        def func(content):
-            return content
+    def test_simple_block_tag (self ):
+        @self .library .simple_block_tag 
+        def func (content ):
+            return content 
 
-        self.assertIn("func", self.library.tags)
+        self .assertIn ("func",self .library .tags )
 
-    def test_simple_block_tag_parens(self):
-        @self.library.simple_block_tag()
-        def func(content):
-            return content
+    def test_simple_block_tag_parens (self ):
+        @self .library .simple_block_tag ()
+        def func (content ):
+            return content 
 
-        self.assertIn("func", self.library.tags)
+        self .assertIn ("func",self .library .tags )
 
-    def test_simple_block_tag_name_kwarg(self):
-        @self.library.simple_block_tag(name="name")
-        def func(content):
-            return content
+    def test_simple_block_tag_name_kwarg (self ):
+        @self .library .simple_block_tag (name ="name")
+        def func (content ):
+            return content 
 
-        self.assertIn("name", self.library.tags)
+        self .assertIn ("name",self .library .tags )
 
-    @unittest.skipUnless(PY314, "Deferred annotations are Python 3.14+ only")
-    def test_simple_block_tag_deferred_annotation(self):
-        @self.library.simple_block_tag
-        def func(content: SomeType):  # NOQA: F821
-            return content
+    @unittest .skipUnless (PY314 ,"Deferred annotations are Python 3.14+ only")
+    def test_simple_block_tag_deferred_annotation (self ):
+        @self .library .simple_block_tag 
+        def func (content :SomeType ):# NOQA: F821
+            return content 
 
-        self.assertIn("func", self.library.tags)
+        self .assertIn ("func",self .library .tags )
 
-    def test_simple_block_tag_invalid(self):
-        msg = "Invalid arguments provided to simple_block_tag"
-        with self.assertRaisesMessage(ValueError, msg):
-            self.library.simple_block_tag("invalid")
+    def test_simple_block_tag_invalid (self ):
+        msg ="Invalid arguments provided to simple_block_tag"
+        with self .assertRaisesMessage (ValueError ,msg ):
+            self .library .simple_block_tag ("invalid")
 
-    def test_simple_tag_wrapped(self):
-        @self.library.simple_block_tag
-        @functools.lru_cache(maxsize=32)
-        def func(content):
-            return content
+    def test_simple_tag_wrapped (self ):
+        @self .library .simple_block_tag 
+        @functools .lru_cache (maxsize =32 )
+        def func (content ):
+            return content 
 
-        func_wrapped = self.library.tags["func"].__wrapped__
-        self.assertIs(func_wrapped, func)
-        self.assertTrue(hasattr(func_wrapped, "cache_info"))
+        func_wrapped =self .library .tags ["func"].__wrapped__ 
+        self .assertIs (func_wrapped ,func )
+        self .assertTrue (hasattr (func_wrapped ,"cache_info"))
 
 
-class TagRegistrationTests(SimpleTestCase):
-    def setUp(self):
-        self.library = Library()
+class TagRegistrationTests (SimpleTestCase ):
+    def setUp (self ):
+        self .library =Library ()
 
-    def test_tag(self):
-        @self.library.tag
-        def func(parser, token):
-            return Node()
+    def test_tag (self ):
+        @self .library .tag 
+        def func (parser ,token ):
+            return Node ()
 
-        self.assertEqual(self.library.tags["func"], func)
+        self .assertEqual (self .library .tags ["func"],func )
 
-    def test_tag_parens(self):
-        @self.library.tag()
-        def func(parser, token):
-            return Node()
+    def test_tag_parens (self ):
+        @self .library .tag ()
+        def func (parser ,token ):
+            return Node ()
 
-        self.assertEqual(self.library.tags["func"], func)
+        self .assertEqual (self .library .tags ["func"],func )
 
-    def test_tag_name_arg(self):
-        @self.library.tag("name")
-        def func(parser, token):
-            return Node()
+    def test_tag_name_arg (self ):
+        @self .library .tag ("name")
+        def func (parser ,token ):
+            return Node ()
 
-        self.assertEqual(self.library.tags["name"], func)
+        self .assertEqual (self .library .tags ["name"],func )
 
-    def test_tag_name_kwarg(self):
-        @self.library.tag(name="name")
-        def func(parser, token):
-            return Node()
+    def test_tag_name_kwarg (self ):
+        @self .library .tag (name ="name")
+        def func (parser ,token ):
+            return Node ()
 
-        self.assertEqual(self.library.tags["name"], func)
+        self .assertEqual (self .library .tags ["name"],func )
 
-    def test_tag_call(self):
-        def func(parser, token):
-            return Node()
+    def test_tag_call (self ):
+        def func (parser ,token ):
+            return Node ()
 
-        self.library.tag("name", func)
-        self.assertEqual(self.library.tags["name"], func)
+        self .library .tag ("name",func )
+        self .assertEqual (self .library .tags ["name"],func )
 
-    def test_tag_invalid(self):
-        msg = "Unsupported arguments to Library.tag: (None, '')"
-        with self.assertRaisesMessage(ValueError, msg):
-            self.library.tag(None, "")
+    def test_tag_invalid (self ):
+        msg ="Unsupported arguments to Library.tag: (None, '')"
+        with self .assertRaisesMessage (ValueError ,msg ):
+            self .library .tag (None ,"")

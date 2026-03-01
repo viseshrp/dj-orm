@@ -1,5 +1,5 @@
-from django.db import models
+from djo .db import models 
 
 
-class Story(models.Model):
-    title = models.CharField(max_length=10)
+class Story (models .Model ):
+    title =models .CharField (max_length =10 )

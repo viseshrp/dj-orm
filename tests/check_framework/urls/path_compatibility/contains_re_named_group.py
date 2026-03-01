@@ -1,5 +1,5 @@
-from django.urls import path
+from djo .urls import path 
 
-urlpatterns = [
-    path(r"(?P<named_group>\d+)", lambda x: x),
+urlpatterns =[
+path (r"(?P<named_group>\d+)",lambda x :x ),
 ]

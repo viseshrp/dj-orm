@@ -1,13 +1,13 @@
-from unittest import mock
+from unittest import mock 
 
-from django.db import migrations
+from djo .db import migrations 
 
-try:
-    from django.contrib.postgres.operations import CryptoExtension
-except ImportError:
-    CryptoExtension = mock.Mock()
+try :
+    from djo .contrib .postgres .operations import CryptoExtension 
+except ImportError :
+    CryptoExtension =mock .Mock ()
 
 
-class Migration(migrations.Migration):
-    # Required for the SHA database functions.
-    operations = [CryptoExtension()]
+class Migration (migrations .Migration ):
+# Required for the SHA database functions.
+    operations =[CryptoExtension ()]

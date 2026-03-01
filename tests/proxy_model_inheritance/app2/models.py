@@ -1,5 +1,5 @@
-from django.db import models
+from djo .db import models 
 
 
-class NiceModel(models.Model):
-    pass
+class NiceModel (models .Model ):
+    pass 

@@ -1,5 +1,5 @@
-from django.contrib import admin
+from djo .contrib import admin 
 
-from ..models.foo import Foo
+from ..models .foo import Foo 
 
-admin.site.register(Foo)
+admin .site .register (Foo )

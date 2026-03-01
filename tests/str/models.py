@@ -8,12 +8,12 @@ because objects' representations are used throughout Django's
 automatically-generated admin.
 """
 
-from django.db import models
+from djo .db import models 
 
 
-class InternationalArticle(models.Model):
-    headline = models.CharField(max_length=100)
-    pub_date = models.DateTimeField()
+class InternationalArticle (models .Model ):
+    headline =models .CharField (max_length =100 )
+    pub_date =models .DateTimeField ()
 
-    def __str__(self):
-        return self.headline
+    def __str__ (self ):
+        return self .headline 

@@ -1,6 +1,6 @@
-try:
-    from django.contrib.gis import admin
-except ImportError:
-    from django.contrib import admin
+try :
+    from djo .contrib .gis import admin 
+except ImportError :
+    from djo .contrib import admin 
 
-    admin.GISModelAdmin = admin.ModelAdmin
+    admin .GISModelAdmin =admin .ModelAdmin 

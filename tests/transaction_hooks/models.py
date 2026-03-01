@@ -1,5 +1,5 @@
-from django.db import models
+from djo .db import models 
 
 
-class Thing(models.Model):
-    num = models.IntegerField()
+class Thing (models .Model ):
+    num =models .IntegerField ()

@@ -1,5 +1,5 @@
-from django.db import models
+from djo .db import models 
 
 
-class DebugObject(models.Model):
-    pass
+class DebugObject (models .Model ):
+    pass 

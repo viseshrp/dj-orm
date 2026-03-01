@@ -1,12 +1,12 @@
-from django.urls import include, path, re_path
+from djo .urls import include ,path ,re_path 
 
-urlpatterns = [
-    path(
-        "",
-        include(
-            [
-                re_path("^include-with-dollar$", include([])),
-            ]
-        ),
-    ),
+urlpatterns =[
+path (
+"",
+include (
+[
+re_path ("^include-with-dollar$",include ([])),
+]
+),
+),
 ]
