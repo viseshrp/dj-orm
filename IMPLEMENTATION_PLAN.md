@@ -387,7 +387,7 @@ import djo
 
 Common fixes needed:
 
-1. **`djo/core/signals.py`** — may import from deleted modules. Keep the signal definitions, remove any imports from deleted modules.
+1. **`djo/core/signals.py`** — Keep all four signal definitions (`request_started`, `request_finished`, `got_request_exception`, `setting_changed`). If the module imports anything from deleted subsystems, remove those imports but keep the `Signal()` instances. See SPEC.md §4.5 for the full signals policy.
 
 2. **`djo/contrib/contenttypes/admin.py`** — already deleted above.
 
@@ -1266,7 +1266,9 @@ python -c "from djo.contrib.gis.db.backends.postgis.base import DatabaseWrapper;
 
 ### T10: Signals wiring in `djo/db/__init__.py`
 
-`djo/db/__init__.py` connects `reset_queries` and `close_old_connections` to `request_started` and `request_finished` signals. These signals still exist (in `djo/core/signals.py`). The connections just won't fire in a non-web context unless the user explicitly sends the signals. This is fine — keep as-is.
+`djo/db/__init__.py` connects `reset_queries` and `close_old_connections` to `request_started` and `request_finished` signals. These are ORM-serving hookups (query-log reset, stale-connection cleanup). **Keep them as-is.** In a non-web context the signals simply never fire unless the user sends them explicitly, which is harmless.
+
+**General signals policy (see SPEC.md §4.5):** All signal *definitions* in `djo.db.models.signals` (`pre_save`, `post_save`, `pre_delete`, `post_delete`, `m2m_changed`, `pre_init`, `post_init`, `class_prepared`, `pre_migrate`, `post_migrate`) and `djo.core.signals` (`request_started`, `request_finished`, `got_request_exception`, `setting_changed`) are fully retained. Only strip `.connect()` calls whose handler lives in a deleted subsystem — never remove a signal definition itself.
 
 ---
 
