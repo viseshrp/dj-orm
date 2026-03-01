@@ -3,7 +3,11 @@ from pathlib import Path
 from asgiref .local import Local 
 
 from djo .apps import apps 
-from djo .utils .autoreload import is_django_module 
+try :
+    from djo .utils .autoreload import is_django_module 
+except ImportError :
+    def is_django_module (module ):
+        return module .__name__ .startswith ("djo.")
 
 
 def watch_for_translation_changes (sender ,**kwargs ):

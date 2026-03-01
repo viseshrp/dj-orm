@@ -8,7 +8,6 @@ _CountAction ,
 _StoreConstAction ,
 _SubParsersAction ,
 )
-from collections import defaultdict 
 from difflib import get_close_matches 
 from importlib import import_module 
 
@@ -23,15 +22,6 @@ CommandParser ,
 handle_default_options ,
 )
 from djo .core .management .color import color_style 
-try :
-    from djo .utils import autoreload 
-except ImportError :
-    class _AutoreloadShim :
-        @staticmethod 
-        def check_errors (func ):
-            return func 
-
-    autoreload =_AutoreloadShim ()
 
 
 def find_commands (management_dir ):
@@ -100,7 +90,7 @@ def call_command (command_name ,*args ,**options ):
 
     Some examples:
         call_command('migrate')
-        call_command('shell', plain=True)
+        call_command('dbshell')
         call_command('sqlmigrate', 'myapp')
 
         from djo.core.management.commands import flush
@@ -211,7 +201,7 @@ class ManagementUtility :
         self .argv =argv or sys .argv [:]
         self .prog_name =os .path .basename (self .argv [0 ])
         if self .prog_name =="__main__.py":
-            self .prog_name ="python -m django"
+            self .prog_name ="python -m djo"
         self .settings_exception =None 
 
     def main_help_text (self ,commands_only =False ):
@@ -394,34 +384,7 @@ class ManagementUtility :
             self .settings_exception =exc 
 
         if settings .configured :
-        # Start the auto-reloading dev server even if the code is broken.
-        # The hardcoded condition is a code smell but we can't rely on a
-        # flag on the command class because we haven't located it yet.
-            if subcommand =="runserver"and "--noreload"not in self .argv :
-                try :
-                    autoreload .check_errors (djo .setup )()
-                except Exception :
-                # The exception will be raised later in the child process
-                # started by the autoreloader. Pretend it didn't happen by
-                # loading an empty list of applications.
-                    apps .all_models =defaultdict (dict )
-                    apps .app_configs ={}
-                    apps .apps_ready =apps .models_ready =apps .ready =True 
-
-                    # Remove options not compatible with the built-in runserver
-                    # (e.g. options for the contrib.staticfiles' runserver).
-                    # Changes here require manually testing as described in
-                    # #27522.
-                    _parser =self .fetch_command ("runserver").create_parser (
-                    "djo","runserver"
-                    )
-                    _options ,_args =_parser .parse_known_args (self .argv [2 :])
-                    for _arg in _args :
-                        self .argv .remove (_arg )
-
-                        # In all other cases, django.setup() is required to succeed.
-            else :
-                djo .setup ()
+            djo .setup ()
 
         self .autocomplete ()
 

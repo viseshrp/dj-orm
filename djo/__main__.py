@@ -1,7 +1,7 @@
 """
-Invokes djo when the django module is run as a script.
+Invokes djo when the djo module is run as a script.
 
-Example: python -m django check
+Example: python -m djo migrate
 """
 
 from djo .core import management 
