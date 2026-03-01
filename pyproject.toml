@@ -12,16 +12,14 @@ dependencies = [
     "tzdata; sys_platform == 'win32'",
 ]
 authors = [
-  {name = "Django Software Foundation", email = "foundation@djangoproject.com"},
+  {name = "djo contributors"},
 ]
-description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
+description = "Django ORM, migrations, and database backends as a standalone library."
 readme = "README.rst"
 license = "BSD-3-Clause"
 license-files = ["LICENSE", "LICENSE.python", "AUTHORS"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Web Environment",
-    "Framework :: Django",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
@@ -32,27 +30,20 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-    "Topic :: Internet :: WWW/HTTP :: WSGI",
-    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Database",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
 [project.optional-dependencies]
-argon2 = ["argon2-cffi>=19.1.0"]
-bcrypt = ["bcrypt"]
+postgresql = ["psycopg>=3.1.8; python_version >= '3.10'", "psycopg2>=2.9"]
+mysql = ["mysqlclient>=2.1"]
 
 [project.scripts]
 djo = "djo.core.management:execute_from_command_line"
 
 [project.urls]
-Homepage = "https://www.djangoproject.com/"
-Documentation = "https://docs.djangoproject.com/"
-"Release notes" = "https://docs.djangoproject.com/en/stable/releases/"
-Funding = "https://www.djangoproject.com/fundraising/"
 Source = "https://github.com/django/django"
-Tracker = "https://code.djangoproject.com/"
+Tracker = "https://github.com/django/django/issues"
 
 [tool.black]
 target-version = ["py310"]
