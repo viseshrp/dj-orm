@@ -748,7 +748,7 @@ class CombinedExpression (SQLiteNumericMixin ,Expression ):
         )
         if combined_type is None :
             raise FieldError (
-            f"Cannot infer type of {self .connector !r } expression involving these "
+            f"Cannot infer type of {self .connector!r} expression involving these "
             f"types: {self .lhs .output_field .__class__ .__name__ }, "
             f"{self .rhs .output_field .__class__ .__name__ }. You must set "
             f"output_field."
@@ -1024,7 +1024,7 @@ class Sliced (F ):
         start =self .start -1 
         stop =None if self .length is None else start +self .length 
         subscript =slice (start ,stop )
-        return f"{self .__class__ .__qualname__ }({self .obj !r }, {subscript !r })"
+        return f"{self .__class__ .__qualname__ }({self .obj!r}, {subscript!r})"
 
     def resolve_expression (
     self ,
@@ -1160,7 +1160,7 @@ class Value (SQLiteNumericMixin ,Expression ):
         self .value =value 
 
     def __repr__ (self ):
-        return f"{self .__class__ .__name__ }({self .value !r })"
+        return f"{self .__class__ .__name__ }({self .value!r})"
 
     def as_sql (self ,compiler ,connection ):
         connection .ops .check_expression_support (self )
@@ -1355,8 +1355,8 @@ class ColPairs (Expression ):
 
     def __repr__ (self ):
         return (
-        f"{self .__class__ .__name__ }({self .alias !r }, {self .targets !r }, "
-        f"{self .sources !r }, {self .output_field !r })"
+        f"{self .__class__ .__name__ }({self .alias!r}, {self .targets!r}, "
+        f"{self .sources!r}, {self .output_field!r})"
         )
 
     def get_cols (self ):

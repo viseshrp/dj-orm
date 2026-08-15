@@ -150,7 +150,7 @@ class EnumSerializer (BaseSerializer ):
         return (
         " | ".join (
         [
-        f"{module }.{enum_class .__qualname__ }[{item .name !r }]"
+        f"{module }.{enum_class .__qualname__ }[{item .name!r}]"
         for item in members 
         ]
         ),

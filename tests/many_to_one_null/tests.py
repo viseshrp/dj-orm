@@ -159,7 +159,7 @@ class ManyToOneNullTests (TestCase ):
         car =Car .objects .create (make =None )
         driver =Driver .objects .create ()
         msg =(
-        f'"{car !r }" needs to have a value for field "make" before this '
+        f'"{car!r}" needs to have a value for field "make" before this '
         f"relationship can be used."
         )
         with self .assertRaisesMessage (ValueError ,msg ):

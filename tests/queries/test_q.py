@@ -273,7 +273,7 @@ class QTests (SimpleTestCase ):
                 )
 
     def test_connector_validation (self ):
-        msg =f"_connector must be one of {Q .AND !r }, {Q .OR !r }, {Q .XOR !r }, or None."
+        msg =f"_connector must be one of {Q .AND!r}, {Q .OR!r}, {Q .XOR!r}, or None."
         with self .assertRaisesMessage (ValueError ,msg ):
             Q (_connector ="evil")
 
@@ -390,7 +390,7 @@ class QCheckTests (TestCase ):
         with self .assertLogs ("djo.db.models","WARNING")as cm :
             self .assertIs (q .check ({"price":10 }),True )
         self .assertIn (
-        f"Got a database error calling check() on {q !r }: ",
+        f"Got a database error calling check() on {q!r}: ",
         cm .records [0 ].getMessage (),
         )
 

@@ -85,7 +85,7 @@ class PostgresConfigTests (TestCase ):
                     )
                     self .assertIn (
                     f"{field .__module__ }.{field .__class__ .__name__ }"
-                    f"(default={import_name }.{default !r })",
+                    f"(default={import_name }.{default!r})",
                     serialized_field ,
                     )
         assertNotSerializable ()

@@ -145,7 +145,7 @@ class ExplainTests (TestCase ):
         ]
         for invalid_option in tests :
             with self .subTest (invalid_option ):
-                msg =f"Invalid option name: {invalid_option !r }"
+                msg =f"Invalid option name: {invalid_option!r}"
                 with self .assertRaisesMessage (ValueError ,msg ):
                     qs .explain (**{invalid_option :True })
 

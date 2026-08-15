@@ -14,6 +14,7 @@ from scripts.apply_django_lts import (
     normalize_upstream_version,
     release_series,
 )
+from scripts.rename_namespace import rewrite_python
 
 
 @pytest.mark.parametrize(
@@ -68,3 +69,17 @@ def test_maintenance_config_records_distribution_and_template() -> None:
     assert config["distribution"] == "dj-orm"
     assert len(config["yapc_commit"]) == 40
     assert config["lts_series"] == ["5.2", "6.2"]
+
+
+def test_namespace_rewrite_preserves_pre_312_fstring_syntax(tmp_path: Path) -> None:
+    source = tmp_path / "example.py"
+    source.write_text(
+        "from django.db import models\nmessage = f'Value: {models!r}'\n",
+        encoding="utf-8",
+    )
+
+    assert rewrite_python(source)
+    rewritten = source.read_text(encoding="utf-8")
+    assert "djo" in rewritten
+    assert "{models!r}" in rewritten
+    assert rewritten == "from djo.db import models\nmessage = f'Value: {models!r}'\n"

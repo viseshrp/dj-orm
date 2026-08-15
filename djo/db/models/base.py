@@ -950,7 +950,7 @@ class Model (AltersData ,metaclass =ModelBase ):
         for member in force_insert :
             if not isinstance (member ,ModelBase ):
                 raise TypeError (
-                f"Invalid force_insert member. {member !r } must be a model subclass."
+                f"Invalid force_insert member. {member!r} must be a model subclass."
                 )
             if not issubclass (cls ,member ):
                 raise TypeError (
@@ -1796,22 +1796,22 @@ class Model (AltersData ,metaclass =ModelBase ):
                 field =None 
 
             if not field :
-                hint =f"{field_name !r } is not a valid field."
+                hint =f"{field_name!r} is not a valid field."
             elif not field .column :
-                hint =f"{field_name !r } field has no column."
+                hint =f"{field_name!r} field has no column."
             elif field .null :
-                hint =f"{field_name !r } field may not set 'null=True'."
+                hint =f"{field_name!r} field may not set 'null=True'."
             elif field .generated :
-                hint =f"{field_name !r } field is a generated field."
+                hint =f"{field_name!r} field is a generated field."
             elif field not in meta .local_fields :
-                hint =f"{field_name !r } field is not a local field."
+                hint =f"{field_name!r} field is not a local field."
             else :
                 seen_columns [field .column ].append (field_name )
 
             if hint :
                 errors .append (
                 checks .Error (
-                f"{field_name !r } cannot be included in the composite primary "
+                f"{field_name!r} cannot be included in the composite primary "
                 "key.",
                 hint =hint ,
                 obj =cls ,
@@ -1827,7 +1827,7 @@ class Model (AltersData ,metaclass =ModelBase ):
                 checks .Error (
                 f"{duplicates } cannot be included in the composite primary "
                 "key.",
-                hint =f"{duplicates } and {field_name !r } are the same fields.",
+                hint =f"{duplicates } and {field_name!r} are the same fields.",
                 obj =cls ,
                 id ="models.E042",
                 )
@@ -2292,9 +2292,9 @@ class Model (AltersData ,metaclass =ModelBase ):
                 elif isinstance (field ,models .CompositePrimaryKey ):
                     errors .append (
                     checks .Error (
-                    f"{option !r } refers to a CompositePrimaryKey "
-                    f"{field_name !r }, but CompositePrimaryKeys are not "
-                    f"permitted in {option !r }.",
+                    f"{option!r} refers to a CompositePrimaryKey "
+                    f"{field_name!r}, but CompositePrimaryKeys are not "
+                    f"permitted in {option!r}.",
                     obj =cls ,
                     id ="models.E048",
                     )

@@ -64,7 +64,9 @@ def isolated_install(wheel: Path) -> None:
     with tempfile.TemporaryDirectory(prefix="djo-wheel-") as temp_dir:
         environment = Path(temp_dir) / ".venv"
         subprocess.run([uv, "venv", str(environment)], check=True)
-        python = environment / ("Scripts/python.exe" if environment.name == "Scripts" else "bin/python")
+        python = environment / (
+            "Scripts/python.exe" if environment.name == "Scripts" else "bin/python"
+        )
         if not python.exists():
             python = environment / "Scripts" / "python.exe"
         subprocess.run([uv, "pip", "install", "--python", str(python), str(wheel)], check=True)

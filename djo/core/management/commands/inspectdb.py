@@ -413,5 +413,5 @@ class Command (BaseCommand ):
             tup ="("+", ".join (unique_together )+",)"
             meta +=["        unique_together = %s"%tup ]
         if comment :
-            meta +=[f"        db_table_comment = {comment !r }"]
+            meta +=[f"        db_table_comment = {comment!r}"]
         return meta 

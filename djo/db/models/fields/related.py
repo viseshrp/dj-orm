@@ -628,7 +628,7 @@ class ForeignObject (RelatedField ):
                     errors .append (
                     checks .Error (
                     "Field defines a relation involving model "
-                    f"{self .remote_field .model ._meta .object_name !r } which has "
+                    f"{self .remote_field .model ._meta .object_name!r} which has "
                     "a CompositePrimaryKey and such relations are not "
                     "supported.",
                     obj =self ,
@@ -1551,7 +1551,7 @@ class ManyToManyField (RelatedField ):
                 if model_name :
                     errors .append (
                     checks .Error (
-                    f"Field defines a relation involving model {model_name !r } "
+                    f"Field defines a relation involving model {model_name!r} "
                     "which has a CompositePrimaryKey and such relations are "
                     "not supported.",
                     obj =self ,

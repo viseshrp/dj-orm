@@ -141,7 +141,7 @@ def _sqlite_date_trunc (lookup_type ,dt ,tzname ,conn_tzname ):
         return f"{dt .year :04d}-{dt .month :02d}-{dt .day :02d}"
     elif lookup_type =="day":
         return f"{dt .year :04d}-{dt .month :02d}-{dt .day :02d}"
-    raise ValueError (f"Unsupported lookup type: {lookup_type !r }")
+    raise ValueError (f"Unsupported lookup type: {lookup_type!r}")
 
 
 def _sqlite_time_trunc (lookup_type ,dt ,tzname ,conn_tzname ):
@@ -161,7 +161,7 @@ def _sqlite_time_trunc (lookup_type ,dt ,tzname ,conn_tzname ):
         return f"{dt .hour :02d}:{dt .minute :02d}:00"
     elif lookup_type =="second":
         return f"{dt .hour :02d}:{dt .minute :02d}:{dt .second :02d}"
-    raise ValueError (f"Unsupported lookup type: {lookup_type !r }")
+    raise ValueError (f"Unsupported lookup type: {lookup_type!r}")
 
 
 def _sqlite_datetime_cast_date (dt ,tzname ,conn_tzname ):
@@ -224,7 +224,7 @@ def _sqlite_datetime_trunc (lookup_type ,dt ,tzname ,conn_tzname ):
         f"{dt .year :04d}-{dt .month :02d}-{dt .day :02d} "
         f"{dt .hour :02d}:{dt .minute :02d}:{dt .second :02d}"
         )
-    raise ValueError (f"Unsupported lookup type: {lookup_type !r }")
+    raise ValueError (f"Unsupported lookup type: {lookup_type!r}")
 
 
 def _sqlite_time_extract (lookup_type ,dt ):

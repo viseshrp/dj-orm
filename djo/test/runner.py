@@ -404,7 +404,7 @@ def parallel_type (value ):
         return int (value )
     except ValueError :
         raise argparse .ArgumentTypeError (
-        f"{value !r } is not an integer or the string 'auto'"
+        f"{value!r} is not an integer or the string 'auto'"
         )
 
 
@@ -631,7 +631,7 @@ class Shuffler :
 
     @property 
     def seed_display (self ):
-        return f"{self .seed !r } ({self .seed_source })"
+        return f"{self .seed!r} ({self .seed_source })"
 
     def _hash_item (self ,item ,key ):
         text ="{}{}".format (self .seed ,key (item ))
@@ -907,7 +907,7 @@ class DiscoverRunner :
             if os .path .exists (label_as_path ):
                 assert tests is None 
                 raise RuntimeError (
-                f"One of the test labels is a path to a file: {label !r }, "
+                f"One of the test labels is a path to a file: {label!r}, "
                 f"which is not supported. Use a dotted module name or "
                 f"path to a directory instead."
                 )

@@ -120,4 +120,4 @@ def __getattr__ (name ):
         stacklevel =2 ,
         )
         return ChoicesType 
-    raise AttributeError (f"module {__name__ !r } has no attribute {name !r }")
+    raise AttributeError (f"module {__name__!r} has no attribute {name!r}")

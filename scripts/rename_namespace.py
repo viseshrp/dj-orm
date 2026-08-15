@@ -85,9 +85,18 @@ def rebuild_string_token(token_text: str, new_value: str) -> str:
 def rewrite_python(path: Path) -> bool:
     original = path.read_text(encoding="utf-8")
     tokens = list(tokenize.generate_tokens(io.StringIO(original).readline))
-    updated: list[tuple[int, str]] = []
-    changed = False
+    line_offsets: list[int] = []
+    offset = 0
+    for line in original.splitlines(keepends=True):
+        line_offsets.append(offset)
+        offset += len(line)
+    replacements: list[tuple[int, int, str]] = []
     current_stmt: list[tokenize.TokenInfo] = []
+
+    def replace_token(token: tokenize.TokenInfo, replacement: str) -> None:
+        start = line_offsets[token.start[0] - 1] + token.start[1]
+        end = line_offsets[token.end[0] - 1] + token.end[1]
+        replacements.append((start, end, replacement))
 
     for idx, token in enumerate(tokens):
         token_str = token.string
@@ -96,16 +105,15 @@ def rewrite_python(path: Path) -> bool:
             try:
                 value = ast.literal_eval(token_str)
             except Exception:
-                updated.append((tok_type, token_str))
                 current_stmt.append(token)
                 continue
             if isinstance(value, str):
                 new_value = rename_string_literal(value)
                 if new_value != value:
                     token_str = rebuild_string_token(token_str, new_value)
-                    changed = True
-            updated.append((tok_type, token_str))
-            current_stmt.append(token._replace(string=token_str))
+                    if token_str != token.string:
+                        replace_token(token, token_str)
+            current_stmt.append(token)
             continue
 
         if tok_type == tokenize.NAME and token_str == "django":
@@ -146,17 +154,17 @@ def rewrite_python(path: Path) -> bool:
             )
             if import_head or dotted_access:
                 token_str = "djo"
-                changed = True
+                replace_token(token, token_str)
 
-        updated.append((tok_type, token_str))
-        current_stmt.append(token._replace(string=token_str))
+        current_stmt.append(token)
         if tok_type in {tokenize.NEWLINE, tokenize.ENDMARKER}:
             current_stmt.clear()
 
-    if not changed:
+    if not replacements:
         return False
-
-    rewritten = tokenize.untokenize(updated)
+    rewritten = original
+    for start, end, replacement in reversed(replacements):
+        rewritten = rewritten[:start] + replacement + rewritten[end:]
     path.write_text(rewritten, encoding="utf-8")
     return True
 

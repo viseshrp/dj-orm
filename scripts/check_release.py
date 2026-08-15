@@ -64,7 +64,8 @@ def validate(root: Path, tag: str) -> list[str]:
         recorded_normalized = ".".join(str(part) for part in recorded_parts[:3])
         if recorded_normalized != upstream_parts:
             errors.append(
-                f"package version maps to Django {upstream_parts}, but provenance records {recorded_ref}"
+                f"package version maps to Django {upstream_parts}, "
+                f"but provenance records {recorded_ref}"
             )
         if int(match.group("revision")) != int(maintenance.get("release_revision", -1)):
             errors.append("package revision does not match maintenance metadata")

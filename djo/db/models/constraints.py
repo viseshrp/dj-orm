@@ -229,7 +229,7 @@ class CheckConstraint (BaseConstraint ):
             if any (isinstance (expr ,RawSQL )for expr in condition .flatten ()):
                 errors .append (
                 checks .Warning (
-                f"Check constraint {self .name !r } contains RawSQL() expression "
+                f"Check constraint {self .name!r} contains RawSQL() expression "
                 "and won't be validated during the model full_clean().",
                 hint ="Silence this warning if you don't care about it.",
                 obj =model ,

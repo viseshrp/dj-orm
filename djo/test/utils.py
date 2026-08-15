@@ -257,8 +257,8 @@ def iter_test_cases (tests ):
         # Prevent an unfriendly RecursionError that can happen with
         # strings.
             raise TypeError (
-            f"Test {test !r } must be a test case or test suite not string "
-            f"(was found in {tests !r })."
+            f"Test {test!r} must be a test case or test suite not string "
+            f"(was found in {tests!r})."
             )
         if isinstance (test ,TestCase ):
             yield test 

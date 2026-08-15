@@ -51,7 +51,7 @@ class TupleLookupMixin :
         if not isinstance (self .rhs ,(tuple ,list )):
             lhs_str =self .get_lhs_str ()
             raise ValueError (
-            f"{self .lookup_name !r } lookup of {lhs_str } must be a tuple or a list"
+            f"{self .lookup_name!r} lookup of {lhs_str } must be a tuple or a list"
             )
 
     def check_rhs_length_equals_lhs_length (self ):
@@ -59,7 +59,7 @@ class TupleLookupMixin :
         if len_lhs !=len (self .rhs ):
             lhs_str =self .get_lhs_str ()
             raise ValueError (
-            f"{self .lookup_name !r } lookup of {lhs_str } must have {len_lhs } elements"
+            f"{self .lookup_name!r} lookup of {lhs_str } must have {len_lhs } elements"
             )
 
     def check_rhs_is_supported_expression (self ):
@@ -67,8 +67,8 @@ class TupleLookupMixin :
             lhs_str =self .get_lhs_str ()
             rhs_cls =self .rhs .__class__ .__name__ 
             raise ValueError (
-            f"{self .lookup_name !r } subquery lookup of {lhs_str } "
-            f"only supports OuterRef and QuerySet objects (received {rhs_cls !r })"
+            f"{self .lookup_name!r} subquery lookup of {lhs_str } "
+            f"only supports OuterRef and QuerySet objects (received {rhs_cls!r})"
             )
 
     def get_lhs_str (self ):
@@ -287,7 +287,7 @@ class TupleIn (TupleLookupMixin ,In ):
         if not all (isinstance (vals ,(tuple ,list ))for vals in self .rhs ):
             lhs_str =self .get_lhs_str ()
             raise ValueError (
-            f"{self .lookup_name !r } lookup of {lhs_str } "
+            f"{self .lookup_name!r} lookup of {lhs_str } "
             "must be a collection of tuples or lists"
             )
 
@@ -296,7 +296,7 @@ class TupleIn (TupleLookupMixin ,In ):
         if not all (len_lhs ==len (vals )for vals in self .rhs ):
             lhs_str =self .get_lhs_str ()
             raise ValueError (
-            f"{self .lookup_name !r } lookup of {lhs_str } "
+            f"{self .lookup_name!r} lookup of {lhs_str } "
             f"must have {len_lhs } elements each"
             )
 
@@ -305,8 +305,8 @@ class TupleIn (TupleLookupMixin ,In ):
             lhs_str =self .get_lhs_str ()
             rhs_cls =self .rhs .__class__ .__name__ 
             raise ValueError (
-            f"{self .lookup_name !r } subquery lookup of {lhs_str } "
-            f"must be a Query object (received {rhs_cls !r })"
+            f"{self .lookup_name!r} subquery lookup of {lhs_str } "
+            f"must be a Query object (received {rhs_cls!r})"
             )
 
     def process_rhs (self ,compiler ,connection ):

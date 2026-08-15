@@ -18,7 +18,7 @@ class DatabaseWrapperTests (SimpleTestCase ):
         conn =connections [DEFAULT_DB_ALIAS ]
         self .assertEqual (
         repr (conn ),
-        f"<DatabaseWrapper vendor={connection .vendor !r } alias='default'>",
+        f"<DatabaseWrapper vendor={connection .vendor!r} alias='default'>",
         )
 
     def test_initialization_class_attributes (self ):

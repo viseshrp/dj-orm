@@ -12,6 +12,6 @@ class SQLCompilerTest (SimpleTestCase ):
         self .assertEqual (
         repr (compiler ),
         f"<SQLCompiler model=Item connection="
-        f"<DatabaseWrapper vendor={connection .vendor !r } alias='default'> "
+        f"<DatabaseWrapper vendor={connection .vendor!r} alias='default'> "
         f"using='default'>",
         )

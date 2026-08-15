@@ -201,7 +201,7 @@ class DateFormatTests (SimpleTestCase ):
             with self .subTest (specifier =specifier ):
                 msg =(
                 "The format for date objects may not contain time-related "
-                f"format specifiers (found {specifier !r })."
+                f"format specifiers (found {specifier!r})."
                 )
                 with self .assertRaisesMessage (TypeError ,msg ):
                     dateformat .format (my_birthday ,specifier )

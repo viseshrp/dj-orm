@@ -700,7 +700,7 @@ def create_reverse_many_to_one_manager (superclass ,rel ):
             for field in self .field .foreign_related_fields :
                 if getattr (self .instance ,field .attname )is None :
                     raise ValueError (
-                    f'"{self .instance !r }" needs to have a value for field '
+                    f'"{self .instance!r}" needs to have a value for field '
                     f'"{field .attname }" before this relationship can be used.'
                     )
 
@@ -758,7 +758,7 @@ def create_reverse_many_to_one_manager (superclass ,rel ):
         # although having a pk value isn't a guarantee of that.
             if not self .instance ._is_pk_set ():
                 raise ValueError (
-                f"{self .instance .__class__ .__name__ !r } instance needs to have a "
+                f"{self .instance .__class__ .__name__!r} instance needs to have a "
                 f"primary key value before this relationship can be used."
                 )
             try :

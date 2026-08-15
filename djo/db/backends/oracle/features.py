@@ -112,27 +112,10 @@ class DatabaseFeatures (BaseDatabaseFeatures ):
         "test_row_number_no_ordering",
         "prefetch_related.tests.PrefetchLimitTests.test_empty_order",
         },
-        "Oracle doesn't support changing collations on indexed columns (#33671).":{
-        "migrations.test_operations.OperationTests."
-        "test_alter_field_pk_fk_db_collation",
-        },
-        "Oracle doesn't support comparing NCLOB to NUMBER.":{
-        "generic_relations_regress.tests.GenericRelationTests."
-        "test_textlink_filter",
-        },
         "Oracle doesn't support casting filters to NUMBER.":{
         "lookup.tests.LookupQueryingTests.test_aggregate_combined_lookup",
         },
         }
-        if self .connection .oracle_version <(23 ,):
-            skips .update (
-            {
-            "Raises ORA-00600 on Oracle < 23c: internal error code.":{
-            "model_fields.test_jsonfield.TestQuerying."
-            "test_usage_in_subquery",
-            },
-            }
-            )
         if self .connection .is_pool :
             skips .update (
             {

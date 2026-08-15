@@ -728,7 +728,7 @@ class SimpleTestCase (unittest .TestCase ):
 
         if field is not None and field not in form .fields :
             self .fail (
-            f"{msg_prefix }The {form_repr } does not contain the field {field !r }."
+            f"{msg_prefix }The {form_repr } does not contain the field {field!r}."
             )
         if field is None :
             field_errors =form .non_field_errors ()
@@ -736,7 +736,7 @@ class SimpleTestCase (unittest .TestCase ):
         else :
             field_errors =form .errors .get (field ,[])
             failure_message =(
-            f"The errors of field {field !r } on {form_repr } don't match."
+            f"The errors of field {field!r} on {form_repr } don't match."
             )
 
         self .assertEqual (field_errors ,errors ,msg_prefix +failure_message )
@@ -754,7 +754,7 @@ class SimpleTestCase (unittest .TestCase ):
         if msg_prefix :
             msg_prefix +=": "
         errors =to_list (errors )
-        self ._assert_form_error (form ,field ,errors ,msg_prefix ,f"form {form !r }")
+        self ._assert_form_error (form ,field ,errors ,msg_prefix ,f"form {form!r}")
 
     def assertFormSetError (self ,formset ,form_index ,field ,errors ,msg_prefix =""):
         """
@@ -775,23 +775,23 @@ class SimpleTestCase (unittest .TestCase ):
 
         if not formset .is_bound :
             self .fail (
-            f"{msg_prefix }The formset {formset !r } is not bound, it will never have "
+            f"{msg_prefix }The formset {formset!r} is not bound, it will never have "
             f"any errors."
             )
         if form_index is not None and form_index >=formset .total_form_count ():
             form_count =formset .total_form_count ()
             form_or_forms ="forms"if form_count >1 else "form"
             self .fail (
-            f"{msg_prefix }The formset {formset !r } only has {form_count } "
+            f"{msg_prefix }The formset {formset!r} only has {form_count } "
             f"{form_or_forms }."
             )
         if form_index is not None :
-            form_repr =f"form {form_index } of formset {formset !r }"
+            form_repr =f"form {form_index } of formset {formset!r}"
             self ._assert_form_error (
             formset .forms [form_index ],field ,errors ,msg_prefix ,form_repr 
             )
         else :
-            failure_message =f"The non-form errors of formset {formset !r } don't match."
+            failure_message =f"The non-form errors of formset {formset!r} don't match."
             self .assertEqual (
             formset .non_form_errors (),errors ,msg_prefix +failure_message 
             )
@@ -1042,12 +1042,12 @@ class SimpleTestCase (unittest .TestCase ):
         if count is not None :
             if count ==0 :
                 msg =(
-                f"{needle !r } unexpectedly found in the following response\n"
+                f"{needle!r} unexpectedly found in the following response\n"
                 f"{haystack_repr }"
                 )
             else :
                 msg =(
-                f"Found {real_count } instances of {needle !r } (expected {count }) in "
+                f"Found {real_count } instances of {needle!r} (expected {count }) in "
                 f"the following response\n{haystack_repr }"
                 )
             self .assertEqual (real_count ,count ,f"{msg_prefix }{msg }")
@@ -1055,7 +1055,7 @@ class SimpleTestCase (unittest .TestCase ):
             self .assertTrue (
             real_count !=0 ,
             (
-            f"{msg_prefix }Couldn't find {needle !r } in the following response\n"
+            f"{msg_prefix }Couldn't find {needle!r} in the following response\n"
             f"{haystack_repr }"
             ),
             )

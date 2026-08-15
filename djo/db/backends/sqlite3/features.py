@@ -117,16 +117,6 @@ class DatabaseFeatures (BaseDatabaseFeatures ):
             },
             }
             )
-        if Database .sqlite_version_info <(3 ,47 ):
-            skips .update (
-            {
-            "SQLite does not parse escaped double quotes in the JSON path "
-            "notation":{
-            "model_fields.test_jsonfield.TestQuerying."
-            "test_lookups_special_chars_double_quotes",
-            },
-            }
-            )
         return skips 
 
     @cached_property 

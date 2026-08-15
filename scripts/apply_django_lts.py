@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 import re
 import shlex
-import shutil
 import subprocess
 import sys
 from typing import Any
@@ -96,8 +95,10 @@ def read_config(source_repo: Path) -> dict[str, Any]:
         raise ApplyError(f"Missing {CONFIG_NAME} fields: {', '.join(missing)}")
     if config["distribution"] != "dj-orm":
         raise ApplyError(f"{CONFIG_NAME} must configure the dj-orm distribution.")
-    if not config["lts_series"] or not isinstance(config["lts_series"], list) or not all(
-        isinstance(series, str) for series in config["lts_series"]
+    if (
+        not config["lts_series"]
+        or not isinstance(config["lts_series"], list)
+        or not all(isinstance(series, str) for series in config["lts_series"])
     ):
         raise ApplyError(f"{CONFIG_NAME} lts_series must be a non-empty array of strings.")
     return config
@@ -106,9 +107,7 @@ def read_config(source_repo: Path) -> dict[str, Any]:
 def normalize_upstream_version(django_ref: str) -> tuple[int, int, int]:
     match = FINAL_TAG_RE.fullmatch(django_ref)
     if match is None:
-        raise ApplyError(
-            "Django ref must be a final numeric release tag such as 5.2.17 or 6.2."
-        )
+        raise ApplyError("Django ref must be a final numeric release tag such as 5.2.17 or 6.2.")
     raw_parts = [int(part) for part in match.group("parts").split(".")]
     if len(raw_parts) == 1:
         raw_parts.extend([0, 0])
@@ -174,7 +173,9 @@ def fetch_exact_tag(source_repo: Path, remote: str, django_ref: str) -> str:
 def commit_stack(source_repo: Path, base_commit: str, source_head: str) -> list[str]:
     if git(source_repo, "merge-base", base_commit, source_head) != base_commit:
         raise ApplyError("Configured upstream base is not an ancestor of the source branch.")
-    output = git(source_repo, "rev-list", "--reverse", "--no-merges", f"{base_commit}..{source_head}")
+    output = git(
+        source_repo, "rev-list", "--reverse", "--no-merges", f"{base_commit}..{source_head}"
+    )
     commits = output.splitlines()
     if not commits:
         raise ApplyError("No Djo commits exist after the configured upstream base.")
@@ -400,14 +401,10 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
     allowed_changes = {CONFIG_NAME, "djo/_version.py"}
     changed_paths = set(git(output, "diff", "--name-only").splitlines())
     changed_paths.update(git(output, "diff", "--cached", "--name-only").splitlines())
-    changed_paths.update(
-        git(output, "ls-files", "--others", "--exclude-standard").splitlines()
-    )
+    changed_paths.update(git(output, "ls-files", "--others", "--exclude-standard").splitlines())
     unexpected = sorted(changed_paths - allowed_changes)
     if unexpected:
-        raise ApplyError(
-            "Verification changed unexpected files: " + ", ".join(unexpected)
-        )
+        raise ApplyError("Verification changed unexpected files: " + ", ".join(unexpected))
 
     run(["git", "add", CONFIG_NAME, "djo/_version.py"], cwd=output, capture=True)
     staged_diff = run(
@@ -440,7 +437,9 @@ def validate_resume_state(state: ApplyState, output: Path) -> None:
         raise ApplyError("The source checkout became dirty after this application started.")
     branch = git(output, "branch", "--show-current")
     if branch != state.branch:
-        raise ApplyError(f"Output must remain on {state.branch}; found {branch or 'detached HEAD'}.")
+        raise ApplyError(
+            f"Output must remain on {state.branch}; found {branch or 'detached HEAD'}."
+        )
 
 
 def apply_remaining(state: ApplyState, *, verify: bool) -> int:

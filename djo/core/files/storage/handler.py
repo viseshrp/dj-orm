@@ -42,5 +42,5 @@ class StorageHandler :
         try :
             storage_cls =import_string (backend )
         except ImportError as e :
-            raise InvalidStorageError (f"Could not find backend {backend !r }: {e }")from e 
+            raise InvalidStorageError (f"Could not find backend {backend!r}: {e }")from e
         return storage_cls (**options )

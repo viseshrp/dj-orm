@@ -2795,7 +2795,7 @@ class CombinedExpressionTests (SimpleTestCase ):
         ]
         for lhs ,connector ,rhs in tests :
             msg =(
-            f"Cannot infer type of {connector !r } expression involving these types: "
+            f"Cannot infer type of {connector!r} expression involving these types: "
             )
             with self .subTest (lhs =lhs ,connector =connector ,rhs =rhs ):
                 expr =CombinedExpression (
@@ -2858,7 +2858,7 @@ class CombinedExpressionTests (SimpleTestCase ):
         ]
         for lhs ,connector ,rhs ,combined in tests :
             msg =(
-            f"Cannot infer type of {connector !r } expression involving these types: "
+            f"Cannot infer type of {connector!r} expression involving these types: "
             )
             with self .subTest (lhs =lhs ,connector =connector ,rhs =rhs ,combined =combined ):
                 expr =CombinedExpression (

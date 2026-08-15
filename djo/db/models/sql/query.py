@@ -682,7 +682,7 @@ class Query (BaseExpression ):
             not EXPLAIN_OPTIONS_PATTERN .fullmatch (option_name )
             or "--"in option_name 
             ):
-                raise ValueError (f"Invalid option name: {option_name !r }.")
+                raise ValueError (f"Invalid option name: {option_name!r}.")
         q .explain_info =ExplainInfo (format ,options )
         compiler =q .get_compiler (using =using )
         return "\n".join (compiler .explain_query ())
@@ -2751,8 +2751,8 @@ class JoinPromoter :
 
     def __repr__ (self ):
         return (
-        f"{self .__class__ .__qualname__ }(connector={self .connector !r }, "
-        f"num_children={self .num_children !r }, negated={self .negated !r })"
+        f"{self .__class__ .__qualname__ }(connector={self .connector!r}, "
+        f"num_children={self .num_children!r}, negated={self .negated!r})"
         )
 
     def add_votes (self ,votes ):
