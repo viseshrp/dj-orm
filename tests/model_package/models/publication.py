@@ -1,5 +1,5 @@
-from djorm .db import models
+from djorm.db import models
 
 
-class Publication (models .Model ):
-    title =models .CharField (max_length =30 )
+class Publication(models.Model):
+    title = models.CharField(max_length=30)

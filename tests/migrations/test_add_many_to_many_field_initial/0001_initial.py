@@ -1,43 +1,43 @@
-from djorm .db import migrations ,models
+from djorm.db import migrations, models
 
 
-class Migration (migrations .Migration ):
-    initial =True 
+class Migration(migrations.Migration):
+    initial = True
 
-    dependencies =[]
+    dependencies = []
 
-    operations =[
-    migrations .CreateModel (
-    name ="Project",
-    fields =[
-    (
-    "id",
-    models .AutoField (
-    auto_created =True ,
-    primary_key =True ,
-    serialize =False ,
-    verbose_name ="ID",
-    ),
-    ),
-    ],
-    ),
-    migrations .CreateModel (
-    name ="Task",
-    fields =[
-    (
-    "id",
-    models .AutoField (
-    auto_created =True ,
-    primary_key =True ,
-    serialize =False ,
-    verbose_name ="ID",
-    ),
-    ),
-    ],
-    ),
-    migrations .AddField (
-    model_name ="project",
-    name ="tasks",
-    field =models .ManyToManyField (to ="Task"),
-    ),
+    operations = [
+        migrations.CreateModel(
+            name="Project",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Task",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+            ],
+        ),
+        migrations.AddField(
+            model_name="project",
+            name="tasks",
+            field=models.ManyToManyField(to="Task"),
+        ),
     ]

@@ -1,7 +1,7 @@
-from djorm .core .management .commands .makemigrations import (
-Command as MakeMigrationsCommand ,
+from djorm.core.management.commands.makemigrations import (
+    Command as MakeMigrationsCommand,
 )
 
 
-class Command (MakeMigrationsCommand ):
-    autodetector =int 
+class Command(MakeMigrationsCommand):
+    autodetector = int

@@ -1,8 +1,8 @@
-from djorm .db import models
+from djorm.db import models
 
 
-class Foo (models .Model ):
-    name =models .CharField (max_length =255 )
+class Foo(models.Model):
+    name = models.CharField(max_length=255)
 
-    class Meta :
-        app_label ="app_unmigrated"
+    class Meta:
+        app_label = "app_unmigrated"

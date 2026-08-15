@@ -8,9 +8,7 @@ from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 class classonlymethod(classmethod):
     def __get__(self, instance, cls=None):
         if instance is not None:
-            raise AttributeError(
-                "This method is available only on the class, not on instances."
-            )
+            raise AttributeError("This method is available only on the class, not on instances.")
         return super().__get__(instance, cls)
 
 
@@ -147,9 +145,7 @@ def make_middleware_decorator(middleware_class):
             def _post_process_request(request, response):
                 if hasattr(response, "render") and callable(response.render):
                     if hasattr(middleware, "process_template_response"):
-                        response = middleware.process_template_response(
-                            request, response
-                        )
+                        response = middleware.process_template_response(request, response)
                     # Defer running of process_response until after the template
                     # has been rendered:
                     if hasattr(middleware, "process_response"):

@@ -5,225 +5,220 @@ than using a new table of their own. This allows them to act as simple proxies,
 providing a modified interface to the data from the base class.
 """
 
-from djorm .db import models
+from djorm.db import models
 
 # A couple of managers for testing managing overriding in proxy model cases.
 
 
-class PersonManager (models .Manager ):
-    def get_queryset (self ):
-        return super ().get_queryset ().exclude (name ="fred")
+class PersonManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().exclude(name="fred")
 
 
-class SubManager (models .Manager ):
-    def get_queryset (self ):
-        return super ().get_queryset ().exclude (name ="wilma")
+class SubManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().exclude(name="wilma")
 
 
-class Person (models .Model ):
+class Person(models.Model):
     """
     A simple concrete base class.
     """
 
-    name =models .CharField (max_length =50 )
+    name = models.CharField(max_length=50)
 
-    objects =PersonManager ()
+    objects = PersonManager()
 
-    def __str__ (self ):
-        return self .name 
+    def __str__(self):
+        return self.name
 
 
-class Abstract (models .Model ):
+class Abstract(models.Model):
     """
     A simple abstract base class, to be used for error checking.
     """
 
-    data =models .CharField (max_length =10 )
+    data = models.CharField(max_length=10)
 
-    class Meta :
-        abstract =True 
+    class Meta:
+        abstract = True
 
 
-class MyPerson (Person ):
+class MyPerson(Person):
     """
     A proxy subclass, this should not get a new table. Overrides the default
     manager.
     """
 
-    class Meta :
-        proxy =True 
-        ordering =["name"]
-        permissions =(("display_users","May display users information"),)
+    class Meta:
+        proxy = True
+        ordering = ["name"]
+        permissions = (("display_users", "May display users information"),)
 
-    objects =SubManager ()
-    other =PersonManager ()
+    objects = SubManager()
+    other = PersonManager()
 
-    def has_special_name (self ):
-        return self .name .lower ()=="special"
-
-
-class ManagerMixin (models .Model ):
-    excluder =SubManager ()
-
-    class Meta :
-        abstract =True 
+    def has_special_name(self):
+        return self.name.lower() == "special"
 
 
-class OtherPerson (Person ,ManagerMixin ):
+class ManagerMixin(models.Model):
+    excluder = SubManager()
+
+    class Meta:
+        abstract = True
+
+
+class OtherPerson(Person, ManagerMixin):
     """
     A class with the default manager from Person, plus a secondary manager.
     """
 
-    class Meta :
-        proxy =True 
-        ordering =["name"]
+    class Meta:
+        proxy = True
+        ordering = ["name"]
 
 
-class StatusPerson (MyPerson ):
+class StatusPerson(MyPerson):
     """
     A non-proxy subclass of a proxy, it should get a new table.
     """
 
-    status =models .CharField (max_length =80 )
+    status = models.CharField(max_length=80)
 
-    objects =models .Manager ()
-
+    objects = models.Manager()
 
     # We can even have proxies of proxies (and subclass of those).
 
 
-class MyPersonProxy (MyPerson ):
-    class Meta :
-        proxy =True 
+class MyPersonProxy(MyPerson):
+    class Meta:
+        proxy = True
 
 
-class LowerStatusPerson (MyPersonProxy ):
-    status =models .CharField (max_length =80 )
+class LowerStatusPerson(MyPersonProxy):
+    status = models.CharField(max_length=80)
 
-    objects =models .Manager ()
-
-
-class User (models .Model ):
-    name =models .CharField (max_length =100 )
-
-    def __str__ (self ):
-        return self .name 
+    objects = models.Manager()
 
 
-class UserProxy (User ):
-    class Meta :
-        proxy =True 
+class User(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 
-class AnotherUserProxy (User ):
-    class Meta :
-        proxy =True 
+class UserProxy(User):
+    class Meta:
+        proxy = True
 
 
-class UserProxyProxy (UserProxy ):
-    class Meta :
-        proxy =True 
+class AnotherUserProxy(User):
+    class Meta:
+        proxy = True
 
 
-class MultiUserProxy (UserProxy ,AnotherUserProxy ):
-    class Meta :
-        proxy =True 
+class UserProxyProxy(UserProxy):
+    class Meta:
+        proxy = True
 
+
+class MultiUserProxy(UserProxy, AnotherUserProxy):
+    class Meta:
+        proxy = True
 
         # We can still use `select_related()` to include related models in our querysets.
 
 
-class Country (models .Model ):
-    name =models .CharField (max_length =50 )
+class Country(models.Model):
+    name = models.CharField(max_length=50)
 
 
-class State (models .Model ):
-    name =models .CharField (max_length =50 )
-    country =models .ForeignKey (Country ,models .CASCADE )
+class State(models.Model):
+    name = models.CharField(max_length=50)
+    country = models.ForeignKey(Country, models.CASCADE)
 
-    def __str__ (self ):
-        return self .name 
+    def __str__(self):
+        return self.name
 
 
-class StateProxy (State ):
-    class Meta :
-        proxy =True 
-
+class StateProxy(State):
+    class Meta:
+        proxy = True
 
         # Proxy models still works with filters (on related fields)
         # and select_related, even when mixed with model inheritance
 
 
-class BaseUser (models .Model ):
-    name =models .CharField (max_length =255 )
+class BaseUser(models.Model):
+    name = models.CharField(max_length=255)
 
-    def __str__ (self ):
-        return ":".join (
-        (
-        self .__class__ .__name__ ,
-        self .name ,
-        )
-        )
-
-
-class TrackerUser (BaseUser ):
-    status =models .CharField (max_length =50 )
-
-
-class ProxyTrackerUser (TrackerUser ):
-    class Meta :
-        proxy =True 
-
-
-class Issue (models .Model ):
-    summary =models .CharField (max_length =255 )
-    assignee =models .ForeignKey (
-    ProxyTrackerUser ,models .CASCADE ,related_name ="issues"
-    )
-
-    def __str__ (self ):
-        return ":".join (
-        (
-        self .__class__ .__name__ ,
-        self .summary ,
-        )
+    def __str__(self):
+        return ":".join(
+            (
+                self.__class__.__name__,
+                self.name,
+            )
         )
 
 
-class Bug (Issue ):
-    version =models .CharField (max_length =50 )
-    reporter =models .ForeignKey (BaseUser ,models .CASCADE )
+class TrackerUser(BaseUser):
+    status = models.CharField(max_length=50)
 
 
-class ProxyBug (Bug ):
+class ProxyTrackerUser(TrackerUser):
+    class Meta:
+        proxy = True
+
+
+class Issue(models.Model):
+    summary = models.CharField(max_length=255)
+    assignee = models.ForeignKey(ProxyTrackerUser, models.CASCADE, related_name="issues")
+
+    def __str__(self):
+        return ":".join(
+            (
+                self.__class__.__name__,
+                self.summary,
+            )
+        )
+
+
+class Bug(Issue):
+    version = models.CharField(max_length=50)
+    reporter = models.ForeignKey(BaseUser, models.CASCADE)
+
+
+class ProxyBug(Bug):
     """
     Proxy of an inherited class
     """
 
-    class Meta :
-        proxy =True 
+    class Meta:
+        proxy = True
 
 
-class ProxyProxyBug (ProxyBug ):
+class ProxyProxyBug(ProxyBug):
     """
     A proxy of proxy model with related field
     """
 
-    class Meta :
-        proxy =True 
+    class Meta:
+        proxy = True
 
 
-class Improvement (Issue ):
+class Improvement(Issue):
     """
     A model that has relation to a proxy model
     or to a proxy of proxy model
     """
 
-    version =models .CharField (max_length =50 )
-    reporter =models .ForeignKey (ProxyTrackerUser ,models .CASCADE )
-    associated_bug =models .ForeignKey (ProxyProxyBug ,models .CASCADE )
+    version = models.CharField(max_length=50)
+    reporter = models.ForeignKey(ProxyTrackerUser, models.CASCADE)
+    associated_bug = models.ForeignKey(ProxyProxyBug, models.CASCADE)
 
 
-class ProxyImprovement (Improvement ):
-    class Meta :
-        proxy =True 
+class ProxyImprovement(Improvement):
+    class Meta:
+        proxy = True

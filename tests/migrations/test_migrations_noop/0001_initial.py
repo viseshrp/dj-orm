@@ -1,9 +1,9 @@
-from djorm .db import migrations
+from djorm.db import migrations
 
 
-class Migration (migrations .Migration ):
-    initial =True 
+class Migration(migrations.Migration):
+    initial = True
 
-    operations =[
-    migrations .RunSQL (sql ="",reverse_sql =""),
+    operations = [
+        migrations.RunSQL(sql="", reverse_sql=""),
     ]

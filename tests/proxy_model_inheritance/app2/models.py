@@ -1,5 +1,5 @@
-from djorm .db import models
+from djorm.db import models
 
 
-class NiceModel (models .Model ):
-    pass 
+class NiceModel(models.Model):
+    pass

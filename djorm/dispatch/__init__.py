@@ -6,4 +6,4 @@ See license.txt for original license.
 Heavily modified for Django's purposes.
 """
 
-from djorm .dispatch .dispatcher import Signal ,receiver # NOQA
+from djorm.dispatch.dispatcher import Signal, receiver  # NOQA

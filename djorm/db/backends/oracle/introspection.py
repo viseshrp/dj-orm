@@ -1,65 +1,59 @@
-from collections import namedtuple 
+from collections import namedtuple
 
-from djorm .db import models
-from djorm .db .backends .base .introspection import BaseDatabaseIntrospection
-from djorm .db .backends .base .introspection import FieldInfo as BaseFieldInfo
-from djorm .db .backends .base .introspection import TableInfo as BaseTableInfo
-from djorm .db .backends .oracle .oracledb_any import oracledb
+from djorm.db import models
+from djorm.db.backends.base.introspection import BaseDatabaseIntrospection
+from djorm.db.backends.base.introspection import FieldInfo as BaseFieldInfo
+from djorm.db.backends.base.introspection import TableInfo as BaseTableInfo
+from djorm.db.backends.oracle.oracledb_any import oracledb
 
-FieldInfo =namedtuple (
-"FieldInfo",BaseFieldInfo ._fields +("is_autofield","is_json","comment")
-)
-TableInfo =namedtuple ("TableInfo",BaseTableInfo ._fields +("comment",))
+FieldInfo = namedtuple("FieldInfo", BaseFieldInfo._fields + ("is_autofield", "is_json", "comment"))
+TableInfo = namedtuple("TableInfo", BaseTableInfo._fields + ("comment",))
 
 
-class DatabaseIntrospection (BaseDatabaseIntrospection ):
-    cache_bust_counter =1 
+class DatabaseIntrospection(BaseDatabaseIntrospection):
+    cache_bust_counter = 1
 
     # Maps type objects to Django Field types.
-    data_types_reverse ={
-    oracledb .DB_TYPE_DATE :"DateField",
-    oracledb .DB_TYPE_BINARY_DOUBLE :"FloatField",
-    oracledb .DB_TYPE_BLOB :"BinaryField",
-    oracledb .DB_TYPE_CHAR :"CharField",
-    oracledb .DB_TYPE_CLOB :"TextField",
-    oracledb .DB_TYPE_INTERVAL_DS :"DurationField",
-    oracledb .DB_TYPE_NCHAR :"CharField",
-    oracledb .DB_TYPE_NCLOB :"TextField",
-    oracledb .DB_TYPE_NVARCHAR :"CharField",
-    oracledb .DB_TYPE_NUMBER :"DecimalField",
-    oracledb .DB_TYPE_TIMESTAMP :"DateTimeField",
-    oracledb .DB_TYPE_VARCHAR :"CharField",
+    data_types_reverse = {
+        oracledb.DB_TYPE_DATE: "DateField",
+        oracledb.DB_TYPE_BINARY_DOUBLE: "FloatField",
+        oracledb.DB_TYPE_BLOB: "BinaryField",
+        oracledb.DB_TYPE_CHAR: "CharField",
+        oracledb.DB_TYPE_CLOB: "TextField",
+        oracledb.DB_TYPE_INTERVAL_DS: "DurationField",
+        oracledb.DB_TYPE_NCHAR: "CharField",
+        oracledb.DB_TYPE_NCLOB: "TextField",
+        oracledb.DB_TYPE_NVARCHAR: "CharField",
+        oracledb.DB_TYPE_NUMBER: "DecimalField",
+        oracledb.DB_TYPE_TIMESTAMP: "DateTimeField",
+        oracledb.DB_TYPE_VARCHAR: "CharField",
     }
 
-    def get_field_type (self ,data_type ,description ):
-        if data_type ==oracledb .NUMBER :
-            precision ,scale =description [4 :6 ]
-            if scale ==0 :
-                if precision >11 :
-                    return (
-                    "BigAutoField"
-                    if description .is_autofield 
-                    else "BigIntegerField"
-                    )
-                elif 1 <precision <6 and description .is_autofield :
+    def get_field_type(self, data_type, description):
+        if data_type == oracledb.NUMBER:
+            precision, scale = description[4:6]
+            if scale == 0:
+                if precision > 11:
+                    return "BigAutoField" if description.is_autofield else "BigIntegerField"
+                elif 1 < precision < 6 and description.is_autofield:
                     return "SmallAutoField"
-                elif precision ==1 :
+                elif precision == 1:
                     return "BooleanField"
-                elif description .is_autofield :
+                elif description.is_autofield:
                     return "AutoField"
-                else :
+                else:
                     return "IntegerField"
-            elif scale ==-127 :
+            elif scale == -127:
                 return "FloatField"
-        elif data_type ==oracledb .NCLOB and description .is_json :
+        elif data_type == oracledb.NCLOB and description.is_json:
             return "JSONField"
 
-        return super ().get_field_type (data_type ,description )
+        return super().get_field_type(data_type, description)
 
-    def get_table_list (self ,cursor ):
+    def get_table_list(self, cursor):
         """Return a list of table and view names in the current database."""
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 user_tables.table_name,
                 't',
@@ -81,18 +75,18 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
         """
         )
         return [
-        TableInfo (self .identifier_converter (row [0 ]),row [1 ],row [2 ])
-        for row in cursor .fetchall ()
+            TableInfo(self.identifier_converter(row[0]), row[1], row[2])
+            for row in cursor.fetchall()
         ]
 
-    def get_table_description (self ,cursor ,table_name ):
+    def get_table_description(self, cursor, table_name):
         """
         Return a description of the table with the DB-API cursor.description
         interface.
         """
         # A default collation for the given table/view/materialized view.
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT user_tables.default_collation
             FROM user_tables
             WHERE
@@ -111,13 +105,13 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
             FROM user_mviews
             WHERE user_mviews.mview_name = UPPER(%s)
             """,
-        [table_name ,table_name ,table_name ],
+            [table_name, table_name, table_name],
         )
-        row =cursor .fetchone ()
-        default_table_collation =row [0 ]if row else ""
+        row = cursor.fetchone()
+        default_table_collation = row[0] if row else ""
         # user_tab_columns gives data default for columns
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 user_tab_cols.column_name,
                 user_tab_cols.data_default,
@@ -154,70 +148,70 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
                 user_col_comments.table_name = user_tab_cols.table_name
             WHERE user_tab_cols.table_name = UPPER(%s)
             """,
-        [default_table_collation ,table_name ],
+            [default_table_collation, table_name],
         )
-        field_map ={
-        column :(
-        display_size ,
-        default .rstrip ()if default and default !="NULL"else None ,
-        collation ,
-        is_autofield ,
-        is_json ,
-        comment ,
-        )
-        for (
-        column ,
-        default ,
-        collation ,
-        display_size ,
-        is_autofield ,
-        is_json ,
-        comment ,
-        )in cursor .fetchall ()
+        field_map = {
+            column: (
+                display_size,
+                default.rstrip() if default and default != "NULL" else None,
+                collation,
+                is_autofield,
+                is_json,
+                comment,
+            )
+            for (
+                column,
+                default,
+                collation,
+                display_size,
+                is_autofield,
+                is_json,
+                comment,
+            ) in cursor.fetchall()
         }
-        self .cache_bust_counter +=1 
-        cursor .execute (
-        "SELECT * FROM {} WHERE ROWNUM < 2 AND {} > 0".format (
-        self .connection .ops .quote_name (table_name ),self .cache_bust_counter 
+        self.cache_bust_counter += 1
+        cursor.execute(
+            "SELECT * FROM {} WHERE ROWNUM < 2 AND {} > 0".format(
+                self.connection.ops.quote_name(table_name), self.cache_bust_counter
+            )
         )
-        )
-        description =[]
-        for desc in cursor .description :
-            name =desc [0 ]
+        description = []
+        for desc in cursor.description:
+            name = desc[0]
             (
-            display_size ,
-            default ,
-            collation ,
-            is_autofield ,
-            is_json ,
-            comment ,
-            )=field_map [name ]
-            name %={}# oracledb, for some reason, doubles percent signs.
-            description .append (
-            FieldInfo (
-            self .identifier_converter (name ),
-            desc [1 ],
-            display_size ,
-            desc [3 ],
-            desc [4 ]or 0 ,
-            desc [5 ]or 0 ,
-            *desc [6 :],
-            default ,
-            collation ,
-            is_autofield ,
-            is_json ,
-            comment ,
+                display_size,
+                default,
+                collation,
+                is_autofield,
+                is_json,
+                comment,
+            ) = field_map[name]
+            name %= {}  # oracledb, for some reason, doubles percent signs.
+            description.append(
+                FieldInfo(
+                    self.identifier_converter(name),
+                    desc[1],
+                    display_size,
+                    desc[3],
+                    desc[4] or 0,
+                    desc[5] or 0,
+                    *desc[6:],
+                    default,
+                    collation,
+                    is_autofield,
+                    is_json,
+                    comment,
+                )
             )
-            )
-        return description 
+        return description
 
-    def identifier_converter (self ,name ):
+    def identifier_converter(self, name):
         """Identifier comparison is case insensitive under Oracle."""
-        return name .lower ()
+        return name.lower()
 
-    def get_sequences (self ,cursor ,table_name ,table_fields =()):
-        cursor .execute (
-        """
+    def get_sequences(self, cursor, table_name, table_fields=()):
+        cursor.execute(
+            """
             SELECT
                 user_tab_identity_cols.sequence_name,
                 user_tab_identity_cols.column_name
@@ -232,53 +226,53 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
                 AND user_constraints.constraint_type = 'P'
                 AND user_tab_identity_cols.table_name = UPPER(%s)
             """,
-        [table_name ],
+            [table_name],
         )
         # Oracle allows only one identity column per table.
-        row =cursor .fetchone ()
-        if row :
+        row = cursor.fetchone()
+        if row:
             return [
-            {
-            "name":self .identifier_converter (row [0 ]),
-            "table":self .identifier_converter (table_name ),
-            "column":self .identifier_converter (row [1 ]),
-            }
+                {
+                    "name": self.identifier_converter(row[0]),
+                    "table": self.identifier_converter(table_name),
+                    "column": self.identifier_converter(row[1]),
+                }
             ]
             # To keep backward compatibility for AutoFields that aren't Oracle
             # identity columns.
-        for f in table_fields :
-            if isinstance (f ,models .AutoField ):
-                return [{"table":table_name ,"column":f .column }]
+        for f in table_fields:
+            if isinstance(f, models.AutoField):
+                return [{"table": table_name, "column": f.column}]
         return []
 
-    def get_relations (self ,cursor ,table_name ):
+    def get_relations(self, cursor, table_name):
         """
         Return a dictionary of {field_name: (field_name_other_table, other_table)}
         representing all foreign keys in the given table.
         """
-        table_name =table_name .upper ()
-        cursor .execute (
-        """
+        table_name = table_name.upper()
+        cursor.execute(
+            """
     SELECT ca.column_name, cb.table_name, cb.column_name
     FROM   user_constraints, USER_CONS_COLUMNS ca, USER_CONS_COLUMNS cb
     WHERE  user_constraints.table_name = %s AND
            user_constraints.constraint_name = ca.constraint_name AND
            user_constraints.r_constraint_name = cb.constraint_name AND
            ca.position = cb.position""",
-        [table_name ],
+            [table_name],
         )
 
         return {
-        self .identifier_converter (field_name ):(
-        self .identifier_converter (rel_field_name ),
-        self .identifier_converter (rel_table_name ),
-        )
-        for field_name ,rel_table_name ,rel_field_name in cursor .fetchall ()
+            self.identifier_converter(field_name): (
+                self.identifier_converter(rel_field_name),
+                self.identifier_converter(rel_table_name),
+            )
+            for field_name, rel_table_name, rel_field_name in cursor.fetchall()
         }
 
-    def get_primary_key_columns (self ,cursor ,table_name ):
-        cursor .execute (
-        """
+    def get_primary_key_columns(self, cursor, table_name):
+        cursor.execute(
+            """
             SELECT
                 cols.column_name
             FROM
@@ -291,19 +285,19 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
             ORDER BY
                 cols.position
             """,
-        [table_name ],
+            [table_name],
         )
-        return [self .identifier_converter (row [0 ])for row in cursor .fetchall ()]
+        return [self.identifier_converter(row[0]) for row in cursor.fetchall()]
 
-    def get_constraints (self ,cursor ,table_name ):
+    def get_constraints(self, cursor, table_name):
         """
         Retrieve any constraints or keys (unique, pk, fk, check, index) across
         one or more columns.
         """
-        constraints ={}
+        constraints = {}
         # Loop over the constraints, getting PKs, uniques, and checks
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 user_constraints.constraint_name,
                 LISTAGG(LOWER(cols.column_name), ',')
@@ -330,21 +324,21 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
                 AND user_constraints.table_name = UPPER(%s)
             GROUP BY user_constraints.constraint_name, user_constraints.constraint_type
             """,
-        [table_name ],
+            [table_name],
         )
-        for constraint ,columns ,pk ,unique ,check in cursor .fetchall ():
-            constraint =self .identifier_converter (constraint )
-            constraints [constraint ]={
-            "columns":columns .split (","),
-            "primary_key":pk ,
-            "unique":unique ,
-            "foreign_key":None ,
-            "check":check ,
-            "index":unique ,# All uniques come with an index
+        for constraint, columns, pk, unique, check in cursor.fetchall():
+            constraint = self.identifier_converter(constraint)
+            constraints[constraint] = {
+                "columns": columns.split(","),
+                "primary_key": pk,
+                "unique": unique,
+                "foreign_key": None,
+                "check": check,
+                "index": unique,  # All uniques come with an index
             }
             # Foreign key constraints
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 cons.constraint_name,
                 LISTAGG(LOWER(cols.column_name), ',')
@@ -364,21 +358,21 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
                 cons.table_name = UPPER(%s)
             GROUP BY cons.constraint_name, rcols.table_name, rcols.column_name
             """,
-        [table_name ],
+            [table_name],
         )
-        for constraint ,columns ,other_table ,other_column in cursor .fetchall ():
-            constraint =self .identifier_converter (constraint )
-            constraints [constraint ]={
-            "primary_key":False ,
-            "unique":False ,
-            "foreign_key":(other_table ,other_column ),
-            "check":False ,
-            "index":False ,
-            "columns":columns .split (","),
+        for constraint, columns, other_table, other_column in cursor.fetchall():
+            constraint = self.identifier_converter(constraint)
+            constraints[constraint] = {
+                "primary_key": False,
+                "unique": False,
+                "foreign_key": (other_table, other_column),
+                "check": False,
+                "index": False,
+                "columns": columns.split(","),
             }
             # Now get indexes
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 ind.index_name,
                 LOWER(ind.index_type),
@@ -397,18 +391,18 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
                 ) AND cols.index_name = ind.index_name
             GROUP BY ind.index_name, ind.index_type, ind.uniqueness
             """,
-        [table_name ],
+            [table_name],
         )
-        for constraint ,type_ ,unique ,columns ,orders in cursor .fetchall ():
-            constraint =self .identifier_converter (constraint )
-            constraints [constraint ]={
-            "primary_key":False ,
-            "unique":unique =="unique",
-            "foreign_key":None ,
-            "check":False ,
-            "index":True ,
-            "type":"idx"if type_ =="normal"else type_ ,
-            "columns":columns .split (","),
-            "orders":orders .split (","),
+        for constraint, type_, unique, columns, orders in cursor.fetchall():
+            constraint = self.identifier_converter(constraint)
+            constraints[constraint] = {
+                "primary_key": False,
+                "unique": unique == "unique",
+                "foreign_key": None,
+                "check": False,
+                "index": True,
+                "type": "idx" if type_ == "normal" else type_,
+                "columns": columns.split(","),
+                "orders": orders.split(","),
             }
-        return constraints 
+        return constraints

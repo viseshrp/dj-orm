@@ -16,20 +16,20 @@ arguments available in tempfile.NamedTemporaryFile.
 2: https://bugs.python.org/issue14243
 """
 
-import os 
-import tempfile 
+import os
+import tempfile
 
-from djorm .core .files .utils import FileProxyMixin
+from djorm.core.files.utils import FileProxyMixin
 
-__all__ =(
-"NamedTemporaryFile",
-"gettempdir",
+__all__ = (
+    "NamedTemporaryFile",
+    "gettempdir",
 )
 
 
-if os .name =="nt":
+if os.name == "nt":
 
-    class TemporaryFile (FileProxyMixin ):
+    class TemporaryFile(FileProxyMixin):
         """
         Temporary file object constructor that supports reopening of the
         temporary file in Windows.
@@ -39,41 +39,42 @@ if os .name =="nt":
         'newline' keyword arguments.
         """
 
-        def __init__ (self ,mode ="w+b",bufsize =-1 ,suffix ="",prefix ="",dir =None ):
-            fd ,name =tempfile .mkstemp (suffix =suffix ,prefix =prefix ,dir =dir )
-            self .name =name 
-            self .file =os .fdopen (fd ,mode ,bufsize )
-            self .close_called =False 
+        def __init__(self, mode="w+b", bufsize=-1, suffix="", prefix="", dir=None):
+            fd, name = tempfile.mkstemp(suffix=suffix, prefix=prefix, dir=dir)
+            self.name = name
+            self.file = os.fdopen(fd, mode, bufsize)
+            self.close_called = False
 
             # Because close can be called during shutdown
             # we need to cache os.unlink and access it
             # as self.unlink only
-        unlink =os .unlink 
 
-        def close (self ):
-            if not self .close_called :
-                self .close_called =True 
-                try :
-                    self .file .close ()
-                except OSError :
-                    pass 
-                try :
-                    self .unlink (self .name )
-                except OSError :
-                    pass 
+        unlink = os.unlink
 
-        def __del__ (self ):
-            self .close ()
+        def close(self):
+            if not self.close_called:
+                self.close_called = True
+                try:
+                    self.file.close()
+                except OSError:
+                    pass
+                try:
+                    self.unlink(self.name)
+                except OSError:
+                    pass
 
-        def __enter__ (self ):
-            self .file .__enter__ ()
-            return self 
+        def __del__(self):
+            self.close()
 
-        def __exit__ (self ,exc ,value ,tb ):
-            self .file .__exit__ (exc ,value ,tb )
+        def __enter__(self):
+            self.file.__enter__()
+            return self
 
-    NamedTemporaryFile =TemporaryFile 
-else :
-    NamedTemporaryFile =tempfile .NamedTemporaryFile 
+        def __exit__(self, exc, value, tb):
+            self.file.__exit__(exc, value, tb)
 
-gettempdir =tempfile .gettempdir 
+    NamedTemporaryFile = TemporaryFile
+else:
+    NamedTemporaryFile = tempfile.NamedTemporaryFile
+
+gettempdir = tempfile.gettempdir

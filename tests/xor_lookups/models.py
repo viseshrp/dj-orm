@@ -1,8 +1,8 @@
-from djorm .db import models
+from djorm.db import models
 
 
-class Number (models .Model ):
-    num =models .IntegerField ()
+class Number(models.Model):
+    num = models.IntegerField()
 
-    def __str__ (self ):
-        return str (self .num )
+    def __str__(self):
+        return str(self.num)

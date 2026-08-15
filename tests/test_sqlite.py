@@ -1,4 +1,4 @@
-import os 
+import os
 
 # This is an example test settings file for use with the Django test suite.
 #
@@ -14,19 +14,21 @@ import os
 # database backends as possible.  You may want to create a separate settings
 # file for each of the backends you test against.
 
-DATABASES ={
-"default":{
-"ENGINE":"djorm.db.backends.sqlite3",
-"TEST":{"NAME":os .path .join (os .environ .get ("TMPDIR",os .getcwd ()),"test_default.sqlite3")},
-},
-"other":{
-"ENGINE":"djorm.db.backends.sqlite3",
-"TEST":{"NAME":os .path .join (os .environ .get ("TMPDIR",os .getcwd ()),"test_other.sqlite3")},
-},
+DATABASES = {
+    "default": {
+        "ENGINE": "djorm.db.backends.sqlite3",
+        "TEST": {
+            "NAME": os.path.join(os.environ.get("TMPDIR", os.getcwd()), "test_default.sqlite3")
+        },
+    },
+    "other": {
+        "ENGINE": "djorm.db.backends.sqlite3",
+        "TEST": {"NAME": os.path.join(os.environ.get("TMPDIR", os.getcwd()), "test_other.sqlite3")},
+    },
 }
 
-SECRET_KEY ="django_tests_secret_key"
+SECRET_KEY = "django_tests_secret_key"
 
-DEFAULT_AUTO_FIELD ="djorm.db.models.AutoField"
+DEFAULT_AUTO_FIELD = "djorm.db.models.AutoField"
 
-USE_TZ =False 
+USE_TZ = False

@@ -1,62 +1,61 @@
-from collections import namedtuple 
+from collections import namedtuple
 
-from djorm .db .backends .base .introspection import BaseDatabaseIntrospection
-from djorm .db .backends .base .introspection import FieldInfo as BaseFieldInfo
-from djorm .db .backends .base .introspection import TableInfo as BaseTableInfo
-from djorm .db .models import Index
+from djorm.db.backends.base.introspection import BaseDatabaseIntrospection
+from djorm.db.backends.base.introspection import FieldInfo as BaseFieldInfo
+from djorm.db.backends.base.introspection import TableInfo as BaseTableInfo
+from djorm.db.models import Index
 
-FieldInfo =namedtuple ("FieldInfo",BaseFieldInfo ._fields +("is_autofield","comment"))
-TableInfo =namedtuple ("TableInfo",BaseTableInfo ._fields +("comment",))
+FieldInfo = namedtuple("FieldInfo", BaseFieldInfo._fields + ("is_autofield", "comment"))
+TableInfo = namedtuple("TableInfo", BaseTableInfo._fields + ("comment",))
 
 
-class DatabaseIntrospection (BaseDatabaseIntrospection ):
-# Maps type codes to Django Field types.
-    data_types_reverse ={
-    16 :"BooleanField",
-    17 :"BinaryField",
-    20 :"BigIntegerField",
-    21 :"SmallIntegerField",
-    23 :"IntegerField",
-    25 :"TextField",
-    700 :"FloatField",
-    701 :"FloatField",
-    869 :"GenericIPAddressField",
-    1042 :"CharField",# blank-padded
-    1043 :"CharField",
-    1082 :"DateField",
-    1083 :"TimeField",
-    1114 :"DateTimeField",
-    1184 :"DateTimeField",
-    1186 :"DurationField",
-    1266 :"TimeField",
-    1700 :"DecimalField",
-    2950 :"UUIDField",
-    3802 :"JSONField",
+class DatabaseIntrospection(BaseDatabaseIntrospection):
+    # Maps type codes to Django Field types.
+    data_types_reverse = {
+        16: "BooleanField",
+        17: "BinaryField",
+        20: "BigIntegerField",
+        21: "SmallIntegerField",
+        23: "IntegerField",
+        25: "TextField",
+        700: "FloatField",
+        701: "FloatField",
+        869: "GenericIPAddressField",
+        1042: "CharField",  # blank-padded
+        1043: "CharField",
+        1082: "DateField",
+        1083: "TimeField",
+        1114: "DateTimeField",
+        1184: "DateTimeField",
+        1186: "DurationField",
+        1266: "TimeField",
+        1700: "DecimalField",
+        2950: "UUIDField",
+        3802: "JSONField",
     }
     # A hook for subclasses.
-    index_default_access_method ="btree"
+    index_default_access_method = "btree"
 
-    ignored_tables =[]
+    ignored_tables = []
 
-    def get_field_type (self ,data_type ,description ):
-        field_type =super ().get_field_type (data_type ,description )
-        if description .is_autofield or (
-        # Required for pre-Django 4.1 serial columns.
-        description .default 
-        and "nextval"in description .default 
+    def get_field_type(self, data_type, description):
+        field_type = super().get_field_type(data_type, description)
+        if description.is_autofield or (
+            # Required for pre-Django 4.1 serial columns.
+            description.default and "nextval" in description.default
         ):
-            if field_type =="IntegerField":
+            if field_type == "IntegerField":
                 return "AutoField"
-            elif field_type =="BigIntegerField":
+            elif field_type == "BigIntegerField":
                 return "BigAutoField"
-            elif field_type =="SmallIntegerField":
+            elif field_type == "SmallIntegerField":
                 return "SmallAutoField"
-        return field_type 
+        return field_type
 
-    def get_table_list (self ,cursor ):
+    def get_table_list(self, cursor):
         """Return a list of table and view names in the current database."""
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 c.relname,
                 CASE
@@ -72,13 +71,9 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
                 AND pg_catalog.pg_table_is_visible(c.oid)
         """
         )
-        return [
-        TableInfo (*row )
-        for row in cursor .fetchall ()
-        if row [0 ]not in self .ignored_tables 
-        ]
+        return [TableInfo(*row) for row in cursor.fetchall() if row[0] not in self.ignored_tables]
 
-    def get_table_description (self ,cursor ,table_name ):
+    def get_table_description(self, cursor, table_name):
         """
         Return a description of the table with the DB-API cursor.description
         interface.
@@ -86,8 +81,8 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
         # Query the pg_catalog tables as cursor.description does not reliably
         # return the nullable property and information_schema.columns does not
         # contain details of materialized views.
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 a.attname AS column_name,
                 NOT (a.attnotnull OR (t.typtype = 'd' AND t.typnotnull)) AS is_nullable,
@@ -106,29 +101,27 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
                 AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
                 AND pg_catalog.pg_table_is_visible(c.oid)
         """,
-        [table_name ],
+            [table_name],
         )
-        field_map ={line [0 ]:line [1 :]for line in cursor .fetchall ()}
-        cursor .execute (
-        "SELECT * FROM %s LIMIT 1"%self .connection .ops .quote_name (table_name )
-        )
+        field_map = {line[0]: line[1:] for line in cursor.fetchall()}
+        cursor.execute("SELECT * FROM %s LIMIT 1" % self.connection.ops.quote_name(table_name))
         return [
-        FieldInfo (
-        line .name ,
-        line .type_code ,
-        # display_size is always None on psycopg2.
-        line .internal_size if line .display_size is None else line .display_size ,
-        line .internal_size ,
-        line .precision ,
-        line .scale ,
-        *field_map [line .name ],
-        )
-        for line in cursor .description 
+            FieldInfo(
+                line.name,
+                line.type_code,
+                # display_size is always None on psycopg2.
+                line.internal_size if line.display_size is None else line.display_size,
+                line.internal_size,
+                line.precision,
+                line.scale,
+                *field_map[line.name],
+            )
+            for line in cursor.description
         ]
 
-    def get_sequences (self ,cursor ,table_name ,table_fields =()):
-        cursor .execute (
-        """
+    def get_sequences(self, cursor, table_name, table_fields=()):
+        cursor.execute(
+            """
             SELECT
                 s.relname AS sequence_name,
                 a.attname AS colname
@@ -145,20 +138,19 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
             WHERE
                 s.relkind = 'S';
         """,
-        [table_name ],
+            [table_name],
         )
         return [
-        {"name":row [0 ],"table":table_name ,"column":row [1 ]}
-        for row in cursor .fetchall ()
+            {"name": row[0], "table": table_name, "column": row[1]} for row in cursor.fetchall()
         ]
 
-    def get_relations (self ,cursor ,table_name ):
+    def get_relations(self, cursor, table_name):
         """
         Return a dictionary of {field_name: (field_name_other_table, other_table)}
         representing all foreign keys in the given table.
         """
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT a1.attname, c2.relname, a2.attname
             FROM pg_constraint con
             LEFT JOIN pg_class c1 ON con.conrelid = c1.oid
@@ -173,22 +165,22 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
                 c1.relnamespace = c2.relnamespace AND
                 pg_catalog.pg_table_is_visible(c1.oid)
         """,
-        [table_name ],
+            [table_name],
         )
-        return {row [0 ]:(row [2 ],row [1 ])for row in cursor .fetchall ()}
+        return {row[0]: (row[2], row[1]) for row in cursor.fetchall()}
 
-    def get_constraints (self ,cursor ,table_name ):
+    def get_constraints(self, cursor, table_name):
         """
         Retrieve any constraints or keys (unique, pk, fk, check, index) across
         one or more columns. Also retrieve the definition of expression-based
         indexes.
         """
-        constraints ={}
+        constraints = {}
         # Loop over the key table, collecting things as constraints. The column
         # array must return column names in the same order in which they were
         # created.
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 c.conname,
                 array(
@@ -208,22 +200,22 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
             JOIN pg_class AS cl ON c.conrelid = cl.oid
             WHERE cl.relname = %s AND pg_catalog.pg_table_is_visible(cl.oid)
         """,
-        [table_name ],
+            [table_name],
         )
-        for constraint ,columns ,kind ,used_cols ,options in cursor .fetchall ():
-            constraints [constraint ]={
-            "columns":columns ,
-            "primary_key":kind =="p",
-            "unique":kind in ["p","u"],
-            "foreign_key":tuple (used_cols .split (".",1 ))if kind =="f"else None ,
-            "check":kind =="c",
-            "index":False ,
-            "definition":None ,
-            "options":options ,
+        for constraint, columns, kind, used_cols, options in cursor.fetchall():
+            constraints[constraint] = {
+                "columns": columns,
+                "primary_key": kind == "p",
+                "unique": kind in ["p", "u"],
+                "foreign_key": tuple(used_cols.split(".", 1)) if kind == "f" else None,
+                "check": kind == "c",
+                "index": False,
+                "definition": None,
+                "options": options,
             }
             # Now get indexes
-        cursor .execute (
-        """
+        cursor.execute(
+            """
             SELECT
                 indexname,
                 array_agg(attname ORDER BY arridx),
@@ -263,37 +255,37 @@ class DatabaseIntrospection (BaseDatabaseIntrospection ):
             ) s2
             GROUP BY indexname, indisunique, indisprimary, amname, exprdef, attoptions;
         """,
-        [self .index_default_access_method ,table_name ],
+            [self.index_default_access_method, table_name],
         )
         for (
-        index ,
-        columns ,
-        unique ,
-        primary ,
-        orders ,
-        type_ ,
-        definition ,
-        options ,
-        )in cursor .fetchall ():
-            if index not in constraints :
-                basic_index =(
-                type_ ==self .index_default_access_method 
-                and 
-                # '_btree' references
-                # django.contrib.postgres.indexes.BTreeIndex.suffix.
-                not index .endswith ("_btree")
-                and options is None 
+            index,
+            columns,
+            unique,
+            primary,
+            orders,
+            type_,
+            definition,
+            options,
+        ) in cursor.fetchall():
+            if index not in constraints:
+                basic_index = (
+                    type_ == self.index_default_access_method
+                    and
+                    # '_btree' references
+                    # django.contrib.postgres.indexes.BTreeIndex.suffix.
+                    not index.endswith("_btree")
+                    and options is None
                 )
-                constraints [index ]={
-                "columns":columns if columns !=[None ]else [],
-                "orders":orders if orders !=[None ]else [],
-                "primary_key":primary ,
-                "unique":unique ,
-                "foreign_key":None ,
-                "check":False ,
-                "index":True ,
-                "type":Index .suffix if basic_index else type_ ,
-                "definition":definition ,
-                "options":options ,
+                constraints[index] = {
+                    "columns": columns if columns != [None] else [],
+                    "orders": orders if orders != [None] else [],
+                    "primary_key": primary,
+                    "unique": unique,
+                    "foreign_key": None,
+                    "check": False,
+                    "index": True,
+                    "type": Index.suffix if basic_index else type_,
+                    "definition": definition,
+                    "options": options,
                 }
-        return constraints 
+        return constraints

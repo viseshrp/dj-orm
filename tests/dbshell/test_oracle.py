@@ -1,54 +1,52 @@
-from unittest import mock ,skipUnless 
+from unittest import mock, skipUnless
 
-from djorm .db import connection
-from djorm .db .backends .oracle .client import DatabaseClient
-from djorm .test import SimpleTestCase
+from djorm.db import connection
+from djorm.db.backends.oracle.client import DatabaseClient
+from djorm.test import SimpleTestCase
 
 
-@skipUnless (connection .vendor =="oracle","Requires oracledb to be installed")
-class OracleDbshellTests (SimpleTestCase ):
-    def settings_to_cmd_args_env (self ,settings_dict ,parameters =None ,rlwrap =False ):
-        if parameters is None :
-            parameters =[]
-        with mock .patch (
-        "shutil.which",return_value ="/usr/bin/rlwrap"if rlwrap else None 
-        ):
-            return DatabaseClient .settings_to_cmd_args_env (settings_dict ,parameters )
+@skipUnless(connection.vendor == "oracle", "Requires oracledb to be installed")
+class OracleDbshellTests(SimpleTestCase):
+    def settings_to_cmd_args_env(self, settings_dict, parameters=None, rlwrap=False):
+        if parameters is None:
+            parameters = []
+        with mock.patch("shutil.which", return_value="/usr/bin/rlwrap" if rlwrap else None):
+            return DatabaseClient.settings_to_cmd_args_env(settings_dict, parameters)
 
-    def test_without_rlwrap (self ):
-        expected_args =[
-        "sqlplus",
-        "-L",
-        connection .client .connect_string (connection .settings_dict ),
+    def test_without_rlwrap(self):
+        expected_args = [
+            "sqlplus",
+            "-L",
+            connection.client.connect_string(connection.settings_dict),
         ]
-        self .assertEqual (
-        self .settings_to_cmd_args_env (connection .settings_dict ,rlwrap =False ),
-        (expected_args ,None ),
+        self.assertEqual(
+            self.settings_to_cmd_args_env(connection.settings_dict, rlwrap=False),
+            (expected_args, None),
         )
 
-    def test_with_rlwrap (self ):
-        expected_args =[
-        "/usr/bin/rlwrap",
-        "sqlplus",
-        "-L",
-        connection .client .connect_string (connection .settings_dict ),
+    def test_with_rlwrap(self):
+        expected_args = [
+            "/usr/bin/rlwrap",
+            "sqlplus",
+            "-L",
+            connection.client.connect_string(connection.settings_dict),
         ]
-        self .assertEqual (
-        self .settings_to_cmd_args_env (connection .settings_dict ,rlwrap =True ),
-        (expected_args ,None ),
+        self.assertEqual(
+            self.settings_to_cmd_args_env(connection.settings_dict, rlwrap=True),
+            (expected_args, None),
         )
 
-    def test_parameters (self ):
-        expected_args =[
-        "sqlplus",
-        "-L",
-        connection .client .connect_string (connection .settings_dict ),
-        "-HELP",
+    def test_parameters(self):
+        expected_args = [
+            "sqlplus",
+            "-L",
+            connection.client.connect_string(connection.settings_dict),
+            "-HELP",
         ]
-        self .assertEqual (
-        self .settings_to_cmd_args_env (
-        connection .settings_dict ,
-        parameters =["-HELP"],
-        ),
-        (expected_args ,None ),
+        self.assertEqual(
+            self.settings_to_cmd_args_env(
+                connection.settings_dict,
+                parameters=["-HELP"],
+            ),
+            (expected_args, None),
         )

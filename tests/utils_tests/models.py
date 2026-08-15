@@ -1,9 +1,9 @@
-from djorm .db import models
+from djorm.db import models
 
 
-class Category (models .Model ):
-    name =models .CharField (max_length =100 )
+class Category(models.Model):
+    name = models.CharField(max_length=100)
 
 
-class CategoryInfo (models .Model ):
-    category =models .OneToOneField (Category ,models .CASCADE )
+class CategoryInfo(models.Model):
+    category = models.OneToOneField(Category, models.CASCADE)

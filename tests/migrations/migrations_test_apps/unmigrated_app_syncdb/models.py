@@ -1,9 +1,9 @@
-from djorm .db import models
+from djorm.db import models
 
 
-class Classroom (models .Model ):
-    pass 
+class Classroom(models.Model):
+    pass
 
 
-class Lesson (models .Model ):
-    classroom =models .ForeignKey (Classroom ,on_delete =models .CASCADE )
+class Lesson(models.Model):
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)

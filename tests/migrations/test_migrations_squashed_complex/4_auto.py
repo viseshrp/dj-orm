@@ -1,7 +1,7 @@
-from djorm .db import migrations
+from djorm.db import migrations
 
 
-class Migration (migrations .Migration ):
-    dependencies =[("migrations","3_auto")]
+class Migration(migrations.Migration):
+    dependencies = [("migrations", "3_auto")]
 
-    operations =[migrations .RunPython (migrations .RunPython .noop )]
+    operations = [migrations.RunPython(migrations.RunPython.noop)]

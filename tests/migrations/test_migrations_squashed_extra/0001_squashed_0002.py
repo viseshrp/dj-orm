@@ -1,8 +1,8 @@
-from djorm .db import migrations
+from djorm.db import migrations
 
 
-class Migration (migrations .Migration ):
-    replaces =[
-    ("migrations","0001_initial"),
-    ("migrations","0002_second"),
+class Migration(migrations.Migration):
+    replaces = [
+        ("migrations", "0001_initial"),
+        ("migrations", "0002_second"),
     ]

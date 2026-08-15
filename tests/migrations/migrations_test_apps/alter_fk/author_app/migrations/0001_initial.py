@@ -1,20 +1,18 @@
-from djorm .db import migrations ,models
+from djorm.db import migrations, models
 
 
-class Migration (migrations .Migration ):
-    dependencies =[]
+class Migration(migrations.Migration):
+    dependencies = []
 
-    operations =[
-    migrations .CreateModel (
-    name ="Author",
-    fields =[
-    (
-    "id",
-    models .AutoField (
-    serialize =False ,auto_created =True ,primary_key =True 
-    ),
-    ),
-    ("name",models .CharField (max_length =50 )),
-    ],
-    ),
+    operations = [
+        migrations.CreateModel(
+            name="Author",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(serialize=False, auto_created=True, primary_key=True),
+                ),
+                ("name", models.CharField(max_length=50)),
+            ],
+        ),
     ]

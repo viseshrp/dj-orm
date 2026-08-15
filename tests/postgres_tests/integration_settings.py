@@ -1,5 +1,5 @@
-SECRET_KEY ="abcdefg"
+SECRET_KEY = "abcdefg"
 
-INSTALLED_APPS =[
-"djorm.contrib.postgres",
+INSTALLED_APPS = [
+    "djorm.contrib.postgres",
 ]

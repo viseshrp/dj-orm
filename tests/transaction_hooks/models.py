@@ -1,5 +1,5 @@
-from djorm .db import models
+from djorm.db import models
 
 
-class Thing (models .Model ):
-    num =models .IntegerField ()
+class Thing(models.Model):
+    num = models.IntegerField()

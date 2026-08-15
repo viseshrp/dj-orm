@@ -1,30 +1,28 @@
-from djorm .conf import settings
-from djorm .db import migrations ,models
+from djorm.conf import settings
+from djorm.db import migrations, models
 
 
-class Migration (migrations .Migration ):
-    dependencies =[
-    migrations .swappable_dependency (settings .AUTH_USER_MODEL ),
+class Migration(migrations.Migration):
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    operations =[
-    migrations .CreateModel (
-    "Author",
-    [
-    ("id",models .AutoField (primary_key =True )),
-    ("name",models .CharField (max_length =255 )),
-    ],
-    ),
-    migrations .CreateModel (
-    "Tribble",
-    [
-    ("id",models .AutoField (primary_key =True )),
-    (
-    "author",
-    models .ForeignKey (
-    settings .AUTH_USER_MODEL ,models .CASCADE ,to_field ="id"
-    ),
-    ),
-    ],
-    ),
+    operations = [
+        migrations.CreateModel(
+            "Author",
+            [
+                ("id", models.AutoField(primary_key=True)),
+                ("name", models.CharField(max_length=255)),
+            ],
+        ),
+        migrations.CreateModel(
+            "Tribble",
+            [
+                ("id", models.AutoField(primary_key=True)),
+                (
+                    "author",
+                    models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE, to_field="id"),
+                ),
+            ],
+        ),
     ]

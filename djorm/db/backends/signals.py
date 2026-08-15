@@ -1,3 +1,3 @@
-from djorm .dispatch import Signal
+from djorm.dispatch import Signal
 
-connection_created =Signal ()
+connection_created = Signal()

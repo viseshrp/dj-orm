@@ -16,25 +16,25 @@ To add your own serializers, use the SERIALIZATION_MODULES setting::
 
 """
 
-import importlib 
+import importlib
 
-from djorm .apps import apps
-from djorm .conf import settings
-from djorm .core .serializers .base import SerializerDoesNotExist
+from djorm.apps import apps
+from djorm.conf import settings
+from djorm.core.serializers.base import SerializerDoesNotExist
 
 # Built-in serializers
-BUILTIN_SERIALIZERS ={
-"xml":"djorm.core.serializers.xml_serializer",
-"python":"djorm.core.serializers.python",
-"json":"djorm.core.serializers.json",
-"yaml":"djorm.core.serializers.pyyaml",
-"jsonl":"djorm.core.serializers.jsonl",
+BUILTIN_SERIALIZERS = {
+    "xml": "djorm.core.serializers.xml_serializer",
+    "python": "djorm.core.serializers.python",
+    "json": "djorm.core.serializers.json",
+    "yaml": "djorm.core.serializers.pyyaml",
+    "jsonl": "djorm.core.serializers.jsonl",
 }
 
-_serializers ={}
+_serializers = {}
 
 
-class BadSerializer :
+class BadSerializer:
     """
     Stub serializer to hold exception raised during registration
 
@@ -43,16 +43,16 @@ class BadSerializer :
     raised and passed along to the caller when the serializer is used.
     """
 
-    internal_use_only =False 
+    internal_use_only = False
 
-    def __init__ (self ,exception ):
-        self .exception =exception 
+    def __init__(self, exception):
+        self.exception = exception
 
-    def __call__ (self ,*args ,**kwargs ):
-        raise self .exception 
+    def __call__(self, *args, **kwargs):
+        raise self.exception
 
 
-def register_serializer (format ,serializer_module ,serializers =None ):
+def register_serializer(format, serializer_module, serializers=None):
     """Register a new serializer.
 
     ``serializer_module`` should be the fully qualified module name
@@ -65,106 +65,104 @@ def register_serializer (format ,serializer_module ,serializers =None ):
     directly into the global register of serializers. Adding serializers
     directly is not a thread-safe operation.
     """
-    if serializers is None and not _serializers :
-        _load_serializers ()
+    if serializers is None and not _serializers:
+        _load_serializers()
 
-    try :
-        module =importlib .import_module (serializer_module )
-    except ImportError as exc :
-        bad_serializer =BadSerializer (exc )
+    try:
+        module = importlib.import_module(serializer_module)
+    except ImportError as exc:
+        bad_serializer = BadSerializer(exc)
 
-        module =type (
-        "BadSerializerModule",
-        (),
-        {
-        "Deserializer":bad_serializer ,
-        "Serializer":bad_serializer ,
-        },
+        module = type(
+            "BadSerializerModule",
+            (),
+            {
+                "Deserializer": bad_serializer,
+                "Serializer": bad_serializer,
+            },
         )
 
-    if serializers is None :
-        _serializers [format ]=module 
-    else :
-        serializers [format ]=module 
+    if serializers is None:
+        _serializers[format] = module
+    else:
+        serializers[format] = module
 
 
-def unregister_serializer (format ):
+def unregister_serializer(format):
     "Unregister a given serializer. This is not a thread-safe operation."
-    if not _serializers :
-        _load_serializers ()
-    if format not in _serializers :
-        raise SerializerDoesNotExist (format )
-    del _serializers [format ]
+    if not _serializers:
+        _load_serializers()
+    if format not in _serializers:
+        raise SerializerDoesNotExist(format)
+    del _serializers[format]
 
 
-def get_serializer (format ):
-    if not _serializers :
-        _load_serializers ()
-    if format not in _serializers :
-        raise SerializerDoesNotExist (format )
-    return _serializers [format ].Serializer 
+def get_serializer(format):
+    if not _serializers:
+        _load_serializers()
+    if format not in _serializers:
+        raise SerializerDoesNotExist(format)
+    return _serializers[format].Serializer
 
 
-def get_serializer_formats ():
-    if not _serializers :
-        _load_serializers ()
-    return list (_serializers )
+def get_serializer_formats():
+    if not _serializers:
+        _load_serializers()
+    return list(_serializers)
 
 
-def get_public_serializer_formats ():
-    if not _serializers :
-        _load_serializers ()
-    return [k for k ,v in _serializers .items ()if not v .Serializer .internal_use_only ]
+def get_public_serializer_formats():
+    if not _serializers:
+        _load_serializers()
+    return [k for k, v in _serializers.items() if not v.Serializer.internal_use_only]
 
 
-def get_deserializer (format ):
-    if not _serializers :
-        _load_serializers ()
-    if format not in _serializers :
-        raise SerializerDoesNotExist (format )
-    return _serializers [format ].Deserializer 
+def get_deserializer(format):
+    if not _serializers:
+        _load_serializers()
+    if format not in _serializers:
+        raise SerializerDoesNotExist(format)
+    return _serializers[format].Deserializer
 
 
-def serialize (format ,queryset ,**options ):
+def serialize(format, queryset, **options):
     """
     Serialize a queryset (or any iterator that returns database objects) using
     a certain serializer.
     """
-    s =get_serializer (format )()
-    s .serialize (queryset ,**options )
-    return s .getvalue ()
+    s = get_serializer(format)()
+    s.serialize(queryset, **options)
+    return s.getvalue()
 
 
-def deserialize (format ,stream_or_string ,**options ):
+def deserialize(format, stream_or_string, **options):
     """
     Deserialize a stream or a string. Return an iterator that yields ``(obj,
     m2m_relation_dict)``, where ``obj`` is an instantiated -- but *unsaved* --
     object, and ``m2m_relation_dict`` is a dictionary of ``{m2m_field_name :
     list_of_related_objects}``.
     """
-    d =get_deserializer (format )
-    return d (stream_or_string ,**options )
+    d = get_deserializer(format)
+    return d(stream_or_string, **options)
 
 
-def _load_serializers ():
+def _load_serializers():
     """
     Register built-in and settings-defined serializers. This is done lazily so
     that user code has a chance to (e.g.) set up custom settings without
     needing to be careful of import order.
     """
-    global _serializers 
-    serializers ={}
-    for format in BUILTIN_SERIALIZERS :
-        register_serializer (format ,BUILTIN_SERIALIZERS [format ],serializers )
-    if hasattr (settings ,"SERIALIZATION_MODULES"):
-        for format in settings .SERIALIZATION_MODULES :
-            register_serializer (
-            format ,settings .SERIALIZATION_MODULES [format ],serializers 
-            )
-    _serializers =serializers 
+    global _serializers
+    serializers = {}
+    for format in BUILTIN_SERIALIZERS:
+        register_serializer(format, BUILTIN_SERIALIZERS[format], serializers)
+    if hasattr(settings, "SERIALIZATION_MODULES"):
+        for format in settings.SERIALIZATION_MODULES:
+            register_serializer(format, settings.SERIALIZATION_MODULES[format], serializers)
+    _serializers = serializers
 
 
-def sort_dependencies (app_list ,allow_cycles =False ):
+def sort_dependencies(app_list, allow_cycles=False):
     """Sort a list of (app_config, models) pairs into a single list of models.
 
     The single list of models is sorted so that any model with a natural key
@@ -175,40 +173,40 @@ def sort_dependencies (app_list ,allow_cycles =False ):
     most of dependencies but ignore some of them to break the cycles.
     """
     # Process the list of models, and get the list of dependencies
-    model_dependencies =[]
-    models =set ()
-    for app_config ,model_list in app_list :
-        if model_list is None :
-            model_list =app_config .get_models ()
+    model_dependencies = []
+    models = set()
+    for app_config, model_list in app_list:
+        if model_list is None:
+            model_list = app_config.get_models()
 
-        for model in model_list :
-            models .add (model )
+        for model in model_list:
+            models.add(model)
             # Add any explicitly defined dependencies
-            if hasattr (model ,"natural_key"):
-                deps =getattr (model .natural_key ,"dependencies",[])
-                if deps :
-                    deps =[apps .get_model (dep )for dep in deps ]
-            else :
-                deps =[]
+            if hasattr(model, "natural_key"):
+                deps = getattr(model.natural_key, "dependencies", [])
+                if deps:
+                    deps = [apps.get_model(dep) for dep in deps]
+            else:
+                deps = []
 
                 # Now add a dependency for any FK relation with a model that
                 # defines a natural key
-            for field in model ._meta .fields :
-                if field .remote_field :
-                    rel_model =field .remote_field .model 
-                    if hasattr (rel_model ,"natural_key")and rel_model !=model :
-                        deps .append (rel_model )
+            for field in model._meta.fields:
+                if field.remote_field:
+                    rel_model = field.remote_field.model
+                    if hasattr(rel_model, "natural_key") and rel_model != model:
+                        deps.append(rel_model)
                         # Also add a dependency for any simple M2M relation with a model
                         # that defines a natural key.  M2M relations with explicit through
                         # models don't count as dependencies.
-            for field in model ._meta .many_to_many :
-                if field .remote_field .through ._meta .auto_created :
-                    rel_model =field .remote_field .model 
-                    if hasattr (rel_model ,"natural_key")and rel_model !=model :
-                        deps .append (rel_model )
-            model_dependencies .append ((model ,deps ))
+            for field in model._meta.many_to_many:
+                if field.remote_field.through._meta.auto_created:
+                    rel_model = field.remote_field.model
+                    if hasattr(rel_model, "natural_key") and rel_model != model:
+                        deps.append(rel_model)
+            model_dependencies.append((model, deps))
 
-    model_dependencies .reverse ()
+    model_dependencies.reverse()
     # Now sort the models to ensure that dependencies are met. This
     # is done by repeatedly iterating over the input list of models.
     # If all the dependencies of a given model are in the final list,
@@ -217,38 +215,36 @@ def sort_dependencies (app_list ,allow_cycles =False ):
     # over the input models without promoting a model to the final list.
     # If we do a full iteration without a promotion, that means there are
     # circular dependencies in the list.
-    model_list =[]
-    while model_dependencies :
-        skipped =[]
-        changed =False 
-        while model_dependencies :
-            model ,deps =model_dependencies .pop ()
+    model_list = []
+    while model_dependencies:
+        skipped = []
+        changed = False
+        while model_dependencies:
+            model, deps = model_dependencies.pop()
 
             # If all of the models in the dependency list are either already
             # on the final model list, or not on the original serialization list,
             # then we've found another model with all it's dependencies satisfied.
-            if all (d not in models or d in model_list for d in deps ):
-                model_list .append (model )
-                changed =True 
-            else :
-                skipped .append ((model ,deps ))
-        if not changed :
-            if allow_cycles :
-            # If cycles are allowed, add the last skipped model and ignore
-            # its dependencies. This could be improved by some graph
-            # analysis to ignore as few dependencies as possible.
-                model ,_ =skipped .pop ()
-                model_list .append (model )
-            else :
-                raise RuntimeError (
-                "Can't resolve dependencies for %s in serialized app list."
-                %", ".join (
-                model ._meta .label 
-                for model ,deps in sorted (
-                skipped ,key =lambda obj :obj [0 ].__name__ 
+            if all(d not in models or d in model_list for d in deps):
+                model_list.append(model)
+                changed = True
+            else:
+                skipped.append((model, deps))
+        if not changed:
+            if allow_cycles:
+                # If cycles are allowed, add the last skipped model and ignore
+                # its dependencies. This could be improved by some graph
+                # analysis to ignore as few dependencies as possible.
+                model, _ = skipped.pop()
+                model_list.append(model)
+            else:
+                raise RuntimeError(
+                    "Can't resolve dependencies for %s in serialized app list."
+                    % ", ".join(
+                        model._meta.label
+                        for model, deps in sorted(skipped, key=lambda obj: obj[0].__name__)
+                    ),
                 )
-                ),
-                )
-        model_dependencies =skipped 
+        model_dependencies = skipped
 
-    return model_list 
+    return model_list

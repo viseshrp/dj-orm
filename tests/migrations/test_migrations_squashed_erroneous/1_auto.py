@@ -1,5 +1,5 @@
-from djorm .db import migrations
+from djorm.db import migrations
 
 
-class Migration (migrations .Migration ):
-    operations =[migrations .RunPython (migrations .RunPython .noop )]
+class Migration(migrations.Migration):
+    operations = [migrations.RunPython(migrations.RunPython.noop)]

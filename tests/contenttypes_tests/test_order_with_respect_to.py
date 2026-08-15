@@ -1,11 +1,11 @@
-from order_with_respect_to .base_tests import BaseOrderWithRespectToTests 
+from order_with_respect_to.base_tests import BaseOrderWithRespectToTests
 
-from djorm .test import TestCase
+from djorm.test import TestCase
 
-from .models import Answer ,Post ,Question 
+from .models import Answer, Post, Question
 
 
-class OrderWithRespectToGFKTests (BaseOrderWithRespectToTests ,TestCase ):
-    Answer =Answer 
-    Post =Post 
-    Question =Question 
+class OrderWithRespectToGFKTests(BaseOrderWithRespectToTests, TestCase):
+    Answer = Answer
+    Post = Post
+    Question = Question

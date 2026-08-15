@@ -1,79 +1,79 @@
-import datetime 
+import datetime
 
-from djorm .db import DJANGO_VERSION_PICKLE_KEY ,models
-from djorm .utils .translation import gettext_lazy as _
-
-
-def standalone_number ():
-    return 1 
+from djorm.db import DJANGO_VERSION_PICKLE_KEY, models
+from djorm.utils.translation import gettext_lazy as _
 
 
-class Numbers :
-    @staticmethod 
-    def get_static_number ():
-        return 2 
+def standalone_number():
+    return 1
 
 
-class PreviousDjangoVersionQuerySet (models .QuerySet ):
-    def __getstate__ (self ):
-        state =super ().__getstate__ ()
-        state [DJANGO_VERSION_PICKLE_KEY ]="1.0"
-        return state 
+class Numbers:
+    @staticmethod
+    def get_static_number():
+        return 2
 
 
-class MissingDjangoVersionQuerySet (models .QuerySet ):
-    def __getstate__ (self ):
-        state =super ().__getstate__ ()
-        del state [DJANGO_VERSION_PICKLE_KEY ]
-        return state 
+class PreviousDjangoVersionQuerySet(models.QuerySet):
+    def __getstate__(self):
+        state = super().__getstate__()
+        state[DJANGO_VERSION_PICKLE_KEY] = "1.0"
+        return state
 
 
-class Group (models .Model ):
-    name =models .CharField (_ ("name"),max_length =100 )
-    objects =models .Manager ()
-    previous_django_version_objects =PreviousDjangoVersionQuerySet .as_manager ()
-    missing_django_version_objects =MissingDjangoVersionQuerySet .as_manager ()
+class MissingDjangoVersionQuerySet(models.QuerySet):
+    def __getstate__(self):
+        state = super().__getstate__()
+        del state[DJANGO_VERSION_PICKLE_KEY]
+        return state
 
 
-class Event (models .Model ):
-    title =models .CharField (max_length =100 )
-    group =models .ForeignKey (Group ,models .CASCADE ,limit_choices_to =models .Q ())
+class Group(models.Model):
+    name = models.CharField(_("name"), max_length=100)
+    objects = models.Manager()
+    previous_django_version_objects = PreviousDjangoVersionQuerySet.as_manager()
+    missing_django_version_objects = MissingDjangoVersionQuerySet.as_manager()
 
 
-class Happening (models .Model ):
-    when =models .DateTimeField (blank =True ,default =datetime .datetime .now )
-    name =models .CharField (blank =True ,max_length =100 ,default ="test")
-    number1 =models .IntegerField (blank =True ,default =standalone_number )
-    number2 =models .IntegerField (blank =True ,default =Numbers .get_static_number )
-    event =models .OneToOneField (Event ,models .CASCADE ,null =True )
+class Event(models.Model):
+    title = models.CharField(max_length=100)
+    group = models.ForeignKey(Group, models.CASCADE, limit_choices_to=models.Q())
 
 
-class BinaryFieldModel (models .Model ):
-    data =models .BinaryField (null =True )
+class Happening(models.Model):
+    when = models.DateTimeField(blank=True, default=datetime.datetime.now)
+    name = models.CharField(blank=True, max_length=100, default="test")
+    number1 = models.IntegerField(blank=True, default=standalone_number)
+    number2 = models.IntegerField(blank=True, default=Numbers.get_static_number)
+    event = models.OneToOneField(Event, models.CASCADE, null=True)
 
 
-class Container :
-# To test pickling we need a class that isn't defined on module, but
-# is still available from app-cache. So, the Container class moves
-# SomeModel outside of module level
-    class SomeModel (models .Model ):
-        somefield =models .IntegerField ()
+class BinaryFieldModel(models.Model):
+    data = models.BinaryField(null=True)
 
 
-class M2MModel (models .Model ):
-    added =models .DateField (default =datetime .date .today )
-    groups =models .ManyToManyField (Group )
+class Container:
+    # To test pickling we need a class that isn't defined on module, but
+    # is still available from app-cache. So, the Container class moves
+    # SomeModel outside of module level
+    class SomeModel(models.Model):
+        somefield = models.IntegerField()
 
 
-class AbstractEvent (Event ):
-    class Meta :
-        abstract =True 
-        ordering =["title"]
+class M2MModel(models.Model):
+    added = models.DateField(default=datetime.date.today)
+    groups = models.ManyToManyField(Group)
 
 
-class MyEvent (AbstractEvent ):
-    pass 
+class AbstractEvent(Event):
+    class Meta:
+        abstract = True
+        ordering = ["title"]
 
 
-class Edition (models .Model ):
-    event =models .ForeignKey ("MyEvent",on_delete =models .CASCADE )
+class MyEvent(AbstractEvent):
+    pass
+
+
+class Edition(models.Model):
+    event = models.ForeignKey("MyEvent", on_delete=models.CASCADE)

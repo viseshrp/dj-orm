@@ -1,25 +1,25 @@
-from djorm .apps import AppConfig
+from djorm.apps import AppConfig
 
 
-class ModelDefaultPKConfig (AppConfig ):
-    name ="model_options"
+class ModelDefaultPKConfig(AppConfig):
+    name = "model_options"
 
 
-class ModelPKConfig (AppConfig ):
-    name ="model_options"
-    default_auto_field ="djorm.db.models.SmallAutoField"
+class ModelPKConfig(AppConfig):
+    name = "model_options"
+    default_auto_field = "djorm.db.models.SmallAutoField"
 
 
-class ModelPKNonAutoConfig (AppConfig ):
-    name ="model_options"
-    default_auto_field ="djorm.db.models.TextField"
+class ModelPKNonAutoConfig(AppConfig):
+    name = "model_options"
+    default_auto_field = "djorm.db.models.TextField"
 
 
-class ModelPKNoneConfig (AppConfig ):
-    name ="model_options"
-    default_auto_field =None 
+class ModelPKNoneConfig(AppConfig):
+    name = "model_options"
+    default_auto_field = None
 
 
-class ModelPKNonexistentConfig (AppConfig ):
-    name ="model_options"
-    default_auto_field ="djorm.db.models.NonexistentAutoField"
+class ModelPKNonexistentConfig(AppConfig):
+    name = "model_options"
+    default_auto_field = "djorm.db.models.NonexistentAutoField"

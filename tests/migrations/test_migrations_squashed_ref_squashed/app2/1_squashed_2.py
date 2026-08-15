@@ -1,10 +1,10 @@
-from djorm .db import migrations
+from djorm.db import migrations
 
 
-class Migration (migrations .Migration ):
-    replaces =[
-    ("app2","1_auto"),
-    ("app2","2_auto"),
+class Migration(migrations.Migration):
+    replaces = [
+        ("app2", "1_auto"),
+        ("app2", "2_auto"),
     ]
 
-    dependencies =[("app1","1_auto")]
+    dependencies = [("app1", "1_auto")]

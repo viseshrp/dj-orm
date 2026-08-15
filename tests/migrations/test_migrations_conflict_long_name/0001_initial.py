@@ -1,14 +1,14 @@
-from djorm .db import migrations ,models
+from djorm.db import migrations, models
 
 
-class Migration (migrations .Migration ):
-    initial =True 
+class Migration(migrations.Migration):
+    initial = True
 
-    operations =[
-    migrations .CreateModel (
-    "Author",
-    [
-    ("id",models .AutoField (primary_key =True )),
-    ],
-    ),
+    operations = [
+        migrations.CreateModel(
+            "Author",
+            [
+                ("id", models.AutoField(primary_key=True)),
+            ],
+        ),
     ]

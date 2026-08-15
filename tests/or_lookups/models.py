@@ -8,15 +8,15 @@ Alternatively, use positional arguments, and pass one or more expressions of
 clauses using the variable ``djorm.db.models.Q``.
 """
 
-from djorm .db import models
+from djorm.db import models
 
 
-class Article (models .Model ):
-    headline =models .CharField (max_length =50 )
-    pub_date =models .DateTimeField ()
+class Article(models.Model):
+    headline = models.CharField(max_length=50)
+    pub_date = models.DateTimeField()
 
-    class Meta :
-        ordering =("pub_date",)
+    class Meta:
+        ordering = ("pub_date",)
 
-    def __str__ (self ):
-        return self .headline 
+    def __str__(self):
+        return self.headline

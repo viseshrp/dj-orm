@@ -1,14 +1,14 @@
-import math 
+import math
 
-from djorm .db .models .functions import Pi
-from djorm .test import TestCase
+from djorm.db.models.functions import Pi
+from djorm.test import TestCase
 
-from ..models import FloatModel 
+from ..models import FloatModel
 
 
-class PiTests (TestCase ):
-    def test (self ):
-        FloatModel .objects .create (f1 =2.5 ,f2 =15.9 )
-        obj =FloatModel .objects .annotate (pi =Pi ()).first ()
-        self .assertIsInstance (obj .pi ,float )
-        self .assertAlmostEqual (obj .pi ,math .pi ,places =5 )
+class PiTests(TestCase):
+    def test(self):
+        FloatModel.objects.create(f1=2.5, f2=15.9)
+        obj = FloatModel.objects.annotate(pi=Pi()).first()
+        self.assertIsInstance(obj.pi, float)
+        self.assertAlmostEqual(obj.pi, math.pi, places=5)

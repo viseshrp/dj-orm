@@ -7,21 +7,21 @@ appropriately behind the scenes, so your database won't complain about
 reserved-name usage.
 """
 
-from djorm .db import models
+from djorm.db import models
 
 
-class Thing (models .Model ):
-    when =models .CharField (max_length =1 ,primary_key =True )
-    join =models .CharField (max_length =1 )
-    like =models .CharField (max_length =1 )
-    drop =models .CharField (max_length =1 )
-    alter =models .CharField (max_length =1 )
-    having =models .CharField (max_length =1 )
-    where =models .DateField (max_length =1 )
-    has_hyphen =models .CharField (max_length =1 ,db_column ="has-hyphen")
+class Thing(models.Model):
+    when = models.CharField(max_length=1, primary_key=True)
+    join = models.CharField(max_length=1)
+    like = models.CharField(max_length=1)
+    drop = models.CharField(max_length=1)
+    alter = models.CharField(max_length=1)
+    having = models.CharField(max_length=1)
+    where = models.DateField(max_length=1)
+    has_hyphen = models.CharField(max_length=1, db_column="has-hyphen")
 
-    class Meta :
-        db_table ="select"
+    class Meta:
+        db_table = "select"
 
-    def __str__ (self ):
-        return self .when 
+    def __str__(self):
+        return self.when

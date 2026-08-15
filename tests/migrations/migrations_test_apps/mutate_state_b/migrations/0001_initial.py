@@ -1,27 +1,27 @@
-from djorm .db import migrations ,models
+from djorm.db import migrations, models
 
 
-class Migration (migrations .Migration ):
-    dependencies =[]
+class Migration(migrations.Migration):
+    dependencies = []
 
-    operations =[
-    migrations .SeparateDatabaseAndState (
-    [],
-    [
-    migrations .CreateModel (
-    name ="B",
-    fields =[
-    (
-    "id",
-    models .AutoField (
-    serialize =False ,
-    verbose_name ="ID",
-    auto_created =True ,
-    primary_key =True ,
-    ),
-    ),
-    ],
-    ),
-    ],
-    )
+    operations = [
+        migrations.SeparateDatabaseAndState(
+            [],
+            [
+                migrations.CreateModel(
+                    name="B",
+                    fields=[
+                        (
+                            "id",
+                            models.AutoField(
+                                serialize=False,
+                                verbose_name="ID",
+                                auto_created=True,
+                                primary_key=True,
+                            ),
+                        ),
+                    ],
+                ),
+            ],
+        )
     ]

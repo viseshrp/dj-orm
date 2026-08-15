@@ -1,60 +1,60 @@
-from djorm .db import DatabaseError
+from djorm.db import DatabaseError
 
 
-class AmbiguityError (Exception ):
+class AmbiguityError(Exception):
     """More than one migration matches a name prefix."""
 
-    pass 
+    pass
 
 
-class BadMigrationError (Exception ):
+class BadMigrationError(Exception):
     """There's a bad migration (unreadable/bad format/etc.)."""
 
-    pass 
+    pass
 
 
-class CircularDependencyError (Exception ):
+class CircularDependencyError(Exception):
     """There's an impossible-to-resolve circular dependency."""
 
-    pass 
+    pass
 
 
-class InconsistentMigrationHistory (Exception ):
+class InconsistentMigrationHistory(Exception):
     """An applied migration has some of its dependencies not applied."""
 
-    pass 
+    pass
 
 
-class InvalidBasesError (ValueError ):
+class InvalidBasesError(ValueError):
     """A model's base classes can't be resolved."""
 
-    pass 
+    pass
 
 
-class IrreversibleError (RuntimeError ):
+class IrreversibleError(RuntimeError):
     """An irreversible migration is about to be reversed."""
 
-    pass 
+    pass
 
 
-class NodeNotFoundError (LookupError ):
+class NodeNotFoundError(LookupError):
     """An attempt on a node is made that is not available in the graph."""
 
-    def __init__ (self ,message ,node ,origin =None ):
-        self .message =message 
-        self .origin =origin 
-        self .node =node 
+    def __init__(self, message, node, origin=None):
+        self.message = message
+        self.origin = origin
+        self.node = node
 
-    def __str__ (self ):
-        return self .message 
+    def __str__(self):
+        return self.message
 
-    def __repr__ (self ):
-        return "NodeNotFoundError(%r)"%(self .node ,)
-
-
-class MigrationSchemaMissing (DatabaseError ):
-    pass 
+    def __repr__(self):
+        return "NodeNotFoundError(%r)" % (self.node,)
 
 
-class InvalidMigrationPlan (ValueError ):
-    pass 
+class MigrationSchemaMissing(DatabaseError):
+    pass
+
+
+class InvalidMigrationPlan(ValueError):
+    pass

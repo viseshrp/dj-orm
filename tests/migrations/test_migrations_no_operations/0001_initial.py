@@ -1,6 +1,6 @@
-from djorm .db import migrations
+from djorm.db import migrations
 
 
-class Migration (migrations .Migration ):
-    dependencies =[]
-    operations =[]
+class Migration(migrations.Migration):
+    dependencies = []
+    operations = []

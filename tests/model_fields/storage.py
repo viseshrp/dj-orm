@@ -1,6 +1,6 @@
-from djorm .core .files .storage .filesystem import FileSystemStorage
+from djorm.core.files.storage.filesystem import FileSystemStorage
 
 
-class NoReadFileSystemStorage (FileSystemStorage ):
-    def open (self ,*args ,**kwargs ):
-        raise AssertionError ("This storage class does not support reading.")
+class NoReadFileSystemStorage(FileSystemStorage):
+    def open(self, *args, **kwargs):
+        raise AssertionError("This storage class does not support reading.")
