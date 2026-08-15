@@ -257,8 +257,17 @@ def main() -> int:
         description="Re-apply the django -> djo namespace rename after an upstream rebase."
     )
     parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--repo-root",
+        type=Path,
+        help="Repository to transform. Defaults to the parent of this script.",
+    )
     args = parser.parse_args()
-    repo_root = Path(__file__).resolve().parents[1]
+    repo_root = (
+        args.repo_root.resolve()
+        if args.repo_root is not None
+        else Path(__file__).resolve().parents[1]
+    )
 
     changed_files = 0
     if not args.check:

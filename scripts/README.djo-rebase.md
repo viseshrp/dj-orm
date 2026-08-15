@@ -1,19 +1,18 @@
-# djo Rebase Workflow
+# Djo LTS application
 
-Use this workflow when rebasing the fork onto a new upstream Django 5.2.x tag.
+The old hand-run rebase workflow has been replaced by a resumable command:
 
-1. Fetch upstream tags and create a fresh branch from the new tag.
-2. Re-apply the fork topic commits in order.
-3. Run `python3 scripts/rename_namespace.py`.
-4. Resolve any remaining conflicts manually, preferring upstream logic with the `djo` namespace.
-5. Verify:
-   - `python3 scripts/rename_namespace.py --check`
-   - `python3 tests/runtests.py --settings=test_sqlite -v0 --parallel`
-   - `python3 -c "import djo; print(djo.__version__)"`
+```console
+uv run python scripts/apply_django_lts.py \
+  --django-ref 5.2.17 \
+  --output ../djo-5.2.17
+```
 
-Notes:
+The command creates a separate worktree, reruns the namespace conversion,
+replays the fork commit stack, handles expected deletion conflicts, and runs
+the release gate. It stops rather than guessing when upstream changed retained
+code.
 
-* `scripts/rename_namespace.py` is the only supported rename workflow.
-* The script does not rename `DJANGO_SETTINGS_MODULE`.
-* The script intentionally leaves serialization/data strings such as `django-version`
-  and translation-domain literals like `django` untouched.
+See [`MAINTENANCE.md`](../MAINTENANCE.md) for the authoritative branch, conflict,
+versioning, and publishing policy. Do not perform the old cherry-pick sequence
+by hand.

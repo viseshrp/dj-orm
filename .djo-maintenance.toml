@@ -1,0 +1,11 @@
+schema = 1
+distribution = "dj-orm"
+yapc_commit = "df3a78fefc78ffb304dd5a32196e1be7a430bbcb"
+upstream_remote = "upstream"
+upstream_url = "https://github.com/django/django.git"
+upstream_ref = "5.2.11-9-g703777cbbc"
+upstream_series = "5.2"
+lts_series = ["5.2", "6.2"]
+upstream_base_commit = "703777cbbc268f62083c703fa27fa582b54bcc93"
+namespace_commit = "bd3e154331d4775985ad88b9b0466532d1ba6d22"
+release_revision = 0

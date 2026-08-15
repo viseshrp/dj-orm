@@ -1,3 +1,8 @@
+# Historical implementation handoff
+
+This file records the original extraction session and is no longer the current
+operator guide. See `MAINTENANCE.md` for branch, update, and release policy.
+
 1) Repo base state
 - Current branch: `feat/djo`
 - Remotes:

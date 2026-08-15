@@ -3,14 +3,14 @@
 ## Specification Document
 
 **Base upstream:** Django 5.2 LTS (latest tag)
-**Target PyPI package:** `djo`
+**Target PyPI distribution:** `dj-orm`
 **Import namespace:** `djo`
 
 ---
 
 ## 1. Purpose
 
-`djo` extracts the Django ORM, migration framework, and database backend stack from Django 5.2 LTS into a standalone Python library. It is distributed as its own package under the `djo` namespace.
+`djo` extracts the Django ORM, migration framework, and database backend stack from Django 5.2 LTS into a standalone Python library. The PyPI distribution is `dj-orm`; the import namespace is `djo` because the unrelated `djo` distribution name is already registered.
 
 ### What djo IS
 
@@ -417,7 +417,8 @@ If a retained ORM test fails because it depends on a removed subsystem (e.g., it
 
 ```toml
 [project]
-name = "djo"
+name = "dj-orm"
+dynamic = ["version"]
 description = "Django ORM, migrations, and database backends as a standalone library."
 requires-python = ">= 3.10"  # copied from upstream Django 5.2
 dependencies = [
@@ -429,18 +430,21 @@ dependencies = [
 [project.scripts]
 djo = "djo.core.management:execute_from_command_line"
 
-[tool.setuptools.packages.find]
-include = ["djo*"]
+[tool.hatch.version]
+path = "djo/_version.py"
 
-[tool.setuptools.dynamic]
-version = {attr = "djo.__version__"}
+[tool.hatch.build.targets.wheel]
+packages = ["djo"]
 ```
 
 ### 8.2 Version strategy
 
-- `djo` version tracks the upstream Django tag it's based on, with an additional fork suffix.
-- Example: Django 5.2.1 → djo 5.2.1.0, djo 5.2.1.1 (fork patch).
+- The `dj-orm` distribution version tracks the exact upstream Django tag with
+  an additional Djo rebuild component.
+- Example: Django 5.2.17 → `dj-orm` 5.2.17.0, then 5.2.17.1 for a Djo-only rebuild.
 - `VERSION` tuple in `djo/__init__.py` remains the Django format: `(5, 2, X, 'final'/'alpha', N)`.
+- Distribution metadata reads `djo/_version.py`; the retained
+  `djo.__version__` remains the upstream API version.
 
 ### 8.3 Console script
 
@@ -479,32 +483,19 @@ Upstream-derived modules should **not** be edited with bespoke logic. If a modul
 ### 9.3 Branch strategy
 
 ```
-main              ← djo stable releases
-upstream/main     ← tracks django/django:main (read-only mirror)
-upstream/stable/5.2.x ← tracks django/django:stable/5.2.x
+djo/5.2-lts          ← maintained Djo release line
+release/django-5.2.X ← generated candidate in a separate worktree
+upstream/*           ← read-only refs from django/django
 ```
 
 ### 9.4 Rebase workflow
 
-To incorporate a new upstream tag:
-
-1. Fetch the upstream tag.
-2. Create a fresh branch from the tag.
-3. Re-apply the fork's topic commits (namespace rename, deletions, pyproject changes, `_ext/` additions).
-4. Run tests. Fix any conflicts.
-5. Tag and release.
-
-Topic commits are structured to be individually re-applicable:
-
-- `[namespace] Rename django → djo in all source files`
-- `[prune] Remove web framework packages`
-- `[prune] Remove non-DB management commands`
-- `[prune] Trim system checks to ORM-only`
-- `[prune] Remove web-related test directories`
-- `[packaging] Update pyproject.toml for djo`
-- `[ext] Add djo/_ext/ fork glue`
-
-Each commit is self-contained and can be cherry-picked or rebased independently.
+To incorporate a new official LTS tag, run `scripts/apply_django_lts.py` as
+documented in `MAINTENANCE.md`. The tool discovers the ordered fork commit
+stack from `.djo-maintenance.toml`, creates a candidate worktree from the exact
+upstream tag, regenerates the namespace commit, and replays the remaining
+commits. It reapplies explicit deletion conflicts mechanically and stops on
+content conflicts for human review.
 
 ### 9.5 Conflict expectations
 
@@ -515,15 +506,16 @@ Most upstream changes will be in files we don't touch (views, admin, templates, 
 - `djo/core/management/` — upstream may change command infrastructure.
 - `djo/utils/` — upstream may change utilities.
 
-The rename commit is the most conflict-prone. Using an import-path-aware rename script (see §9.6) makes it reproducible.
+The namespace commit is regenerated rather than cherry-picked, which keeps the
+largest transformation reproducible.
 
 ### 9.6 Namespace rename tooling
 
 **Do not use blanket `sed` over all tokens.** A naive `sed 's/django/djo/g'` will corrupt comments, documentation strings, license text, locale data, and serialization constants (e.g., `DJANGO_VERSION_PICKLE_KEY`'s string value `"django-version"`).
 
-**Required approach — AST-aware rewriter (`scripts/rename_namespace.py`):**
+**Required approach — syntax-aware rewriter (`scripts/rename_namespace.py`):**
 
-Use a Python AST-based rewriter (e.g., `libcst` or `rope`) that only rewrites:
+Use Python tokenization plus literal parsing so the tool only rewrites:
 - `import` statements and `from … import` statements referencing `django.*`.
 - Dotted-name string literals that match known module paths (`django.db.*`, `django.conf.*`, etc.).
 - Targeted field-level edits in `pyproject.toml` (package name, console script, version attr) — not a blanket replace.
@@ -533,11 +525,12 @@ The rewriter must **not** touch:
 - Serialization constants whose *string value* contains `django` (e.g., `"django-version"`).
 - Comments, license text, locale `.po` files, or documentation.
 
-**Mandatory post-step:** After every rename pass, run the verification grep from IMPLEMENTATION_PLAN.md §1.3.4 and manually review every remaining `django` occurrence in `.py` files. The script must fail-loud if unexpected residuals are found.
+**Mandatory post-step:** After every rename pass, run the script's `--check`
+mode. It must fail loudly if a rewritable `django` namespace reference remains.
 
 The script (`scripts/rename_namespace.py`) must be checked into the repo and be idempotent so it can be re-run on every upstream rebase.
 
-> **Emergency fallback only:** If `libcst`/`rope` are genuinely unavailable, narrowly-targeted sed rules (import-shaped patterns only, with allowlists/blocklists) may be used as a one-time escape hatch — never as the default workflow.
+Blanket search-and-replace is never a supported fallback.
 
 ---
 

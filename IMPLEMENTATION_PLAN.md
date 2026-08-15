@@ -1,5 +1,10 @@
 # djo — Implementation Plan
 
+> **Historical extraction record:** This plan documents how the initial fork
+> was created. [`MAINTENANCE.md`](MAINTENANCE.md) and
+> `scripts/apply_django_lts.py` are authoritative for current updates,
+> packaging, versioning, and releases.
+
 **Upstream base:** Django 5.2 LTS (latest tag from `stable/5.2.x`)
 **Goal:** Transform Django into `djo`, a standalone ORM + migrations + DB backends library.
 
@@ -1080,108 +1085,19 @@ Most likely `_ext/` will remain nearly empty in the initial release. It's a conv
 
 ---
 
-## Phase 8: Upstream Rebase Workflow
+## Phase 8: Upstream application workflow
 
-### 8.1 Objective
+### 8.1 Current workflow
 
-Document and verify the process for incorporating new upstream Django releases.
+Run `scripts/apply_django_lts.py` from a clean LTS source branch. The tool
+fetches an exact reviewed Django LTS tag, creates an isolated candidate
+worktree, performs the namespace conversion, replays the fork changes, and
+runs the package gate. It automatically reapplies only explicit deletions and
+stops for file-by-file review of semantic conflicts.
 
-### 8.2 Workflow
-
-#### 8.2.1 Preparation
-
-```bash
-# Fetch latest upstream
-git fetch upstream --tags
-
-# Identify the new tag
-NEW_TAG=$(git tag -l 'v5.2*' --sort=-v:refname | head -1)
-echo "New upstream tag: $NEW_TAG"
-
-# Create a rebase branch
-git checkout -b djo/rebase-${NEW_TAG} ${NEW_TAG}
-```
-
-#### 8.2.2 Re-apply fork commits
-
-The fork consists of ~7 topic commits (from phases 1-7). These should be cherry-picked or rebased:
-
-```bash
-# Option A: Cherry-pick each topic commit
-git cherry-pick <namespace-rename-commit>
-git cherry-pick <prune-web-commit>
-git cherry-pick <prune-commands-commit>
-git cherry-pick <prune-checks-commit>
-git cherry-pick <prune-tests-commit>
-git cherry-pick <packaging-commit>
-git cherry-pick <ext-commit>
-
-# Option B: Rebase the whole series
-git rebase --onto ${NEW_TAG} <original-tag> djo/main
-```
-
-#### 8.2.3 Resolve conflicts
-
-1. **Namespace rename conflicts**: If upstream added new files or new `from django.x import y` lines in retained modules, re-run the AST-aware rename script:
-   ```bash
-   # Re-run the rename script on any conflicting files
-   python scripts/rename_namespace.py
-   ```
-
-2. **Deletion conflicts**: Files we deleted that upstream modified → just delete them again.
-
-3. **Content conflicts in retained files**: These are the genuine conflicts. Resolve manually, preferring upstream logic with `djo` namespace.
-
-#### 8.2.4 Verify
-
-```bash
-# Run the full test suite
-cd tests/
-python runtests.py --settings=test_sqlite -v0 --parallel
-cd ..
-
-# Smoke test
-python -c "import djo; print(djo.__version__)"
-```
-
-#### 8.2.5 Tag and release
-
-```bash
-git tag djo-${NEW_TAG#v}  # e.g., djo-5.2.2
-git checkout djo/main
-git merge djo/rebase-${NEW_TAG}
-git push origin djo/main --tags
-```
-
-### 8.3 Automated rename script
-
-Create `scripts/rename_namespace.py` — a Python script that performs the namespace rename using an **AST-aware rewriter** (`libcst` or `rope`). This is the **only supported rename method**. See SPEC.md §9.6.
-
-The script must:
-
-1. Rename the `django/` directory to `djo/` (if not already done).
-2. Rewrite `import django…` / `from django… import` statements and dotted-name string literals that match known module paths (`django.db.*`, `django.conf.*`, etc.).
-3. Update `pyproject.toml` with targeted field-level edits (package name, `known_first_party`, console script entry point, version attr) — **not** a blanket find-and-replace.
-4. **NOT** rename `DJANGO_SETTINGS_MODULE` (env var, not a Python path).
-5. **NOT** rename serialization-format constants like `DJANGO_VERSION_PICKLE_KEY`'s string value `"django-version"`.
-6. Run the verification grep from §1.3.4 and fail-loud if any `from django.` or `import django.` lines remain in `.py` files.
-
-The script must be checked into the repo (`scripts/rename_namespace.py`) and be idempotent so it can be re-run on every upstream rebase.
-
-> **Emergency fallback only:** If `libcst`/`rope` are unavailable in the CI environment, the narrowly-targeted sed rules from §1.3.2 may be used as a one-time escape hatch, with §1.3.4 verification mandatory. Do not use blanket `sed 's/django/djo/g'` on any file.
-
-### 8.4 Conflict minimization principles
-
-1. **Never modify upstream file internals unless absolutely necessary.** The rename is mechanical and reproducible.
-2. **All deletions are additive (remove-only).** They don't conflict with upstream changes to other files.
-3. **Fork-specific logic lives in `_ext/`.** If upstream changes break something, the fix goes in `_ext/`, not in the upstream-derived module.
-4. **Keep the number of topic commits minimal** (~7). Each commit has a clear, bounded scope.
-
-### 8.5 Commit
-
-```
-[upstream] Add rebase workflow script and documentation
-```
+The full command, resume procedure, version mapping, and publication gate are
+maintained in [`MAINTENANCE.md`](MAINTENANCE.md). This replaces the original
+manual rebase and cherry-pick procedure.
 
 ---
 
