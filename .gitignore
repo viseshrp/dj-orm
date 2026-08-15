@@ -22,6 +22,4 @@ coverage-html/
 coverage.xml
 dist/
 htmlcov/
-MANIFEST
 tests/coverage_html/
-tests/report/

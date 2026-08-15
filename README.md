@@ -102,8 +102,7 @@ uv run python scripts/apply_django_lts.py \
 ```
 
 See [MAINTENANCE.md](MAINTENANCE.md) for the branch model, release gate, conflict
-workflow, and PyPI setup. [SPEC.md](SPEC.md) defines the retained API and
-[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) records the original extraction.
+workflow, and PyPI setup. [SPEC.md](SPEC.md) defines the retained API.
 
 ## License and attribution
 

@@ -27,9 +27,5 @@ insert_final_newline = ignore
 [Makefile]
 indent_style = tab
 
-# Batch files use tabs for indentation
-[*.bat]
-indent_style = tab
-
 [*.yml]
 indent_size = 2

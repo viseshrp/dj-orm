@@ -30,7 +30,6 @@ FORK_OWNED_PATHS = {
     ".pre-commit-config.yaml",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
-    "IMPLEMENTATION_PLAN.md",
     "MAINTENANCE.md",
     "Makefile",
     "README.md",

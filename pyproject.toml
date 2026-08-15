@@ -107,7 +107,6 @@ include = [
     "AUTHORS",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
-    "IMPLEMENTATION_PLAN.md",
     "LICENSE",
     "LICENSE.python",
     "MAINTENANCE.md",

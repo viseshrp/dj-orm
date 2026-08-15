@@ -26,3 +26,5 @@ upstream release notes for the exact tag named by each Djorm release.
   runtime translations.
 - Removed orphaned test apps, fixtures, and web-only runner options left after
   the original ORM test-suite pruning.
+- Removed the obsolete extraction plan and stale configuration for file types
+  and outputs no longer present in the repository.
