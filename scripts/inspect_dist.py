@@ -37,6 +37,8 @@ def inspect_wheel(wheel: Path) -> None:
         raise InspectionError(f"Wheel is missing required paths: {', '.join(missing)}")
     if any(name.startswith("django/") for name in names):
         raise InspectionError("Wheel contains a forbidden django package.")
+    if any(name.endswith(".po") for name in names):
+        raise InspectionError("Wheel contains gettext source catalogs.")
     if not any(name.endswith("/LC_MESSAGES/django.mo") for name in names):
         raise InspectionError("Wheel does not contain compiled translation catalogs.")
     if not any("dj_orm-" in name and name.endswith(".dist-info/METADATA") for name in names):
@@ -46,6 +48,10 @@ def inspect_wheel(wheel: Path) -> None:
 def inspect_sdist(sdist: Path) -> None:
     with tarfile.open(sdist, "r:gz") as archive:
         names = archive.getnames()
+    if any(name.endswith(".po") for name in names):
+        raise InspectionError("Source archive contains gettext source catalogs.")
+    if not any(name.endswith("/LC_MESSAGES/django.mo") for name in names):
+        raise InspectionError("Source archive does not contain compiled translation catalogs.")
     suffixes = {
         "README.md",
         "MAINTENANCE.md",
@@ -81,7 +87,10 @@ settings.configure(
 )
 djorm.setup()
 from djorm.db import models
+from djorm.utils.translation import activate, gettext
 assert models.Model is not None
+activate("fr")
+assert gettext("January") == "janvier"
 print(version("dj-orm"))
 """
         subprocess.run([str(python), "-c", script], check=True)

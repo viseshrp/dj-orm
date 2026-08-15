@@ -548,6 +548,10 @@ Django 5.2 uses `asgiref` for async support in the ORM (`QuerySet.aiterator()`, 
 
 The Django ORM uses `gettext_lazy` and translation utilities throughout model field definitions (`verbose_name`, `help_text`, etc.) and migration files. The translation utility (`djorm/utils/translation/`) must be retained even though we remove the i18n management commands (`makemessages`, `compilemessages`) and the full i18n middleware.
 
+Compiled `.mo` catalogs remain runtime package data. Source `.po` catalogs are
+excluded because Djorm does not provide the translation-authoring commands that
+consume them.
+
 ### 10.4 `dumpdata` / `loaddata` / `flush` retention (DB-ops scope)
 
 These are data-management commands that operate on model data and fixtures. They depend on `djorm/core/serializers/` which becomes a permanently in-scope module. This is a deliberate scope expansion from "strict migrations-only" to "DB-ops mode." The rationale and opt-out path are documented in §5.1.

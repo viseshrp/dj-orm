@@ -95,9 +95,10 @@ The command performs these bounded operations:
    merge support.
 4. Applies clean additions, edits, and deletions automatically. Directories
    removed by the maintained fork stay removed, including files added upstream
-   after the recorded base. Reviewed packaging and CI files stay fork-owned;
-   incompatible changes in retained Django runtime code remain as conflicts for
-   human review.
+   after the recorded base. Gettext source catalogs remain pruned while compiled
+   runtime catalogs are retained. Reviewed packaging and CI files stay
+   fork-owned; incompatible changes in retained Django runtime code remain as
+   conflicts for human review.
 5. Writes the new upstream provenance and `A.B.C.N` package version, then runs
    the namespace, package, and retained-suite checks.
 

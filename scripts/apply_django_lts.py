@@ -47,6 +47,7 @@ FORK_OWNED_PATHS = {
     "uv.lock",
 }
 FORK_OWNED_PREFIXES = (".github/", "djorm/_ext/", "tests/djorm_smoke/")
+PRUNED_SUFFIXES = (".po",)
 
 
 class ApplyError(RuntimeError):
@@ -357,6 +358,15 @@ def tree_paths(source_repo: Path, treeish: str) -> set[str]:
     return {path for path in output.split("\0") if path}
 
 
+def tracked_paths(repo: Path) -> set[str]:
+    output = git(repo, "ls-files", "-z")
+    return {path for path in output.split("\0") if path}
+
+
+def is_pruned_path(path: str) -> bool:
+    return path.endswith(PRUNED_SUFFIXES)
+
+
 def maintained_deleted_directory_prefixes(
     source_repo: Path,
     state: ApplyState,
@@ -409,13 +419,19 @@ def apply_delta(source_repo: Path, output: Path, state: ApplyState) -> list[str]
     deleted_prefixes = maintained_deleted_directory_prefixes(source_repo, state)
     deletion_conflicts = conflict_paths & maintained_deletions(source_repo, state)
     deletion_conflicts.update(path for path in conflict_paths if path.startswith(deleted_prefixes))
-    deletion_targets = sorted(
+    deletion_conflicts.update(path for path in conflict_paths if is_pruned_path(path))
+    deletion_targets = {
         path for path in deletion_conflicts if not path.startswith(deleted_prefixes)
+    }
+    deletion_targets.update(
+        path
+        for path in tracked_paths(output)
+        if is_pruned_path(path) and not path.startswith(deleted_prefixes)
     )
-    deletion_targets.extend(prefix.removesuffix("/") for prefix in deleted_prefixes)
+    deletion_targets.update(prefix.removesuffix("/") for prefix in deleted_prefixes)
     if deletion_targets:
         run(
-            ["git", "rm", "-r", "--ignore-unmatch", "--", *deletion_targets],
+            ["git", "rm", "-r", "--ignore-unmatch", "--", *sorted(deletion_targets)],
             cwd=output,
             capture=True,
         )

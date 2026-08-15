@@ -54,6 +54,29 @@ def test_source_has_no_django_package() -> None:
     assert not (root / "django").exists()
 
 
+def test_source_contains_compiled_translation_catalogs_only() -> None:
+    root = Path(__file__).resolve().parents[2]
+    locale_root = root / "djorm" / "conf" / "locale"
+
+    assert any(locale_root.rglob("django.mo"))
+    assert not any(locale_root.rglob("*.po"))
+
+
+def test_compiled_translation_catalogs_load() -> None:
+    script = """
+from djorm.conf import settings
+
+settings.configure(USE_I18N=True, LANGUAGE_CODE="fr", INSTALLED_APPS=[])
+import djorm
+djorm.setup()
+from djorm.utils.translation import activate, gettext
+activate("fr")
+assert gettext("January") == "janvier"
+"""
+    result = subprocess.run([sys.executable, "-c", script], text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
+
+
 def test_source_compiles_on_supported_python(tmp_path: Path) -> None:
     root = Path(__file__).resolve().parents[2]
     environment = dict(os.environ)

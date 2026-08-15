@@ -16,6 +16,7 @@ from scripts.apply_django_lts import (
     distribution_version,
     fully_deleted_directory_prefixes,
     is_fork_owned,
+    is_pruned_path,
     normalize_upstream_version,
     release_series,
 )
@@ -131,6 +132,21 @@ def test_lts_application_does_not_prune_retained_parent_directory() -> None:
     assert "tests/" not in deleted
 
 
+@pytest.mark.parametrize(
+    ("path", "expected"),
+    [
+        ("djorm/conf/locale/fr/LC_MESSAGES/django.po", True),
+        ("djorm/conf/locale/fr/LC_MESSAGES/django.mo", False),
+        ("djorm/db/models/query.py", False),
+    ],
+)
+def test_lts_application_prunes_translation_sources_only(
+    path: str,
+    expected: bool,
+) -> None:
+    assert is_pruned_path(path) is expected
+
+
 def test_lts_application_removes_new_upstream_files_from_pruned_directory(
     tmp_path: Path,
 ) -> None:
@@ -142,9 +158,17 @@ def test_lts_application_removes_new_upstream_files_from_pruned_directory(
 
     (source_repo / "kept").mkdir()
     (source_repo / "kept" / "model.py").write_text("baseline\n", encoding="utf-8")
+    (source_repo / "locale" / "en" / "LC_MESSAGES").mkdir(parents=True)
+    (source_repo / "locale" / "en" / "LC_MESSAGES" / "django.mo").write_bytes(b"compiled")
     (source_repo / "pruned").mkdir()
     (source_repo / "pruned" / "old.py").write_text("old\n", encoding="utf-8")
-    run_git(source_repo, "add", "kept/model.py", "pruned/old.py")
+    run_git(
+        source_repo,
+        "add",
+        "kept/model.py",
+        "locale/en/LC_MESSAGES/django.mo",
+        "pruned/old.py",
+    )
     run_git(source_repo, "commit", "-m", "baseline")
     baseline_tree = run_git(source_repo, "rev-parse", "HEAD^{tree}")
 
@@ -154,8 +178,12 @@ def test_lts_application_removes_new_upstream_files_from_pruned_directory(
     source_head = run_git(source_repo, "rev-parse", "HEAD")
 
     run_git(source_repo, "switch", "main")
+    (source_repo / "locale" / "en" / "LC_MESSAGES" / "django.po").write_text(
+        "new translation source\n",
+        encoding="utf-8",
+    )
     (source_repo / "pruned" / "new.py").write_text("new upstream file\n", encoding="utf-8")
-    run_git(source_repo, "add", "pruned/new.py")
+    run_git(source_repo, "add", "locale/en/LC_MESSAGES/django.po", "pruned/new.py")
     run_git(source_repo, "commit", "-m", "add upstream file")
     target_head = run_git(source_repo, "rev-parse", "HEAD")
 
@@ -175,6 +203,8 @@ def test_lts_application_removes_new_upstream_files_from_pruned_directory(
     assert apply_delta(source_repo, output, state) == []
     assert run_git(output, "ls-files", "pruned") == ""
     assert not (output / "pruned").exists()
+    assert run_git(output, "ls-files", "locale/en/LC_MESSAGES/django.po") == ""
+    assert run_git(output, "ls-files", "locale/en/LC_MESSAGES/django.mo")
 
 
 def test_maintenance_config_records_distribution_and_template() -> None:
