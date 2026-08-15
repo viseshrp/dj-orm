@@ -1,14 +1,14 @@
 import unittest 
 from datetime import date ,datetime ,time ,timedelta 
 
-from djo .utils .dateparse import (
+from djorm .utils .dateparse import (
 parse_date ,
 parse_datetime ,
 parse_duration ,
 parse_time ,
 )
-from djo .utils .timezone import get_fixed_timezone 
-from djo .utils .version import PY311 
+from djorm .utils .timezone import get_fixed_timezone
+from djorm .utils .version import PY311
 
 
 class DateParseTests (unittest .TestCase ):

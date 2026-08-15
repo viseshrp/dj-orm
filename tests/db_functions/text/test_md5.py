@@ -1,8 +1,8 @@
-from djo .db import connection 
-from djo .db .models import CharField 
-from djo .db .models .functions import MD5 
-from djo .test import TestCase 
-from djo .test .utils import register_lookup 
+from djorm .db import connection
+from djorm .db .models import CharField
+from djorm .db .models .functions import MD5
+from djorm .test import TestCase
+from djorm .test .utils import register_lookup
 
 from ..models import Author 
 

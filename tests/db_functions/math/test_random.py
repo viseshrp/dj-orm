@@ -1,5 +1,5 @@
-from djo .db .models .functions import Random 
-from djo .test import TestCase 
+from djorm .db .models .functions import Random
+from djorm .test import TestCase
 
 from ..models import FloatModel 
 

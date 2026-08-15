@@ -1,8 +1,8 @@
-from djo .contrib .contenttypes .models import ContentType 
-from djo .contrib .contenttypes .prefetch import GenericPrefetch 
-from djo .core .exceptions import FieldError 
-from djo .db .models import Q ,prefetch_related_objects 
-from djo .test import SimpleTestCase ,TestCase ,skipUnlessDBFeature 
+from djorm .contrib .contenttypes .models import ContentType
+from djorm .contrib .contenttypes .prefetch import GenericPrefetch
+from djorm .core .exceptions import FieldError
+from djorm .db .models import Q ,prefetch_related_objects
+from djorm .test import SimpleTestCase ,TestCase ,skipUnlessDBFeature
 
 from .models import (
 AllowsNullGFK ,

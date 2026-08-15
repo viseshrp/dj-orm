@@ -3,17 +3,17 @@ from contextlib import contextmanager
 from io import StringIO 
 from unittest import mock 
 
-from djo .core .exceptions import ImproperlyConfigured 
-from djo .db import DatabaseError ,connection 
-from djo .db .backends .base .creation import BaseDatabaseCreation 
-from djo .test import SimpleTestCase 
+from djorm .core .exceptions import ImproperlyConfigured
+from djorm .db import DatabaseError ,connection
+from djorm .db .backends .base .creation import BaseDatabaseCreation
+from djorm .test import SimpleTestCase
 
 try :
-    from djo .db .backends .postgresql .psycopg_any import errors 
+    from djorm .db .backends .postgresql .psycopg_any import errors
 except ImportError :
     pass 
 else :
-    from djo .db .backends .postgresql .creation import DatabaseCreation 
+    from djorm .db .backends .postgresql .creation import DatabaseCreation
 
 
 @unittest .skipUnless (connection .vendor =="postgresql","PostgreSQL tests")

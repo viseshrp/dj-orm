@@ -1,6 +1,6 @@
-from djo .db import connection 
-from djo .db .models import Max 
-from djo .test import TestCase 
+from djorm .db import connection
+from djorm .db .models import Max
+from djorm .test import TestCase
 
 from .models import Cash ,CashModel 
 

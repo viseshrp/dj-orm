@@ -1,5 +1,5 @@
-from djo .test import SimpleTestCase 
-from djo .utils .hashable import make_hashable 
+from djorm .test import SimpleTestCase
+from djorm .utils .hashable import make_hashable
 
 
 class TestHashable (SimpleTestCase ):

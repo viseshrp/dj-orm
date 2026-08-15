@@ -1,6 +1,6 @@
-from djo .db .models import Value as V 
-from djo .db .models .functions import Lower ,StrIndex ,Substr ,Upper 
-from djo .test import TestCase 
+from djorm .db .models import Value as V
+from djorm .db .models .functions import Lower ,StrIndex ,Substr ,Upper
+from djorm .test import TestCase
 
 from ..models import Author 
 

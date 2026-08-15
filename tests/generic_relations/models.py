@@ -9,9 +9,9 @@ The canonical example is tags (although this example implementation is *far*
 from complete).
 """
 
-from djo .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation 
-from djo .contrib .contenttypes .models import ContentType 
-from djo .db import models 
+from djorm .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation
+from djorm .contrib .contenttypes .models import ContentType
+from djorm .db import models
 
 
 class TaggedItem (models .Model ):

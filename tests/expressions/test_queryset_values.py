@@ -1,7 +1,7 @@
 from itertools import chain 
 
-from djo .db .models import F ,Sum 
-from djo .test import TestCase ,skipUnlessDBFeature 
+from djorm .db .models import F ,Sum
+from djorm .test import TestCase ,skipUnlessDBFeature
 
 from .models import Company ,Employee ,JSONFieldModel 
 

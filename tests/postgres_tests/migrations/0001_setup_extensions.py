@@ -1,9 +1,9 @@
 from unittest import mock 
 
-from djo .db import migrations 
+from djorm .db import migrations
 
 try :
-    from djo .contrib .postgres .operations import (
+    from djorm .contrib .postgres .operations import (
     BloomExtension ,
     BtreeGinExtension ,
     BtreeGistExtension ,

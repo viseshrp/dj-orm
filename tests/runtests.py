@@ -16,29 +16,29 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 try :
-    import djo 
+    import djorm
 except ImportError as e :
     raise RuntimeError (
     "Django module not found, reference tests/README.rst for instructions."
     )from e 
 else :
-    from djo .apps import apps 
-    from djo .conf import settings 
-    from djo .core .exceptions import ImproperlyConfigured 
-    from djo .db import connection ,connections 
-    from djo .test import TestCase ,TransactionTestCase 
-    from djo .test .runner import get_max_test_processes ,parallel_type 
-    from djo .test .utils import NullTimeKeeper ,TimeKeeper ,get_runner 
-    from djo .utils .deprecation import (
+    from djorm .apps import apps
+    from djorm .conf import settings
+    from djorm .core .exceptions import ImproperlyConfigured
+    from djorm .db import connection ,connections
+    from djorm .test import TestCase ,TransactionTestCase
+    from djorm .test .runner import get_max_test_processes ,parallel_type
+    from djorm .test .utils import NullTimeKeeper ,TimeKeeper ,get_runner
+    from djorm .utils .deprecation import (
     RemovedInDjango60Warning ,
     RemovedInDjango61Warning ,
     )
-    from djo .utils .functional import classproperty 
-    from djo .utils .log import DEFAULT_LOGGING 
-    from djo .utils .version import PY312 ,PYPY 
+    from djorm .utils .functional import classproperty
+    from djorm .utils .log import DEFAULT_LOGGING
+    from djorm .utils .version import PY312 ,PYPY
 
 try :
-    from djo .test .selenium import SeleniumTestCase ,SeleniumTestCaseBase 
+    from djorm .test .selenium import SeleniumTestCase ,SeleniumTestCaseBase
 except ImportError :
     class SeleniumTestCase :
         screenshots =False 
@@ -95,7 +95,7 @@ SUBDIRS_TO_SKIP ={
 }
 
 ALWAYS_INSTALLED_APPS =[
-"djo.contrib.contenttypes",
+"djorm.contrib.contenttypes",
 ]
 
 ALWAYS_MIDDLEWARE =[]
@@ -218,14 +218,14 @@ def setup_collect_tests (start_at ,start_after ,test_labels =None ):
     log_config =copy .deepcopy (DEFAULT_LOGGING )
     # Filter out non-error logging so we don't have to capture it in lots of
     # tests.
-    log_config ["loggers"]["djo"]["level"]="ERROR"
+    log_config ["loggers"]["djorm"]["level"]="ERROR"
     settings .LOGGING =log_config 
     settings .SILENCED_SYSTEM_CHECKS =[
     "fields.W342",# ForeignKey(unique=True) -> OneToOneField
     ]
 
     # Load all the ALWAYS_INSTALLED_APPS.
-    djo .setup ()
+    djorm .setup ()
 
     # This flag must be evaluated after django.setup() because otherwise it can
     # raise AppRegistryNotReady when running gis_tests in isolation on some
@@ -264,7 +264,7 @@ def get_apps_to_install (test_modules ):
         # Add contrib.gis to INSTALLED_APPS if needed (rather than requiring
         # @override_settings(INSTALLED_APPS=...) on all test cases.
     if connection .features .gis_enabled :
-        yield "djo.contrib.gis"
+        yield "djorm.contrib.gis"
 
 
 def setup_run_tests (verbosity ,start_at ,start_after ,test_labels =None ):
@@ -353,7 +353,7 @@ durations =None ,
 
     if verbosity >=1 :
         msg ="Testing against Django installed in '%s'"%os .path .dirname (
-        djo .__file__ 
+        djorm .__file__
         )
         if max_parallel >1 :
             msg +=" with up to %d processes"%max_parallel 
@@ -363,7 +363,7 @@ durations =None ,
     test_labels ,state =setup_run_tests (*process_setup_args )
     # Run the test suite, including the extra validation tests.
     if not hasattr (settings ,"TEST_RUNNER"):
-        settings .TEST_RUNNER ="djo.test.runner.DiscoverRunner"
+        settings .TEST_RUNNER ="djorm.test.runner.DiscoverRunner"
 
     if parallel in {0 ,"auto"}:
     # This doesn't work before django.setup() on some databases.

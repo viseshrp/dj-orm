@@ -7,7 +7,7 @@ commit-on-success behavior. Alternatively, you can manage the transaction
 manually.
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Reporter (models .Model ):

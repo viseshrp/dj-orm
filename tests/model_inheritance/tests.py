@@ -1,10 +1,10 @@
 from operator import attrgetter 
 
-from djo .core .exceptions import FieldError ,ValidationError 
-from djo .db import connection ,models 
-from djo .db .models .query_utils import DeferredAttribute 
-from djo .test import SimpleTestCase ,TestCase 
-from djo .test .utils import CaptureQueriesContext ,isolate_apps 
+from djorm .core .exceptions import FieldError ,ValidationError
+from djorm .db import connection ,models
+from djorm .db .models .query_utils import DeferredAttribute
+from djorm .test import SimpleTestCase ,TestCase
+from djorm .test .utils import CaptureQueriesContext ,isolate_apps
 
 from .models import (
 Base ,

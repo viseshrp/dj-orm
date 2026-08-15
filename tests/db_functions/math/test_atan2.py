@@ -1,8 +1,8 @@
 import math 
 from decimal import Decimal 
 
-from djo .db .models .functions import ATan2 
-from djo .test import TestCase 
+from djorm .db .models .functions import ATan2
+from djorm .test import TestCase
 
 from ..models import DecimalModel ,FloatModel ,IntegerModel 
 

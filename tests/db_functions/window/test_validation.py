@@ -1,5 +1,5 @@
-from djo .db .models .functions import Lag ,Lead ,NthValue ,Ntile 
-from djo .test import SimpleTestCase 
+from djorm .db .models .functions import Lag ,Lead ,NthValue ,Ntile
+from djorm .test import SimpleTestCase
 
 
 class ValidationTests (SimpleTestCase ):

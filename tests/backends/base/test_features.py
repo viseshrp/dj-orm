@@ -1,5 +1,5 @@
-from djo .db import connection 
-from djo .test import SimpleTestCase 
+from djorm .db import connection
+from djorm .test import SimpleTestCase
 
 
 class TestDatabaseFeatures (SimpleTestCase ):

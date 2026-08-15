@@ -1,4 +1,4 @@
-from djo .core .exceptions import ValidationError 
+from djorm .core .exceptions import ValidationError
 
 
 class ValidationAssertions :

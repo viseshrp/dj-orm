@@ -1,4 +1,4 @@
-from djo .core .files .storage .filesystem import FileSystemStorage 
+from djorm .core .files .storage .filesystem import FileSystemStorage
 
 
 class NoReadFileSystemStorage (FileSystemStorage ):

@@ -1,4 +1,4 @@
-from djo .db import models 
+from djorm .db import models
 
 
 class Poll (models .Model ):

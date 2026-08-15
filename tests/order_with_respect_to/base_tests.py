@@ -1,6 +1,6 @@
 """
 The tests are shared with contenttypes_tests and so shouldn't import or
-reference any models directly. Subclasses should inherit djo.test.TestCase.
+reference any models directly. Subclasses should inherit djorm.test.TestCase.
 """
 
 from operator import attrgetter 

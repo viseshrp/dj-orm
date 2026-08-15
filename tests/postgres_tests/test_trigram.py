@@ -1,11 +1,11 @@
-from djo .db .models import F ,Value 
-from djo .db .models .functions import Concat 
+from djorm .db .models import F ,Value
+from djorm .db .models .functions import Concat
 
 from .import PostgreSQLTestCase 
 from .models import CharFieldModel ,TextFieldModel 
 
 try :
-    from djo .contrib .postgres .search import (
+    from djorm .contrib .postgres .search import (
     TrigramDistance ,
     TrigramSimilarity ,
     TrigramStrictWordDistance ,

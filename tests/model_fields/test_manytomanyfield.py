@@ -1,7 +1,7 @@
-from djo .apps import apps 
-from djo .db import models 
-from djo .test import SimpleTestCase ,TestCase 
-from djo .test .utils import isolate_apps 
+from djorm .apps import apps
+from djorm .db import models
+from djorm .test import SimpleTestCase ,TestCase
+from djorm .test .utils import isolate_apps
 
 from .models import ManyToMany 
 

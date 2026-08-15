@@ -2,13 +2,13 @@ import time
 import unittest 
 from datetime import date ,datetime 
 
-from djo .core .exceptions import FieldError 
-from djo .db import connection ,models 
-from djo .db .models .fields .related_lookups import RelatedGreaterThan 
-from djo .db .models .lookups import EndsWith ,StartsWith 
-from djo .test import SimpleTestCase ,TestCase ,override_settings 
-from djo .test .utils import register_lookup 
-from djo .utils import timezone 
+from djorm .core .exceptions import FieldError
+from djorm .db import connection ,models
+from djorm .db .models .fields .related_lookups import RelatedGreaterThan
+from djorm .db .models .lookups import EndsWith ,StartsWith
+from djorm .test import SimpleTestCase ,TestCase ,override_settings
+from djorm .test .utils import register_lookup
+from djorm .utils import timezone
 
 from .models import Article ,Author ,MySQLUnixTimestamp 
 

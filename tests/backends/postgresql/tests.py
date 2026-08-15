@@ -3,8 +3,8 @@ import unittest
 from io import StringIO 
 from unittest import mock 
 
-from djo .core .exceptions import ImproperlyConfigured 
-from djo .db import (
+from djorm .core .exceptions import ImproperlyConfigured
+from djorm .db import (
 DEFAULT_DB_ALIAS ,
 DatabaseError ,
 NotSupportedError ,
@@ -12,11 +12,11 @@ ProgrammingError ,
 connection ,
 connections ,
 )
-from djo .db .backends .base .base import BaseDatabaseWrapper 
-from djo .test import TestCase ,override_settings 
+from djorm .db .backends .base .base import BaseDatabaseWrapper
+from djorm .test import TestCase ,override_settings
 
 try :
-    from djo .db .backends .postgresql .psycopg_any import errors ,is_psycopg3 
+    from djorm .db .backends .postgresql .psycopg_any import errors ,is_psycopg3
 except ImportError :
     is_psycopg3 =False 
 
@@ -63,7 +63,7 @@ class Tests (TestCase ):
         )
         with self .assertWarnsMessage (RuntimeWarning ,msg ):
             with mock .patch (
-            "djo.db.backends.base.base.BaseDatabaseWrapper.connect",
+            "djorm.db.backends.base.base.BaseDatabaseWrapper.connect",
             side_effect =mocked_connect ,
             autospec =True ,
             ):
@@ -84,7 +84,7 @@ class Tests (TestCase ):
         # Cursor is yielded only for the first PostgreSQL database.
         with self .assertWarnsMessage (RuntimeWarning ,msg ):
             with mock .patch (
-            "djo.db.backends.base.base.BaseDatabaseWrapper.connect",
+            "djorm.db.backends.base.base.BaseDatabaseWrapper.connect",
             side_effect =mocked_connect ,
             autospec =True ,
             ):
@@ -116,12 +116,12 @@ class Tests (TestCase ):
         )
         with self .assertWarnsMessage (RuntimeWarning ,msg ):
             mocker_connections_all =mock .patch (
-            "djo.utils.connection.BaseConnectionHandler.all",
+            "djorm.utils.connection.BaseConnectionHandler.all",
             side_effect =mocked_all ,
             autospec =True ,
             )
             mocker_connect =mock .patch (
-            "djo.db.backends.base.base.BaseDatabaseWrapper.connect",
+            "djorm.db.backends.base.base.BaseDatabaseWrapper.connect",
             side_effect =mocked_connect ,
             autospec =True ,
             )
@@ -136,7 +136,7 @@ class Tests (TestCase ):
                 raise DatabaseError ("exception")
 
     def test_database_name_too_long (self ):
-        from djo .db .backends .postgresql .base import DatabaseWrapper 
+        from djorm .db .backends .postgresql .base import DatabaseWrapper
 
         settings =connection .settings_dict .copy ()
         max_name_length =connection .ops .max_name_length ()
@@ -150,7 +150,7 @@ class Tests (TestCase ):
             DatabaseWrapper (settings ).get_connection_params ()
 
     def test_database_name_empty (self ):
-        from djo .db .backends .postgresql .base import DatabaseWrapper 
+        from djorm .db .backends .postgresql .base import DatabaseWrapper
 
         settings =connection .settings_dict .copy ()
         settings ["NAME"]=""
@@ -162,7 +162,7 @@ class Tests (TestCase ):
             DatabaseWrapper (settings ).get_connection_params ()
 
     def test_service_name (self ):
-        from djo .db .backends .postgresql .base import DatabaseWrapper 
+        from djorm .db .backends .postgresql .base import DatabaseWrapper
 
         settings =connection .settings_dict .copy ()
         settings ["OPTIONS"]={"service":"my_service"}
@@ -173,7 +173,7 @@ class Tests (TestCase ):
 
     def test_service_name_default_db (self ):
     # None is used to connect to the default 'postgres' db.
-        from djo .db .backends .postgresql .base import DatabaseWrapper 
+        from djorm .db .backends .postgresql .base import DatabaseWrapper
 
         settings =connection .settings_dict .copy ()
         settings ["NAME"]=None 
@@ -358,7 +358,7 @@ class Tests (TestCase ):
         The transaction level can be configured with
         DATABASES ['OPTIONS']['isolation_level'].
         """
-        from djo .db .backends .postgresql .psycopg_any import IsolationLevel 
+        from djorm .db .backends .postgresql .psycopg_any import IsolationLevel
 
         # Since this is a django.test.TestCase, a transaction is in progress
         # and the isolation level isn't reported as 0. This test assumes that
@@ -413,7 +413,7 @@ class Tests (TestCase ):
         The server-side parameters binding role can be enabled with DATABASES
         ["OPTIONS"]["server_side_binding"].
         """
-        from djo .db .backends .postgresql .base import ServerBindingCursor 
+        from djorm .db .backends .postgresql .base import ServerBindingCursor
 
         new_connection =no_pool_connection ()
         new_connection .settings_dict ["OPTIONS"]["server_side_binding"]=True 
@@ -431,7 +431,7 @@ class Tests (TestCase ):
         A custom cursor factory can be configured with DATABASES["options"]
         ["cursor_factory"].
         """
-        from djo .db .backends .postgresql .base import Cursor 
+        from djorm .db .backends .postgresql .base import Cursor
 
         class MyCursor (Cursor ):
             pass 
@@ -481,7 +481,7 @@ class Tests (TestCase ):
         self .assertEqual (a [0 ],b [0 ])
 
     def test_lookup_cast (self ):
-        from djo .db .backends .postgresql .operations import DatabaseOperations 
+        from djorm .db .backends .postgresql .operations import DatabaseOperations
 
         do =DatabaseOperations (connection =None )
         lookups =(
@@ -500,7 +500,7 @@ class Tests (TestCase ):
                 self .assertIn ("::text",do .lookup_cast (lookup ))
 
     def test_lookup_cast_isnull_noop (self ):
-        from djo .db .backends .postgresql .operations import DatabaseOperations 
+        from djorm .db .backends .postgresql .operations import DatabaseOperations
 
         do =DatabaseOperations (connection =None )
         # Using __isnull lookup doesn't require casting.
@@ -514,7 +514,7 @@ class Tests (TestCase ):
                 self .assertEqual (do .lookup_cast ("isnull",field_type ),"%s")
 
     def test_correct_extraction_psycopg_version (self ):
-        from djo .db .backends .postgresql .base import Database ,psycopg_version 
+        from djorm .db .backends .postgresql .base import Database ,psycopg_version
 
         with mock .patch .object (Database ,"__version__","4.2.1 (dt dec pq3 ext lo64)"):
             self .assertEqual (psycopg_version (),(4 ,2 ,1 ))
@@ -569,7 +569,7 @@ class Tests (TestCase ):
             new_connection .close ()
 
     def test_bypass_timezone_configuration (self ):
-        from djo .db .backends .postgresql .base import DatabaseWrapper 
+        from djorm .db .backends .postgresql .base import DatabaseWrapper
 
         class CustomDatabaseWrapper (DatabaseWrapper ):
             def _configure_timezone (self ,connection ):
@@ -597,7 +597,7 @@ class Tests (TestCase ):
                 self .assertIs (Wrapper (settings )._configure_connection (conn ),commit )
 
     def test_bypass_role_configuration (self ):
-        from djo .db .backends .postgresql .base import DatabaseWrapper 
+        from djorm .db .backends .postgresql .base import DatabaseWrapper
 
         class CustomDatabaseWrapper (DatabaseWrapper ):
             def _configure_role (self ,connection ):

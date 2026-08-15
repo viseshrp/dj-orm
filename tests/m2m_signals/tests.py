@@ -2,8 +2,8 @@
 Testing signals emitted on changing m2m relations.
 """
 
-from djo .db import models 
-from djo .test import TestCase 
+from djorm .db import models
+from djorm .test import TestCase
 
 from .models import Car ,Part ,Person ,SportsCar 
 

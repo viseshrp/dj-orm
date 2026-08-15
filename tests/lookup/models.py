@@ -4,8 +4,8 @@ The lookup API
 This demonstrates features of the database API.
 """
 
-from djo .db import models 
-from djo .db .models .lookups import IsNull 
+from djorm .db import models
+from djorm .db .models .lookups import IsNull
 
 
 class Alarm (models .Model ):

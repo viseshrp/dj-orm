@@ -1,7 +1,7 @@
 from functools import partial 
 
-from djo .db import models 
-from djo .db .models .fields .related import (
+from djorm .db import models
+from djorm .db .models .fields .related import (
 RECURSIVE_RELATIONSHIP_CONSTANT ,
 ManyToManyDescriptor ,
 RelatedField ,

@@ -2,9 +2,9 @@ import zoneinfo
 from datetime import datetime ,timedelta 
 from datetime import timezone as datetime_timezone 
 
-from djo .conf import settings 
-from djo .db import DataError ,OperationalError 
-from djo .db .models import (
+from djorm .conf import settings
+from djorm .db import DataError ,OperationalError
+from djorm .db .models import (
 DateField ,
 DateTimeField ,
 F ,
@@ -14,7 +14,7 @@ OuterRef ,
 Subquery ,
 TimeField ,
 )
-from djo .db .models .functions import (
+from djorm .db .models .functions import (
 Extract ,
 ExtractDay ,
 ExtractHour ,
@@ -39,13 +39,13 @@ TruncTime ,
 TruncWeek ,
 TruncYear ,
 )
-from djo .test import (
+from djorm .test import (
 TestCase ,
 override_settings ,
 skipIfDBFeature ,
 skipUnlessDBFeature ,
 )
-from djo .utils import timezone 
+from djorm .utils import timezone
 
 from ..models import Author ,DTModel ,Fan 
 

@@ -1,5 +1,5 @@
-from djo .db import models 
-from djo .utils import timezone 
+from djorm .db import models
+from djorm .utils import timezone
 
 
 class RelatedModel (models .Model ):

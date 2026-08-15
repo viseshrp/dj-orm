@@ -1,6 +1,6 @@
 import datetime 
 
-from djo .test import TestCase 
+from djorm .test import TestCase
 
 from .models import Person 
 

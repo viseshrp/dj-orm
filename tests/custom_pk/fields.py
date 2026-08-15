@@ -1,7 +1,7 @@
 import random 
 import string 
 
-from djo .db import models 
+from djorm .db import models
 
 
 class MyWrapper :

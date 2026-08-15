@@ -1,6 +1,6 @@
-from djo .test import SimpleTestCase 
-from djo .utils .deconstruct import deconstructible 
-from djo .utils .version import get_docs_version 
+from djorm .test import SimpleTestCase
+from djorm .utils .deconstruct import deconstructible
+from djorm .utils .version import get_docs_version
 
 
 @deconstructible ()

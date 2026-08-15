@@ -1,8 +1,8 @@
-from djo .db import connection 
-from djo .db .models import CharField ,Value 
-from djo .db .models .functions import Length ,Reverse ,Trim 
-from djo .test import TestCase 
-from djo .test .utils import register_lookup 
+from djorm .db import connection
+from djorm .db .models import CharField ,Value
+from djorm .db .models .functions import Length ,Reverse ,Trim
+from djorm .test import TestCase
+from djorm .test .utils import register_lookup
 
 from ..models import Author 
 

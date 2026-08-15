@@ -1,7 +1,7 @@
-from djo .core import checks 
-from djo .db import models 
-from djo .test import SimpleTestCase 
-from djo .test .utils import isolate_apps 
+from djorm .core import checks
+from djorm .db import models
+from djorm .test import SimpleTestCase
+from djorm .test .utils import isolate_apps
 
 
 @isolate_apps ("check_framework")

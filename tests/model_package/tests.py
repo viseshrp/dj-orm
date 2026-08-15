@@ -1,6 +1,6 @@
-from djo .db import connection ,models 
-from djo .db .backends .utils import truncate_name 
-from djo .test import TestCase 
+from djorm .db import connection ,models
+from djorm .db .backends .utils import truncate_name
+from djorm .test import TestCase
 
 from .models .article import Article ,Site 
 from .models .publication import Publication 

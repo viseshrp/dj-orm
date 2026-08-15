@@ -1,7 +1,7 @@
-from djo .db .models import CharField ,Value 
-from djo .db .models .functions import Left ,Ord 
-from djo .test import TestCase 
-from djo .test .utils import register_lookup 
+from djorm .db .models import CharField ,Value
+from djorm .db .models .functions import Left ,Ord
+from djorm .test import TestCase
+from djorm .test .utils import register_lookup
 
 from ..models import Author 
 

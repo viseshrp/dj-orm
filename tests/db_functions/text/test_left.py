@@ -1,6 +1,6 @@
-from djo .db .models import IntegerField ,Value 
-from djo .db .models .functions import Left ,Lower 
-from djo .test import TestCase 
+from djorm .db .models import IntegerField ,Value
+from djorm .db .models .functions import Left ,Lower
+from djorm .test import TestCase
 
 from ..models import Author 
 

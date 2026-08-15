@@ -1,10 +1,10 @@
 from datetime import datetime ,timedelta 
 
-from djo .db import connection 
-from djo .db .models import TextField 
-from djo .db .models .functions import Cast ,Now 
-from djo .test import TestCase 
-from djo .utils import timezone 
+from djorm .db import connection
+from djorm .db .models import TextField
+from djorm .db .models .functions import Cast ,Now
+from djorm .test import TestCase
+from djorm .utils import timezone
 
 from ..models import Article 
 

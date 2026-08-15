@@ -1,6 +1,6 @@
-from djo import test 
-from djo .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation 
-from djo .db import models 
+from djorm import test
+from djorm .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation
+from djorm .db import models
 
 from .models import AllFieldsModel 
 

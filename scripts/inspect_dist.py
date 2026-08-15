@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inspect and install Djo distribution artifacts."""
+"""Inspect and install Djorm distribution artifacts."""
 
 from __future__ import annotations
 
@@ -27,10 +27,10 @@ def inspect_wheel(wheel: Path) -> None:
     with zipfile.ZipFile(wheel) as archive:
         names = set(archive.namelist())
     required = {
-        "djo/__init__.py",
-        "djo/_version.py",
-        "djo/db/models/__init__.py",
-        "djo/core/management/__init__.py",
+        "djorm/__init__.py",
+        "djorm/_version.py",
+        "djorm/db/models/__init__.py",
+        "djorm/core/management/__init__.py",
     }
     missing = sorted(required - names)
     if missing:
@@ -50,7 +50,7 @@ def inspect_sdist(sdist: Path) -> None:
         "README.md",
         "MAINTENANCE.md",
         "scripts/apply_django_lts.py",
-        "tests/djo_smoke/test_distribution.py",
+        "tests/djorm_smoke/test_distribution.py",
     }
     for suffix in suffixes:
         if not any(name.endswith(f"/{suffix}") for name in names):
@@ -61,7 +61,7 @@ def isolated_install(wheel: Path) -> None:
     uv = shutil.which("uv")
     if uv is None:
         raise InspectionError("uv is required for the isolated wheel check.")
-    with tempfile.TemporaryDirectory(prefix="djo-wheel-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="djorm-wheel-") as temp_dir:
         environment = Path(temp_dir) / ".venv"
         subprocess.run([uv, "venv", str(environment)], check=True)
         python = environment / (
@@ -72,21 +72,21 @@ def isolated_install(wheel: Path) -> None:
         subprocess.run([uv, "pip", "install", "--python", str(python), str(wheel)], check=True)
         script = """
 from importlib.metadata import version
-import djo
-from djo.conf import settings
+import djorm
+from djorm.conf import settings
 
 settings.configure(
-    DATABASES={"default": {"ENGINE": "djo.db.backends.sqlite3", "NAME": ":memory:"}},
+    DATABASES={"default": {"ENGINE": "djorm.db.backends.sqlite3", "NAME": ":memory:"}},
     INSTALLED_APPS=[],
 )
-djo.setup()
-from djo.db import models
+djorm.setup()
+from djorm.db import models
 assert models.Model is not None
 print(version("dj-orm"))
 """
         subprocess.run([str(python), "-c", script], check=True)
-        djo_command = python.parent / ("djo.exe" if python.suffix == ".exe" else "djo")
-        subprocess.run([str(djo_command), "--help"], check=True, stdout=subprocess.DEVNULL)
+        djorm_command = python.parent / ("djorm.exe" if python.suffix == ".exe" else "djorm")
+        subprocess.run([str(djorm_command), "--help"], check=True, stdout=subprocess.DEVNULL)
 
 
 def main() -> int:

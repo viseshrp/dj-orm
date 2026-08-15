@@ -1,7 +1,7 @@
 from datetime import datetime 
 
-from djo .db .models import Avg 
-from djo .test import TestCase 
+from djorm .db .models import Avg
+from djorm .test import TestCase
 
 from .models import Article ,Comment ,IndexErrorArticle ,Person 
 

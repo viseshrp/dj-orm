@@ -1,7 +1,7 @@
 import datetime 
 
-from djo .db import DJANGO_VERSION_PICKLE_KEY ,models 
-from djo .utils .translation import gettext_lazy as _ 
+from djorm .db import DJANGO_VERSION_PICKLE_KEY ,models
+from djorm .utils .translation import gettext_lazy as _
 
 
 def standalone_number ():

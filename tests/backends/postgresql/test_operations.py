@@ -1,10 +1,10 @@
 import unittest 
 
-from djo .core .management .color import no_style 
-from djo .db import connection 
-from djo .db .models .expressions import Col 
-from djo .db .models .functions import Cast 
-from djo .test import SimpleTestCase 
+from djorm .core .management .color import no_style
+from djorm .db import connection
+from djorm .db .models .expressions import Col
+from djorm .db .models .functions import Cast
+from djorm .test import SimpleTestCase
 
 from ..models import Author ,Book ,Person ,Tag 
 

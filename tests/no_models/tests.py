@@ -1,5 +1,5 @@
-from djo .apps import apps 
-from djo .test import SimpleTestCase 
+from djorm .apps import apps
+from djorm .test import SimpleTestCase
 
 
 class NoModelTests (SimpleTestCase ):

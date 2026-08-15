@@ -1,9 +1,9 @@
-from djo .db import connection 
+from djorm .db import connection
 
 from .import PostgreSQLTestCase 
 
 try :
-    from djo .contrib .postgres .signals import (
+    from djorm .contrib .postgres .signals import (
     get_citext_oids ,
     get_hstore_oids ,
     register_type_handlers ,

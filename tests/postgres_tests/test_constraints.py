@@ -1,11 +1,11 @@
 import datetime 
 from unittest import mock 
 
-from djo .contrib .postgres .indexes import OpClass 
-from djo .core .checks import Error 
-from djo .core .exceptions import ValidationError 
-from djo .db import IntegrityError ,connection ,transaction 
-from djo .db .models import (
+from djorm .contrib .postgres .indexes import OpClass
+from djorm .core .checks import Error
+from djorm .core .exceptions import ValidationError
+from djorm .db import IntegrityError ,connection ,transaction
+from djorm .db .models import (
 CASCADE ,
 CharField ,
 CheckConstraint ,
@@ -20,24 +20,24 @@ Model ,
 Q ,
 UniqueConstraint ,
 )
-from djo .db .models .fields .json import KeyTextTransform 
-from djo .db .models .functions import Cast ,Left ,Lower 
-from djo .test import skipUnlessDBFeature 
-from djo .test .utils import isolate_apps 
-from djo .utils import timezone 
+from djorm .db .models .fields .json import KeyTextTransform
+from djorm .db .models .functions import Cast ,Left ,Lower
+from djorm .test import skipUnlessDBFeature
+from djorm .test .utils import isolate_apps
+from djorm .utils import timezone
 
 from .import PostgreSQLTestCase 
 from .models import HotelReservation ,IntegerArrayModel ,RangesModel ,Room ,Scene 
 
 try :
-    from djo .contrib .postgres .constraints import ExclusionConstraint 
-    from djo .contrib .postgres .fields import (
+    from djorm .contrib .postgres .constraints import ExclusionConstraint
+    from djorm .contrib .postgres .fields import (
     DateTimeRangeField ,
     IntegerRangeField ,
     RangeBoundary ,
     RangeOperators ,
     )
-    from djo .db .backends .postgresql .psycopg_any import DateRange ,NumericRange 
+    from djorm .db .backends .postgresql .psycopg_any import DateRange ,NumericRange
 except ImportError :
     pass 
 
@@ -590,7 +590,7 @@ class ExclusionConstraintTests (PostgreSQLTestCase ):
         )
         path ,args ,kwargs =constraint .deconstruct ()
         self .assertEqual (
-        path ,"djo.contrib.postgres.constraints.ExclusionConstraint"
+        path ,"djorm.contrib.postgres.constraints.ExclusionConstraint"
         )
         self .assertEqual (args ,())
         self .assertEqual (
@@ -615,7 +615,7 @@ class ExclusionConstraintTests (PostgreSQLTestCase ):
         )
         path ,args ,kwargs =constraint .deconstruct ()
         self .assertEqual (
-        path ,"djo.contrib.postgres.constraints.ExclusionConstraint"
+        path ,"djorm.contrib.postgres.constraints.ExclusionConstraint"
         )
         self .assertEqual (args ,())
         self .assertEqual (
@@ -641,7 +641,7 @@ class ExclusionConstraintTests (PostgreSQLTestCase ):
         )
         path ,args ,kwargs =constraint .deconstruct ()
         self .assertEqual (
-        path ,"djo.contrib.postgres.constraints.ExclusionConstraint"
+        path ,"djorm.contrib.postgres.constraints.ExclusionConstraint"
         )
         self .assertEqual (args ,())
         self .assertEqual (
@@ -664,7 +664,7 @@ class ExclusionConstraintTests (PostgreSQLTestCase ):
         )
         path ,args ,kwargs =constraint .deconstruct ()
         self .assertEqual (
-        path ,"djo.contrib.postgres.constraints.ExclusionConstraint"
+        path ,"djorm.contrib.postgres.constraints.ExclusionConstraint"
         )
         self .assertEqual (args ,())
         self .assertEqual (
@@ -684,7 +684,7 @@ class ExclusionConstraintTests (PostgreSQLTestCase ):
         )
         path ,args ,kwargs =constraint .deconstruct ()
         self .assertEqual (
-        path ,"djo.contrib.postgres.constraints.ExclusionConstraint"
+        path ,"djorm.contrib.postgres.constraints.ExclusionConstraint"
         )
         self .assertEqual (args ,())
         self .assertEqual (

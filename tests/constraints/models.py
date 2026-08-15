@@ -1,5 +1,5 @@
-from djo .db import models 
-from djo .db .models .functions import Coalesce ,Lower 
+from djorm .db import models
+from djorm .db .models .functions import Coalesce ,Lower
 
 
 class Product (models .Model ):

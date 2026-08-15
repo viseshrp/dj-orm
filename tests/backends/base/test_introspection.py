@@ -1,6 +1,6 @@
-from djo .db import connection 
-from djo .db .backends .base .introspection import BaseDatabaseIntrospection 
-from djo .test import SimpleTestCase 
+from djorm .db import connection
+from djorm .db .backends .base .introspection import BaseDatabaseIntrospection
+from djorm .test import SimpleTestCase
 
 
 class SimpleDatabaseIntrospectionTests (SimpleTestCase ):

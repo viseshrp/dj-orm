@@ -1,4 +1,4 @@
-from djo .apps import AppConfig 
+from djorm .apps import AppConfig
 
 
 class CheckDefaultPKConfig (AppConfig ):
@@ -7,4 +7,4 @@ class CheckDefaultPKConfig (AppConfig ):
 
 class CheckPKConfig (AppConfig ):
     name ="check_framework"
-    default_auto_field ="djo.db.models.BigAutoField"
+    default_auto_field ="djorm.db.models.BigAutoField"

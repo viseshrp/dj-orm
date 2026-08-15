@@ -4,8 +4,8 @@ from unittest import mock
 
 from multiple_database .routers import TestRouter 
 
-from djo .core .exceptions import FieldError 
-from djo .db import (
+from djorm .core .exceptions import FieldError
+from djorm .db import (
 DatabaseError ,
 NotSupportedError ,
 connection ,
@@ -13,15 +13,15 @@ connections ,
 router ,
 transaction ,
 )
-from djo .db .models import F ,Value 
-from djo .db .models .functions import Concat 
-from djo .test import (
+from djorm .db .models import F ,Value
+from djorm .db .models .functions import Concat
+from djorm .test import (
 TransactionTestCase ,
 override_settings ,
 skipIfDBFeature ,
 skipUnlessDBFeature ,
 )
-from djo .test .utils import CaptureQueriesContext 
+from djorm .test .utils import CaptureQueriesContext
 
 from .models import (
 City ,

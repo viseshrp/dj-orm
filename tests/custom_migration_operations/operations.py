@@ -1,4 +1,4 @@
-from djo .db .migrations .operations .base import Operation 
+from djorm .db .migrations .operations .base import Operation
 
 
 class TestOperation (Operation ):

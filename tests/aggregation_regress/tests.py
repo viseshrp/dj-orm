@@ -4,10 +4,10 @@ from decimal import Decimal
 from operator import attrgetter 
 from unittest import mock 
 
-from djo .contrib .contenttypes .models import ContentType 
-from djo .core .exceptions import FieldError 
-from djo .db import connection 
-from djo .db .models import (
+from djorm .contrib .contenttypes .models import ContentType
+from djorm .core .exceptions import FieldError
+from djorm .db import connection
+from djorm .db .models import (
 Aggregate ,
 Avg ,
 Case ,
@@ -24,9 +24,9 @@ Value ,
 Variance ,
 When ,
 )
-from djo .db .models .functions import Cast ,Concat 
-from djo .test import TestCase ,skipUnlessDBFeature 
-from djo .test .utils import Approximate 
+from djorm .db .models .functions import Cast ,Concat
+from djorm .test import TestCase ,skipUnlessDBFeature
+from djorm .test .utils import Approximate
 
 from .models import (
 Alfa ,
@@ -1561,7 +1561,7 @@ class AggregationTests (TestCase ):
         )
         # Force treating unmanaged models as tables.
         with mock .patch (
-        "djo.db.connection.features.allows_group_by_selected_pks_on_model",
+        "djorm.db.connection.features.allows_group_by_selected_pks_on_model",
         return_value =True ,
         ):
             with (
@@ -1612,7 +1612,7 @@ class AggregationTests (TestCase ):
         )
         ItemTag .objects .create (
         object_id =django_book .id ,
-        tag ="djo",
+        tag ="djorm",
         content_type =ContentType .objects .get_for_model (django_book ),
         )
         # Assign a tag to model with same PK as the book above. If the JOIN

@@ -1,10 +1,10 @@
 from datetime import date ,datetime ,time ,timezone ,tzinfo 
 
-from djo .test import SimpleTestCase ,override_settings 
-from djo .test .utils import TZ_SUPPORT ,requires_tz_support 
-from djo .utils import dateformat ,translation 
-from djo .utils .dateformat import format 
-from djo .utils .timezone import get_default_timezone ,get_fixed_timezone ,make_aware 
+from djorm .test import SimpleTestCase ,override_settings
+from djorm .test .utils import TZ_SUPPORT ,requires_tz_support
+from djorm .utils import dateformat ,translation
+from djorm .utils .dateformat import format
+from djorm .utils .timezone import get_default_timezone ,get_fixed_timezone ,make_aware
 
 
 @override_settings (TIME_ZONE ="Europe/Copenhagen")

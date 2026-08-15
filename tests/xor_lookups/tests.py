@@ -1,5 +1,5 @@
-from djo .db .models import Q 
-from djo .test import TestCase 
+from djorm .db .models import Q
+from djorm .test import TestCase
 
 from .models import Number 
 

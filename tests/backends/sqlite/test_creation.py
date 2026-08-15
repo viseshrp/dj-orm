@@ -3,8 +3,8 @@ import multiprocessing
 import unittest 
 from unittest import mock 
 
-from djo .db import DEFAULT_DB_ALIAS ,NotSupportedError ,connection ,connections 
-from djo .test import SimpleTestCase 
+from djorm .db import DEFAULT_DB_ALIAS ,NotSupportedError ,connection ,connections
+from djorm .test import SimpleTestCase
 
 
 @unittest .skipUnless (connection .vendor =="sqlite","SQLite tests")

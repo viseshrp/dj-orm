@@ -1,6 +1,6 @@
-from djo .db import models 
-from djo .db .models .fields .related import ForwardManyToOneDescriptor 
-from djo .utils .translation import get_language 
+from djorm .db import models
+from djorm .db .models .fields .related import ForwardManyToOneDescriptor
+from djorm .utils .translation import get_language
 
 
 class ArticleTranslationDescriptor (ForwardManyToOneDescriptor ):

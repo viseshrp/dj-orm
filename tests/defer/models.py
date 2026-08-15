@@ -2,7 +2,7 @@
 Tests for defer() and only().
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Secondary (models .Model ):

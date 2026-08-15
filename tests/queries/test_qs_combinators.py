@@ -1,8 +1,8 @@
 import operator 
 from datetime import datetime 
 
-from djo .db import DatabaseError ,NotSupportedError ,connection 
-from djo .db .models import (
+from djorm .db import DatabaseError ,NotSupportedError ,connection
+from djorm .db .models import (
 DateTimeField ,
 Exists ,
 F ,
@@ -12,9 +12,9 @@ Subquery ,
 Transform ,
 Value ,
 )
-from djo .db .models .functions import Cast ,Mod 
-from djo .test import TestCase ,skipIfDBFeature ,skipUnlessDBFeature 
-from djo .test .utils import CaptureQueriesContext 
+from djorm .db .models .functions import Cast ,Mod
+from djorm .test import TestCase ,skipIfDBFeature ,skipUnlessDBFeature
+from djorm .test .utils import CaptureQueriesContext
 
 from .models import (
 Annotation ,

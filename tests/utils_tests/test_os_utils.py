@@ -2,8 +2,8 @@ import os
 import unittest 
 from pathlib import Path 
 
-from djo .core .exceptions import SuspiciousFileOperation 
-from djo .utils ._os import safe_join ,to_path 
+from djorm .core .exceptions import SuspiciousFileOperation
+from djorm .utils ._os import safe_join ,to_path
 
 
 class SafeJoinTests (unittest .TestCase ):

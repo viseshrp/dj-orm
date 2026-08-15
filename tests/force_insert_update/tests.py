@@ -1,5 +1,5 @@
-from djo .db import DatabaseError ,IntegrityError ,models ,transaction 
-from djo .test import TestCase 
+from djorm .db import DatabaseError ,IntegrityError ,models ,transaction
+from djorm .test import TestCase
 
 from .models import (
 Counter ,

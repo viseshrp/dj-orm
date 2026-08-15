@@ -1,10 +1,10 @@
-from djo .apps .registry import apps 
-from djo .conf import settings 
-from djo .contrib .contenttypes import management as contenttypes_management 
-from djo .contrib .contenttypes .models import ContentType 
-from djo .core .management import call_command 
-from djo .db import migrations ,models 
-from djo .test import TransactionTestCase ,override_settings 
+from djorm .apps .registry import apps
+from djorm .conf import settings
+from djorm .contrib .contenttypes import management as contenttypes_management
+from djorm .contrib .contenttypes .models import ContentType
+from djorm .core .management import call_command
+from djorm .db import migrations ,models
+from djorm .test import TransactionTestCase ,override_settings
 
 
 @override_settings (
@@ -17,7 +17,7 @@ class ContentTypeOperationsTests (TransactionTestCase ):
     databases ={"default","other"}
     available_apps =[
     "contenttypes_tests",
-    "djo.contrib.contenttypes",
+    "djorm.contrib.contenttypes",
     ]
 
     class TestRouter :

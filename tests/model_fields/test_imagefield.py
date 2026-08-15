@@ -2,12 +2,12 @@ import os
 import shutil 
 from unittest import skipIf 
 
-from djo .core .exceptions import ImproperlyConfigured 
-from djo .core .files import File 
-from djo .core .files .images import ImageFile 
-from djo .db .models import signals 
-from djo .test import TestCase 
-from djo .test .testcases import SerializeMixin 
+from djorm .core .exceptions import ImproperlyConfigured
+from djorm .core .files import File
+from djorm .core .files .images import ImageFile
+from djorm .db .models import signals
+from djorm .test import TestCase
+from djorm .test .testcases import SerializeMixin
 
 try :
     from .models import Image 

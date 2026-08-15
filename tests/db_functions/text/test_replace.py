@@ -1,6 +1,6 @@
-from djo .db .models import F ,Value 
-from djo .db .models .functions import Concat ,Replace 
-from djo .test import TestCase 
+from djorm .db .models import F ,Value
+from djorm .db .models .functions import Concat ,Replace
+from djorm .test import TestCase
 
 from ..models import Author 
 

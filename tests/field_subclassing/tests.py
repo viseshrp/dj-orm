@@ -1,5 +1,5 @@
-from djo .db import connection ,models 
-from djo .test import SimpleTestCase 
+from djorm .db import connection ,models
+from djorm .test import SimpleTestCase
 
 from .fields import CustomDescriptorField ,CustomTypedField 
 

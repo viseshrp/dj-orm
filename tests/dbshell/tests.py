@@ -1,9 +1,9 @@
 from unittest import mock 
 
-from djo .core .management import call_command 
-from djo .core .management .base import CommandError 
-from djo .db import connection 
-from djo .test import SimpleTestCase 
+from djorm .core .management import call_command
+from djorm .core .management .base import CommandError
+from djorm .db import connection
+from djorm .test import SimpleTestCase
 
 
 class DbshellCommandTestCase (SimpleTestCase ):

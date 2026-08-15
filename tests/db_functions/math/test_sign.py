@@ -1,9 +1,9 @@
 from decimal import Decimal 
 
-from djo .db .models import DecimalField 
-from djo .db .models .functions import Sign 
-from djo .test import TestCase 
-from djo .test .utils import register_lookup 
+from djorm .db .models import DecimalField
+from djorm .db .models .functions import Sign
+from djorm .test import TestCase
+from djorm .test .utils import register_lookup
 
 from ..models import DecimalModel ,FloatModel ,IntegerModel 
 

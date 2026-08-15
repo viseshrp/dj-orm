@@ -6,13 +6,13 @@ All text copyright Python (Monty) Pictures. Thanks to sacred-texts.com for the
 transcript.
 """
 
-from djo .db .models import F ,Value 
+from djorm .db .models import F ,Value
 
 from .import PostgreSQLSimpleTestCase ,PostgreSQLTestCase 
 from .models import Character ,Line ,LineSavedSearch ,Scene 
 
 try :
-    from djo .contrib .postgres .search import (
+    from djorm .contrib .postgres .search import (
     SearchConfig ,
     SearchHeadline ,
     SearchQuery ,

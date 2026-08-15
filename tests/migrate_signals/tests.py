@@ -1,10 +1,10 @@
 from io import StringIO 
 
-from djo .apps import apps 
-from djo .core import management 
-from djo .db import migrations 
-from djo .db .models import signals 
-from djo .test import TransactionTestCase ,override_settings 
+from djorm .apps import apps
+from djorm .core import management
+from djorm .db import migrations
+from djorm .db .models import signals
+from djorm .test import TransactionTestCase ,override_settings
 
 APP_CONFIG =apps .get_app_config ("migrate_signals")
 SIGNAL_ARGS =[

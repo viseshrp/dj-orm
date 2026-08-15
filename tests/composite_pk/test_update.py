@@ -1,7 +1,7 @@
-from djo .core .exceptions import FieldError 
-from djo .db import connection 
-from djo .db .models import F 
-from djo .test import TestCase 
+from djorm .core .exceptions import FieldError
+from djorm .db import connection
+from djorm .db .models import F
+from djorm .test import TestCase
 
 from .models import Comment ,Tenant ,TimeStamped ,Token ,User 
 

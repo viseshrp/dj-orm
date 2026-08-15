@@ -1,6 +1,6 @@
 import unittest 
 
-from djo .utils .termcolors import (
+from djorm .utils .termcolors import (
 DARK_PALETTE ,
 DEFAULT_PALETTE ,
 LIGHT_PALETTE ,

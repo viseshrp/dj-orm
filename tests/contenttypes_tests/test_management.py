@@ -1,11 +1,11 @@
 from unittest import mock 
 
-from djo .apps .registry import Apps ,apps 
-from djo .contrib .contenttypes import management as contenttypes_management 
-from djo .contrib .contenttypes .models import ContentType 
-from djo .core .management import call_command 
-from djo .test import TestCase ,modify_settings 
-from djo .test .utils import captured_stdout 
+from djorm .apps .registry import Apps ,apps
+from djorm .contrib .contenttypes import management as contenttypes_management
+from djorm .contrib .contenttypes .models import ContentType
+from djorm .core .management import call_command
+from djorm .test import TestCase ,modify_settings
+from djorm .test .utils import captured_stdout
 
 from .models import ModelWithNullFKToSite ,Post 
 
@@ -17,7 +17,7 @@ class RemoveStaleContentTypesTests (TestCase ):
     "contenttypes_tests",
     "empty_models",
     "no_models",
-    "djo.contrib.contenttypes",
+    "djorm.contrib.contenttypes",
     ]
 
     @classmethod 

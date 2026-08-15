@@ -2,9 +2,9 @@ import unittest
 from io import StringIO 
 from unittest import mock 
 
-from djo .db import DatabaseError ,connection 
-from djo .db .backends .oracle .creation import DatabaseCreation 
-from djo .test import TestCase 
+from djorm .db import DatabaseError ,connection
+from djorm .db .backends .oracle .creation import DatabaseCreation
+from djorm .test import TestCase
 
 
 @unittest .skipUnless (connection .vendor =="oracle","Oracle tests")

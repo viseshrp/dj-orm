@@ -1,7 +1,7 @@
 from unittest .mock import patch 
 
-from djo .db import connection 
-from djo .db .models import (
+from djorm .db import connection
+from djorm .db .models import (
 Case ,
 F ,
 FilteredRelation ,
@@ -12,9 +12,9 @@ TextField ,
 Value ,
 When ,
 )
-from djo .db .models .functions import Cast 
-from djo .db .models .lookups import Exact 
-from djo .test import TestCase ,skipUnlessDBFeature 
+from djorm .db .models .functions import Cast
+from djorm .db .models .lookups import Exact
+from djorm .test import TestCase ,skipUnlessDBFeature
 
 from .models import Comment ,Tenant ,User 
 

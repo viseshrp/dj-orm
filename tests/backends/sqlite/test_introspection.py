@@ -2,8 +2,8 @@ import unittest
 
 import sqlparse 
 
-from djo .db import connection 
-from djo .test import TestCase 
+from djorm .db import connection
+from djorm .test import TestCase
 
 
 @unittest .skipUnless (connection .vendor =="sqlite","SQLite tests")

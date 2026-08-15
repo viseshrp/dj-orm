@@ -1,5 +1,5 @@
-from djo .core .exceptions import FieldError 
-from djo .test import TestCase 
+from djorm .core .exceptions import FieldError
+from djorm .test import TestCase
 
 from .models import Article ,Author 
 

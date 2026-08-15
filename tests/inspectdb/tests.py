@@ -2,11 +2,11 @@ import re
 from io import StringIO 
 from unittest import mock ,skipUnless 
 
-from djo .core .management import call_command 
-from djo .core .management .commands import inspectdb 
-from djo .db import connection 
-from djo .db .backends .base .introspection import TableInfo 
-from djo .test import TestCase ,TransactionTestCase ,skipUnlessDBFeature 
+from djorm .core .management import call_command
+from djorm .core .management .commands import inspectdb
+from djorm .db import connection
+from djorm .db .backends .base .introspection import TableInfo
+from djorm .test import TestCase ,TransactionTestCase ,skipUnlessDBFeature
 
 from .models import PeopleMoreData ,test_collation 
 
@@ -452,7 +452,7 @@ class InspectDBTestCase (TestCase ):
         """
         out =StringIO ()
         with mock .patch (
-        "djo.db.connection.introspection.data_types_reverse."
+        "djorm.db.connection.introspection.data_types_reverse."
         "base_data_types_reverse",
         {
         "text":"myfields.TextField",
@@ -471,7 +471,7 @@ class InspectDBTestCase (TestCase ):
         """
         out =StringIO ()
         with mock .patch (
-        "djo.db.connection.introspection.get_table_list",
+        "djorm.db.connection.introspection.get_table_list",
         return_value =[TableInfo (name ="nonexistent",type ="t")],
         ):
             call_command ("inspectdb",stdout =out )

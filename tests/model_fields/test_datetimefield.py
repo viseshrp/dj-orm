@@ -1,9 +1,9 @@
 import datetime 
 
-from djo .db import models 
-from djo .test import SimpleTestCase ,TestCase ,override_settings ,skipUnlessDBFeature 
-from djo .test .utils import requires_tz_support 
-from djo .utils import timezone 
+from djorm .db import models
+from djorm .test import SimpleTestCase ,TestCase ,override_settings ,skipUnlessDBFeature
+from djorm .test .utils import requires_tz_support
+from djorm .utils import timezone
 
 from .models import DateTimeModel 
 

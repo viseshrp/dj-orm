@@ -7,7 +7,7 @@ and many "secondary" ``Category`` objects.
 Set ``related_name`` to designate what the reverse relationship is called.
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Category (models .Model ):

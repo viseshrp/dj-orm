@@ -3,12 +3,12 @@ import os
 import sys 
 from datetime import datetime 
 
-from djo .core .exceptions import SuspiciousOperation 
-from djo .core .serializers .json import DjangoJSONEncoder 
-from djo .test import SimpleTestCase 
-from djo .utils .deprecation import RemovedInDjango60Warning 
-from djo .utils .functional import lazystr 
-from djo .utils .html import (
+from djorm .core .exceptions import SuspiciousOperation
+from djorm .core .serializers .json import DjangoJSONEncoder
+from djorm .test import SimpleTestCase
+from djorm .utils .deprecation import RemovedInDjango60Warning
+from djorm .utils .functional import lazystr
+from djorm .utils .html import (
 conditional_escape ,
 escape ,
 escapejs ,
@@ -22,7 +22,7 @@ strip_spaces_between_tags ,
 strip_tags ,
 urlize ,
 )
-from djo .utils .safestring import mark_safe 
+from djorm .utils .safestring import mark_safe
 
 
 class TestUtilsHtml (SimpleTestCase ):
@@ -365,9 +365,9 @@ class TestUtilsHtml (SimpleTestCase ):
         ),
         (
         "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
-        "djo",
+        "djorm",
         "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
-        "djo",
+        "djorm",
         ),
         ("http://.www.f oo.bar/","http://.www.f%20oo.bar/"),
         ('http://example.com">',"http://example.com%22%3E"),

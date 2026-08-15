@@ -1,5 +1,5 @@
-from djo .db .models .base import ModelState ,ModelStateFieldsCacheDescriptor 
-from djo .test import SimpleTestCase 
+from djorm .db .models .base import ModelState ,ModelStateFieldsCacheDescriptor
+from djorm .test import SimpleTestCase
 
 
 class ModelStateTests (SimpleTestCase ):

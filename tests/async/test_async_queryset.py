@@ -4,9 +4,9 @@ from datetime import datetime
 
 from asgiref .sync import async_to_sync ,sync_to_async 
 
-from djo .db import NotSupportedError ,connection 
-from djo .db .models import Prefetch ,Sum 
-from djo .test import TestCase ,skipIfDBFeature ,skipUnlessDBFeature 
+from djorm .db import NotSupportedError ,connection
+from djorm .db .models import Prefetch ,Sum
+from djorm .test import TestCase ,skipIfDBFeature ,skipUnlessDBFeature
 
 from .models import RelatedModel ,SimpleModel 
 

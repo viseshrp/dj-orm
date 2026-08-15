@@ -4,11 +4,11 @@ from datetime import date ,datetime ,timedelta
 from threading import Event ,Thread ,Timer 
 from unittest .mock import patch 
 
-from djo .core .exceptions import FieldError 
-from djo .db import DatabaseError ,IntegrityError ,connection 
-from djo .test import TestCase ,TransactionTestCase ,skipUnlessDBFeature 
-from djo .test .utils import CaptureQueriesContext 
-from djo .utils .functional import lazy 
+from djorm .core .exceptions import FieldError
+from djorm .db import DatabaseError ,IntegrityError ,connection
+from djorm .test import TestCase ,TransactionTestCase ,skipUnlessDBFeature
+from djorm .test .utils import CaptureQueriesContext
+from djorm .utils .functional import lazy
 
 from .models import (
 Author ,

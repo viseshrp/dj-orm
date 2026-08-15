@@ -1,6 +1,6 @@
-from djo .db import connection ,models 
-from djo .db .models .functions import Lower 
-from djo .utils .functional import SimpleLazyObject 
+from djorm .db import connection ,models
+from djorm .db .models .functions import Lower
+from djorm .utils .functional import SimpleLazyObject
 
 
 class People (models .Model ):

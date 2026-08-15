@@ -7,7 +7,7 @@ appropriately behind the scenes, so your database won't complain about
 reserved-name usage.
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Thing (models .Model ):

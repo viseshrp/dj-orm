@@ -1,10 +1,10 @@
 import unittest 
 from datetime import date 
 
-from djo .db import connection 
-from djo .db .models .expressions import RawSQL 
-from djo .db .utils import DataError 
-from djo .test import TestCase 
+from djorm .db import connection
+from djorm .db .models .expressions import RawSQL
+from djorm .db .utils import DataError
+from djorm .test import TestCase
 
 from ..models import Article ,Reporter ,Square 
 

@@ -1,6 +1,6 @@
-from djo .db import DEFAULT_DB_ALIAS ,connection 
-from djo .db .models .sql import Query 
-from djo .test import SimpleTestCase 
+from djorm .db import DEFAULT_DB_ALIAS ,connection
+from djorm .db .models .sql import Query
+from djorm .test import SimpleTestCase
 
 from .models import Item 
 

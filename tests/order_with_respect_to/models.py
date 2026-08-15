@@ -2,7 +2,7 @@
 Tests for the order_with_respect_to Meta attribute.
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Question (models .Model ):

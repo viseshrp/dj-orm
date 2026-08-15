@@ -1,10 +1,10 @@
 from math import ceil 
 
-from djo .db import connection ,models 
-from djo .db .models import ProtectedError ,Q ,RestrictedError 
-from djo .db .models .deletion import Collector 
-from djo .db .models .sql .constants import GET_ITERATOR_CHUNK_SIZE 
-from djo .test import TestCase ,skipIfDBFeature ,skipUnlessDBFeature 
+from djorm .db import connection ,models
+from djorm .db .models import ProtectedError ,Q ,RestrictedError
+from djorm .db .models .deletion import Collector
+from djorm .db .models .sql .constants import GET_ITERATOR_CHUNK_SIZE
+from djorm .test import TestCase ,skipIfDBFeature ,skipUnlessDBFeature
 
 from .models import (
 B1 ,

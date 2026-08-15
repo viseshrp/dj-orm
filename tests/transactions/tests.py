@@ -3,7 +3,7 @@ import threading
 import time 
 from unittest import skipIf ,skipUnless 
 
-from djo .db import (
+from djorm .db import (
 DatabaseError ,
 Error ,
 IntegrityError ,
@@ -11,7 +11,7 @@ OperationalError ,
 connection ,
 transaction ,
 )
-from djo .test import (
+from djorm .test import (
 TestCase ,
 TransactionTestCase ,
 skipIfDBFeature ,

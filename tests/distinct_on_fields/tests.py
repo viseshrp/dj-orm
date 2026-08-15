@@ -1,8 +1,8 @@
-from djo .db import connection 
-from djo .db .models import CharField ,F ,Max 
-from djo .db .models .functions import Lower 
-from djo .test import TestCase ,skipUnlessDBFeature 
-from djo .test .utils import register_lookup 
+from djorm .db import connection
+from djorm .db .models import CharField ,F ,Max
+from djorm .db .models .functions import Lower
+from djorm .test import TestCase ,skipUnlessDBFeature
+from djorm .test .utils import register_lookup
 
 from .models import Celebrity ,Fan ,Staff ,StaffTag ,Tag 
 

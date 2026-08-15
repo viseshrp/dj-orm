@@ -1,7 +1,7 @@
-from djo .db .models import F ,IntegerField 
-from djo .db .models .functions import Chr ,Left ,Ord 
-from djo .test import TestCase 
-from djo .test .utils import register_lookup 
+from djorm .db .models import F ,IntegerField
+from djorm .db .models .functions import Chr ,Left ,Ord
+from djorm .test import TestCase
+from djorm .test .utils import register_lookup
 
 from ..models import Author 
 

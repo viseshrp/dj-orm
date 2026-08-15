@@ -1,11 +1,11 @@
 import unittest 
 
-from djo .db import NotSupportedError ,connection 
-from djo .db .models import CharField ,F ,Value 
-from djo .db .models .functions import Cast ,JSONArray ,JSONObject ,Lower 
-from djo .test import TestCase 
-from djo .test .testcases import skipIfDBFeature ,skipUnlessDBFeature 
-from djo .utils import timezone 
+from djorm .db import NotSupportedError ,connection
+from djorm .db .models import CharField ,F ,Value
+from djorm .db .models .functions import Cast ,JSONArray ,JSONObject ,Lower
+from djorm .test import TestCase
+from djorm .test .testcases import skipIfDBFeature ,skipUnlessDBFeature
+from djorm .utils import timezone
 
 from ..models import Article ,Author 
 

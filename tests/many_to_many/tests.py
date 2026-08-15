@@ -1,8 +1,8 @@
 from unittest import mock 
 
-from djo .db import connection ,transaction 
-from djo .test import TestCase ,skipIfDBFeature ,skipUnlessDBFeature 
-from djo .utils .deprecation import RemovedInDjango60Warning 
+from djorm .db import connection ,transaction
+from djorm .test import TestCase ,skipIfDBFeature ,skipUnlessDBFeature
+from djorm .utils .deprecation import RemovedInDjango60Warning
 
 from .models import (
 Article ,

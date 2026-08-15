@@ -1,6 +1,6 @@
-from djo .db import models 
-from djo .db .backends .base .schema import BaseDatabaseSchemaEditor 
-from djo .test import SimpleTestCase 
+from djorm .db import models
+from djorm .db .backends .base .schema import BaseDatabaseSchemaEditor
+from djorm .test import SimpleTestCase
 
 
 class SchemaEditorTests (SimpleTestCase ):

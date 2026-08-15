@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the Djo fork commit stack to an exact Django LTS tag."""
+"""Apply the Djorm fork commit stack to an exact Django LTS tag."""
 
 from __future__ import annotations
 
@@ -19,8 +19,8 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10
     import tomli as tomllib
 
 
-CONFIG_NAME = ".djo-maintenance.toml"
-STATE_NAME = "djo-apply-state.json"
+CONFIG_NAME = ".djorm-maintenance.toml"
+STATE_NAME = "djorm-apply-state.json"
 FINAL_TAG_RE = re.compile(r"^(?P<parts>\d+(?:\.\d+){0,2})$")
 
 
@@ -133,14 +133,14 @@ def assert_configured_lts(django_ref: str, config: dict[str, Any]) -> None:
 
 def distribution_version(django_ref: str, revision: int) -> str:
     if revision < 0:
-        raise ApplyError("The Djo release revision must be zero or greater.")
+        raise ApplyError("The Djorm release revision must be zero or greater.")
     major, minor, patch = normalize_upstream_version(django_ref)
     return f"{major}.{minor}.{patch}.{revision}"
 
 
 def assert_source_ready(source_repo: Path, config: dict[str, Any]) -> str:
     if git(source_repo, "status", "--porcelain"):
-        raise ApplyError("The Djo source checkout must be clean before applying an LTS tag.")
+        raise ApplyError("The Djorm source checkout must be clean before applying an LTS tag.")
     expected_url = str(config["upstream_url"])
     remote = str(config["upstream_remote"])
     actual_url = git(source_repo, "remote", "get-url", remote, check=False)
@@ -178,7 +178,7 @@ def commit_stack(source_repo: Path, base_commit: str, source_head: str) -> list[
     )
     commits = output.splitlines()
     if not commits:
-        raise ApplyError("No Djo commits exist after the configured upstream base.")
+        raise ApplyError("No Djorm commits exist after the configured upstream base.")
     return commits
 
 
@@ -197,7 +197,7 @@ def save_state(output: Path, state: ApplyState) -> None:
 def load_state(output: Path) -> ApplyState:
     path = state_path(output)
     if not path.is_file():
-        raise ApplyError(f"No interrupted Djo application state exists for {output}.")
+        raise ApplyError(f"No interrupted Djorm application state exists for {output}.")
     return ApplyState(**json.loads(path.read_text(encoding="utf-8")))
 
 
@@ -216,7 +216,7 @@ def create_candidate(
     commits = commit_stack(source_repo, str(config["upstream_base_commit"]), source_head)
     namespace_commit = str(config["namespace_commit"])
     if namespace_commit not in commits:
-        raise ApplyError("Configured namespace commit is not in the Djo commit stack.")
+        raise ApplyError("Configured namespace commit is not in the Djorm commit stack.")
 
     branch = f"release/django-{django_ref}"
     if git(source_repo, "show-ref", "--verify", f"refs/heads/{branch}", check=False):
@@ -284,7 +284,7 @@ def run_namespace_step(output: Path, source_repo: Path) -> str:
     )
     run(["git", "add", "-A"], cwd=output, capture=True)
     run(
-        ["git", "commit", "-m", "[namespace] Rename django -> djo mechanically"],
+        ["git", "commit", "-m", "[namespace] Rename django -> djorm mechanically"],
         cwd=output,
         capture=False,
     )
@@ -335,7 +335,7 @@ def finish_cherry_pick(output: Path) -> None:
 
 
 def report_conflicts(output: Path, unresolved: list[str]) -> None:
-    print("Upstream changed retained Djo code. Resolve and stage these files:", file=sys.stderr)
+    print("Upstream changed retained Djorm code. Resolve and stage these files:", file=sys.stderr)
     for file_name in unresolved:
         print(f"  {file_name}", file=sys.stderr)
     print(
@@ -346,7 +346,7 @@ def report_conflicts(output: Path, unresolved: list[str]) -> None:
 
 
 def update_version_file(output: Path, version: str) -> None:
-    version_path = output / "djo" / "_version.py"
+    version_path = output / "djorm" / "_version.py"
     original = version_path.read_text(encoding="utf-8")
     rewritten, count = re.subn(
         r'^__version__\s*=\s*["\'][^"\']+["\']$',
@@ -398,7 +398,7 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
         ):
             run(command, cwd=output, capture=False)
 
-    allowed_changes = {CONFIG_NAME, "djo/_version.py"}
+    allowed_changes = {CONFIG_NAME, "djorm/_version.py"}
     changed_paths = set(git(output, "diff", "--name-only").splitlines())
     changed_paths.update(git(output, "diff", "--cached", "--name-only").splitlines())
     changed_paths.update(git(output, "ls-files", "--others", "--exclude-standard").splitlines())
@@ -406,7 +406,7 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
     if unexpected:
         raise ApplyError("Verification changed unexpected files: " + ", ".join(unexpected))
 
-    run(["git", "add", CONFIG_NAME, "djo/_version.py"], cwd=output, capture=True)
+    run(["git", "add", CONFIG_NAME, "djorm/_version.py"], cwd=output, capture=True)
     staged_diff = run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=output,
@@ -416,7 +416,7 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
     if staged_diff.returncode == 0:
         raise ApplyError("Generated provenance and version did not change.")
     run(
-        ["git", "commit", "-m", f"[lts] Base Djo on Django {state.django_ref}"],
+        ["git", "commit", "-m", f"[lts] Base Djorm on Django {state.django_ref}"],
         cwd=output,
         capture=False,
     )
@@ -480,7 +480,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--django-ref", help="Exact final Django LTS tag, for example 5.2.17")
     parser.add_argument("--output", required=True, type=Path, help="New candidate worktree path")
-    parser.add_argument("--revision", type=int, default=0, help="Djo-only rebuild revision")
+    parser.add_argument("--revision", type=int, default=0, help="Djorm-only rebuild revision")
     parser.add_argument("--continue", dest="resume", action="store_true")
     parser.add_argument("--no-verify", action="store_true", help="Skip the final package gate")
     return parser.parse_args()

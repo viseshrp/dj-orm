@@ -1,5 +1,5 @@
-from djo .db .models .utils import create_namedtuple_class 
-from djo .test import SimpleTestCase 
+from djorm .db .models .utils import create_namedtuple_class
+from djorm .test import SimpleTestCase
 
 
 class NamedTupleClassTests (SimpleTestCase ):

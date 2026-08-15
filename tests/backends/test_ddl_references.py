@@ -1,5 +1,5 @@
-from djo .db import connection 
-from djo .db .backends .ddl_references import (
+from djorm .db import connection
+from djorm .db .backends .ddl_references import (
 Columns ,
 Expressions ,
 ForeignKeyName ,
@@ -7,11 +7,11 @@ IndexName ,
 Statement ,
 Table ,
 )
-from djo .db .models import ExpressionList ,F 
-from djo .db .models .functions import Upper 
-from djo .db .models .indexes import IndexExpression 
-from djo .db .models .sql import Query 
-from djo .test import SimpleTestCase ,TransactionTestCase 
+from djorm .db .models import ExpressionList ,F
+from djorm .db .models .functions import Upper
+from djorm .db .models .indexes import IndexExpression
+from djorm .db .models .sql import Query
+from djorm .test import SimpleTestCase ,TransactionTestCase
 
 from .models import Person 
 

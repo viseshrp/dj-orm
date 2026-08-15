@@ -1,4 +1,4 @@
-from djo .db import models 
+from djorm .db import models
 
 
 class ParentManager (models .Manager ):

@@ -1,11 +1,11 @@
 import json 
 
-from djo .contrib .contenttypes .fields import GenericForeignKey 
-from djo .contrib .contenttypes .prefetch import GenericPrefetch 
-from djo .db import models 
-from djo .test import TestCase 
-from djo .test .utils import isolate_apps 
-from djo .utils .deprecation import RemovedInDjango60Warning 
+from djorm .contrib .contenttypes .fields import GenericForeignKey
+from djorm .contrib .contenttypes .prefetch import GenericPrefetch
+from djorm .db import models
+from djorm .test import TestCase
+from djorm .test .utils import isolate_apps
+from djorm .utils .deprecation import RemovedInDjango60Warning
 
 from .models import Answer ,Post ,Question 
 

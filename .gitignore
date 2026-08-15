@@ -33,4 +33,4 @@ docs/locale/
 node_modules/
 
 # Interrupted LTS application state
-.djo-apply-state.json
+.djorm-apply-state.json

@@ -1,18 +1,18 @@
 import datetime 
 from unittest import skipUnless 
 
-from djo .conf import settings 
-from djo .db import connection 
-from djo .db .models import CASCADE ,CharField ,ForeignKey ,Index ,Q 
-from djo .db .models .functions import Lower 
-from djo .test import (
+from djorm .conf import settings
+from djorm .db import connection
+from djorm .db .models import CASCADE ,CharField ,ForeignKey ,Index ,Q
+from djorm .db .models .functions import Lower
+from djorm .test import (
 TestCase ,
 TransactionTestCase ,
 skipIfDBFeature ,
 skipUnlessDBFeature ,
 )
-from djo .test .utils import override_settings 
-from djo .utils import timezone 
+from djorm .test .utils import override_settings
+from djorm .utils import timezone
 
 from .models import Article ,ArticleTranslation ,IndexedArticle2 
 

@@ -1,8 +1,8 @@
 from unittest import mock 
 
-from djo .db import connections ,models 
-from djo .test import SimpleTestCase 
-from djo .test .utils import isolate_apps ,override_settings 
+from djorm .db import connections ,models
+from djorm .test import SimpleTestCase
+from djorm .test .utils import isolate_apps ,override_settings
 
 
 class TestRouter :

@@ -1,7 +1,7 @@
-from djo .db import models 
-from djo .db .models .fields .related import ReverseManyToOneDescriptor 
-from djo .db .models .lookups import StartsWith 
-from djo .db .models .query_utils import PathInfo 
+from djorm .db import models
+from djorm .db .models .fields .related import ReverseManyToOneDescriptor
+from djorm .db .models .lookups import StartsWith
+from djorm .db .models .query_utils import PathInfo
 
 
 class CustomForeignObjectRel (models .ForeignObjectRel ):

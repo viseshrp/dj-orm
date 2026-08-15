@@ -16,7 +16,7 @@ if there is a name clash, and tests that symmetry is preserved where
 appropriate.
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Person (models .Model ):

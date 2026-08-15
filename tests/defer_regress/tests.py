@@ -1,9 +1,9 @@
 from operator import attrgetter 
 
-from djo .contrib .contenttypes .models import ContentType 
-from djo .db import models 
-from djo .db .models import Count 
-from djo .test import TestCase 
+from djorm .contrib .contenttypes .models import ContentType
+from djorm .db import models
+from djorm .db .models import Count
+from djorm .test import TestCase
 
 from .models import (
 Base ,

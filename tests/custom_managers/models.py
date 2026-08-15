@@ -9,8 +9,8 @@ There are two reasons you might want to customize a ``Manager``: to add extra
 returns.
 """
 
-from djo .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation 
-from djo .db import models 
+from djorm .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation
+from djorm .db import models
 
 
 class PersonManager (models .Manager ):

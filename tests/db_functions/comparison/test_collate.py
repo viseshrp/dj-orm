@@ -1,7 +1,7 @@
-from djo .db import connection 
-from djo .db .models import F ,Value 
-from djo .db .models .functions import Collate 
-from djo .test import TestCase 
+from djorm .db import connection
+from djorm .db .models import F ,Value
+from djorm .db .models .functions import Collate
+from djorm .test import TestCase
 
 from ..models import Author 
 

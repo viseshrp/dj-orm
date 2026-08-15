@@ -1,5 +1,5 @@
-import djo .contrib .postgres .fields 
-from djo .db import migrations ,models 
+import djorm .contrib .postgres .fields
+from djorm .db import migrations ,models
 
 
 class Migration (migrations .Migration ):
@@ -20,14 +20,14 @@ class Migration (migrations .Migration ):
     ),
     (
     "char",
-    djo .contrib .postgres .fields .ArrayField (
+    djorm .contrib .postgres .fields .ArrayField (
     models .CharField (max_length =10 ),db_index =True ,size =100 
     ),
     ),
     ("char2",models .CharField (max_length =11 ,db_index =True )),
     (
     "text",
-    djo .contrib .postgres .fields .ArrayField (
+    djorm .contrib .postgres .fields .ArrayField (
     models .TextField (),db_index =True 
     ),
     ),

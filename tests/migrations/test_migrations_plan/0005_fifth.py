@@ -1,4 +1,4 @@
-from djo .db import migrations 
+from djorm .db import migrations
 
 
 def grow_tail (x ,y ):

@@ -2,7 +2,7 @@
 Regression tests for defer() / only() behavior.
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Item (models .Model ):

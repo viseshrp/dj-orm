@@ -1,10 +1,10 @@
-from djo .apps import apps 
-from djo .contrib .contenttypes .models import ContentType ,ContentTypeManager 
-from djo .contrib .contenttypes .prefetch import GenericPrefetch 
-from djo .db import models 
-from djo .db .migrations .state import ModelState ,ProjectState 
-from djo .test import TestCase ,override_settings 
-from djo .test .utils import isolate_apps 
+from djorm .apps import apps
+from djorm .contrib .contenttypes .models import ContentType ,ContentTypeManager
+from djorm .contrib .contenttypes .prefetch import GenericPrefetch
+from djorm .db import models
+from djorm .db .migrations .state import ModelState ,ProjectState
+from djorm .test import TestCase ,override_settings
+from djorm .test .utils import isolate_apps
 
 from .models import Author ,ConcreteModel ,FooWithUrl ,ProxyModel 
 

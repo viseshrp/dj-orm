@@ -1,11 +1,11 @@
 import unittest 
 
-from djo .core .exceptions import FieldError 
-from djo .db import IntegrityError ,connection ,transaction 
-from djo .db .models import Case ,CharField ,Count ,F ,IntegerField ,Max ,When 
-from djo .db .models .functions import Abs ,Concat ,Lower 
-from djo .test import TestCase 
-from djo .test .utils import register_lookup 
+from djorm .core .exceptions import FieldError
+from djorm .db import IntegrityError ,connection ,transaction
+from djorm .db .models import Case ,CharField ,Count ,F ,IntegerField ,Max ,When
+from djorm .db .models .functions import Abs ,Concat ,Lower
+from djorm .test import TestCase
+from djorm .test .utils import register_lookup
 
 from .models import (
 A ,
@@ -159,7 +159,7 @@ class AdvancedTests (TestCase ):
     def test_update_m2m_field (self ):
         msg =(
         "Cannot update model field "
-        "<djo.db.models.fields.related.ManyToManyField: m2m_foo> "
+        "<djorm.db.models.fields.related.ManyToManyField: m2m_foo> "
         "(only non-relations and foreign keys permitted)."
         )
         with self .assertRaisesMessage (FieldError ,msg ):

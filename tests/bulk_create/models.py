@@ -2,8 +2,8 @@ import datetime
 import uuid 
 from decimal import Decimal 
 
-from djo .db import models 
-from djo .utils import timezone 
+from djorm .db import models
+from djorm .utils import timezone
 
 try :
     from PIL import Image 

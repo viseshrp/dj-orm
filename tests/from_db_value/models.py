@@ -1,6 +1,6 @@
 import decimal 
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Cash (decimal .Decimal ):

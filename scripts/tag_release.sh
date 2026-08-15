@@ -7,8 +7,8 @@ fail() {
 }
 
 branch=$(git rev-parse --abbrev-ref HEAD)
-if [[ ! "$branch" =~ ^(djo/.+-lts|release/django-.+)$ ]]; then
-  fail "Release tags must be created from a djo/*-lts or release/django-* branch."
+if [[ ! "$branch" =~ ^(djorm/.+-lts|release/django-.+)$ ]]; then
+  fail "Release tags must be created from a djorm/*-lts or release/django-* branch."
 fi
 
 if [[ -n "$(git status --porcelain)" ]]; then

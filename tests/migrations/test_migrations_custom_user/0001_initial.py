@@ -1,5 +1,5 @@
-from djo .conf import settings 
-from djo .db import migrations ,models 
+from djorm .conf import settings
+from djorm .db import migrations ,models
 
 
 class Migration (migrations .Migration ):

@@ -6,7 +6,7 @@ import datetime
 from operator import attrgetter 
 from unittest import expectedFailure 
 
-from djo .test import TestCase 
+from djorm .test import TestCase
 
 from .models import (
 ArticleWithAuthor ,

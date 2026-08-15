@@ -5,7 +5,7 @@ on:
   pull_request:
     paths: [codecov.yml]
   push:
-    branches: ["djo/**"]
+    branches: ["djorm/**"]
     paths: [codecov.yml]
 
 permissions:

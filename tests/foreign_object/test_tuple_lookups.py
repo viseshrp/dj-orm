@@ -1,7 +1,7 @@
 import itertools 
 
-from djo .db .models import F 
-from djo .db .models .fields .tuple_lookups import (
+from djorm .db .models import F
+from djorm .db .models .fields .tuple_lookups import (
 TupleExact ,
 TupleGreaterThan ,
 TupleGreaterThanOrEqual ,
@@ -10,8 +10,8 @@ TupleIsNull ,
 TupleLessThan ,
 TupleLessThanOrEqual ,
 )
-from djo .db .models .lookups import In 
-from djo .test import TestCase ,skipUnlessDBFeature 
+from djorm .db .models .lookups import In
+from djorm .test import TestCase ,skipUnlessDBFeature
 
 from .models import Contact ,Customer 
 

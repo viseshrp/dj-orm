@@ -1,6 +1,6 @@
-from djo .db .models .signals import post_save ,pre_save 
-from djo .test import TestCase 
-from djo .utils .deprecation import RemovedInDjango60Warning 
+from djorm .db .models .signals import post_save ,pre_save
+from djorm .test import TestCase
+from djorm .utils .deprecation import RemovedInDjango60Warning
 
 from .models import Account ,Employee ,Person ,Profile ,ProxyEmployee 
 

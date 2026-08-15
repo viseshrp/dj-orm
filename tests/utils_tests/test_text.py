@@ -1,12 +1,12 @@
 import json 
 import sys 
 
-from djo .core .exceptions import SuspiciousFileOperation 
-from djo .test import SimpleTestCase 
-from djo .utils import text 
-from djo .utils .functional import lazystr 
-from djo .utils .text import format_lazy 
-from djo .utils .translation import gettext_lazy ,override 
+from djorm .core .exceptions import SuspiciousFileOperation
+from djorm .test import SimpleTestCase
+from djorm .utils import text
+from djorm .utils .functional import lazystr
+from djorm .utils .text import format_lazy
+from djorm .utils .translation import gettext_lazy ,override
 
 IS_WIDE_BUILD =len ("\U0001f4a9")==1 
 
@@ -413,19 +413,19 @@ class TestUtilsText (SimpleTestCase ):
         self .assertLess (compressed_length ,actual_length )
 
     def test_format_lazy (self ):
-        self .assertEqual ("djo/test",format_lazy ("{}/{}","djo",lazystr ("test")))
-        self .assertEqual ("djo/test",format_lazy ("{0}/{1}",*("djo","test")))
+        self .assertEqual ("djorm/test",format_lazy ("{}/{}","djorm",lazystr ("test")))
+        self .assertEqual ("djorm/test",format_lazy ("{0}/{1}",*("djorm","test")))
         self .assertEqual (
-        "djo/test",format_lazy ("{a}/{b}",**{"a":"djo","b":"test"})
+        "djorm/test",format_lazy ("{a}/{b}",**{"a":"djorm","b":"test"})
         )
         self .assertEqual (
-        "djo/test",format_lazy ("{a[0]}/{a[1]}",a =("djo","test"))
+        "djorm/test",format_lazy ("{a[0]}/{a[1]}",a =("djorm","test"))
         )
 
         t ={}
         s =format_lazy ("{0[a]}-{p[a]}",t ,p =t )
-        t ["a"]=lazystr ("djo")
-        self .assertEqual ("djo-djo",s )
+        t ["a"]=lazystr ("djorm")
+        self .assertEqual ("djorm-djorm",s )
         t ["a"]="update"
         self .assertEqual ("update-update",s )
 

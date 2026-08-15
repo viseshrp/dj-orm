@@ -1,7 +1,7 @@
 import math 
 
-from djo .db .models .functions import Pi 
-from djo .test import TestCase 
+from djorm .db .models .functions import Pi
+from djorm .test import TestCase
 
 from ..models import FloatModel 
 

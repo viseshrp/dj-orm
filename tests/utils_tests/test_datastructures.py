@@ -1,13 +1,13 @@
 """
-Tests for stuff in djo.utils.datastructures.
+Tests for stuff in djorm.utils.datastructures.
 """
 
 import collections .abc 
 import copy 
 import pickle 
 
-from djo .test import SimpleTestCase 
-from djo .utils .datastructures import (
+from djorm .test import SimpleTestCase
+from djorm .utils .datastructures import (
 CaseInsensitiveMapping ,
 DictWrapper ,
 ImmutableList ,

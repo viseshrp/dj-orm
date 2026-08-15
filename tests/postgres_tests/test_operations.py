@@ -2,20 +2,20 @@ import unittest
 
 from migrations .test_base import OperationTestBase ,OptimizerTestBase 
 
-from djo .db import IntegrityError ,NotSupportedError ,connection ,transaction 
-from djo .db .migrations .operations import RemoveIndex ,RenameIndex 
-from djo .db .migrations .state import ProjectState 
-from djo .db .migrations .writer import OperationWriter 
-from djo .db .models import CheckConstraint ,Index ,Q ,UniqueConstraint 
-from djo .db .utils import ProgrammingError 
-from djo .test import modify_settings ,override_settings 
-from djo .test .utils import CaptureQueriesContext 
+from djorm .db import IntegrityError ,NotSupportedError ,connection ,transaction
+from djorm .db .migrations .operations import RemoveIndex ,RenameIndex
+from djorm .db .migrations .state import ProjectState
+from djorm .db .migrations .writer import OperationWriter
+from djorm .db .models import CheckConstraint ,Index ,Q ,UniqueConstraint
+from djorm .db .utils import ProgrammingError
+from djorm .test import modify_settings ,override_settings
+from djorm .test .utils import CaptureQueriesContext
 
 from .import PostgreSQLTestCase 
 
 try :
-    from djo .contrib .postgres .indexes import BrinIndex ,BTreeIndex 
-    from djo .contrib .postgres .operations import (
+    from djorm .contrib .postgres .indexes import BrinIndex ,BTreeIndex
+    from djorm .contrib .postgres .operations import (
     AddConstraintNotValid ,
     AddIndexConcurrently ,
     BloomExtension ,
@@ -448,10 +448,10 @@ class CreateCollationTests (OptimizerTestBase ,PostgreSQLTestCase ):
         deterministic =False ,
         )
         buff ,imports =OperationWriter (operation ,indentation =0 ).serialize ()
-        self .assertEqual (imports ,{'import djo.contrib.postgres.operations'})
+        self .assertEqual (imports ,{'import djorm.contrib.postgres.operations'})
         self .assertEqual (
         buff ,
-        'djo.contrib.postgres.operations.CreateCollation(\n'
+        'djorm.contrib.postgres.operations.CreateCollation(\n'
         "    name='sample_collation',\n"
         "    locale='und-u-ks-level2',\n"
         "    provider='icu',\n"

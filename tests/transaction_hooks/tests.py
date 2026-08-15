@@ -1,5 +1,5 @@
-from djo .db import connection ,transaction 
-from djo .test import TransactionTestCase ,skipUnlessDBFeature 
+from djorm .db import connection ,transaction
+from djorm .test import TransactionTestCase ,skipUnlessDBFeature
 
 from .models import Thing 
 
@@ -47,7 +47,7 @@ class TestConnectionOnCommit (TransactionTestCase ):
         def robust_callback ():
             raise ForcedError ("robust callback")
 
-        with self .assertLogs ("djo.db.backends.base","ERROR")as cm :
+        with self .assertLogs ("djorm.db.backends.base","ERROR")as cm :
             transaction .on_commit (robust_callback ,robust =True )
             self .do (1 )
 
@@ -67,7 +67,7 @@ class TestConnectionOnCommit (TransactionTestCase ):
         def robust_callback ():
             raise ForcedError ("robust callback")
 
-        with self .assertLogs ("djo.db.backends","ERROR")as cm :
+        with self .assertLogs ("djorm.db.backends","ERROR")as cm :
             with transaction .atomic ():
                 transaction .on_commit (robust_callback ,robust =True )
                 self .do (1 )

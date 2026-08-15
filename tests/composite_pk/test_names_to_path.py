@@ -1,6 +1,6 @@
-from djo .db .models .query_utils import PathInfo 
-from djo .db .models .sql import Query 
-from djo .test import TestCase 
+from djorm .db .models .query_utils import PathInfo
+from djorm .db .models .sql import Query
+from djorm .test import TestCase
 
 from .models import Comment ,Tenant ,User 
 

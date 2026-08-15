@@ -12,7 +12,7 @@ license = "BSD-3-Clause"
 license-files = ["LICENSE", "LICENSE.python", "AUTHORS"]
 authors = [
     { name = "Django Software Foundation and contributors" },
-    { name = "Djo contributors" },
+    { name = "Djorm contributors" },
 ]
 maintainers = [
     { name = "Visesh Prasad", email = "viseshrprasad@gmail.com" },
@@ -48,15 +48,15 @@ postgresql-legacy = ["psycopg2>=2.9.9"]
 yaml = ["PyYAML>=5.1"]
 
 [project.scripts]
-djo = "djo.core.management:execute_from_command_line"
+djorm = "djorm.core.management:execute_from_command_line"
 
 [project.urls]
-Homepage = "https://github.com/viseshrp/djo"
-Repository = "https://github.com/viseshrp/djo"
-Documentation = "https://github.com/viseshrp/djo/blob/djo/5.2-lts/README.md"
-Changelog = "https://github.com/viseshrp/djo/blob/djo/5.2-lts/CHANGELOG.md"
-"Bug Tracker" = "https://github.com/viseshrp/djo/issues"
-CI = "https://github.com/viseshrp/djo/actions"
+Homepage = "https://github.com/viseshrp/dj-orm"
+Repository = "https://github.com/viseshrp/dj-orm"
+Documentation = "https://github.com/viseshrp/dj-orm/blob/djorm/5.2-lts/README.md"
+Changelog = "https://github.com/viseshrp/dj-orm/blob/djorm/5.2-lts/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/viseshrp/dj-orm/issues"
+CI = "https://github.com/viseshrp/dj-orm/actions"
 "Django upstream" = "https://github.com/django/django"
 
 [dependency-groups]
@@ -79,11 +79,11 @@ dev = [
 ]
 
 [tool.hatch.version]
-path = "djo/_version.py"
+path = "djorm/_version.py"
 
 [tool.hatch.build]
 include = [
-    "djo/**",
+    "djorm/**",
     "AUTHORS",
     "CHANGELOG.md",
     "LICENSE",
@@ -92,14 +92,14 @@ include = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["djo"]
+packages = ["djorm"]
 
 [tool.hatch.build.targets.editable]
-packages = ["djo"]
+packages = ["djorm"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    ".djo-maintenance.toml",
+    ".djorm-maintenance.toml",
     ".github/**",
     ".gitattributes",
     ".gitignore",
@@ -116,14 +116,14 @@ include = [
     "SPEC.md",
     "codecov.yml",
     "codespell.txt",
-    "djo/**",
+    "djorm/**",
     "pyproject.toml",
     "scripts/apply_django_lts.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",
     "scripts/rename_namespace.py",
     "scripts/tag_release.sh",
-    "tests/djo_smoke/**",
+    "tests/djorm_smoke/**",
     "tox.ini",
     "uv.lock",
 ]
@@ -135,7 +135,7 @@ path = ".venv"
 default-groups = "all"
 
 [tool.pytest.ini_options]
-testpaths = ["tests/djo_smoke"]
+testpaths = ["tests/djorm_smoke"]
 addopts = "--capture=tee-sys --tb=native -ra"
 tmp_path_retention_policy = "failed"
 markers = [
@@ -146,7 +146,7 @@ markers = [
 
 [tool.coverage.run]
 branch = true
-source = ["djo"]
+source = ["djorm"]
 
 [tool.coverage.report]
 show_missing = true
@@ -169,26 +169,26 @@ select = ["B", "E", "F", "I", "SIM", "UP"]
 ignore = ["SIM108"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/djo_smoke/*" = ["S101"]
+"tests/djorm_smoke/*" = ["S101"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["djo", "scripts", "tests"]
+known-first-party = ["djorm", "scripts", "tests"]
 force-sort-within-sections = true
 
 [tool.ty.src]
 include = [
-    "djo/_ext",
+    "djorm/_ext",
     "scripts/apply_django_lts.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",
-    "tests/djo_smoke",
+    "tests/djorm_smoke",
 ]
 
 [tool.ty.environment]
 python-version = "3.10"
 
 [tool.ty.analysis]
-allowed-unresolved-imports = ["djo.urls", "tomllib"]
+allowed-unresolved-imports = ["djorm.urls", "tomllib"]
 
 [tool.ty.rules]
 unused-type-ignore-comment = "error"
@@ -199,6 +199,6 @@ quiet-level = 3
 skip = "*.mo,*.po,AUTHORS,docs,js_tests,tests/*"
 
 [tool.bandit]
-targets = ["djo/_ext", "scripts"]
+targets = ["djorm/_ext", "scripts"]
 exclude_dirs = ["tests"]
 skips = ["B404", "B603", "B607"]

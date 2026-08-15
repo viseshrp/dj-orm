@@ -1,8 +1,8 @@
 from unittest import mock ,skipUnless 
 
-from djo .db import connection 
-from djo .db .backends .mysql .features import DatabaseFeatures 
-from djo .test import TestCase 
+from djorm .db import connection
+from djorm .db .backends .mysql .features import DatabaseFeatures
+from djorm .test import TestCase
 
 
 @skipUnless (connection .vendor =="mysql","MySQL tests")
@@ -13,12 +13,12 @@ class TestFeatures (TestCase ):
         """
         del connection .features .supports_transactions 
         with mock .patch (
-        "djo.db.connection.features._mysql_storage_engine","InnoDB"
+        "djorm.db.connection.features._mysql_storage_engine","InnoDB"
         ):
             self .assertTrue (connection .features .supports_transactions )
         del connection .features .supports_transactions 
         with mock .patch (
-        "djo.db.connection.features._mysql_storage_engine","MyISAM"
+        "djorm.db.connection.features._mysql_storage_engine","MyISAM"
         ):
             self .assertFalse (connection .features .supports_transactions )
         del connection .features .supports_transactions 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Djo release provenance, version, and repository state."""
+"""Validate Djorm release provenance, version, and repository state."""
 
 from __future__ import annotations
 
@@ -24,10 +24,10 @@ def read_toml(path: Path) -> dict:
 
 
 def read_distribution_version(root: Path) -> str:
-    version_text = (root / "djo" / "_version.py").read_text(encoding="utf-8")
+    version_text = (root / "djorm" / "_version.py").read_text(encoding="utf-8")
     match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']$', version_text, re.MULTILINE)
     if match is None:
-        raise ValueError("djo/_version.py does not define one literal __version__ value")
+        raise ValueError("djorm/_version.py does not define one literal __version__ value")
     return match.group(1)
 
 
@@ -44,7 +44,7 @@ def git(root: Path, *args: str) -> str:
 def validate(root: Path, tag: str) -> list[str]:
     errors: list[str] = []
     project = read_toml(root / "pyproject.toml")
-    maintenance = read_toml(root / ".djo-maintenance.toml")
+    maintenance = read_toml(root / ".djorm-maintenance.toml")
     version = read_distribution_version(root)
     match = RELEASE_RE.fullmatch(version)
 
@@ -55,7 +55,7 @@ def validate(root: Path, tag: str) -> list[str]:
     if tag != f"v{version}":
         errors.append(f"tag {tag!r} does not match package version {version!r}")
     if match is None:
-        errors.append("package version must contain Django A.B.C plus a Djo revision")
+        errors.append("package version must contain Django A.B.C plus a Djorm revision")
     else:
         recorded_ref = str(maintenance.get("upstream_ref", ""))
         upstream_parts = match.group("upstream")

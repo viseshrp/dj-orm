@@ -16,17 +16,17 @@ import os
 
 DATABASES ={
 "default":{
-"ENGINE":"djo.db.backends.sqlite3",
+"ENGINE":"djorm.db.backends.sqlite3",
 "TEST":{"NAME":os .path .join (os .environ .get ("TMPDIR",os .getcwd ()),"test_default.sqlite3")},
 },
 "other":{
-"ENGINE":"djo.db.backends.sqlite3",
+"ENGINE":"djorm.db.backends.sqlite3",
 "TEST":{"NAME":os .path .join (os .environ .get ("TMPDIR",os .getcwd ()),"test_other.sqlite3")},
 },
 }
 
 SECRET_KEY ="django_tests_secret_key"
 
-DEFAULT_AUTO_FIELD ="djo.db.models.AutoField"
+DEFAULT_AUTO_FIELD ="djorm.db.models.AutoField"
 
 USE_TZ =False 

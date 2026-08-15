@@ -1,5 +1,5 @@
-from djo .db import models 
-from djo .test import SimpleTestCase ,TestCase 
+from djorm .db import models
+from djorm .test import SimpleTestCase ,TestCase
 
 from .models import Post 
 

@@ -1,5 +1,5 @@
-from djo .db .migrations .exceptions import NodeNotFoundError 
-from djo .test import SimpleTestCase 
+from djorm .db .migrations .exceptions import NodeNotFoundError
+from djorm .test import SimpleTestCase
 
 
 class ExceptionTests (SimpleTestCase ):

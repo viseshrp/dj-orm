@@ -1,5 +1,5 @@
-from djo .db import transaction 
-from djo .db .models import (
+from djorm .db import transaction
+from djorm .db .models import (
 CharField ,
 F ,
 Func ,
@@ -11,17 +11,17 @@ Subquery ,
 Value ,
 Window ,
 )
-from djo .db .models .fields .json import KeyTextTransform ,KeyTransform 
-from djo .db .models .functions import Cast ,Concat ,LPad ,Substr 
-from djo .test .utils import Approximate 
-from djo .utils import timezone 
-from djo .utils .deprecation import RemovedInDjango61Warning 
+from djorm .db .models .fields .json import KeyTextTransform ,KeyTransform
+from djorm .db .models .functions import Cast ,Concat ,LPad ,Substr
+from djorm .test .utils import Approximate
+from djorm .utils import timezone
+from djorm .utils .deprecation import RemovedInDjango61Warning
 
 from .import PostgreSQLTestCase 
 from .models import AggregateTestModel ,HotelReservation ,Room ,StatTestModel 
 
 try :
-    from djo .contrib .postgres .aggregates import (
+    from djorm .contrib .postgres .aggregates import (
     ArrayAgg ,
     BitAnd ,
     BitOr ,
@@ -43,7 +43,7 @@ try :
     StatAggregate ,
     StringAgg ,
     )
-    from djo .contrib .postgres .fields import ArrayField 
+    from djorm .contrib .postgres .fields import ArrayField
 except ImportError :
     pass # psycopg2 is not installed
 

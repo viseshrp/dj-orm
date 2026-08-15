@@ -1,11 +1,11 @@
 from decimal import Decimal 
 
-from djo .apps import apps 
-from djo .core import checks 
-from djo .core .exceptions import FieldError 
-from djo .db import models 
-from djo .test import TestCase ,skipIfDBFeature 
-from djo .test .utils import isolate_apps 
+from djorm .apps import apps
+from djorm .core import checks
+from djorm .core .exceptions import FieldError
+from djorm .db import models
+from djorm .test import TestCase ,skipIfDBFeature
+from djorm .test .utils import isolate_apps
 
 from .models import Bar ,FkToChar ,Foo ,PrimaryKeyCharModel 
 

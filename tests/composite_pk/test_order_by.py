@@ -1,5 +1,5 @@
-from djo .db .models import F 
-from djo .test import TestCase 
+from djorm .db .models import F
+from djorm .test import TestCase
 
 from .models import Comment ,Tenant ,User 
 

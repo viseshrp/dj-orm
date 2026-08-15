@@ -1,10 +1,10 @@
 import datetime 
 import unittest 
 
-from djo .apps .registry import Apps 
-from djo .core .exceptions import ValidationError 
-from djo .db import models 
-from djo .test import TestCase 
+from djorm .apps .registry import Apps
+from djorm .core .exceptions import ValidationError
+from djorm .db import models
+from djorm .test import TestCase
 
 from .models import (
 CustomPKModel ,

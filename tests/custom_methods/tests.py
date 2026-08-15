@@ -1,6 +1,6 @@
 from datetime import date 
 
-from djo .test import TestCase 
+from djorm .test import TestCase
 
 from .models import Article 
 

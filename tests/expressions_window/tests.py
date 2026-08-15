@@ -2,9 +2,9 @@ import datetime
 from decimal import Decimal 
 from unittest import mock 
 
-from djo .core .exceptions import FieldError 
-from djo .db import NotSupportedError ,connection 
-from djo .db .models import (
+from djorm .core .exceptions import FieldError
+from djorm .db import NotSupportedError ,connection
+from djorm .db .models import (
 Avg ,
 Case ,
 Count ,
@@ -24,8 +24,8 @@ Window ,
 WindowFrame ,
 WindowFrameExclusion ,
 )
-from djo .db .models .fields .json import KeyTextTransform ,KeyTransform 
-from djo .db .models .functions import (
+from djorm .db .models .fields .json import KeyTextTransform ,KeyTransform
+from djorm .db .models .functions import (
 Cast ,
 CumeDist ,
 DenseRank ,
@@ -41,9 +41,9 @@ Rank ,
 RowNumber ,
 Upper ,
 )
-from djo .db .models .lookups import Exact 
-from djo .test import SimpleTestCase ,TestCase ,skipIfDBFeature ,skipUnlessDBFeature 
-from djo .test .utils import CaptureQueriesContext 
+from djorm .db .models .lookups import Exact
+from djorm .test import SimpleTestCase ,TestCase ,skipIfDBFeature ,skipUnlessDBFeature
+from djorm .test .utils import CaptureQueriesContext
 
 from .models import Classification ,Detail ,Employee ,PastEmployeeDepartment 
 

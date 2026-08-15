@@ -15,7 +15,7 @@ class PostgresIntegrationTests (PostgreSQLSimpleTestCase ):
         [
         sys .executable ,
         "-m",
-        "djo",
+        "djorm",
         "check",
         "--settings",
         "integration_settings",

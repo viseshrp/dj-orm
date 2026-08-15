@@ -1,15 +1,15 @@
 import unittest 
 from unittest import mock 
 
-from djo .core .checks .database import check_database_backends 
-from djo .db import connection ,connections 
-from djo .test import TestCase 
+from djorm .core .checks .database import check_database_backends
+from djorm .db import connection ,connections
+from djorm .test import TestCase
 
 
 class DatabaseCheckTests (TestCase ):
     databases ={"default","other"}
 
-    @mock .patch ("djo.db.backends.base.validation.BaseDatabaseValidation.check")
+    @mock .patch ("djorm.db.backends.base.validation.BaseDatabaseValidation.check")
     def test_database_checks_called (self ,mocked_check ):
         check_database_backends ()
         self .assertFalse (mocked_check .called )

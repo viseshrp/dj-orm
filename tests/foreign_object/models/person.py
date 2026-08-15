@@ -1,6 +1,6 @@
 import datetime 
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Country (models .Model ):

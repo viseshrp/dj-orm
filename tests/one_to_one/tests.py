@@ -1,6 +1,6 @@
-from djo .db import IntegrityError ,connection ,transaction 
-from djo .test import TestCase 
-from djo .utils .deprecation import RemovedInDjango60Warning 
+from djorm .db import IntegrityError ,connection ,transaction
+from djorm .test import TestCase
+from djorm .utils .deprecation import RemovedInDjango60Warning
 
 from .models import (
 Bar ,

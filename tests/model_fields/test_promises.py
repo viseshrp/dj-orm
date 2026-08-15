@@ -1,7 +1,7 @@
 import datetime 
 from decimal import Decimal 
 
-from djo .db .models import (
+from djorm .db .models import (
 AutoField ,
 BinaryField ,
 BooleanField ,
@@ -26,8 +26,8 @@ TextField ,
 TimeField ,
 URLField ,
 )
-from djo .test import SimpleTestCase 
-from djo .utils .functional import lazy 
+from djorm .test import SimpleTestCase
+from djorm .utils .functional import lazy
 
 
 class PromiseTest (SimpleTestCase ):

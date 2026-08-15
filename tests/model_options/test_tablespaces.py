@@ -1,7 +1,7 @@
-from djo .apps import apps 
-from djo .conf import settings 
-from djo .db import connection 
-from djo .test import TransactionTestCase ,skipIfDBFeature ,skipUnlessDBFeature 
+from djorm .apps import apps
+from djorm .conf import settings
+from djorm .db import connection
+from djorm .test import TransactionTestCase ,skipIfDBFeature ,skipUnlessDBFeature
 
 from .models .tablespaces import (
 Article ,

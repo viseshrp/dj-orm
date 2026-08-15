@@ -12,7 +12,7 @@ RangesModel ,
 )
 
 try :
-    from djo .db .backends .postgresql .psycopg_any import DateRange ,NumericRange 
+    from djorm .db .backends .postgresql .psycopg_any import DateRange ,NumericRange
 except ImportError :
     pass # psycopg isn't installed.
 

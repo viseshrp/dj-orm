@@ -3,10 +3,10 @@ import unittest
 from io import StringIO 
 from unittest import mock 
 
-from djo .db import DatabaseError ,connection 
-from djo .db .backends .base .creation import BaseDatabaseCreation 
-from djo .db .backends .mysql .creation import DatabaseCreation 
-from djo .test import SimpleTestCase 
+from djorm .db import DatabaseError ,connection
+from djorm .db .backends .base .creation import BaseDatabaseCreation
+from djorm .db .backends .mysql .creation import DatabaseCreation
+from djorm .test import SimpleTestCase
 
 
 @unittest .skipUnless (connection .vendor =="mysql","MySQL tests")
@@ -66,7 +66,7 @@ class DatabaseCreationTests (SimpleTestCase ):
             "PASSWORD":"",
             "PORT":"",
             "HOST":"",
-            "ENGINE":"djo.db.backends.mysql",
+            "ENGINE":"djorm.db.backends.mysql",
             "OPTIONS":{
             "read_default_file":"my.cnf",
             },

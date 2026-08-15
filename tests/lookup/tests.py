@@ -4,9 +4,9 @@ from math import ceil
 from operator import attrgetter 
 from unittest import mock ,skipUnless 
 
-from djo .core .exceptions import FieldError 
-from djo .db import connection ,models 
-from djo .db .models import (
+from djorm .core .exceptions import FieldError
+from djorm .db import connection ,models
+from djorm .db .models import (
 BooleanField ,
 Case ,
 Exists ,
@@ -19,8 +19,8 @@ Subquery ,
 Value ,
 When ,
 )
-from djo .db .models .functions import Abs ,Cast ,Length ,Substr 
-from djo .db .models .lookups import (
+from djorm .db .models .functions import Abs ,Cast ,Length ,Substr
+from djorm .db .models .lookups import (
 Exact ,
 GreaterThan ,
 GreaterThanOrEqual ,
@@ -29,8 +29,8 @@ IsNull ,
 LessThan ,
 LessThanOrEqual ,
 )
-from djo .test import TestCase ,skipUnlessDBFeature 
-from djo .test .utils import isolate_apps ,register_lookup 
+from djorm .test import TestCase ,skipUnlessDBFeature
+from djorm .test .utils import isolate_apps ,register_lookup
 
 from .models import (
 Article ,

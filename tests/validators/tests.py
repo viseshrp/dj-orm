@@ -5,9 +5,9 @@ from datetime import datetime ,timedelta
 from decimal import Decimal 
 from unittest import TestCase ,mock 
 
-from djo .core .exceptions import ValidationError 
-from djo .core .files .base import ContentFile 
-from djo .core .validators import (
+from djorm .core .exceptions import ValidationError
+from djorm .core .files .base import ContentFile
+from djorm .core .validators import (
 BaseValidator ,
 DecimalValidator ,
 DomainNameValidator ,
@@ -33,7 +33,7 @@ validate_ipv46_address ,
 validate_slug ,
 validate_unicode_slug ,
 )
-from djo .test import SimpleTestCase 
+from djorm .test import SimpleTestCase
 
 try :
     from PIL import Image # noqa

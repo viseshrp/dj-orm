@@ -3,12 +3,12 @@ import datetime
 import pickle 
 from operator import attrgetter 
 
-from djo .core .exceptions import FieldError 
-from djo .db import connection ,models 
-from djo .test import SimpleTestCase ,TestCase ,skipUnlessDBFeature 
-from djo .test .utils import isolate_apps 
-from djo .utils import translation 
-from djo .utils .deprecation import RemovedInDjango60Warning 
+from djorm .core .exceptions import FieldError
+from djorm .db import connection ,models
+from djorm .test import SimpleTestCase ,TestCase ,skipUnlessDBFeature
+from djorm .test .utils import isolate_apps
+from djorm .utils import translation
+from djorm .utils .deprecation import RemovedInDjango60Warning
 
 from .models import (
 Article ,

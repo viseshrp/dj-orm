@@ -1,15 +1,15 @@
-"""Tests for djo.db.backends.utils"""
+"""Tests for djorm.db.backends.utils"""
 
 from decimal import Decimal ,Rounded 
 
-from djo .db import NotSupportedError ,connection 
-from djo .db .backends .utils import (
+from djorm .db import NotSupportedError ,connection
+from djorm .db .backends .utils import (
 format_number ,
 split_identifier ,
 split_tzname_delta ,
 truncate_name ,
 )
-from djo .test import (
+from djorm .test import (
 SimpleTestCase ,
 TransactionTestCase ,
 skipIfDBFeature ,

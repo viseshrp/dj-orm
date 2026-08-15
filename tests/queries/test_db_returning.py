@@ -1,8 +1,8 @@
 import datetime 
 
-from djo .db import connection 
-from djo .test import TestCase ,skipUnlessDBFeature 
-from djo .test .utils import CaptureQueriesContext 
+from djorm .db import connection
+from djorm .test import TestCase ,skipUnlessDBFeature
+from djorm .test .utils import CaptureQueriesContext
 
 from .models import DumbCategory ,NonIntegerPKReturningModel ,ReturningModel 
 

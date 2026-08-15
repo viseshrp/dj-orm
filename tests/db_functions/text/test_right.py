@@ -1,7 +1,7 @@
-from djo .db import connection 
-from djo .db .models import IntegerField ,Value 
-from djo .db .models .functions import Length ,Lower ,Right 
-from djo .test import TestCase 
+from djorm .db import connection
+from djorm .db .models import IntegerField ,Value
+from djorm .db .models .functions import Length ,Lower ,Right
+from djorm .test import TestCase
 
 from ..models import Author 
 

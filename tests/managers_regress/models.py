@@ -2,9 +2,9 @@
 Various edge-cases for model managers.
 """
 
-from djo .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation 
-from djo .contrib .contenttypes .models import ContentType 
-from djo .db import models 
+from djorm .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation
+from djorm .contrib .contenttypes .models import ContentType
+from djorm .db import models
 
 
 class OnlyFred (models .Manager ):

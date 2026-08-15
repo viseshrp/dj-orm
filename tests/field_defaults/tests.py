@@ -2,10 +2,10 @@ from datetime import datetime
 from decimal import Decimal 
 from math import pi 
 
-from djo .core .exceptions import ValidationError 
-from djo .db import connection 
-from djo .db .models import Case ,F ,FloatField ,Value ,When 
-from djo .db .models .expressions import (
+from djorm .core .exceptions import ValidationError
+from djorm .db import connection
+from djorm .db .models import Case ,F ,FloatField ,Value ,When
+from djorm .db .models .expressions import (
 Expression ,
 ExpressionList ,
 ExpressionWrapper ,
@@ -13,16 +13,16 @@ Func ,
 OrderByList ,
 RawSQL ,
 )
-from djo .db .models .functions import Collate 
-from djo .db .models .lookups import GreaterThan 
-from djo .test import (
+from djorm .db .models .functions import Collate
+from djorm .db .models .lookups import GreaterThan
+from djorm .test import (
 SimpleTestCase ,
 TestCase ,
 override_settings ,
 skipIfDBFeature ,
 skipUnlessDBFeature ,
 )
-from djo .utils import timezone 
+from djorm .utils import timezone
 
 from .models import (
 Article ,

@@ -2,14 +2,14 @@ import json
 import time 
 import unittest 
 
-from djo .core .serializers .base import DeserializationError ,DeserializedObject 
-from djo .core .serializers .json import Deserializer as JsonDeserializer 
-from djo .core .serializers .jsonl import Deserializer as JsonlDeserializer 
-from djo .core .serializers .python import Deserializer 
-from djo .core .serializers .xml_serializer import Deserializer as XMLDeserializer 
-from djo .db import models 
-from djo .test import SimpleTestCase 
-from djo .test .utils import garbage_collect 
+from djorm .core .serializers .base import DeserializationError ,DeserializedObject
+from djorm .core .serializers .json import Deserializer as JsonDeserializer
+from djorm .core .serializers .jsonl import Deserializer as JsonlDeserializer
+from djorm .core .serializers .python import Deserializer
+from djorm .core .serializers .xml_serializer import Deserializer as XMLDeserializer
+from djorm .db import models
+from djorm .test import SimpleTestCase
+from djorm .test .utils import garbage_collect
 
 from .models import Author 
 
@@ -107,7 +107,7 @@ class TestDeserializer (SimpleTestCase ):
 
     @unittest .skipUnless (HAS_YAML ,"No yaml library detected")
     def test_yaml_bytes_input (self ):
-        from djo .core .serializers .pyyaml import Deserializer as YamlDeserializer 
+        from djorm .core .serializers .pyyaml import Deserializer as YamlDeserializer
 
         test_string ="""- pk: 1
   model: serializers.author

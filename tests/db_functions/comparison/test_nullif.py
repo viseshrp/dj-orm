@@ -1,9 +1,9 @@
 from unittest import skipUnless 
 
-from djo .db import connection 
-from djo .db .models import Value 
-from djo .db .models .functions import NullIf 
-from djo .test import TestCase 
+from djorm .db import connection
+from djorm .db .models import Value
+from djorm .db .models .functions import NullIf
+from djorm .test import TestCase
 
 from ..models import Author 
 

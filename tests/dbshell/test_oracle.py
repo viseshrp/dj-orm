@@ -1,8 +1,8 @@
 from unittest import mock ,skipUnless 
 
-from djo .db import connection 
-from djo .db .backends .oracle .client import DatabaseClient 
-from djo .test import SimpleTestCase 
+from djorm .db import connection
+from djorm .db .backends .oracle .client import DatabaseClient
+from djorm .test import SimpleTestCase
 
 
 @skipUnless (connection .vendor =="oracle","Requires oracledb to be installed")

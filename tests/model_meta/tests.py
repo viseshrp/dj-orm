@@ -1,9 +1,9 @@
-from djo .apps import apps 
-from djo .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation 
-from djo .core .exceptions import FieldDoesNotExist 
-from djo .db .models import CharField ,Field ,ForeignObjectRel ,ManyToManyField 
-from djo .db .models .options import EMPTY_RELATION_TREE ,IMMUTABLE_WARNING 
-from djo .test import SimpleTestCase ,override_settings 
+from djorm .apps import apps
+from djorm .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation
+from djorm .core .exceptions import FieldDoesNotExist
+from djorm .db .models import CharField ,Field ,ForeignObjectRel ,ManyToManyField
+from djorm .db .models .options import EMPTY_RELATION_TREE ,IMMUTABLE_WARNING
+from djorm .test import SimpleTestCase ,override_settings
 
 from .models import (
 AbstractPerson ,

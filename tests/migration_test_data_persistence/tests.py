@@ -1,5 +1,5 @@
-from djo .core .management import call_command 
-from djo .test import TestCase ,TransactionTestCase 
+from djorm .core .management import call_command
+from djorm .test import TestCase ,TransactionTestCase
 
 from .models import Book 
 

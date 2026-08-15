@@ -2,13 +2,13 @@ from unittest import mock
 
 from asgiref .sync import markcoroutinefunction 
 
-from djo import dispatch 
-from djo .apps .registry import Apps 
-from djo .db import models 
-from djo .db .models import signals 
-from djo .dispatch import receiver 
-from djo .test import SimpleTestCase ,TestCase 
-from djo .test .utils import isolate_apps 
+from djorm import dispatch
+from djorm .apps .registry import Apps
+from djorm .db import models
+from djorm .db .models import signals
+from djorm .dispatch import receiver
+from djorm .test import SimpleTestCase ,TestCase
+from djorm .test .utils import isolate_apps
 
 from .models import Author ,Book ,Car ,Page ,Person 
 

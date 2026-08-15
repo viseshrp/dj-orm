@@ -4,9 +4,9 @@ import unittest
 from importlib import import_module 
 from zipimport import zipimporter 
 
-from djo .test import SimpleTestCase ,modify_settings 
-from djo .test .utils import extend_sys_path 
-from djo .utils .module_loading import (
+from djorm .test import SimpleTestCase ,modify_settings
+from djorm .test .utils import extend_sys_path
+from djorm .utils .module_loading import (
 autodiscover_modules ,
 import_string ,
 module_has_submodule ,
@@ -35,7 +35,7 @@ class DefaultLoader (unittest .TestCase ):
             import_module ("utils_tests.test_module.no_such_module")
 
             # A child that doesn't exist, but is the name of a package on the path
-        self .assertFalse (module_has_submodule (test_module ,"djo"))
+        self .assertFalse (module_has_submodule (test_module ,"djorm"))
         with self .assertRaises (ImportError ):
             import_module ("utils_tests.test_module.django")
 
@@ -130,7 +130,7 @@ class EggLoader (unittest .TestCase ):
 
 class ModuleImportTests (SimpleTestCase ):
     def test_import_string (self ):
-        cls =import_string ("djo.utils.module_loading.import_string")
+        cls =import_string ("djorm.utils.module_loading.import_string")
         self .assertEqual (cls ,import_string )
 
         # Test exceptions raised

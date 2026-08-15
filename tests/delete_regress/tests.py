@@ -1,8 +1,8 @@
 import datetime 
 
-from djo .db import connection ,models ,transaction 
-from djo .db .models import Exists ,OuterRef 
-from djo .test import (
+from djorm .db import connection ,models ,transaction
+from djorm .db .models import Exists ,OuterRef
+from djorm .test import (
 SimpleTestCase ,
 TestCase ,
 TransactionTestCase ,

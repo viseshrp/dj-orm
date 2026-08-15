@@ -1,6 +1,6 @@
 from operator import attrgetter 
 
-from djo .test .testcases import TestCase 
+from djorm .test .testcases import TestCase
 
 from .models import Address ,Contact ,Customer 
 

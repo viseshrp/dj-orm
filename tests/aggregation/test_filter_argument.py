@@ -1,7 +1,7 @@
 import datetime 
 from decimal import Decimal 
 
-from djo .db .models import (
+from djorm .db .models import (
 Avg ,
 Case ,
 Count ,
@@ -16,8 +16,8 @@ Sum ,
 Variance ,
 When ,
 )
-from djo .test import TestCase 
-from djo .test .utils import Approximate 
+from djorm .test import TestCase
+from djorm .test .utils import Approximate
 
 from .models import Author ,Book ,Publisher 
 

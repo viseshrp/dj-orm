@@ -1,4 +1,4 @@
-from djo .test import TestCase 
+from djorm .test import TestCase
 
 from .models import Article ,Car ,Driver ,Reporter 
 

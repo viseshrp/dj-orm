@@ -1,4 +1,4 @@
-from djo .core .management .commands .makemigrations import (
+from djorm .core .management .commands .makemigrations import (
 Command as MakeMigrationsCommand ,
 )
 

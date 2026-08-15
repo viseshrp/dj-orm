@@ -6,7 +6,7 @@ unexpected results
 
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 # The first two models represent a very simple null FK ordering case.

@@ -1,8 +1,8 @@
 import hashlib 
 import unittest 
 
-from djo .test import SimpleTestCase 
-from djo .utils .crypto import (
+from djorm .test import SimpleTestCase
+from djorm .utils .crypto import (
 InvalidAlgorithm ,
 constant_time_compare ,
 pbkdf2 ,

@@ -1,8 +1,8 @@
-from djo .core import checks 
-from djo .db import connection ,models 
-from djo .db .models import F 
-from djo .test import TestCase ,skipUnlessAnyDBFeature 
-from djo .test .utils import isolate_apps 
+from djorm .core import checks
+from djorm .db import connection ,models
+from djorm .db .models import F
+from djorm .test import TestCase ,skipUnlessAnyDBFeature
+from djorm .test .utils import isolate_apps
 
 
 @isolate_apps ("composite_pk")

@@ -1,8 +1,8 @@
 import unittest 
 
-from djo .core .management .color import no_style 
-from djo .db import connection ,models 
-from djo .test import TestCase 
+from djorm .core .management .color import no_style
+from djorm .db import connection ,models
+from djorm .test import TestCase
 
 from ..models import Person ,Tag 
 

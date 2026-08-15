@@ -3,8 +3,8 @@ import threading
 from datetime import datetime ,timedelta 
 from unittest import mock 
 
-from djo .core .exceptions import MultipleObjectsReturned ,ObjectDoesNotExist 
-from djo .db import (
+from djorm .core .exceptions import MultipleObjectsReturned ,ObjectDoesNotExist
+from djorm .db import (
 DEFAULT_DB_ALIAS ,
 DatabaseError ,
 connection ,
@@ -12,18 +12,18 @@ connections ,
 models ,
 transaction ,
 )
-from djo .db .models .manager import BaseManager 
-from djo .db .models .query import MAX_GET_RESULTS ,EmptyQuerySet 
-from djo .test import (
+from djorm .db .models .manager import BaseManager
+from djorm .db .models .query import MAX_GET_RESULTS ,EmptyQuerySet
+from djorm .test import (
 SimpleTestCase ,
 TestCase ,
 TransactionTestCase ,
 skipUnlessDBFeature ,
 )
-from djo .test .utils import CaptureQueriesContext ,ignore_warnings 
-from djo .utils .connection import ConnectionDoesNotExist 
-from djo .utils .deprecation import RemovedInDjango60Warning 
-from djo .utils .translation import gettext_lazy 
+from djorm .test .utils import CaptureQueriesContext ,ignore_warnings
+from djorm .utils .connection import ConnectionDoesNotExist
+from djorm .utils .deprecation import RemovedInDjango60Warning
+from djorm .utils .translation import gettext_lazy
 
 from .models import (
 Article ,

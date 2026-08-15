@@ -1,7 +1,7 @@
-from djo .db .models .fields .mixins import FieldCacheMixin 
-from djo .test import SimpleTestCase 
-from djo .utils .deprecation import RemovedInDjango60Warning 
-from djo .utils .functional import cached_property 
+from djorm .db .models .fields .mixins import FieldCacheMixin
+from djorm .test import SimpleTestCase
+from djorm .utils .deprecation import RemovedInDjango60Warning
+from djorm .utils .functional import cached_property
 
 from .models import Foo 
 

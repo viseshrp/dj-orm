@@ -1,7 +1,7 @@
-from djo .db .models import Subquery ,TextField 
-from djo .db .models .functions import Coalesce ,Lower 
-from djo .test import TestCase 
-from djo .utils import timezone 
+from djorm .db .models import Subquery ,TextField
+from djorm .db .models .functions import Coalesce ,Lower
+from djorm .test import TestCase
+from djorm .utils import timezone
 
 from ..models import Article ,Author 
 

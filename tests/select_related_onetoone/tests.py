@@ -1,6 +1,6 @@
-from djo .core .exceptions import FieldError 
-from djo .db .models import FilteredRelation 
-from djo .test import SimpleTestCase ,TestCase 
+from djorm .core .exceptions import FieldError
+from djorm .db .models import FilteredRelation
+from djorm .test import SimpleTestCase ,TestCase
 
 from .models import (
 AdvancedUserStat ,

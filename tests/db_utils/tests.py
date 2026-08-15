@@ -1,12 +1,12 @@
-'Tests for djo.db.utils.'
+'Tests for djorm.db.utils.'
 
 import unittest 
 
-from djo .core .exceptions import ImproperlyConfigured 
-from djo .db import DEFAULT_DB_ALIAS ,ProgrammingError ,connection 
-from djo .db .utils import ConnectionHandler ,load_backend 
-from djo .test import SimpleTestCase ,TestCase 
-from djo .utils .connection import ConnectionDoesNotExist 
+from djorm .core .exceptions import ImproperlyConfigured
+from djorm .db import DEFAULT_DB_ALIAS ,ProgrammingError ,connection
+from djorm .db .utils import ConnectionHandler ,load_backend
+from djorm .test import SimpleTestCase ,TestCase
+from djorm .utils .connection import ConnectionDoesNotExist
 
 
 class ConnectionHandlerTests (SimpleTestCase ):
@@ -25,7 +25,7 @@ class ConnectionHandlerTests (SimpleTestCase ):
     def assertImproperlyConfigured (self ,DATABASES ):
         conns =ConnectionHandler (DATABASES )
         self .assertEqual (
-        conns [DEFAULT_DB_ALIAS ].settings_dict ["ENGINE"],'djo.db.backends.dummy'
+        conns [DEFAULT_DB_ALIAS ].settings_dict ["ENGINE"],'djorm.db.backends.dummy'
         )
         msg =(
         "settings.DATABASES is improperly configured. Please supply the "
@@ -53,7 +53,7 @@ class ConnectionHandlerTests (SimpleTestCase ):
         msg ="The connection 'nonexistent' doesn't exist."
         conns =ConnectionHandler (
         {
-        DEFAULT_DB_ALIAS :{"ENGINE":'djo.db.backends.dummy'},
+        DEFAULT_DB_ALIAS :{"ENGINE":'djorm.db.backends.dummy'},
         }
         )
         with self .assertRaisesMessage (ConnectionDoesNotExist ,msg ):
@@ -63,7 +63,7 @@ class ConnectionHandlerTests (SimpleTestCase ):
 class DatabaseErrorWrapperTests (TestCase ):
     @unittest .skipUnless (connection .vendor =="postgresql","PostgreSQL test")
     def test_reraising_backend_specific_database_exception (self ):
-        from djo .db .backends .postgresql .psycopg_any import is_psycopg3 
+        from djorm .db .backends .postgresql .psycopg_any import is_psycopg3
 
         with connection .cursor ()as cursor :
             msg ='table "X" does not exist'
@@ -84,7 +84,7 @@ class LoadBackendTests (SimpleTestCase ):
         msg =(
         "'foo' isn't an available database backend or couldn't be "
         "imported. Check the above exception. To use one of the built-in "
-        "backends, use 'djo.db.backends.XXX', where XXX is one of:\n"
+        "backends, use 'djorm.db.backends.XXX', where XXX is one of:\n"
         "    'mysql', 'oracle', 'postgresql', 'sqlite3'"
         )
         with self .assertRaisesMessage (ImproperlyConfigured ,msg )as cm :

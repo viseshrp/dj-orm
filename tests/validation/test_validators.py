@@ -1,4 +1,4 @@
-from djo .test import SimpleTestCase 
+from djorm .test import SimpleTestCase
 
 from .import ValidationAssertions 
 from .models import ModelToValidate 

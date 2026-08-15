@@ -2,7 +2,7 @@
 Tests for built in Function expressions.
 """
 
-from djo .db import models 
+from djorm .db import models
 
 
 class Author (models .Model ):

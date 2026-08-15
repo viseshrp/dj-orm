@@ -1,5 +1,5 @@
-from djo .db .models import Prefetch ,prefetch_related_objects 
-from djo .test import TestCase 
+from djorm .db .models import Prefetch ,prefetch_related_objects
+from djorm .test import TestCase
 
 from .models import Author ,Book ,House ,Reader ,Room 
 

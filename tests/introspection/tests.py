@@ -1,6 +1,6 @@
-from djo .db import DatabaseError ,connection 
-from djo .db .models import Index 
-from djo .test import TransactionTestCase ,skipUnlessDBFeature 
+from djorm .db import DatabaseError ,connection
+from djorm .db .models import Index
+from djorm .test import TransactionTestCase ,skipUnlessDBFeature
 
 from .models import (
 Article ,

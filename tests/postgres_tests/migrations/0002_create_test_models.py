@@ -1,4 +1,4 @@
-from djo .db import migrations ,models 
+from djorm .db import migrations ,models
 
 from ..fields import (
 ArrayField ,

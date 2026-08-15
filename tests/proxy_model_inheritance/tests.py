@@ -1,8 +1,8 @@
 import os 
 
-from djo .core .management import call_command 
-from djo .test import TestCase ,TransactionTestCase 
-from djo .test .utils import extend_sys_path 
+from djorm .core .management import call_command
+from djorm .test import TestCase ,TransactionTestCase
+from djorm .test .utils import extend_sys_path
 
 from .models import (
 ConcreteModel ,

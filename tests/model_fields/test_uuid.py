@@ -1,11 +1,11 @@
 import json 
 import uuid 
 
-from djo .core import exceptions ,serializers 
-from djo .db import IntegrityError ,connection ,models 
-from djo .db .models import CharField ,F ,Value 
-from djo .db .models .functions import Concat ,Repeat 
-from djo .test import (
+from djorm .core import exceptions ,serializers
+from djorm .db import IntegrityError ,connection ,models
+from djorm .db .models import CharField ,F ,Value
+from djorm .db .models .functions import Concat ,Repeat
+from djorm .test import (
 SimpleTestCase ,
 TestCase ,
 TransactionTestCase ,

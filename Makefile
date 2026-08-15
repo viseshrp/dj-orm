@@ -12,7 +12,7 @@ check: ## Check the lockfile and maintained project files
 
 .PHONY: test-smoke
 test-smoke: ## Run package and maintenance-tool smoke tests
-	uv run python -m pytest tests/djo_smoke
+	uv run python -m pytest tests/djorm_smoke
 
 .PHONY: test-upstream
 test-upstream: ## Run the retained ORM suite with SQLite

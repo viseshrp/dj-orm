@@ -4,8 +4,8 @@ import sys
 import unittest 
 import warnings 
 
-from djo .test import TestCase 
-from djo .utils .functional import LazyObject ,SimpleLazyObject ,empty 
+from djorm .test import TestCase
+from djorm .utils .functional import LazyObject ,SimpleLazyObject ,empty
 
 from .models import Category ,CategoryInfo 
 

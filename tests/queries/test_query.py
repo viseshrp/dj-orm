@@ -1,9 +1,9 @@
 from datetime import datetime 
 
-from djo .core .exceptions import FieldError 
-from djo .db import DEFAULT_DB_ALIAS ,connection 
-from djo .db .models import BooleanField ,CharField ,F ,Q 
-from djo .db .models .expressions import (
+from djorm .core .exceptions import FieldError
+from djorm .db import DEFAULT_DB_ALIAS ,connection
+from djorm .db .models import BooleanField ,CharField ,F ,Q
+from djorm .db .models .expressions import (
 Col ,
 Exists ,
 ExpressionWrapper ,
@@ -11,14 +11,14 @@ Func ,
 RawSQL ,
 Value ,
 )
-from djo .db .models .fields .related_lookups import RelatedIsNull 
-from djo .db .models .functions import Lower 
-from djo .db .models .lookups import Exact ,GreaterThan ,IsNull ,LessThan 
-from djo .db .models .sql .constants import SINGLE 
-from djo .db .models .sql .query import JoinPromoter ,Query ,get_field_names_from_opts 
-from djo .db .models .sql .where import AND ,OR 
-from djo .test import SimpleTestCase ,TestCase ,skipUnlessDBFeature 
-from djo .test .utils import register_lookup 
+from djorm .db .models .fields .related_lookups import RelatedIsNull
+from djorm .db .models .functions import Lower
+from djorm .db .models .lookups import Exact ,GreaterThan ,IsNull ,LessThan
+from djorm .db .models .sql .constants import SINGLE
+from djorm .db .models .sql .query import JoinPromoter ,Query ,get_field_names_from_opts
+from djorm .db .models .sql .where import AND ,OR
+from djorm .test import SimpleTestCase ,TestCase ,skipUnlessDBFeature
+from djorm .test .utils import register_lookup
 
 from .models import Author ,Item ,ObjectC ,Ranking 
 

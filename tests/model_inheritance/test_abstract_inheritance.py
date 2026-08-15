@@ -1,10 +1,10 @@
-from djo .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation 
-from djo .contrib .contenttypes .models import ContentType 
-from djo .core .checks import Error 
-from djo .core .exceptions import FieldDoesNotExist ,FieldError 
-from djo .db import models 
-from djo .test import SimpleTestCase 
-from djo .test .utils import isolate_apps 
+from djorm .contrib .contenttypes .fields import GenericForeignKey ,GenericRelation
+from djorm .contrib .contenttypes .models import ContentType
+from djorm .core .checks import Error
+from djorm .core .exceptions import FieldDoesNotExist ,FieldError
+from djorm .db import models
+from djorm .test import SimpleTestCase
+from djorm .test .utils import isolate_apps
 
 
 @isolate_apps ("model_inheritance")

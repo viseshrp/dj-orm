@@ -1,11 +1,11 @@
 from unittest import skipUnless 
 
-from djo .db import connection 
-from djo .db .models import CharField ,TextField 
-from djo .db .models import Value as V 
-from djo .db .models .functions import Concat ,ConcatPair ,Upper 
-from djo .test import TestCase 
-from djo .utils import timezone 
+from djorm .db import connection
+from djorm .db .models import CharField ,TextField
+from djorm .db .models import Value as V
+from djorm .db .models .functions import Concat ,ConcatPair ,Upper
+from djorm .test import TestCase
+from djorm .utils import timezone
 
 from ..models import Article ,Author 
 

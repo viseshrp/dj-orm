@@ -1,7 +1,7 @@
 # Changelog
 
-This file records Djo-specific changes. Django changes remain documented in the
-upstream release notes for the exact tag named by each Djo release.
+This file records Djorm-specific changes. Django changes remain documented in the
+upstream release notes for the exact tag named by each Djorm release.
 
 ## Unreleased
 
@@ -14,5 +14,5 @@ upstream release notes for the exact tag named by each Djo release.
 
 ### Changed
 
-- The public distribution name is `dj-orm`; imports and the CLI remain `djo`.
-- Release versions map the exact Django tag plus a Djo rebuild revision.
+- The public distribution name is `dj-orm`; imports and the CLI remain `djorm`.
+- Release versions map the exact Django tag plus a Djorm rebuild revision.

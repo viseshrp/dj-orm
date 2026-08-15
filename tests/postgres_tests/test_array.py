@@ -4,17 +4,17 @@ import json
 import unittest 
 import uuid 
 
-from djo import forms 
-from djo .contrib .admin .utils import display_for_field 
-from djo .core import checks ,exceptions ,serializers ,validators 
-from djo .core .exceptions import FieldError 
-from djo .core .management import call_command 
-from djo .db import IntegrityError ,connection ,models 
-from djo .db .models .expressions import Exists ,F ,OuterRef ,RawSQL ,Value 
-from djo .db .models .functions import Cast ,JSONObject ,Upper 
-from djo .test import TransactionTestCase ,override_settings ,skipUnlessDBFeature 
-from djo .test .utils import isolate_apps 
-from djo .utils import timezone 
+from djorm import forms
+from djorm .contrib .admin .utils import display_for_field
+from djorm .core import checks ,exceptions ,serializers ,validators
+from djorm .core .exceptions import FieldError
+from djorm .core .management import call_command
+from djorm .db import IntegrityError ,connection ,models
+from djorm .db .models .expressions import Exists ,F ,OuterRef ,RawSQL ,Value
+from djorm .db .models .functions import Cast ,JSONObject ,Upper
+from djorm .test import TransactionTestCase ,override_settings ,skipUnlessDBFeature
+from djorm .test .utils import isolate_apps
+from djorm .utils import timezone
 
 from .import PostgreSQLSimpleTestCase ,PostgreSQLTestCase ,PostgreSQLWidgetTestCase 
 from .models import (
@@ -32,16 +32,16 @@ WithSizeArrayModel ,
 )
 
 try :
-    from djo .contrib .postgres .aggregates import ArrayAgg 
-    from djo .contrib .postgres .expressions import ArraySubquery 
-    from djo .contrib .postgres .fields import ArrayField 
-    from djo .contrib .postgres .fields .array import IndexTransform ,SliceTransform 
-    from djo .contrib .postgres .forms import (
+    from djorm .contrib .postgres .aggregates import ArrayAgg
+    from djorm .contrib .postgres .expressions import ArraySubquery
+    from djorm .contrib .postgres .fields import ArrayField
+    from djorm .contrib .postgres .fields .array import IndexTransform ,SliceTransform
+    from djorm .contrib .postgres .forms import (
     SimpleArrayField ,
     SplitArrayField ,
     SplitArrayWidget ,
     )
-    from djo .db .backends .postgresql .psycopg_any import NumericRange 
+    from djorm .db .backends .postgresql .psycopg_any import NumericRange
 except ImportError :
     pass 
 
@@ -942,7 +942,7 @@ class TestMigrations (TransactionTestCase ):
     def test_subclass_deconstruct (self ):
         field =ArrayField (models .IntegerField ())
         name ,path ,args ,kwargs =field .deconstruct ()
-        self .assertEqual (path ,"djo.contrib.postgres.fields.ArrayField")
+        self .assertEqual (path ,"djorm.contrib.postgres.fields.ArrayField")
 
         field =ArrayFieldSubclass ()
         name ,path ,args ,kwargs =field .deconstruct ()

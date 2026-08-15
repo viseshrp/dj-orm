@@ -5,7 +5,7 @@ By default, Django adds an ``"id"`` field to each model. But you can override
 this behavior by explicitly adding ``primary_key=True`` to a field.
 """
 
-from djo .db import models 
+from djorm .db import models
 
 from .fields import MyAutoField ,MyWrapperField 
 

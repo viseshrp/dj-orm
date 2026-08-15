@@ -1,5 +1,5 @@
-from djo .apps .registry import Apps 
-from djo .db import models 
+from djorm .apps .registry import Apps
+from djorm .db import models
 
 
 class CustomModelBase (models .base .ModelBase ):

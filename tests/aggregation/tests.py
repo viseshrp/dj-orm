@@ -4,9 +4,9 @@ import re
 from decimal import Decimal 
 from itertools import chain 
 
-from djo .core .exceptions import FieldError 
-from djo .db import connection 
-from djo .db .models import (
+from djorm .core .exceptions import FieldError
+from djorm .db import connection
+from djorm .db .models import (
 Avg ,
 Case ,
 Count ,
@@ -32,8 +32,8 @@ Variance ,
 When ,
 Window ,
 )
-from djo .db .models .expressions import Func ,RawSQL 
-from djo .db .models .functions import (
+from djorm .db .models .expressions import Func ,RawSQL
+from djorm .db .models .functions import (
 Cast ,
 Coalesce ,
 Greatest ,
@@ -45,10 +45,10 @@ Pi ,
 TruncDate ,
 TruncHour ,
 )
-from djo .test import TestCase 
-from djo .test .testcases import skipUnlessDBFeature 
-from djo .test .utils import Approximate ,CaptureQueriesContext 
-from djo .utils import timezone 
+from djorm .test import TestCase
+from djorm .test .testcases import skipUnlessDBFeature
+from djorm .test .utils import Approximate ,CaptureQueriesContext
+from djorm .utils import timezone
 
 from .models import Author ,Book ,Publisher ,Store 
 
