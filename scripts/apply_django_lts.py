@@ -23,7 +23,6 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10
 
 CONFIG_NAME = ".djorm-maintenance.toml"
 STATE_NAME = "djorm-apply-state.json"
-PATCH_NAME = "djorm-maintained.patch"
 FINAL_TAG_RE = re.compile(r"^(?P<parts>\d+(?:\.\d+){0,2})$")
 
 
@@ -287,61 +286,73 @@ def run_namespace_step(output: Path, source_repo: Path) -> str:
     run(
         ["git", "commit", "-m", "[namespace] Generate the djorm namespace"],
         cwd=output,
-        capture=False,
+        capture=True,
     )
     return git(output, "rev-parse", "HEAD")
 
 
-def patch_path(output: Path) -> Path:
-    raw_path = git(output, "rev-parse", "--git-path", PATCH_NAME)
-    path = Path(raw_path)
-    return path if path.is_absolute() else output / path
+def maintained_deletions(source_repo: Path, state: ApplyState) -> set[str]:
+    output = git(
+        source_repo,
+        "diff",
+        "--name-only",
+        "--diff-filter=D",
+        state.baseline_tree,
+        state.source_head,
+    )
+    return set(output.splitlines())
 
 
-def write_delta_patch(source_repo: Path, state: ApplyState) -> Path:
-    path = patch_path(Path(state.output))
+def merged_tree(source_repo: Path, output: Path, state: ApplyState) -> tuple[str, list[str]]:
     result = subprocess.run(
         [
             "git",
-            "diff",
-            "--binary",
-            "--full-index",
-            "--no-ext-diff",
-            "--no-renames",
+            "merge-tree",
+            "--write-tree",
+            "--name-only",
+            "-z",
+            "--no-messages",
+            "--merge-base",
             state.baseline_tree,
+            git(output, "rev-parse", "HEAD"),
             state.source_head,
         ],
         cwd=source_repo,
-        check=True,
-        stdout=subprocess.PIPE,
+        check=False,
+        capture_output=True,
     )
-    if not result.stdout:
-        raise ApplyError("The maintained Djorm delta is empty.")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(result.stdout)
-    return path
+    if result.returncode not in {0, 1}:
+        detail = result.stderr.decode(errors="replace").strip() or "unknown Git error"
+        raise ApplyError(f"Could not merge the maintained Djorm delta: {detail}")
+    fields = [field.decode() for field in result.stdout.split(b"\0") if field]
+    if not fields:
+        raise ApplyError("Git did not produce a merged tree.")
+    return fields[0], fields[1:]
 
 
 def pending_resolution_paths(output: Path) -> list[str]:
     paths = set(unmerged_paths(output))
     paths.update(git(output, "diff", "--name-only").splitlines())
+    paths.update(git(output, "ls-files", "--others", "--exclude-standard").splitlines())
     return sorted(paths)
 
 
-def apply_delta(output: Path, patch: Path) -> list[str]:
-    result = run(
-        ["git", "apply", "--3way", "--index", "--whitespace=nowarn", str(patch)],
-        cwd=output,
-        check=False,
-        capture=True,
-    )
-    if result.returncode == 0:
-        return []
-    unresolved = pending_resolution_paths(output)
-    if unresolved:
-        return unresolved
-    detail = result.stderr.strip() or result.stdout.strip() or "unknown Git error"
-    raise ApplyError(f"Could not apply the maintained Djorm delta: {detail}")
+def apply_delta(source_repo: Path, output: Path, state: ApplyState) -> list[str]:
+    tree, conflicts = merged_tree(source_repo, output, state)
+    run(["git", "read-tree", "--reset", "-u", tree], cwd=output, capture=True)
+
+    deletion_conflicts = sorted(set(conflicts) & maintained_deletions(source_repo, state))
+    if deletion_conflicts:
+        run(
+            ["git", "rm", "--ignore-unmatch", "--", *deletion_conflicts],
+            cwd=output,
+            capture=True,
+        )
+
+    semantic_conflicts = sorted(set(conflicts) - set(deletion_conflicts))
+    if semantic_conflicts:
+        run(["git", "reset", "HEAD", "--", *semantic_conflicts], cwd=output, capture=True)
+    return semantic_conflicts
 
 
 def commit_delta(output: Path) -> None:
@@ -359,9 +370,8 @@ def commit_delta(output: Path) -> None:
     run(
         ["git", "commit", "-m", "[fork] Apply the maintained dj-orm delta"],
         cwd=output,
-        capture=False,
+        capture=True,
     )
-    patch_path(output).unlink(missing_ok=True)
 
 
 def report_conflicts(output: Path, unresolved: list[str]) -> None:
@@ -454,7 +464,6 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
         capture=False,
     )
     state_path(output).unlink(missing_ok=True)
-    patch_path(output).unlink(missing_ok=True)
     print(f"Created {state.branch} at {output}")
     print(f"Distribution version: {version}")
 
@@ -486,8 +495,7 @@ def apply_remaining(state: ApplyState, *, verify: bool) -> int:
         save_state(output, state)
 
     if state.phase == "delta":
-        patch = write_delta_patch(source_repo, state)
-        unresolved = apply_delta(output, patch)
+        unresolved = apply_delta(source_repo, output, state)
         if unresolved:
             state.phase = "delta-conflict"
             save_state(output, state)
