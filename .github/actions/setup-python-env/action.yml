@@ -1,0 +1,27 @@
+name: Setup Python environment
+description: Install Python, uv, and the locked Djo development environment
+
+inputs:
+  python-version:
+    description: Python version
+    required: false
+    default: "3.14"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v7.0.0
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v9.0.0
+      with:
+        enable-cache: true
+        cache-suffix: ${{ github.job }}-${{ inputs.python-version }}
+        prune-cache: true
+
+    - name: Install locked dependencies
+      run: make install
+      shell: bash

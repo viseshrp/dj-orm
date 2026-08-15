@@ -1,0 +1,152 @@
+name: Main
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - "djo/**"
+      - "release/**"
+    tags:
+      - "v*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  MAIN_PYTHON_VERSION: "3.14"
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Cache pre-commit hooks
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Set up Python and environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Run project checks
+        run: make check
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Python and environment
+        uses: ./.github/actions/setup-python-env
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run retained ORM suite
+        run: make test
+
+      - name: Generate coverage
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION
+        run: make coverage
+
+      - name: Upload coverage
+        if: matrix.python-version == env.MAIN_PYTHON_VERSION
+        uses: codecov/codecov-action@v7.0.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  portability:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Python and environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Run package smoke tests
+        run: make test-smoke
+
+  package:
+    needs: [quality, tests, portability]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Python and environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Build and inspect distributions
+        run: |
+          make build
+          make check-dist
+          make inspect-dist
+
+  create-draft-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out exact tag
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Python and environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Verify tag and build artifacts
+        run: |
+          make release-check RELEASE_TAG="$RELEASE_TAG"
+          make build
+          make check-dist
+          make inspect-dist
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+
+      - name: Create draft GitHub release
+        run: |
+          gh release create "$RELEASE_TAG" \
+            --title "Release $RELEASE_TAG" \
+            --notes-from-tag \
+            --draft \
+            --verify-tag \
+            dist/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}

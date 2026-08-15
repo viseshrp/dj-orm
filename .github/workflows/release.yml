@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/dj-orm/
+    steps:
+      - name: Check out exact release tag
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Python and environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Download tag-verified artifacts
+        run: |
+          mkdir -p dist
+          gh release download "$RELEASE_TAG" \
+            --pattern "*.whl" \
+            --pattern "*.tar.gz" \
+            --dir dist
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+
+      - name: Recheck release and artifacts
+        run: |
+          make release-check RELEASE_TAG="$RELEASE_TAG"
+          make check-dist
+          make inspect-dist
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+
+      - name: Publish to PyPI
+        run: make publish PYPI_TOKEN="$PYPI_TOKEN"
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
