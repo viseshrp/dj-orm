@@ -330,6 +330,43 @@ def maintained_deletions(source_repo: Path, state: ApplyState) -> set[str]:
     return set(output.splitlines())
 
 
+def directory_prefixes(paths: set[str]) -> set[str]:
+    """Return every Git directory prefix represented by a set of paths."""
+    prefixes = set()
+    for path in paths:
+        parts = path.split("/")
+        prefixes.update("/".join(parts[:index]) + "/" for index in range(1, len(parts)))
+    return prefixes
+
+
+def fully_deleted_directory_prefixes(
+    baseline_paths: set[str],
+    source_paths: set[str],
+) -> tuple[str, ...]:
+    """Return minimal directories present in the baseline but absent from the fork."""
+    missing = directory_prefixes(baseline_paths) - directory_prefixes(source_paths)
+    deleted = []
+    for prefix in sorted(missing, key=lambda path: (path.count("/"), path)):
+        if not prefix.startswith(tuple(deleted)):
+            deleted.append(prefix)
+    return tuple(deleted)
+
+
+def tree_paths(source_repo: Path, treeish: str) -> set[str]:
+    output = git(source_repo, "ls-tree", "-r", "--name-only", "-z", treeish)
+    return {path for path in output.split("\0") if path}
+
+
+def maintained_deleted_directory_prefixes(
+    source_repo: Path,
+    state: ApplyState,
+) -> tuple[str, ...]:
+    return fully_deleted_directory_prefixes(
+        tree_paths(source_repo, state.baseline_tree),
+        tree_paths(source_repo, state.source_head),
+    )
+
+
 def merged_tree(source_repo: Path, output: Path, state: ApplyState) -> tuple[str, list[str]]:
     result = subprocess.run(
         [
@@ -368,15 +405,22 @@ def apply_delta(source_repo: Path, output: Path, state: ApplyState) -> list[str]
     tree, conflicts = merged_tree(source_repo, output, state)
     run(["git", "read-tree", "--reset", "-u", tree], cwd=output, capture=True)
 
-    deletion_conflicts = sorted(set(conflicts) & maintained_deletions(source_repo, state))
-    if deletion_conflicts:
+    conflict_paths = set(conflicts)
+    deleted_prefixes = maintained_deleted_directory_prefixes(source_repo, state)
+    deletion_conflicts = conflict_paths & maintained_deletions(source_repo, state)
+    deletion_conflicts.update(path for path in conflict_paths if path.startswith(deleted_prefixes))
+    deletion_targets = sorted(
+        path for path in deletion_conflicts if not path.startswith(deleted_prefixes)
+    )
+    deletion_targets.extend(prefix.removesuffix("/") for prefix in deleted_prefixes)
+    if deletion_targets:
         run(
-            ["git", "rm", "--ignore-unmatch", "--", *deletion_conflicts],
+            ["git", "rm", "-r", "--ignore-unmatch", "--", *deletion_targets],
             cwd=output,
             capture=True,
         )
 
-    remaining_conflicts = set(conflicts) - set(deletion_conflicts)
+    remaining_conflicts = conflict_paths - deletion_conflicts
     infrastructure_conflicts = sorted(path for path in remaining_conflicts if is_fork_owned(path))
     if infrastructure_conflicts:
         run(

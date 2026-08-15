@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 
 import pytest
 
@@ -9,13 +10,26 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10
 
 from scripts.apply_django_lts import (
     ApplyError,
+    ApplyState,
+    apply_delta,
     assert_configured_lts,
     distribution_version,
+    fully_deleted_directory_prefixes,
     is_fork_owned,
     normalize_upstream_version,
     release_series,
 )
 from scripts.rename_namespace import rewrite_python
+
+
+def run_git(repo: Path, *args: str) -> str:
+    return subprocess.run(
+        ["git", *args],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
 
 
 @pytest.mark.parametrize(
@@ -81,6 +95,86 @@ def test_lts_application_prefers_reviewed_infrastructure(path: str) -> None:
 
 def test_lts_application_reviews_retained_runtime_conflicts() -> None:
     assert not is_fork_owned("djorm/db/models/query.py")
+
+
+def test_lts_application_keeps_fully_deleted_directories_pruned() -> None:
+    baseline_paths = {
+        "tests/gis_tests/geos_tests/test_geos.py",
+        "tests/gis_tests/test_runner.py",
+        "tests/model_tests/test_models.py",
+    }
+    source_paths = {"tests/model_tests/test_models.py"}
+
+    assert fully_deleted_directory_prefixes(baseline_paths, source_paths) == ("tests/gis_tests/",)
+
+
+def test_lts_application_collapses_nested_deleted_directories() -> None:
+    baseline_paths = {
+        "docs/_ext/links.py",
+        "docs/ref/models.txt",
+        "tests/model_tests/test_models.py",
+    }
+    source_paths = {"tests/model_tests/test_models.py"}
+
+    assert fully_deleted_directory_prefixes(baseline_paths, source_paths) == ("docs/",)
+
+
+def test_lts_application_does_not_prune_retained_parent_directory() -> None:
+    baseline_paths = {
+        "tests/gis_tests/test_runner.py",
+        "tests/model_tests/test_models.py",
+    }
+    source_paths = {"tests/model_tests/test_models.py"}
+
+    deleted = fully_deleted_directory_prefixes(baseline_paths, source_paths)
+
+    assert "tests/" not in deleted
+
+
+def test_lts_application_removes_new_upstream_files_from_pruned_directory(
+    tmp_path: Path,
+) -> None:
+    source_repo = tmp_path / "source"
+    source_repo.mkdir()
+    run_git(source_repo, "init", "-b", "main")
+    run_git(source_repo, "config", "user.name", "Djorm tests")
+    run_git(source_repo, "config", "user.email", "tests@example.invalid")
+
+    (source_repo / "kept").mkdir()
+    (source_repo / "kept" / "model.py").write_text("baseline\n", encoding="utf-8")
+    (source_repo / "pruned").mkdir()
+    (source_repo / "pruned" / "old.py").write_text("old\n", encoding="utf-8")
+    run_git(source_repo, "add", "kept/model.py", "pruned/old.py")
+    run_git(source_repo, "commit", "-m", "baseline")
+    baseline_tree = run_git(source_repo, "rev-parse", "HEAD^{tree}")
+
+    run_git(source_repo, "switch", "-c", "maintained")
+    run_git(source_repo, "rm", "pruned/old.py")
+    run_git(source_repo, "commit", "-m", "prune unused directory")
+    source_head = run_git(source_repo, "rev-parse", "HEAD")
+
+    run_git(source_repo, "switch", "main")
+    (source_repo / "pruned" / "new.py").write_text("new upstream file\n", encoding="utf-8")
+    run_git(source_repo, "add", "pruned/new.py")
+    run_git(source_repo, "commit", "-m", "add upstream file")
+    target_head = run_git(source_repo, "rev-parse", "HEAD")
+
+    output = tmp_path / "candidate"
+    run_git(source_repo, "worktree", "add", "--detach", str(output), target_head)
+    state = ApplyState(
+        source_repo=str(source_repo),
+        source_head=source_head,
+        output=str(output),
+        branch="test",
+        django_ref="5.2.18",
+        django_commit=target_head,
+        revision=0,
+        baseline_tree=baseline_tree,
+    )
+
+    assert apply_delta(source_repo, output, state) == []
+    assert run_git(output, "ls-files", "pruned") == ""
+    assert not (output / "pruned").exists()
 
 
 def test_maintenance_config_records_distribution_and_template() -> None:

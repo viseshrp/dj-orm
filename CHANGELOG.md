@@ -20,3 +20,5 @@ upstream release notes for the exact tag named by each Djorm release.
 - Release versions map the exact Django tag plus a Djorm rebuild revision.
 - Removed inherited Django documentation, browser tooling, maintainer scripts,
   and other files outside the standalone ORM project.
+- The LTS updater now removes new upstream files that appear inside directories
+  intentionally pruned by Djorm.
