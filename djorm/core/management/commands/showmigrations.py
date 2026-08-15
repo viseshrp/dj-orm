@@ -21,8 +21,7 @@ class Command(BaseCommand):
             default=DEFAULT_DB_ALIAS,
             choices=tuple(connections),
             help=(
-                "Nominates a database to show migrations for. Defaults to the "
-                '"default" database.'
+                'Nominates a database to show migrations for. Defaults to the "default" database.'
             ),
         )
 
@@ -90,11 +89,11 @@ class Command(BaseCommand):
         # If we were passed a list of apps, validate it
         if app_names:
             self._validate_app_names(loader, app_names)
-        # Otherwise, show all apps in alphabetic order
+            # Otherwise, show all apps in alphabetic order
         else:
             app_names = sorted(loader.migrated_apps)
-        # For each app, print its migrations in order from oldest (roots) to
-        # newest (leaves).
+            # For each app, print its migrations in order from oldest (roots) to
+            # newest (leaves).
         for app_name in app_names:
             self.stdout.write(app_name, self.style.MIGRATE_LABEL)
             shown = set()
@@ -115,20 +114,15 @@ class Command(BaseCommand):
                             else:
                                 title += " Run 'manage.py migrate' to finish recording."
                                 output = " [-] %s" % title
-                            if self.verbosity >= 2 and hasattr(
-                                applied_migration, "applied"
-                            ):
-                                output += (
-                                    " (applied at %s)"
-                                    % applied_migration.applied.strftime(
-                                        "%Y-%m-%d %H:%M:%S"
-                                    )
+                            if self.verbosity >= 2 and hasattr(applied_migration, "applied"):
+                                output += " (applied at %s)" % applied_migration.applied.strftime(
+                                    "%Y-%m-%d %H:%M:%S"
                                 )
                             self.stdout.write(output)
                         else:
                             self.stdout.write(" [ ] %s" % title)
                         shown.add(plan_node)
-            # If we didn't print anything, then a small message
+                        # If we didn't print anything, then a small message
             if not shown:
                 self.stdout.write(" (no migrations)", self.style.ERROR)
 
@@ -156,7 +150,8 @@ class Command(BaseCommand):
                     plan.append(node)
                     seen.add(migration)
 
-        # Output
+                    # Output
+
         def print_deps(node):
             out = []
             for parent in sorted(node.parents):

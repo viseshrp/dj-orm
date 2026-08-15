@@ -45,9 +45,10 @@ if os.name == "nt":
             self.file = os.fdopen(fd, mode, bufsize)
             self.close_called = False
 
-        # Because close can be called during shutdown
-        # we need to cache os.unlink and access it
-        # as self.unlink only
+            # Because close can be called during shutdown
+            # we need to cache os.unlink and access it
+            # as self.unlink only
+
         unlink = os.unlink
 
         def close(self):

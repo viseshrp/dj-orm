@@ -63,9 +63,7 @@ class ColumnsTests(TableTests):
         self.assertIs(self.reference.references_column("table", "third_column"), True)
 
     def test_repr(self):
-        self.assertEqual(
-            repr(self.reference), "<Columns 'FIRST_COLUMN, SECOND_COLUMN'>"
-        )
+        self.assertEqual(repr(self.reference), "<Columns 'FIRST_COLUMN, SECOND_COLUMN'>")
 
     def test_str(self):
         self.assertEqual(str(self.reference), "FIRST_COLUMN, SECOND_COLUMN")
@@ -75,8 +73,7 @@ class IndexNameTests(ColumnsTests):
     def setUp(self):
         def create_index_name(table_name, column_names, suffix):
             return ", ".join(
-                "%s_%s_%s" % (table_name, column_name, suffix)
-                for column_name in column_names
+                "%s_%s_%s" % (table_name, column_name, suffix) for column_name in column_names
             )
 
         self.reference = IndexName(
@@ -99,8 +96,7 @@ class ForeignKeyNameTests(IndexNameTests):
     def setUp(self):
         def create_foreign_key_name(table_name, column_names, suffix):
             return ", ".join(
-                "%s_%s_%s" % (table_name, column_name, suffix)
-                for column_name in column_names
+                "%s_%s_%s" % (table_name, column_name, suffix) for column_name in column_names
             )
 
         self.reference = ForeignKeyName(
@@ -118,12 +114,8 @@ class ForeignKeyNameTests(IndexNameTests):
 
     def test_references_column(self):
         super().test_references_column()
-        self.assertIs(
-            self.reference.references_column("to_table", "second_column"), False
-        )
-        self.assertIs(
-            self.reference.references_column("to_table", "to_second_column"), True
-        )
+        self.assertIs(self.reference.references_column("to_table", "second_column"), False)
+        self.assertIs(self.reference.references_column("to_table", "to_second_column"), True)
 
     def test_rename_table_references(self):
         super().test_rename_table_references()
@@ -133,22 +125,12 @@ class ForeignKeyNameTests(IndexNameTests):
 
     def test_rename_column_references(self):
         super().test_rename_column_references()
-        self.reference.rename_column_references(
-            "to_table", "second_column", "third_column"
-        )
+        self.reference.rename_column_references("to_table", "second_column", "third_column")
         self.assertIs(self.reference.references_column("table", "second_column"), True)
-        self.assertIs(
-            self.reference.references_column("to_table", "to_second_column"), True
-        )
-        self.reference.rename_column_references(
-            "to_table", "to_first_column", "to_third_column"
-        )
-        self.assertIs(
-            self.reference.references_column("to_table", "to_first_column"), False
-        )
-        self.assertIs(
-            self.reference.references_column("to_table", "to_third_column"), True
-        )
+        self.assertIs(self.reference.references_column("to_table", "to_second_column"), True)
+        self.reference.rename_column_references("to_table", "to_first_column", "to_third_column")
+        self.assertIs(self.reference.references_column("to_table", "to_first_column"), False)
+        self.assertIs(self.reference.references_column("to_table", "to_third_column"), True)
 
     def test_repr(self):
         self.assertEqual(
@@ -166,9 +148,7 @@ class ForeignKeyNameTests(IndexNameTests):
 
 
 class MockReference:
-    def __init__(
-        self, representation, referenced_tables, referenced_columns, referenced_indexes
-    ):
+    def __init__(self, representation, referenced_tables, referenced_columns, referenced_indexes):
         self.representation = representation
         self.referenced_tables = referenced_tables
         self.referenced_columns = referenced_columns
@@ -200,9 +180,7 @@ class MockReference:
 
 class StatementTests(SimpleTestCase):
     def test_references_table(self):
-        statement = Statement(
-            "", reference=MockReference("", {"table"}, {}, {}), non_reference=""
-        )
+        statement = Statement("", reference=MockReference("", {"table"}, {}, {}), non_reference="")
         self.assertIs(statement.references_table("table"), True)
         self.assertIs(statement.references_table("other"), False)
 

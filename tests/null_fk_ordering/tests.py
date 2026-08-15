@@ -13,12 +13,8 @@ class NullFkOrderingTests(TestCase):
         author_1 = Author.objects.create(name="Tom Jones")
         author_2 = Author.objects.create(name="Bob Smith")
         Article.objects.create(title="No author on this article")
-        Article.objects.create(
-            author=author_1, title="This article written by Tom Jones"
-        )
-        Article.objects.create(
-            author=author_2, title="This article written by Bob Smith"
-        )
+        Article.objects.create(author=author_1, title="This article written by Tom Jones")
+        Article.objects.create(author=author_2, title="This article written by Bob Smith")
 
         # We can't compare results directly (since different databases sort NULLs to
         # different ends of the ordering), but we can check that all results are

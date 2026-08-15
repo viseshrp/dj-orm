@@ -18,7 +18,29 @@ MIGRATIONS_MODULE_NAME = "migrations"
 
 
 class MigrationLoader:
-    '\n    Load migration files from disk and their status from the database.\n\n    Migration files are expected to live in the "migrations" directory of\n    an app. Their names are entirely unimportant from a code perspective,\n    but will probably follow the 1234_name.py convention.\n\n    On initialization, this class will scan those directories, and open and\n    read the Python files, looking for a class called Migration, which should\n    inherit from djorm.db.migrations.Migration. See\n    djorm.db.migrations.migration for what that looks like.\n\n    Some migrations will be marked as "replacing" another set of migrations.\n    These are loaded into a separate set of migrations away from the main ones.\n    If all the migrations they replace are either unapplied or missing from\n    disk, then they are injected into the main set, replacing the named migrations.\n    Any dependency pointers to the replaced migrations are re-pointed to the\n    new migration.\n\n    This does mean that this class MUST also talk to the database as well as\n    to disk, but this is probably fine. We\'re already not just operating\n    in memory.\n    '
+    """
+    Load migration files from disk and their status from the database.
+
+    Migration files are expected to live in the "migrations" directory of
+    an app. Their names are entirely unimportant from a code perspective,
+    but will probably follow the 1234_name.py convention.
+
+    On initialization, this class will scan those directories, and open and
+    read the Python files, looking for a class called Migration, which should
+    inherit from djorm.db.migrations.Migration. See
+    djorm.db.migrations.migration for what that looks like.
+
+    Some migrations will be marked as "replacing" another set of migrations.
+    These are loaded into a separate set of migrations away from the main ones.
+    If all the migrations they replace are either unapplied or missing from
+    disk, then they are injected into the main set, replacing the named migrations.
+    Any dependency pointers to the replaced migrations are re-pointed to the
+    new migration.
+
+    This does mean that this class MUST also talk to the database as well as
+    to disk, but this is probably fine. We're already not just operating
+    in memory.
+    """
 
     def __init__(
         self,
@@ -74,15 +96,15 @@ class MigrationLoader:
                 if not hasattr(module, "__path__"):
                     self.unmigrated_apps.add(app_config.label)
                     continue
-                # Empty directories are namespaces. Namespace packages have no
-                # __file__ and don't use a list for __path__. See
-                # https://docs.python.org/3/reference/import.html#namespace-packages
+                    # Empty directories are namespaces. Namespace packages have no
+                    # __file__ and don't use a list for __path__. See
+                    # https://docs.python.org/3/reference/import.html#namespace-packages
                 if getattr(module, "__file__", None) is None and not isinstance(
                     module.__path__, list
                 ):
                     self.unmigrated_apps.add(app_config.label)
                     continue
-                # Force a reload if it's already loaded (tests need this)
+                    # Force a reload if it's already loaded (tests need this)
                 if was_loaded:
                     reload(module)
             self.migrated_apps.add(app_config.label)
@@ -109,11 +131,9 @@ class MigrationLoader:
                         "Migration %s in app %s has no Migration class"
                         % (migration_name, app_config.label)
                     )
-                self.disk_migrations[app_config.label, migration_name] = (
-                    migration_module.Migration(
-                        migration_name,
-                        app_config.label,
-                    )
+                self.disk_migrations[app_config.label, migration_name] = migration_module.Migration(
+                    migration_name,
+                    app_config.label,
                 )
 
     def get_migration(self, app_label, name_prefix):
@@ -127,9 +147,7 @@ class MigrationLoader:
         # Do the search
         results = []
         for migration_app_label, migration_name in self.disk_migrations:
-            if migration_app_label == app_label and migration_name.startswith(
-                name_prefix
-            ):
+            if migration_app_label == app_label and migration_name.startswith(name_prefix):
                 results.append((migration_app_label, migration_name))
         if len(results) > 1:
             raise AmbiguityError(
@@ -138,8 +156,7 @@ class MigrationLoader:
             )
         elif not results:
             raise KeyError(
-                f"There is no migration for '{app_label}' with the prefix "
-                f"'{name_prefix}'"
+                f"There is no migration for '{app_label}' with the prefix '{name_prefix}'"
             )
         else:
             return self.disk_migrations[results[0]]
@@ -147,10 +164,10 @@ class MigrationLoader:
     def check_key(self, key, current_app):
         if (key[1] != "__first__" and key[1] != "__latest__") or key in self.graph:
             return key
-        # Special-case __first__, which means "the first migration" for
-        # migrated apps, and is ignored for unmigrated apps. It allows
-        # makemigrations to declare dependencies on apps before they even have
-        # migrations.
+            # Special-case __first__, which means "the first migration" for
+            # migrated apps, and is ignored for unmigrated apps. It allows
+            # makemigrations to declare dependencies on apps before they even have
+            # migrations.
         if key[0] == current_app:
             # Ignore __first__ references to the same app (#22325)
             return
@@ -169,9 +186,7 @@ class MigrationLoader:
                 if self.ignore_no_migrations:
                     return None
                 else:
-                    raise ValueError(
-                        "Dependency on app with no migrations: %s" % key[0]
-                    )
+                    raise ValueError("Dependency on app with no migrations: %s" % key[0])
         raise ValueError("Dependency on unknown app: %s" % key[0])
 
     def add_internal_dependencies(self, key, migration):
@@ -211,8 +226,8 @@ class MigrationLoader:
         else:
             recorder = MigrationRecorder(self.connection)
             self.applied_migrations = recorder.applied_migrations()
-        # To start, populate the migration graph with nodes for ALL migrations
-        # and their dependencies. Also make note of replacing migrations at this step.
+            # To start, populate the migration graph with nodes for ALL migrations
+            # and their dependencies. Also make note of replacing migrations at this step.
         self.graph = MigrationGraph()
         self.replacements = {}
         for key, migration in self.disk_migrations.items():
@@ -223,10 +238,10 @@ class MigrationLoader:
         for key, migration in self.disk_migrations.items():
             # Internal (same app) dependencies.
             self.add_internal_dependencies(key, migration)
-        # Add external dependencies now that the internal ones have been resolved.
+            # Add external dependencies now that the internal ones have been resolved.
         for key, migration in self.disk_migrations.items():
             self.add_external_dependencies(key, migration)
-        # Carry out replacements where possible and if enabled.
+            # Carry out replacements where possible and if enabled.
         if self.replace_migrations:
             for key, migration in self.replacements.items():
                 # Get applied status of each of this migration's replacement
@@ -240,8 +255,8 @@ class MigrationLoader:
                     self.applied_migrations[key] = migration
                 else:
                     self.applied_migrations.pop(key, None)
-                # A replacing migration can be used if either all or none of
-                # its replacement targets have been applied.
+                    # A replacing migration can be used if either all or none of
+                    # its replacement targets have been applied.
                 if all(applied_statuses) or (not any(applied_statuses)):
                     self.graph.remove_replaced_nodes(key, migration.replaces)
                 else:
@@ -249,7 +264,7 @@ class MigrationLoader:
                     # partially applied. Remove it from the graph and remap
                     # dependencies to it (#25945).
                     self.graph.remove_replacement_node(key, migration.replaces)
-        # Ensure the graph is consistent.
+                    # Ensure the graph is consistent.
         try:
             self.graph.validate_consistency()
         except NodeNotFoundError as exc:
@@ -262,21 +277,17 @@ class MigrationLoader:
             for key, migration in self.replacements.items():
                 for replaced in migration.replaces:
                     reverse_replacements.setdefault(replaced, set()).add(key)
-            # Try to reraise exception with more detail.
+                    # Try to reraise exception with more detail.
             if exc.node in reverse_replacements:
                 candidates = reverse_replacements.get(exc.node, set())
-                is_replaced = any(
-                    candidate in self.graph.nodes for candidate in candidates
-                )
+                is_replaced = any(candidate in self.graph.nodes for candidate in candidates)
                 if not is_replaced:
                     tries = ", ".join("%s.%s" % c for c in candidates)
                     raise NodeNotFoundError(
                         "Migration {0} depends on nonexistent node ('{1}', '{2}'). "
                         "Django tried to replace migration {1}.{2} with any of [{3}] "
                         "but wasn't able to because some of the replaced migrations "
-                        "are already applied.".format(
-                            exc.origin, exc.node[0], exc.node[1], tries
-                        ),
+                        "are already applied.".format(exc.origin, exc.node[0], exc.node[1], tries),
                         exc.node,
                     ) from exc
             raise
@@ -298,9 +309,7 @@ class MigrationLoader:
                     # Skip unapplied squashed migrations that have all of their
                     # `replaces` applied.
                     if parent in self.replacements:
-                        if all(
-                            m in applied for m in self.replacements[parent].replaces
-                        ):
+                        if all(m in applied for m in self.replacements[parent].replaces):
                             continue
                     raise InconsistentMigrationHistory(
                         "Migration {}.{} is applied before its dependency "
@@ -325,9 +334,7 @@ class MigrationLoader:
             if app_label in seen_apps:
                 conflicting_apps.add(app_label)
             seen_apps.setdefault(app_label, set()).add(migration_name)
-        return {
-            app_label: sorted(seen_apps[app_label]) for app_label in conflicting_apps
-        }
+        return {app_label: sorted(seen_apps[app_label]) for app_label in conflicting_apps}
 
     def project_state(self, nodes=None, at_end=True):
         """
@@ -336,9 +343,7 @@ class MigrationLoader:
 
         See graph.make_state() for the meaning of "nodes" and "at_end".
         """
-        return self.graph.make_state(
-            nodes=nodes, at_end=at_end, real_apps=self.unmigrated_apps
-        )
+        return self.graph.make_state(nodes=nodes, at_end=at_end, real_apps=self.unmigrated_apps)
 
     def collect_sql(self, plan):
         """
@@ -352,9 +357,7 @@ class MigrationLoader:
                 collect_sql=True, atomic=migration.atomic
             ) as schema_editor:
                 if state is None:
-                    state = self.project_state(
-                        (migration.app_label, migration.name), at_end=False
-                    )
+                    state = self.project_state((migration.app_label, migration.name), at_end=False)
                 if not backwards:
                     state = migration.apply(state, schema_editor, collect_sql=True)
                 else:

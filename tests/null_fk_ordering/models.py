@@ -21,8 +21,9 @@ class Article(models.Model):
     class Meta:
         ordering = ["author__name"]
 
+        # These following 4 models represent a far more complex ordering case.
 
-# These following 4 models represent a far more complex ordering case.
+
 class SystemInfo(models.Model):
     system_name = models.CharField(max_length=32)
 

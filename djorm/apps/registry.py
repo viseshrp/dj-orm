@@ -24,13 +24,13 @@ class Apps:
         if installed_apps is None and hasattr(sys.modules[__name__], "apps"):
             raise RuntimeError("You must supply an installed_apps argument.")
 
-        # Mapping of app labels => model names => model classes. Every time a
-        # model is imported, ModelBase.__new__ calls apps.register_model which
-        # creates an entry in all_models. All imported models are registered,
-        # regardless of whether they're defined in an installed application
-        # and whether the registry has been populated. Since it isn't possible
-        # to reimport a module safely (it could reexecute initialization code)
-        # all_models is never overridden or reset.
+            # Mapping of app labels => model names => model classes. Every time a
+            # model is imported, ModelBase.__new__ calls apps.register_model which
+            # creates an entry in all_models. All imported models are registered,
+            # regardless of whether they're defined in an installed application
+            # and whether the registry has been populated. Since it isn't possible
+            # to reimport a module safely (it could reexecute initialization code)
+            # all_models is never overridden or reset.
         self.all_models = defaultdict(dict)
 
         # Mapping of labels to AppConfig instances for installed apps.
@@ -69,14 +69,14 @@ class Apps:
         if self.ready:
             return
 
-        # populate() might be called by two threads in parallel on servers
-        # that create threads before initializing the WSGI callable.
+            # populate() might be called by two threads in parallel on servers
+            # that create threads before initializing the WSGI callable.
         with self._lock:
             if self.ready:
                 return
 
-            # An RLock prevents other threads from entering this section. The
-            # compare and set operation below is atomic.
+                # An RLock prevents other threads from entering this section. The
+                # compare and set operation below is atomic.
             if self.loading:
                 # Prevent reentrant calls to avoid running AppConfig.ready()
                 # methods twice.
@@ -91,22 +91,18 @@ class Apps:
                     app_config = AppConfig.create(entry)
                 if app_config.label in self.app_configs:
                     raise ImproperlyConfigured(
-                        "Application labels aren't unique, "
-                        "duplicates: %s" % app_config.label
+                        "Application labels aren't unique, duplicates: %s" % app_config.label
                     )
 
                 self.app_configs[app_config.label] = app_config
                 app_config.apps = self
 
-            # Check for duplicate app names.
-            counts = Counter(
-                app_config.name for app_config in self.app_configs.values()
-            )
+                # Check for duplicate app names.
+            counts = Counter(app_config.name for app_config in self.app_configs.values())
             duplicates = [name for name, count in counts.most_common() if count > 1]
             if duplicates:
                 raise ImproperlyConfigured(
-                    "Application names aren't unique, "
-                    "duplicates: %s" % ", ".join(duplicates)
+                    "Application names aren't unique, duplicates: %s" % ", ".join(duplicates)
                 )
 
             self.apps_ready = True
@@ -164,7 +160,8 @@ class Apps:
                     break
             raise LookupError(message)
 
-    # This method is performance-critical at least for Django's test suite.
+            # This method is performance-critical at least for Django's test suite.
+
     @functools.cache
     def get_models(self, include_auto_created=False, include_swapped=False):
         """
@@ -240,7 +237,11 @@ class Apps:
         self.clear_cache()
 
     def is_installed(self, app_name):
-        "\n        Check whether an application with this name exists in the registry.\n\n        app_name is the full name of the app e.g. 'djorm.contrib.admin'.\n        "
+        """
+        Check whether an application with this name exists in the registry.
+
+        app_name is the full name of the app e.g. 'djorm.contrib.admin'.
+        """
         self.check_apps_ready()
         return any(ac.name == app_name for ac in self.app_configs.values())
 
@@ -294,7 +295,7 @@ class Apps:
             # Is this model swapped out for the model given by to_string?
             if swapped and swapped.lower() == to_string:
                 return model._meta.swappable
-            # Is this model swappable and the one given by to_string?
+                # Is this model swappable and the one given by to_string?
             if model._meta.swappable and model._meta.label_lower == to_string:
                 return model._meta.swappable
         return None
@@ -392,11 +393,11 @@ class Apps:
         # Base case: no arguments, just execute the function.
         if not model_keys:
             function()
-        # Recursive case: take the head of model_keys, wait for the
-        # corresponding model class to be imported and registered, then apply
-        # that argument to the supplied function. Pass the resulting partial
-        # to lazy_model_operation() along with the remaining model args and
-        # repeat until all models are loaded and all arguments are applied.
+            # Recursive case: take the head of model_keys, wait for the
+            # corresponding model class to be imported and registered, then apply
+            # that argument to the supplied function. Pass the resulting partial
+            # to lazy_model_operation() along with the remaining model args and
+            # repeat until all models are loaded and all arguments are applied.
         else:
             next_model, *more_models = model_keys
 

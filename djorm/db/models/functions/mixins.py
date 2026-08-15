@@ -45,9 +45,7 @@ class FixDurationInputMixin:
             )
 
             return compiler.compile(
-                SecondsToInterval(
-                    self.__class__(IntervalToSeconds(expression), **options)
-                )
+                SecondsToInterval(self.__class__(IntervalToSeconds(expression), **options))
             )
         return super().as_sql(compiler, connection, **extra_context)
 

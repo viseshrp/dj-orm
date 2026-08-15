@@ -23,15 +23,11 @@ class QuestionerTests(SimpleTestCase):
 
     def test_ask_not_null_alteration(self):
         questioner = MigrationQuestioner()
-        self.assertIsNone(
-            questioner.ask_not_null_alteration("field_name", "model_name")
-        )
+        self.assertIsNone(questioner.ask_not_null_alteration("field_name", "model_name"))
 
     @mock.patch("builtins.input", return_value="2")
     def test_ask_not_null_alteration_not_provided(self, mock):
-        questioner = InteractiveMigrationQuestioner(
-            prompt_output=OutputWrapper(StringIO())
-        )
+        questioner = InteractiveMigrationQuestioner(prompt_output=OutputWrapper(StringIO()))
         question = questioner.ask_not_null_alteration("field_name", "model_name")
         self.assertEqual(question, NOT_PROVIDED)
 
@@ -70,9 +66,7 @@ class QuestionerHelperMethodsTests(SimpleTestCase):
     def test_questioner_no_default_name_error(self, mock_input):
         with self.assertRaises(SystemExit):
             self.questioner._ask_default()
-        self.assertIn(
-            "NameError: name 'datetim' is not defined", self.prompt.getvalue()
-        )
+        self.assertIn("NameError: name 'datetim' is not defined", self.prompt.getvalue())
 
     @mock.patch("builtins.input", side_effect=["datetime.dat", "exit"])
     def test_questioner_no_default_attribute_error(self, mock_input):
@@ -103,7 +97,7 @@ class QuestionerHelperMethodsTests(SimpleTestCase):
     def test_questioner_bad_user_choice(self, mock_input):
         question = "Make a choice:"
         value = self.questioner._choice_input(question, choices="abc")
-        expected_msg = f"{question}\n" f" 1) a\n" f" 2) b\n" f" 3) c\n"
+        expected_msg = f"{question}\n 1) a\n 2) b\n 3) c\n"
         self.assertIn(expected_msg, self.prompt.getvalue())
         self.assertEqual(value, 1)
 
@@ -112,12 +106,5 @@ class QuestionerHelperMethodsTests(SimpleTestCase):
         question = "Make a choice:"
         with self.assertRaises(SystemExit):
             self.questioner._choice_input(question, choices="abc")
-        expected_msg = (
-            f"{question}\n"
-            f" 1) a\n"
-            f" 2) b\n"
-            f" 3) c\n"
-            f"Select an option: \n"
-            f"Cancelled.\n"
-        )
+        expected_msg = f"{question}\n 1) a\n 2) b\n 3) c\nSelect an option: \nCancelled.\n"
         self.assertIn(expected_msg, self.prompt.getvalue())

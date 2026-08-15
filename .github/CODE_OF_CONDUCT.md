@@ -1,3 +1,4 @@
-# Django Code of Conduct
+# Code of conduct
 
-See https://www.djangoproject.com/conduct/.
+Contributors must follow the [Django Code of Conduct](https://www.djangoproject.com/conduct/)
+when participating in this repository.

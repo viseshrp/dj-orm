@@ -75,15 +75,9 @@ class ModelInstanceCreationTests(TestCase):
         self.assertEqual(a.pub_date, datetime(2005, 7, 30, 0, 0))
 
     def test_autofields_generate_different_values_for_each_instance(self):
-        a1 = Article.objects.create(
-            headline="First", pub_date=datetime(2005, 7, 30, 0, 0)
-        )
-        a2 = Article.objects.create(
-            headline="First", pub_date=datetime(2005, 7, 30, 0, 0)
-        )
-        a3 = Article.objects.create(
-            headline="First", pub_date=datetime(2005, 7, 30, 0, 0)
-        )
+        a1 = Article.objects.create(headline="First", pub_date=datetime(2005, 7, 30, 0, 0))
+        a2 = Article.objects.create(headline="First", pub_date=datetime(2005, 7, 30, 0, 0))
+        a3 = Article.objects.create(headline="First", pub_date=datetime(2005, 7, 30, 0, 0))
         self.assertNotEqual(a3.id, a1.id)
         self.assertNotEqual(a3.id, a2.id)
 
@@ -337,9 +331,7 @@ class ModelInstanceCreationTests(TestCase):
 
     @ignore_warnings(category=RemovedInDjango60Warning)
     async def test_asave_positional_arguments(self):
-        a = await Article.objects.acreate(
-            headline="original", pub_date=datetime(2014, 5, 16)
-        )
+        a = await Article.objects.acreate(headline="original", pub_date=datetime(2014, 5, 16))
         a.headline = "changed"
 
         await a.asave(False, False, None, ["pub_date"])
@@ -441,9 +433,7 @@ class ModelTest(TestCase):
             pub_date=datetime(2005, 7, 28),
         )
         a.save()
-        self.assertEqual(
-            Article.objects.get(pk=a.id).headline, "\u6797\u539f \u3081\u3050\u307f"
-        )
+        self.assertEqual(Article.objects.get(pk=a.id).headline, "\u6797\u539f \u3081\u3050\u307f")
 
     def test_hash_function(self):
         # Model instances have a hash function, so they can be used in sets
@@ -470,9 +460,7 @@ class ModelTest(TestCase):
         # them, as long as you use values().
         Article.objects.bulk_create(
             [
-                Article(
-                    headline="Article 10", pub_date=datetime(2005, 7, 31, 12, 30, 45)
-                ),
+                Article(headline="Article 10", pub_date=datetime(2005, 7, 31, 12, 30, 45)),
                 Article(headline="Article 11", pub_date=datetime(2008, 1, 1)),
                 Article(
                     headline="Article 12",
@@ -499,9 +487,7 @@ class ModelTest(TestCase):
         # will silently be ignored.
         Article.objects.bulk_create(
             [
-                Article(
-                    headline="Article 10", pub_date=datetime(2005, 7, 31, 12, 30, 45)
-                ),
+                Article(headline="Article 10", pub_date=datetime(2005, 7, 31, 12, 30, 45)),
                 Article(headline="Article 11", pub_date=datetime(2008, 1, 1)),
                 Article(
                     headline="Article 12",
@@ -573,9 +559,7 @@ class ModelTest(TestCase):
         # Tests for ticket #17712
         Article.objects.create(headline="foo", pub_date=datetime.now())
         with self.assertNumQueries(0):
-            self.assertEqual(
-                len(Article.objects.none().values_list("id").order_by("id")), 0
-            )
+            self.assertEqual(len(Article.objects.none().values_list("id").order_by("id")), 0)
         with self.assertNumQueries(0):
             self.assertEqual(
                 len(
@@ -591,9 +575,7 @@ class ModelTest(TestCase):
         # Tests for #19426
         Article.objects.create(headline="foo", pub_date=datetime.now())
         with self.assertNumQueries(0):
-            self.assertEqual(
-                len(Article.objects.none().distinct("headline", "pub_date")), 0
-            )
+            self.assertEqual(len(Article.objects.none().distinct("headline", "pub_date")), 0)
 
     def test_ticket_20278(self):
         sr = SelfRef.objects.create()
@@ -645,7 +627,7 @@ class ModelTest(TestCase):
         del article.headline
         with self.assertNumQueries(1):
             self.assertEqual(article.headline, "foo")
-        # Fields that weren't deleted aren't reloaded.
+            # Fields that weren't deleted aren't reloaded.
         self.assertEqual(article.pub_date, new_pub_date)
 
     def test_multiple_objects_max_num_fetched(self):
@@ -660,13 +642,10 @@ class ModelTest(TestCase):
             Article.objects.get,
             headline__startswith="Area",
         )
-        Article.objects.create(
-            headline="Area %s" % max_results, pub_date=datetime(2005, 7, 28)
-        )
+        Article.objects.create(headline="Area %s" % max_results, pub_date=datetime(2005, 7, 28))
         self.assertRaisesMessage(
             MultipleObjectsReturned,
-            "get() returned more than one Article -- it returned more than %d!"
-            % max_results,
+            "get() returned more than one Article -- it returned more than %d!" % max_results,
             Article.objects.get,
             headline__startswith="Area",
         )
@@ -722,13 +701,9 @@ class ModelLookupTest(TestCase):
         self.assertEqual(Article.objects.get(id__exact=self.a.id), self.a)
         self.assertEqual(Article.objects.get(headline__startswith="Swallow"), self.a)
         self.assertEqual(Article.objects.get(pub_date__year=2005), self.a)
+        self.assertEqual(Article.objects.get(pub_date__year=2005, pub_date__month=7), self.a)
         self.assertEqual(
-            Article.objects.get(pub_date__year=2005, pub_date__month=7), self.a
-        )
-        self.assertEqual(
-            Article.objects.get(
-                pub_date__year=2005, pub_date__month=7, pub_date__day=28
-            ),
+            Article.objects.get(pub_date__year=2005, pub_date__month=7, pub_date__day=28),
             self.a,
         )
         self.assertEqual(Article.objects.get(pub_date__week_day=5), self.a)
@@ -736,9 +711,7 @@ class ModelLookupTest(TestCase):
     def test_equal_lookup(self):
         # The "__exact" lookup type can be omitted, as a shortcut.
         self.assertEqual(Article.objects.get(id=self.a.id), self.a)
-        self.assertEqual(
-            Article.objects.get(headline="Swallow programs in Python"), self.a
-        )
+        self.assertEqual(Article.objects.get(headline="Swallow programs in Python"), self.a)
 
         self.assertSequenceEqual(
             Article.objects.filter(pub_date__year=2005),
@@ -765,19 +738,15 @@ class ModelLookupTest(TestCase):
     def test_does_not_exist(self):
         # Django raises an Article.DoesNotExist exception for get() if the
         # parameters don't match any object.
-        with self.assertRaisesMessage(
-            ObjectDoesNotExist, "Article matching query does not exist."
-        ):
+        with self.assertRaisesMessage(ObjectDoesNotExist, "Article matching query does not exist."):
             Article.objects.get(
                 id__exact=2000,
             )
-        # To avoid dict-ordering related errors check only one lookup
-        # in single assert.
+            # To avoid dict-ordering related errors check only one lookup
+            # in single assert.
         with self.assertRaises(ObjectDoesNotExist):
             Article.objects.get(pub_date__year=2005, pub_date__month=8)
-        with self.assertRaisesMessage(
-            ObjectDoesNotExist, "Article matching query does not exist."
-        ):
+        with self.assertRaisesMessage(ObjectDoesNotExist, "Article matching query does not exist."):
             Article.objects.get(
                 pub_date__week_day=6,
             )
@@ -954,9 +923,7 @@ class SelectOnSaveTests(TestCase):
         with self.assertNumQueries(1):
             asos.save(force_update=True)
         Article.objects.all().delete()
-        with self.assertRaisesMessage(
-            DatabaseError, "Forced update did not affect any rows."
-        ):
+        with self.assertRaisesMessage(DatabaseError, "Forced update did not affect any rows."):
             with self.assertNumQueries(1):
                 asos.save(force_update=True)
 
@@ -988,12 +955,10 @@ class SelectOnSaveTests(TestCase):
             with self.assertNumQueries(3):
                 asos.save()
                 self.assertTrue(FakeQuerySet.called)
-            # This is not wanted behavior, but this is how Django has always
-            # behaved for databases that do not return correct information
-            # about matched rows for UPDATE.
-            with self.assertRaisesMessage(
-                DatabaseError, "Forced update did not affect any rows."
-            ):
+                # This is not wanted behavior, but this is how Django has always
+                # behaved for databases that do not return correct information
+                # about matched rows for UPDATE.
+            with self.assertRaisesMessage(DatabaseError, "Forced update did not affect any rows."):
                 asos.save(force_update=True)
             msg = (
                 "An error occurred in the current transaction. You can't "
@@ -1034,10 +999,7 @@ class ModelRefreshTests(TestCase):
 
     def test_lookup_in_fields(self):
         s = SelfRef.objects.create()
-        msg = (
-            'Found "__" in fields argument. Relations and transforms are not allowed '
-            "in fields."
-        )
+        msg = 'Found "__" in fields argument. Relations and transforms are not allowed in fields.'
         with self.assertRaisesMessage(ValueError, msg):
             s.refresh_from_db(fields=["foo__bar"])
 
@@ -1161,9 +1123,7 @@ class ModelRefreshTests(TestCase):
 
         with transaction.atomic(), CaptureQueriesContext(connection) as ctx:
             a.refresh_from_db(from_queryset=Article.objects.select_for_update())
-        self.assertTrue(
-            any(for_update_sql in query["sql"] for query in ctx.captured_queries)
-        )
+        self.assertTrue(any(for_update_sql in query["sql"] for query in ctx.captured_queries))
 
     def test_refresh_with_related(self):
         a = Article.objects.create(pub_date=datetime.now())

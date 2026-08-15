@@ -102,7 +102,7 @@ class _UninitializedOperatorsDescriptor:
         # AttributeError.
         if instance is None:
             raise AttributeError("operators not available as class attribute")
-        # Creating a cursor will initialize the operators.
+            # Creating a cursor will initialize the operators.
         instance.cursor().close()
         return instance.__dict__["operators"]
 
@@ -163,30 +163,21 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     _standard_operators = {
         "exact": "= %s",
         "iexact": "= UPPER(%s)",
-        "contains": (
-            "LIKE TRANSLATE(%s USING NCHAR_CS) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
-        ),
+        "contains": ("LIKE TRANSLATE(%s USING NCHAR_CS) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"),
         "icontains": (
-            "LIKE UPPER(TRANSLATE(%s USING NCHAR_CS)) "
-            "ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
+            "LIKE UPPER(TRANSLATE(%s USING NCHAR_CS)) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
         ),
         "gt": "> %s",
         "gte": ">= %s",
         "lt": "< %s",
         "lte": "<= %s",
-        "startswith": (
-            "LIKE TRANSLATE(%s USING NCHAR_CS) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
-        ),
-        "endswith": (
-            "LIKE TRANSLATE(%s USING NCHAR_CS) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
-        ),
+        "startswith": ("LIKE TRANSLATE(%s USING NCHAR_CS) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"),
+        "endswith": ("LIKE TRANSLATE(%s USING NCHAR_CS) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"),
         "istartswith": (
-            "LIKE UPPER(TRANSLATE(%s USING NCHAR_CS)) "
-            "ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
+            "LIKE UPPER(TRANSLATE(%s USING NCHAR_CS)) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
         ),
         "iendswith": (
-            "LIKE UPPER(TRANSLATE(%s USING NCHAR_CS)) "
-            "ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
+            "LIKE UPPER(TRANSLATE(%s USING NCHAR_CS)) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
         ),
     }
 
@@ -219,13 +210,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     }
 
     _standard_pattern_ops = {
-        k: "LIKE TRANSLATE( " + v + " USING NCHAR_CS)"
-        " ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
+        k: "LIKE TRANSLATE( " + v + " USING NCHAR_CS) ESCAPE TRANSLATE('\\' USING NCHAR_CS)"
         for k, v in _pattern_ops.items()
     }
-    _likec_pattern_ops = {
-        k: "LIKEC " + v + " ESCAPE '\\'" for k, v in _pattern_ops.items()
-    }
+    _likec_pattern_ops = {k: "LIKEC " + v + " ESCAPE '\\'" for k, v in _pattern_ops.items()}
 
     Database = Database
     SchemaEditorClass = DatabaseSchemaEditor
@@ -240,9 +228,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        use_returning_into = self.settings_dict["OPTIONS"].get(
-            "use_returning_into", True
-        )
+        use_returning_into = self.settings_dict["OPTIONS"].get("use_returning_into", True)
         self.features.can_return_columns_from_insert = use_returning_into
 
     @property
@@ -255,9 +241,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             return None
 
         if self.settings_dict.get("CONN_MAX_AGE", 0) != 0:
-            raise ImproperlyConfigured(
-                "Pooling doesn't support persistent connections."
-            )
+            raise ImproperlyConfigured("Pooling doesn't support persistent connections.")
 
         pool_key = (self.alias, self.settings_dict["USER"])
         if pool_key not in self._connection_pools:
@@ -334,8 +318,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             cursor = self.create_cursor()
             try:
                 cursor.execute(
-                    "SELECT 1 FROM DUAL WHERE DUMMY %s"
-                    % self._standard_operators["contains"],
+                    "SELECT 1 FROM DUAL WHERE DUMMY %s" % self._standard_operators["contains"],
                     ["X"],
                 )
             except Database.DatabaseError:
@@ -359,8 +342,9 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             with debug_transaction(self, "COMMIT"), wrap_oracle_errors():
                 return self.connection.commit()
 
-    # Oracle doesn't support releasing savepoints. But we fake them when query
-    # logging is enabled to keep query counts consistent with other backends.
+                # Oracle doesn't support releasing savepoints. But we fake them when query
+                # logging is enabled to keep query counts consistent with other backends.
+
     def _savepoint_commit(self, sid):
         if self.queries_logged:
             self.queries_log.append(
@@ -421,15 +405,12 @@ class OracleParam:
         # With raw SQL queries, datetimes can reach this function
         # without being converted by DateTimeField.get_db_prep_value.
         if settings.USE_TZ and (
-            isinstance(param, datetime.datetime)
-            and not isinstance(param, Oracle_datetime)
+            isinstance(param, datetime.datetime) and not isinstance(param, Oracle_datetime)
         ):
             param = Oracle_datetime.from_datetime(param)
 
         string_size = 0
-        has_boolean_data_type = (
-            cursor.database.features.supports_boolean_expr_in_select_clause
-        )
+        has_boolean_data_type = cursor.database.features.supports_boolean_expr_in_select_clause
         if not has_boolean_data_type:
             # Oracle < 23c doesn't recognize True and False correctly.
             if param is True:
@@ -531,9 +512,7 @@ class FormatStylePlaceholderCursor:
             elif precision > 0:
                 # NUMBER(p,s) column: decimal-precision fixed point.
                 # This comes from IntegerField and DecimalField columns.
-                outconverter = FormatStylePlaceholderCursor._get_decimal_converter(
-                    precision, scale
-                )
+                outconverter = FormatStylePlaceholderCursor._get_decimal_converter(precision, scale)
             else:
                 # No type information. This normally comes from a
                 # mathematical expression in the SELECT list. Guess int
@@ -545,8 +524,8 @@ class FormatStylePlaceholderCursor:
                 arraysize=cursor.arraysize,
                 outconverter=outconverter,
             )
-        # oracledb 2.0.0+ returns NLOB columns with IS JSON constraints as
-        # dicts. Use a no-op converter to avoid this.
+            # oracledb 2.0.0+ returns NLOB columns with IS JSON constraints as
+            # dicts. Use a no-op converter to avoid this.
         elif defaultType == Database.DB_TYPE_NCLOB:
             return cursor.var(Database.DB_TYPE_NCLOB, arraysize=cursor.arraysize)
 
@@ -612,13 +591,10 @@ class FormatStylePlaceholderCursor:
             # unifying 0/1 with False/True.
             param_types = [(type(param), param) for param in params]
             params_dict = {
-                param_type: ":arg%d" % i
-                for i, param_type in enumerate(dict.fromkeys(param_types))
+                param_type: ":arg%d" % i for i, param_type in enumerate(dict.fromkeys(param_types))
             }
             args = [params_dict[param_type] for param_type in param_types]
-            params = {
-                placeholder: param for (_, param), placeholder in params_dict.items()
-            }
+            params = {placeholder: param for (_, param), placeholder in params_dict.items()}
             query %= tuple(args)
         else:
             # Handle params as sequence
@@ -636,7 +612,7 @@ class FormatStylePlaceholderCursor:
         if not params:
             # No params given, nothing to do
             return None
-        # uniform treatment for sequences and iterables
+            # uniform treatment for sequences and iterables
         params_iter = iter(params)
         query, firstparams = self._fix_for_params(query, next(params_iter))
         # we build a list of formatted params; as we're going to traverse it
@@ -644,9 +620,7 @@ class FormatStylePlaceholderCursor:
         formatted = [firstparams] + [self._format_params(p) for p in params_iter]
         self._guess_input_sizes(formatted)
         with wrap_oracle_errors():
-            return self.cursor.executemany(
-                query, [self._param_generator(p) for p in formatted]
-            )
+            return self.cursor.executemany(query, [self._param_generator(p) for p in formatted])
 
     def close(self):
         try:

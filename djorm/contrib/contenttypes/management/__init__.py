@@ -53,7 +53,7 @@ def inject_rename_contenttypes_operations(
     if plan is None:
         return
 
-    # Determine whether or not the ContentType model is available.
+        # Determine whether or not the ContentType model is available.
     try:
         ContentType = apps.get_model("contenttypes", "ContentType")
     except LookupError:
@@ -73,7 +73,7 @@ def inject_rename_contenttypes_operations(
             else:
                 available = True
                 continue
-        # The ContentType model is not available yet.
+                # The ContentType model is not available yet.
         if not available:
             continue
         inserts = []
@@ -96,8 +96,7 @@ def get_contenttypes_and_models(app_config, using, ContentType):
     ContentType.objects.clear_cache()
 
     content_types = {
-        ct.model: ct
-        for ct in ContentType.objects.using(using).filter(app_label=app_config.label)
+        ct.model: ct for ct in ContentType.objects.using(using).filter(app_label=app_config.label)
     }
     app_models = {model._meta.model_name: model for model in app_config.get_models()}
     return content_types, app_models
@@ -124,9 +123,7 @@ def create_contenttypes(
     except LookupError:
         return
 
-    content_types, app_models = get_contenttypes_and_models(
-        app_config, using, ContentType
-    )
+    content_types, app_models = get_contenttypes_and_models(app_config, using, ContentType)
 
     if not app_models:
         return

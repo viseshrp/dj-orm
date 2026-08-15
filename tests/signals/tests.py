@@ -69,9 +69,7 @@ class SignalTests(BaseSignalSetup, TestCase):
             data.append((instance, sender, kwargs.get("raw", False)))
 
         def post_save_handler(signal, sender, instance, **kwargs):
-            data.append(
-                (instance, sender, kwargs.get("created"), kwargs.get("raw", False))
-            )
+            data.append((instance, sender, kwargs.get("created"), kwargs.get("raw", False)))
 
         signals.pre_save.connect(pre_save_handler, weak=False)
         signals.post_save.connect(post_save_handler, weak=False)
@@ -152,7 +150,8 @@ class SignalTests(BaseSignalSetup, TestCase):
         def pre_delete_handler(signal, sender, instance, origin, **kwargs):
             data.append((instance, sender, instance.id is None, origin))
 
-        # #8285: signals can be any callable
+            # #8285: signals can be any callable
+
         class PostDeleteHandler:
             def __init__(self, data):
                 self.data = data
@@ -455,9 +454,7 @@ class LazyModelRefTests(BaseSignalSetup, SimpleTestCase):
 
     @isolate_apps("signals", kwarg_name="apps")
     def test_not_loaded_model(self, apps):
-        signals.post_init.connect(
-            self.receiver, sender="signals.Created", weak=False, apps=apps
-        )
+        signals.post_init.connect(self.receiver, sender="signals.Created", weak=False, apps=apps)
 
         try:
 
@@ -491,14 +488,10 @@ class LazyModelRefTests(BaseSignalSetup, SimpleTestCase):
         signals.post_init.connect(receiver, sender="signals.Created", apps=apps)
         try:
             self.assertIsNone(
-                signals.post_init.disconnect(
-                    receiver, sender="signals.Created", apps=apps
-                )
+                signals.post_init.disconnect(receiver, sender="signals.Created", apps=apps)
             )
             self.assertIsNone(
-                signals.post_init.disconnect(
-                    receiver, sender="signals.Created", apps=apps
-                )
+                signals.post_init.disconnect(receiver, sender="signals.Created", apps=apps)
             )
             Created()
             self.assertEqual(received, [])
@@ -515,14 +508,10 @@ class LazyModelRefTests(BaseSignalSetup, SimpleTestCase):
         signals.post_init.connect(receiver, sender="signals.Created", apps=apps)
         try:
             self.assertIsNone(
-                signals.post_init.disconnect(
-                    receiver, sender="signals.Created", apps=apps
-                )
+                signals.post_init.disconnect(receiver, sender="signals.Created", apps=apps)
             )
             self.assertIsNone(
-                signals.post_init.disconnect(
-                    receiver, sender="signals.Created", apps=apps
-                )
+                signals.post_init.disconnect(receiver, sender="signals.Created", apps=apps)
             )
 
             class Created(models.Model):

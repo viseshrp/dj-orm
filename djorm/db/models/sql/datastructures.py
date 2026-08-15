@@ -68,8 +68,7 @@ class Join:
         if hasattr(join_field, "get_joining_fields"):
             self.join_fields = join_field.get_joining_fields()
             self.join_cols = tuple(
-                (lhs_field.column, rhs_field.column)
-                for lhs_field, rhs_field in self.join_fields
+                (lhs_field.column, rhs_field.column) for lhs_field, rhs_field in self.join_fields
             )
         else:
             warnings.warn(
@@ -79,7 +78,7 @@ class Join:
             )
             self.join_fields = None
             self.join_cols = join_field.get_joining_columns()
-        # Along which field (or ForeignObjectRel in the reverse join case)
+            # Along which field (or ForeignObjectRel in the reverse join case)
         self.join_field = join_field
         # Is this join nullabled?
         self.nullable = nullable
@@ -115,11 +114,9 @@ class Join:
                 rhs_full_name = rhs_sql % rhs_params
             join_conditions.append(f"{lhs_full_name} = {rhs_full_name}")
 
-        # Add a single condition inside parentheses for whatever
-        # get_extra_restriction() returns.
-        extra_cond = self.join_field.get_extra_restriction(
-            self.table_alias, self.parent_alias
-        )
+            # Add a single condition inside parentheses for whatever
+            # get_extra_restriction() returns.
+        extra_cond = self.join_field.get_extra_restriction(self.table_alias, self.parent_alias)
         if extra_cond:
             extra_sql, extra_params = compiler.compile(extra_cond)
             join_conditions.append("(%s)" % extra_sql)
@@ -140,9 +137,7 @@ class Join:
                 "joining columns or extra restrictions." % declared_field.__class__
             )
         on_clause_sql = " AND ".join(join_conditions)
-        alias_str = (
-            "" if self.table_alias == self.table_name else (" %s" % self.table_alias)
-        )
+        alias_str = "" if self.table_alias == self.table_name else (" %s" % self.table_alias)
         sql = "%s %s%s ON (%s)" % (
             self.join_type,
             qn(self.table_name),
@@ -214,16 +209,12 @@ class BaseTable:
         self.table_alias = alias
 
     def as_sql(self, compiler, connection):
-        alias_str = (
-            "" if self.table_alias == self.table_name else (" %s" % self.table_alias)
-        )
+        alias_str = "" if self.table_alias == self.table_name else (" %s" % self.table_alias)
         base_sql = compiler.quote_name_unless_alias(self.table_name)
         return base_sql + alias_str, []
 
     def relabeled_clone(self, change_map):
-        return self.__class__(
-            self.table_name, change_map.get(self.table_alias, self.table_alias)
-        )
+        return self.__class__(self.table_name, change_map.get(self.table_alias, self.table_alias))
 
     @property
     def identity(self):

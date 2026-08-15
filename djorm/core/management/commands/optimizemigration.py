@@ -20,9 +20,7 @@ class Command(BaseCommand):
             "app_label",
             help="App label of the application to optimize the migration for.",
         )
-        parser.add_argument(
-            "migration_name", help="Migration name to optimize the operations for."
-        )
+        parser.add_argument("migration_name", help="Migration name to optimize the operations for.")
         parser.add_argument(
             "--check",
             action="store_true",
@@ -41,11 +39,11 @@ class Command(BaseCommand):
         except LookupError as err:
             raise CommandError(str(err))
 
-        # Load the current graph state.
+            # Load the current graph state.
         loader = MigrationLoader(None)
         if app_label not in loader.migrated_apps:
             raise CommandError(f"App '{app_label}' does not have migrations.")
-        # Find a migration.
+            # Find a migration.
         try:
             migration = loader.get_migration_by_prefix(app_label, migration_name)
         except AmbiguityError:
@@ -55,11 +53,10 @@ class Command(BaseCommand):
             )
         except KeyError:
             raise CommandError(
-                f"Cannot find a migration matching '{migration_name}' from app "
-                f"'{app_label}'."
+                f"Cannot find a migration matching '{migration_name}' from app '{app_label}'."
             )
 
-        # Optimize the migration.
+            # Optimize the migration.
         optimizer = MigrationOptimizer()
         new_operations = optimizer.optimize(migration.operations, migration.app_label)
         if len(migration.operations) == len(new_operations):
@@ -75,7 +72,7 @@ class Command(BaseCommand):
             if check:
                 sys.exit(1)
 
-        # Set the new migration optimizations.
+                # Set the new migration optimizations.
         migration.operations = new_operations
 
         # Write out the optimized migration file.
@@ -89,7 +86,7 @@ class Command(BaseCommand):
                     "https://docs.djangoproject.com/en/%s/topics/migrations/"
                     "#squashing-migrations" % get_docs_version()
                 )
-            # Make a new migration with those operations.
+                # Make a new migration with those operations.
             subclass = type(
                 "Migration",
                 (migrations.Migration,),
@@ -124,6 +121,4 @@ class Command(BaseCommand):
         run_formatters([writer.path], stderr=self.stderr)
 
         if verbosity > 0:
-            self.stdout.write(
-                self.style.MIGRATE_HEADING(f"Optimized migration {writer.path}")
-            )
+            self.stdout.write(self.style.MIGRATE_HEADING(f"Optimized migration {writer.path}"))

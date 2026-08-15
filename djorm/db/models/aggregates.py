@@ -32,9 +32,7 @@ class Aggregate(Func):
     allow_distinct = False
     empty_result_set_value = None
 
-    def __init__(
-        self, *expressions, distinct=False, filter=None, default=None, **extra
-    ):
+    def __init__(self, *expressions, distinct=False, filter=None, default=None, **extra):
         if distinct and not self.allow_distinct:
             raise TypeError("%s does not allow distinct." % self.__class__.__name__)
         if default is not None and self.empty_result_set_value is not None:
@@ -65,9 +63,7 @@ class Aggregate(Func):
             # Summarized aggregates cannot refer to summarized aggregates.
             for ref in c.get_refs():
                 if query.annotations[ref].is_summary:
-                    raise FieldError(
-                        f"Cannot compute {c.name}('{ref}'): '{ref}' is an aggregate"
-                    )
+                    raise FieldError(f"Cannot compute {c.name}('{ref}'): '{ref}' is an aggregate")
         elif not self.is_summary:
             # Call Aggregate.get_source_expressions() to avoid
             # returning self.filter and including that in this loop.
@@ -81,8 +77,7 @@ class Aggregate(Func):
                         else repr(before_resolved)
                     )
                     raise FieldError(
-                        "Cannot compute %s('%s'): '%s' is an aggregate"
-                        % (c.name, name, name)
+                        "Cannot compute %s('%s'): '%s' is an aggregate" % (c.name, name, name)
                     )
         if (default := c.default) is None:
             return c
@@ -99,9 +94,7 @@ class Aggregate(Func):
 
     @property
     def default_alias(self):
-        expressions = [
-            expr for expr in self.get_source_expressions() if expr is not None
-        ]
+        expressions = [expr for expr in self.get_source_expressions() if expr is not None]
         if len(expressions) == 1 and hasattr(expressions[0], "name"):
             return "%s__%s" % (expressions[0].name, self.name.lower())
         raise TypeError("Complex expressions require an alias")
@@ -118,9 +111,7 @@ class Aggregate(Func):
                 except FullResultSet:
                     pass
                 else:
-                    template = self.filter_template % extra_context.get(
-                        "template", self.template
-                    )
+                    template = self.filter_template % extra_context.get("template", self.template)
                     sql, params = super().as_sql(
                         compiler,
                         connection,
@@ -135,9 +126,7 @@ class Aggregate(Func):
                 source_expressions = copy.get_source_expressions()
                 condition = When(self.filter, then=source_expressions[0])
                 copy.set_source_expressions([Case(condition)] + source_expressions[1:])
-                return super(Aggregate, copy).as_sql(
-                    compiler, connection, **extra_context
-                )
+                return super(Aggregate, copy).as_sql(compiler, connection, **extra_context)
         return super().as_sql(compiler, connection, **extra_context)
 
     def _get_repr_options(self):
@@ -179,9 +168,7 @@ class Count(Aggregate):
         # In case of composite primary keys, count the first column.
         if isinstance(expr, ColPairs):
             if self.distinct:
-                raise ValueError(
-                    "COUNT(DISTINCT) doesn't support composite primary keys"
-                )
+                raise ValueError("COUNT(DISTINCT) doesn't support composite primary keys")
 
             cols = expr.get_cols()
             return Count(cols[0], filter=result.filter)

@@ -37,9 +37,7 @@ class ManyToManySignalsTest(TestCase):
             "model": kwargs["model"],
         }
         if kwargs["pk_set"]:
-            message["objects"] = list(
-                kwargs["model"].objects.filter(pk__in=kwargs["pk_set"])
-            )
+            message["objects"] = list(kwargs["model"].objects.filter(pk__in=kwargs["pk_set"]))
         self.m2m_changed_messages.append(message)
 
     def tearDown(self):
@@ -50,9 +48,7 @@ class ManyToManySignalsTest(TestCase):
         models.signals.m2m_changed.disconnect(
             self.m2m_changed_signal_receiver, Car.optional_parts.through
         )
-        models.signals.m2m_changed.disconnect(
-            self.m2m_changed_signal_receiver, Person.fans.through
-        )
+        models.signals.m2m_changed.disconnect(self.m2m_changed_signal_receiver, Person.fans.through)
         models.signals.m2m_changed.disconnect(
             self.m2m_changed_signal_receiver, Person.friends.through
         )
@@ -501,12 +497,8 @@ class ManyToManySignalsTest(TestCase):
 
     def _initialize_signal_person(self):
         # Install a listener on the two m2m relations.
-        models.signals.m2m_changed.connect(
-            self.m2m_changed_signal_receiver, Person.fans.through
-        )
-        models.signals.m2m_changed.connect(
-            self.m2m_changed_signal_receiver, Person.friends.through
-        )
+        models.signals.m2m_changed.connect(self.m2m_changed_signal_receiver, Person.fans.through)
+        models.signals.m2m_changed.connect(self.m2m_changed_signal_receiver, Person.friends.through)
 
     def test_m2m_relations_with_self_add_friends(self):
         self._initialize_signal_person()

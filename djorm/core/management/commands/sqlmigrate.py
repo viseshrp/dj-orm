@@ -13,17 +13,12 @@ class Command(BaseCommand):
         parser.add_argument(
             "app_label", help="App label of the application containing the migration."
         )
-        parser.add_argument(
-            "migration_name", help="Migration name to print the SQL for."
-        )
+        parser.add_argument("migration_name", help="Migration name to print the SQL for.")
         parser.add_argument(
             "--database",
             default=DEFAULT_DB_ALIAS,
             choices=tuple(connections),
-            help=(
-                'Nominates a database to create SQL for. Defaults to the "default" '
-                "database."
-            ),
+            help=('Nominates a database to create SQL for. Defaults to the "default" database.'),
         )
         parser.add_argument(
             "--backwards",
@@ -70,9 +65,7 @@ class Command(BaseCommand):
 
         # Show begin/end around output for atomic migrations, if the database
         # supports transactional DDL.
-        self.output_transaction = (
-            migration.atomic and connection.features.can_rollback_ddl
-        )
+        self.output_transaction = migration.atomic and connection.features.can_rollback_ddl
 
         # Make a plan that represents just the requested migrations and show SQL
         # for it

@@ -65,8 +65,7 @@ class RelatedObjectTests(TestCase):
             lambda i: i.num,
         )
         self.assertQuerySetEqual(
-            Issue.objects.filter(cc__id__exact=r.id)
-            | Issue.objects.filter(client=r.id),
+            Issue.objects.filter(cc__id__exact=r.id) | Issue.objects.filter(client=r.id),
             [
                 1,
                 2,

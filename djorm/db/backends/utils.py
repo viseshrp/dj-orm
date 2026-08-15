@@ -11,7 +11,7 @@ from djorm.apps import apps
 from djorm.db import NotSupportedError
 from djorm.utils.dateparse import parse_time
 
-logger = logging.getLogger('djorm.db.backends')
+logger = logging.getLogger("djorm.db.backends")
 
 
 class CursorWrapper:
@@ -50,19 +50,18 @@ class CursorWrapper:
         except self.db.Database.Error:
             pass
 
-    # The following methods cannot be implemented in __getattr__, because the
-    # code must run when the method is invoked, not just when it is accessed.
+            # The following methods cannot be implemented in __getattr__, because the
+            # code must run when the method is invoked, not just when it is accessed.
 
     def callproc(self, procname, params=None, kparams=None):
         # Keyword parameters for callproc aren't supported in PEP 249, but the
         # database driver may support them (e.g. oracledb).
         if kparams is not None and not self.db.features.supports_callproc_kwargs:
             raise NotSupportedError(
-                "Keyword parameters for callproc are not supported on this "
-                "database backend."
+                "Keyword parameters for callproc are not supported on this database backend."
             )
-        # Raise a warning during app initialization (stored_app_configs is only
-        # ever set during testing).
+            # Raise a warning during app initialization (stored_app_configs is only
+            # ever set during testing).
         if not apps.ready and not apps.stored_app_configs:
             warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
         self.db.validate_no_broken_transaction()
@@ -76,14 +75,10 @@ class CursorWrapper:
                 return self.cursor.callproc(procname, params, kparams)
 
     def execute(self, sql, params=None):
-        return self._execute_with_wrappers(
-            sql, params, many=False, executor=self._execute
-        )
+        return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
 
     def executemany(self, sql, param_list):
-        return self._execute_with_wrappers(
-            sql, param_list, many=True, executor=self._executemany
-        )
+        return self._execute_with_wrappers(sql, param_list, many=True, executor=self._executemany)
 
     def _execute_with_wrappers(self, sql, params, many, executor):
         context = {"connection": self.db, "cursor": self}
@@ -126,9 +121,7 @@ class CursorDebugWrapper(CursorWrapper):
             return super().executemany(sql, param_list)
 
     @contextmanager
-    def debug_sql(
-        self, sql=None, params=None, use_last_executed_query=False, many=False
-    ):
+    def debug_sql(self, sql=None, params=None, use_last_executed_query=False, many=False):
         start = time.monotonic()
         try:
             yield
@@ -205,16 +198,13 @@ def split_tzname_delta(tzname):
                 return name, sign, offset
     return tzname, None, None
 
-
-###############################################
-# Converters from database (string) to Python #
-###############################################
+    ###############################################
+    # Converters from database (string) to Python #
+    ###############################################
 
 
 def typecast_date(s):
-    return (
-        datetime.date(*map(int, s.split("-"))) if s else None
-    )  # return None if s is null
+    return datetime.date(*map(int, s.split("-"))) if s else None  # return None if s is null
 
 
 def typecast_time(s):  # does NOT store time zone information
@@ -225,9 +215,7 @@ def typecast_time(s):  # does NOT store time zone information
         seconds, microseconds = seconds.split(".")
     else:
         microseconds = "0"
-    return datetime.time(
-        int(hour), int(minutes), int(seconds), int((microseconds + "000000")[:6])
-    )
+    return datetime.time(int(hour), int(minutes), int(seconds), int((microseconds + "000000")[:6]))
 
 
 def typecast_timestamp(s):  # does NOT store time zone information
@@ -260,10 +248,9 @@ def typecast_timestamp(s):  # does NOT store time zone information
         int((microseconds + "000000")[:6]),
     )
 
-
-###############################################
-# Converters from Python to database (string) #
-###############################################
+    ###############################################
+    # Converters from Python to database (string) #
+    ###############################################
 
 
 def split_identifier(identifier):
@@ -323,9 +310,7 @@ def format_number(value, max_digits, decimal_places):
     if max_digits is not None:
         context.prec = max_digits
     if decimal_places is not None:
-        value = value.quantize(
-            decimal.Decimal(1).scaleb(-decimal_places), context=context
-        )
+        value = value.quantize(decimal.Decimal(1).scaleb(-decimal_places), context=context)
     else:
         context.traps[decimal.Rounded] = 1
         value = context.create_decimal(value)

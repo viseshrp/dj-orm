@@ -17,10 +17,7 @@ class cached_property:
 
     @staticmethod
     def func(instance):
-        raise TypeError(
-            "Cannot use cached_property instance without calling "
-            "__set_name__() on it."
-        )
+        raise TypeError("Cannot use cached_property instance without calling __set_name__() on it.")
 
     def __init__(self, func):
         self.real_func = func
@@ -109,8 +106,8 @@ def lazy(func, *resultclasses):
         def __cast(self):
             return func(*self._args, **self._kw)
 
-        # Explicitly wrap methods which are defined on object and hence would
-        # not have been overloaded by the loop over resultclasses below.
+            # Explicitly wrap methods which are defined on object and hence would
+            # not have been overloaded by the loop over resultclasses below.
 
         def __repr__(self):
             return repr(self.__cast())
@@ -154,8 +151,8 @@ def lazy(func, *resultclasses):
         def __format__(self, format_spec):
             return format(self.__cast(), format_spec)
 
-        # Explicitly wrap methods which are required for certain operations on
-        # int/str objects to function correctly.
+            # Explicitly wrap methods which are required for certain operations on
+            # int/str objects to function correctly.
 
         def __add__(self, other):
             return self.__cast() + other
@@ -169,8 +166,9 @@ def lazy(func, *resultclasses):
         def __mul__(self, other):
             return self.__cast() * other
 
-    # Add wrappers for all methods from resultclasses which haven't been
-    # wrapped explicitly above.
+            # Add wrappers for all methods from resultclasses which haven't been
+            # wrapped explicitly above.
+
     for resultclass in resultclasses:
         for type_ in resultclass.mro():
             for method_name in type_.__dict__:
@@ -179,8 +177,9 @@ def lazy(func, *resultclasses):
                 if hasattr(__proxy__, method_name):
                     continue
 
-                # Builds a wrapper around some method. Pass method_name to
-                # avoid issues due to late binding.
+                    # Builds a wrapper around some method. Pass method_name to
+                    # avoid issues due to late binding.
+
                 def __wrapper__(self, *args, __method_name=method_name, **kw):
                     # Automatically triggers the evaluation of a lazy value and
                     # applies the given method of the result type.
@@ -223,10 +222,7 @@ def keep_lazy(*resultclasses):
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            if any(
-                isinstance(arg, Promise)
-                for arg in itertools.chain(args, kwargs.values())
-            ):
+            if any(isinstance(arg, Promise) for arg in itertools.chain(args, kwargs.values())):
                 return lazy_func(*args, **kwargs)
             return func(*args, **kwargs)
 
@@ -306,24 +302,23 @@ class LazyObject:
         """
         Must be implemented by subclasses to initialize the wrapped object.
         """
-        raise NotImplementedError(
-            "subclasses of LazyObject must provide a _setup() method"
-        )
+        raise NotImplementedError("subclasses of LazyObject must provide a _setup() method")
 
-    # Because we have messed with __class__ below, we confuse pickle as to what
-    # class we are pickling. We're going to have to initialize the wrapped
-    # object to successfully pickle it, so we might as well just pickle the
-    # wrapped object since they're supposed to act the same way.
-    #
-    # Unfortunately, if we try to simply act like the wrapped object, the ruse
-    # will break down when pickle gets our id(). Thus we end up with pickle
-    # thinking, in effect, that we are a distinct object from the wrapped
-    # object, but with the same __dict__. This can cause problems (see #25389).
-    #
-    # So instead, we define our own __reduce__ method and custom unpickler. We
-    # pickle the wrapped object as the unpickler's argument, so that pickle
-    # will pickle it normally, and then the unpickler simply returns its
-    # argument.
+        # Because we have messed with __class__ below, we confuse pickle as to what
+        # class we are pickling. We're going to have to initialize the wrapped
+        # object to successfully pickle it, so we might as well just pickle the
+        # wrapped object since they're supposed to act the same way.
+        #
+        # Unfortunately, if we try to simply act like the wrapped object, the ruse
+        # will break down when pickle gets our id(). Thus we end up with pickle
+        # thinking, in effect, that we are a distinct object from the wrapped
+        # object, but with the same __dict__. This can cause problems (see #25389).
+        #
+        # So instead, we define our own __reduce__ method and custom unpickler. We
+        # pickle the wrapped object as the unpickler's argument, so that pickle
+        # will pickle it normally, and then the unpickler simply returns its
+        # argument.
+
     def __reduce__(self):
         if self._wrapped is empty:
             self._setup()
@@ -381,7 +376,12 @@ def unpickle_lazyobject(wrapped):
 
 
 class SimpleLazyObject(LazyObject):
-    '\n    A lazy object initialized from any function.\n\n    Designed for compound objects of unknown type. For builtins or objects of\n    known type, use djorm.utils.functional.lazy.\n    '
+    """
+    A lazy object initialized from any function.
+
+    Designed for compound objects of unknown type. For builtins or objects of
+    known type, use djorm.utils.functional.lazy.
+    """
 
     def __init__(self, func):
         """
@@ -398,8 +398,9 @@ class SimpleLazyObject(LazyObject):
     def _setup(self):
         self._wrapped = self._setupfunc()
 
-    # Return a meaningful representation of the lazy object for debugging
-    # without evaluating the wrapped object.
+        # Return a meaningful representation of the lazy object for debugging
+        # without evaluating the wrapped object.
+
     def __repr__(self):
         if self._wrapped is empty:
             repr_attr = self._setupfunc

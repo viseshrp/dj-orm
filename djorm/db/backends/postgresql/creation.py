@@ -22,8 +22,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         test_settings = self.connection.settings_dict["TEST"]
         if test_settings.get("COLLATION") is not None:
             raise ImproperlyConfigured(
-                "PostgreSQL does not support collation setting at database "
-                "creation time."
+                "PostgreSQL does not support collation setting at database creation time."
             )
         return self._get_database_create_suffix(
             encoding=test_settings["CHARSET"],
@@ -74,11 +73,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                     if verbosity >= 1:
                         self.log(
                             "Destroying old test database for alias %s..."
-                            % (
-                                self._get_database_display_str(
-                                    verbosity, target_database_name
-                                ),
-                            )
+                            % (self._get_database_display_str(verbosity, target_database_name),)
                         )
                     cursor.execute("DROP DATABASE %(dbname)s" % test_db_params)
                     self._execute_create_test_db(cursor, test_db_params, keepdb)

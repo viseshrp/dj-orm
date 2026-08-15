@@ -34,8 +34,7 @@ class GeneratedFieldStoredProduct(models.Model):
     price = models.IntegerField(null=True)
     discounted_price = models.IntegerField(null=True)
     rebate = models.GeneratedField(
-        expression=Coalesce("price", 0)
-        - Coalesce("discounted_price", Coalesce("price", 0)),
+        expression=Coalesce("price", 0) - Coalesce("discounted_price", Coalesce("price", 0)),
         output_field=models.IntegerField(),
         db_persist=True,
     )
@@ -54,8 +53,7 @@ class GeneratedFieldVirtualProduct(models.Model):
     price = models.IntegerField(null=True)
     discounted_price = models.IntegerField(null=True)
     rebate = models.GeneratedField(
-        expression=Coalesce("price", 0)
-        - Coalesce("discounted_price", Coalesce("price", 0)),
+        expression=Coalesce("price", 0) - Coalesce("discounted_price", Coalesce("price", 0)),
         output_field=models.IntegerField(),
         db_persist=False,
     )

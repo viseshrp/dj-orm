@@ -9,8 +9,7 @@ class RecursiveM2MTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.a, cls.b, cls.c, cls.d = [
-            Person.objects.create(name=name)
-            for name in ["Anne", "Bill", "Chuck", "David"]
+            Person.objects.create(name=name) for name in ["Anne", "Bill", "Chuck", "David"]
         ]
         cls.a.friends.add(cls.b, cls.c)
         # Add m2m for Anne and Chuck in reverse direction.
@@ -67,8 +66,7 @@ class RecursiveSymmetricalM2MThroughTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.a, cls.b, cls.c, cls.d = [
-            Person.objects.create(name=name)
-            for name in ["Anne", "Bill", "Chuck", "David"]
+            Person.objects.create(name=name) for name in ["Anne", "Bill", "Chuck", "David"]
         ]
         cls.a.colleagues.add(
             cls.b,

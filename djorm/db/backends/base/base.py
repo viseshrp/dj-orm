@@ -24,7 +24,7 @@ from djorm.utils.functional import cached_property
 NO_DB_ALIAS = "__no_db__"
 RAN_DB_VERSION_CHECK = set()
 
-logger = logging.getLogger('djorm.db.backends.base')
+logger = logging.getLogger("djorm.db.backends.base")
 
 
 class BaseDatabaseWrapper:
@@ -119,10 +119,7 @@ class BaseDatabaseWrapper:
         self.validation = self.validation_class(self)
 
     def __repr__(self):
-        return (
-            f"<{self.__class__.__qualname__} "
-            f"vendor={self.vendor!r} alias={self.alias!r}>"
-        )
+        return f"<{self.__class__.__qualname__} vendor={self.vendor!r} alias={self.alias!r}>"
 
     def ensure_timezone(self):
         """
@@ -183,8 +180,7 @@ class BaseDatabaseWrapper:
     def get_database_version(self):
         """Return a tuple of the database's version."""
         raise NotImplementedError(
-            "subclasses of BaseDatabaseWrapper may require a get_database_version() "
-            "method."
+            "subclasses of BaseDatabaseWrapper may require a get_database_version() method."
         )
 
     def check_database_version_supported(self):
@@ -199,24 +195,21 @@ class BaseDatabaseWrapper:
             db_version = ".".join(map(str, self.get_database_version()))
             min_db_version = ".".join(map(str, self.features.minimum_database_version))
             raise NotSupportedError(
-                f"{self.display_name} {min_db_version} or later is required "
-                f"(found {db_version})."
+                f"{self.display_name} {min_db_version} or later is required (found {db_version})."
             )
 
-    # ##### Backend-specific methods for creating connections and cursors #####
+            # ##### Backend-specific methods for creating connections and cursors #####
 
     def get_connection_params(self):
         """Return a dict of parameters suitable for get_new_connection."""
         raise NotImplementedError(
-            "subclasses of BaseDatabaseWrapper may require a get_connection_params() "
-            "method"
+            "subclasses of BaseDatabaseWrapper may require a get_connection_params() method"
         )
 
     def get_new_connection(self, conn_params):
         """Open a connection to the database."""
         raise NotImplementedError(
-            "subclasses of BaseDatabaseWrapper may require a get_new_connection() "
-            "method"
+            "subclasses of BaseDatabaseWrapper may require a get_new_connection() method"
         )
 
     def init_connection_state(self):
@@ -231,7 +224,7 @@ class BaseDatabaseWrapper:
             "subclasses of BaseDatabaseWrapper may require a create_cursor() method"
         )
 
-    # ##### Backend-specific methods for creating connections #####
+        # ##### Backend-specific methods for creating connections #####
 
     @async_unsafe
     def connect(self):
@@ -263,8 +256,7 @@ class BaseDatabaseWrapper:
     def check_settings(self):
         if self.settings_dict["TIME_ZONE"] is not None and not settings.USE_TZ:
             raise ImproperlyConfigured(
-                "Connection '%s' cannot set TIME_ZONE because USE_TZ is False."
-                % self.alias
+                "Connection '%s' cannot set TIME_ZONE because USE_TZ is False." % self.alias
             )
 
     @async_unsafe
@@ -272,13 +264,11 @@ class BaseDatabaseWrapper:
         """Guarantee that a connection to the database is established."""
         if self.connection is None:
             if self.in_atomic_block and self.closed_in_transaction:
-                raise ProgrammingError(
-                    "Cannot open a new connection in an atomic block."
-                )
+                raise ProgrammingError("Cannot open a new connection in an atomic block.")
             with self.wrap_database_errors:
                 self.connect()
 
-    # ##### Backend-specific wrappers for PEP-249 connection methods #####
+                # ##### Backend-specific wrappers for PEP-249 connection methods #####
 
     def _prepare_cursor(self, cursor):
         """
@@ -312,7 +302,7 @@ class BaseDatabaseWrapper:
             with self.wrap_database_errors:
                 return self.connection.close()
 
-    # ##### Generic wrappers for PEP-249 connection methods #####
+                # ##### Generic wrappers for PEP-249 connection methods #####
 
     @async_unsafe
     def cursor(self):
@@ -360,7 +350,7 @@ class BaseDatabaseWrapper:
             else:
                 self.connection = None
 
-    # ##### Backend-specific savepoint management methods #####
+                # ##### Backend-specific savepoint management methods #####
 
     def _savepoint(self, sid):
         with self.cursor() as cursor:
@@ -378,7 +368,7 @@ class BaseDatabaseWrapper:
         # Savepoints cannot be created outside a transaction
         return self.features.uses_savepoints and not self.get_autocommit()
 
-    # ##### Generic savepoint management methods #####
+        # ##### Generic savepoint management methods #####
 
     @async_unsafe
     def savepoint(self):
@@ -414,9 +404,7 @@ class BaseDatabaseWrapper:
 
         # Remove any callbacks registered while this savepoint was active.
         self.run_on_commit = [
-            (sids, func, robust)
-            for (sids, func, robust) in self.run_on_commit
-            if sid not in sids
+            (sids, func, robust) for (sids, func, robust) in self.run_on_commit if sid not in sids
         ]
 
     @async_unsafe
@@ -437,7 +425,7 @@ class BaseDatabaseWrapper:
         """
         self.savepoint_state = 0
 
-    # ##### Backend-specific transaction management methods #####
+        # ##### Backend-specific transaction management methods #####
 
     def _set_autocommit(self, autocommit):
         """
@@ -447,16 +435,14 @@ class BaseDatabaseWrapper:
             "subclasses of BaseDatabaseWrapper may require a _set_autocommit() method"
         )
 
-    # ##### Generic transaction management methods #####
+        # ##### Generic transaction management methods #####
 
     def get_autocommit(self):
         """Get the autocommit state."""
         self.ensure_connection()
         return self.autocommit
 
-    def set_autocommit(
-        self, autocommit, force_begin_transaction_with_broken_autocommit=False
-    ):
+    def set_autocommit(self, autocommit, force_begin_transaction_with_broken_autocommit=False):
         """
         Enable or disable autocommit.
 
@@ -512,9 +498,7 @@ class BaseDatabaseWrapper:
     def validate_no_atomic_block(self):
         """Raise an error if an atomic block is active."""
         if self.in_atomic_block:
-            raise TransactionManagementError(
-                "This is forbidden when an 'atomic' block is active."
-            )
+            raise TransactionManagementError("This is forbidden when an 'atomic' block is active.")
 
     def validate_no_broken_transaction(self):
         if self.needs_rollback:
@@ -523,7 +507,7 @@ class BaseDatabaseWrapper:
                 "execute queries until the end of the 'atomic' block."
             ) from self.rollback_exc
 
-    # ##### Foreign key constraints checks handling #####
+            # ##### Foreign key constraints checks handling #####
 
     @contextmanager
     def constraint_checks_disabled(self):
@@ -560,7 +544,7 @@ class BaseDatabaseWrapper:
         """
         pass
 
-    # ##### Connection termination handling #####
+        # ##### Connection termination handling #####
 
     def is_usable(self):
         """
@@ -577,11 +561,7 @@ class BaseDatabaseWrapper:
 
     def close_if_health_check_failed(self):
         """Close existing connection if it fails a health check."""
-        if (
-            self.connection is None
-            or not self.health_check_enabled
-            or self.health_check_done
-        ):
+        if self.connection is None or not self.health_check_enabled or self.health_check_done:
             return
 
         if not self.is_usable():
@@ -601,8 +581,8 @@ class BaseDatabaseWrapper:
                 self.close()
                 return
 
-            # If an exception other than DataError or IntegrityError occurred
-            # since the last commit / rollback, check if the connection works.
+                # If an exception other than DataError or IntegrityError occurred
+                # since the last commit / rollback, check if the connection works.
             if self.errors_occurred:
                 if self.is_usable():
                     self.errors_occurred = False
@@ -615,7 +595,7 @@ class BaseDatabaseWrapper:
                 self.close()
                 return
 
-    # ##### Thread safety handling #####
+                # ##### Thread safety handling #####
 
     @property
     def allow_thread_sharing(self):
@@ -629,9 +609,7 @@ class BaseDatabaseWrapper:
     def dec_thread_sharing(self):
         with self._thread_sharing_lock:
             if self._thread_sharing_count <= 0:
-                raise RuntimeError(
-                    "Cannot decrement the thread sharing count below zero."
-                )
+                raise RuntimeError("Cannot decrement the thread sharing count below zero.")
             self._thread_sharing_count -= 1
 
     def validate_thread_sharing(self):
@@ -649,7 +627,7 @@ class BaseDatabaseWrapper:
                 "thread id %s." % (self.alias, self._thread_ident, _thread.get_ident())
             )
 
-    # ##### Miscellaneous #####
+            # ##### Miscellaneous #####
 
     def prepare_database(self):
         """

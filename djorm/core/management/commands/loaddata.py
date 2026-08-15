@@ -49,9 +49,7 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "args", metavar="fixture", nargs="+", help="Fixture labels."
-        )
+        parser.add_argument("args", metavar="fixture", nargs="+", help="Fixture labels.")
         parser.add_argument(
             "--database",
             default=DEFAULT_DB_ALIAS,
@@ -79,10 +77,7 @@ class Command(BaseCommand):
             "--exclude",
             action="append",
             default=[],
-            help=(
-                "An app_label or app_label.ModelName to exclude. Can be used multiple "
-                "times."
-            ),
+            help=("An app_label or app_label.ModelName to exclude. Can be used multiple times."),
         )
         parser.add_argument(
             "--format",
@@ -94,18 +89,16 @@ class Command(BaseCommand):
         self.using = options["database"]
         self.app_label = options["app_label"]
         self.verbosity = options["verbosity"]
-        self.excluded_models, self.excluded_apps = parse_apps_and_model_labels(
-            options["exclude"]
-        )
+        self.excluded_models, self.excluded_apps = parse_apps_and_model_labels(options["exclude"])
         self.format = options["format"]
 
         with transaction.atomic(using=self.using):
             self.loaddata(fixture_labels)
 
-        # Close the DB connection -- unless we're still in a transaction. This
-        # is required as a workaround for an edge case in MySQL: if the same
-        # connection is used to create tables, load data, and query, the query
-        # can return incorrect results. See Django #7572, MySQL #37735.
+            # Close the DB connection -- unless we're still in a transaction. This
+            # is required as a workaround for an edge case in MySQL: if the same
+            # connection is used to create tables, load data, and query, the query
+            # can return incorrect results. See Django #7572, MySQL #37735.
         if transaction.get_autocommit(self.using):
             connections[self.using].close()
 
@@ -165,8 +158,8 @@ class Command(BaseCommand):
             for obj in self.objs_with_deferred_fields:
                 obj.save_deferred_fields(using=self.using)
 
-        # Since we disabled constraint checks, we must manually check for
-        # any invalid keys that might have been added
+                # Since we disabled constraint checks, we must manually check for
+                # any invalid keys that might have been added
         table_names = [model._meta.db_table for model in self.models]
         try:
             connection.check_constraints(table_names=table_names)
@@ -174,8 +167,8 @@ class Command(BaseCommand):
             e.args = ("Problem installing fixtures: %s" % e,)
             raise
 
-        # If we found even one object in a fixture, we need to reset the
-        # database sequences.
+            # If we found even one object in a fixture, we need to reset the
+            # database sequences.
         if self.loaded_object_count > 0:
             self.reset_sequences(connection, self.models)
 
@@ -208,7 +201,7 @@ class Command(BaseCommand):
             self.models.add(obj.object.__class__)
             try:
                 obj.save(using=self.using)
-            # psycopg raises ValueError if data contains NUL chars.
+                # psycopg raises ValueError if data contains NUL chars.
             except (DatabaseError, IntegrityError, ValueError) as e:
                 e.args = (
                     "Could not load %(object_label)s(pk=%(pk)s): %(error_msg)s"
@@ -226,9 +219,7 @@ class Command(BaseCommand):
     def load_label(self, fixture_label):
         """Load fixtures files for a given label."""
         show_progress = self.verbosity >= 3
-        for fixture_file, fixture_dir, fixture_name in self.find_fixtures(
-            fixture_label
-        ):
+        for fixture_file, fixture_dir, fixture_name in self.find_fixtures(fixture_label):
             _, ser_fmt, cmp_fmt = self.parse_name(os.path.basename(fixture_file))
             open_method, mode = self.compression_formats[cmp_fmt]
             fixture = open_method(fixture_file, mode)
@@ -260,9 +251,7 @@ class Command(BaseCommand):
                             )
             except Exception as e:
                 if not isinstance(e, CommandError):
-                    e.args = (
-                        "Problem installing fixture '%s': %s" % (fixture_file, e),
-                    )
+                    e.args = ("Problem installing fixture '%s': %s" % (fixture_file, e),)
                 raise
             finally:
                 fixture.close()
@@ -274,8 +263,7 @@ class Command(BaseCommand):
             # Warn if the fixture we loaded contains 0 objects.
             if objects_in_fixture == 0:
                 warnings.warn(
-                    "No fixture data found for '%s'. (File format may be "
-                    "invalid.)" % fixture_name,
+                    "No fixture data found for '%s'. (File format may be invalid.)" % fixture_name,
                     RuntimeWarning,
                 )
 
@@ -334,12 +322,10 @@ class Command(BaseCommand):
                 targets,
             )
             if self.verbosity >= 2 and not fixture_files_in_dir:
-                self.stdout.write(
-                    "No fixture '%s' in %s." % (fixture_name, humanize(fixture_dir))
-                )
+                self.stdout.write("No fixture '%s' in %s." % (fixture_name, humanize(fixture_dir)))
 
-            # Check kept for backwards-compatibility; it isn't clear why
-            # duplicates are only allowed in different directories.
+                # Check kept for backwards-compatibility; it isn't clear why
+                # duplicates are only allowed in different directories.
             if len(fixture_files_in_dir) > 1:
                 raise CommandError(
                     "Multiple fixtures named '%s' in %s. Aborting."
@@ -371,8 +357,7 @@ class Command(BaseCommand):
             if app_dir in [str(d) for d in fixture_dirs]:
                 raise ImproperlyConfigured(
                     "'%s' is a default fixture directory for the '%s' app "
-                    "and cannot be listed in settings.FIXTURE_DIRS."
-                    % (app_dir, app_label)
+                    "and cannot be listed in settings.FIXTURE_DIRS." % (app_dir, app_label)
                 )
 
             if self.app_label and app_label != self.app_label:
@@ -389,9 +374,7 @@ class Command(BaseCommand):
         """
         if fixture_name == READ_STDIN:
             if not self.format:
-                raise CommandError(
-                    "--format must be specified when reading from stdin."
-                )
+                raise CommandError("--format must be specified when reading from stdin.")
             return READ_STDIN, self.format, "stdin"
 
         parts = fixture_name.rsplit(".", 2)

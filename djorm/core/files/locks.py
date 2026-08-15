@@ -1,4 +1,21 @@
-"\nPortable file locking utilities.\n\nBased partially on an example by Jonathan Feignberg in the Python\nCookbook [1] (licensed under the Python Software License) and a ctypes port by\nAnatoly Techtonik for Roundup [2] (license [3]).\n\n[1] https://code.activestate.com/recipes/65203/\n[2] https://sourceforge.net/p/roundup/code/ci/default/tree/roundup/backends/portalocker.py  # NOQA\n[3] https://sourceforge.net/p/roundup/code/ci/default/tree/COPYING.txt\n\nExample Usage::\n\n    >>> from djorm.core.files import locks\n    >>> with open('./file', 'wb') as f:\n    ...     locks.lock(f, locks.LOCK_EX)\n    ...     f.write('Django')\n"
+"""
+Portable file locking utilities.
+
+Based partially on an example by Jonathan Feignberg in the Python
+Cookbook [1] (licensed under the Python Software License) and a ctypes port by
+Anatoly Techtonik for Roundup [2] (license [3]).
+
+[1] https://code.activestate.com/recipes/65203/
+[2] https://sourceforge.net/p/roundup/code/ci/default/tree/roundup/backends/portalocker.py  # NOQA
+[3] https://sourceforge.net/p/roundup/code/ci/default/tree/COPYING.txt
+
+Example Usage::
+
+    >>> from djorm.core.files import locks
+    >>> with open('./file', 'wb') as f:
+    ...     locks.lock(f, locks.LOCK_EX)
+    ...     f.write('Django')
+"""
 
 import os
 

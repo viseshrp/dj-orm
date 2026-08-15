@@ -17,9 +17,7 @@ def check_all_models(app_configs=None, **kwargs):
     if app_configs is None:
         models = apps.get_models()
     else:
-        models = chain.from_iterable(
-            app_config.get_models() for app_config in app_configs
-        )
+        models = chain.from_iterable(app_config.get_models() for app_config in app_configs)
     for model in models:
         if model._meta.managed and not model._meta.proxy:
             db_table_models[model._meta.db_table].append(model._meta.label)
@@ -52,8 +50,7 @@ def check_all_models(app_configs=None, **kwargs):
             model_labels_str = ", ".join(model_labels)
             errors.append(
                 error_class(
-                    "db_table '%s' is used by multiple models: %s."
-                    % (db_table, model_labels_str),
+                    "db_table '%s' is used by multiple models: %s." % (db_table, model_labels_str),
                     obj=db_table,
                     hint=(error_hint % model_labels_str) if error_hint else None,
                     id=error_id,
@@ -140,11 +137,11 @@ def _check_lazy_references(apps, ignore=None):
             model_error = "app '%s' isn't installed" % model_key[0]
         return model_error
 
-    # Here are several functions which return CheckMessage instances for the
-    # most common usages of lazy operations throughout Django. These functions
-    # take the model that was being waited on as an (app_label, modelname)
-    # pair, the original lazy function, and its positional and keyword args as
-    # determined by extract_operation().
+        # Here are several functions which return CheckMessage instances for the
+        # most common usages of lazy operations throughout Django. These functions
+        # take the model that was being waited on as an (app_label, modelname)
+        # pair, the original lazy function, and its positional and keyword args as
+        # determined by extract_operation().
 
     def field_error(model_key, func, args, keywords):
         error_msg = (
@@ -185,9 +182,7 @@ def _check_lazy_references(apps, ignore=None):
         return Error(error_msg % params, obj=receiver.__module__, id="signals.E001")
 
     def default_error(model_key, func, args, keywords):
-        error_msg = (
-            "%(op)s contains a lazy reference to %(model)s, but %(model_error)s."
-        )
+        error_msg = "%(op)s contains a lazy reference to %(model)s, but %(model_error)s."
         params = {
             "op": func,
             "model": ".".join(model_key),
@@ -195,13 +190,14 @@ def _check_lazy_references(apps, ignore=None):
         }
         return Error(error_msg % params, obj=func, id="models.E022")
 
-    # Maps common uses of lazy operations to corresponding error functions
-    # defined above. If a key maps to None, no error will be produced.
-    # default_error() will be used for usages that don't appear in this dict.
+        # Maps common uses of lazy operations to corresponding error functions
+        # defined above. If a key maps to None, no error will be produced.
+        # default_error() will be used for usages that don't appear in this dict.
+
     known_lazy = {
-        ('djorm.db.models.fields.related', "resolve_related_class"): field_error,
-        ('djorm.db.models.fields.related', "set_managed"): None,
-        ('djorm.dispatch.dispatcher', "connect"): signal_connect_error,
+        ("djorm.db.models.fields.related", "resolve_related_class"): field_error,
+        ("djorm.db.models.fields.related", "set_managed"): None,
+        ("djorm.dispatch.dispatcher", "connect"): signal_connect_error,
     }
 
     def build_error(model_key, func, args, keywords):

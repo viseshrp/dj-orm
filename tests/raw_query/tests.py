@@ -19,25 +19,16 @@ from .models import (
 class RawQueryTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.a1 = Author.objects.create(
-            first_name="Joe", last_name="Smith", dob=date(1950, 9, 20)
-        )
-        cls.a2 = Author.objects.create(
-            first_name="Jill", last_name="Doe", dob=date(1920, 4, 2)
-        )
-        cls.a3 = Author.objects.create(
-            first_name="Bob", last_name="Smith", dob=date(1986, 1, 25)
-        )
-        cls.a4 = Author.objects.create(
-            first_name="Bill", last_name="Jones", dob=date(1932, 5, 10)
-        )
+        cls.a1 = Author.objects.create(first_name="Joe", last_name="Smith", dob=date(1950, 9, 20))
+        cls.a2 = Author.objects.create(first_name="Jill", last_name="Doe", dob=date(1920, 4, 2))
+        cls.a3 = Author.objects.create(first_name="Bob", last_name="Smith", dob=date(1986, 1, 25))
+        cls.a4 = Author.objects.create(first_name="Bill", last_name="Jones", dob=date(1932, 5, 10))
         cls.b1 = Book.objects.create(
             title="The awesome book",
             author=cls.a1,
             paperback=False,
             opening_line=(
-                "It was a bright cold day in April and the clocks were striking "
-                "thirteen."
+                "It was a bright cold day in April and the clocks were striking thirteen."
             ),
         )
         cls.b2 = Book.objects.create(
@@ -47,7 +38,7 @@ class RawQueryTests(TestCase):
             opening_line=(
                 "On an evening in the latter part of May a middle-aged man "
                 "was walking homeward from Shaston to the village of Marlott, "
-                "in the adjoining Vale of Blakemore, or Blackmoor."
+                "in the adjormining Vale of Blakemore, or Blackmoor."
             ),
         )
         cls.b3 = Book.objects.create(
@@ -80,9 +71,7 @@ class RawQueryTests(TestCase):
         """
         Execute the passed query against the passed model and check the output
         """
-        results = list(
-            model.objects.raw(query, params=params, translations=translations)
-        )
+        results = list(model.objects.raw(query, params=params, translations=translations))
         self.assertProcessed(model, results, expected_results, expected_annotations)
         self.assertAnnotations(results, expected_annotations)
 
@@ -98,9 +87,7 @@ class RawQueryTests(TestCase):
 
             for field in model._meta.fields:
                 # All values on the model are equal
-                self.assertEqual(
-                    getattr(item, field.attname), getattr(orig_item, field.attname)
-                )
+                self.assertEqual(getattr(item, field.attname), getattr(orig_item, field.attname))
                 # This includes checking that they are the same type
                 self.assertEqual(
                     type(getattr(item, field.attname)),
@@ -125,12 +112,8 @@ class RawQueryTests(TestCase):
 
     def test_rawqueryset_repr(self):
         queryset = RawQuerySet(raw_query="SELECT * FROM raw_query_author")
-        self.assertEqual(
-            repr(queryset), "<RawQuerySet: SELECT * FROM raw_query_author>"
-        )
-        self.assertEqual(
-            repr(queryset.query), "<RawQuery: SELECT * FROM raw_query_author>"
-        )
+        self.assertEqual(repr(queryset), "<RawQuerySet: SELECT * FROM raw_query_author>")
+        self.assertEqual(repr(queryset.query), "<RawQuery: SELECT * FROM raw_query_author>")
 
     def test_simple_raw_query(self):
         """
@@ -193,10 +176,7 @@ class RawQueryTests(TestCase):
         Test of raw query's optional ability to translate unexpected result
         column names to specific model fields
         """
-        query = (
-            "SELECT first_name AS first, last_name AS last, dob, id "
-            "FROM raw_query_author"
-        )
+        query = "SELECT first_name AS first, last_name AS last, dob, id FROM raw_query_author"
         translations = {"first": "first_name", "last": "last_name"}
         authors = Author.objects.all()
         self.assertSuccessfulRawQuery(Author, query, authors, translations=translations)
@@ -326,7 +306,7 @@ class RawQueryTests(TestCase):
             self.assertEqual(normal_authors[index], raw_author)
             first_iterations += 1
 
-        # Second Iteration
+            # Second Iteration
         second_iterations = 0
         for index, raw_author in enumerate(raw_authors):
             self.assertEqual(normal_authors[index], raw_author)
@@ -354,15 +334,12 @@ class RawQueryTests(TestCase):
         self.assertEqual([o.pk for o in FriendlyAuthor.objects.raw(query)], [f.pk])
 
     def test_query_count(self):
-        self.assertNumQueries(
-            1, list, Author.objects.raw("SELECT * FROM raw_query_author")
-        )
+        self.assertNumQueries(1, list, Author.objects.raw("SELECT * FROM raw_query_author"))
 
     def test_subquery_in_raw_sql(self):
         list(
             Book.objects.raw(
-                "SELECT id FROM "
-                "(SELECT * FROM raw_query_book WHERE paperback IS NOT NULL) sq"
+                "SELECT id FROM (SELECT * FROM raw_query_book WHERE paperback IS NOT NULL) sq"
             )
         )
 
@@ -376,11 +353,7 @@ class RawQueryTests(TestCase):
         """
         b = BookFkAsPk.objects.create(book=self.b1)
         self.assertEqual(
-            list(
-                BookFkAsPk.objects.raw(
-                    "SELECT not_the_default FROM raw_query_bookfkaspk"
-                )
-            ),
+            list(BookFkAsPk.objects.raw("SELECT not_the_default FROM raw_query_bookfkaspk")),
             [b],
         )
 
@@ -405,12 +378,8 @@ class RawQueryTests(TestCase):
 
     def test_bool(self):
         self.assertIs(bool(Book.objects.raw("SELECT * FROM raw_query_book")), True)
-        self.assertIs(
-            bool(Book.objects.raw("SELECT * FROM raw_query_book WHERE id = 0")), False
-        )
+        self.assertIs(bool(Book.objects.raw("SELECT * FROM raw_query_book WHERE id = 0")), False)
 
     def test_len(self):
         self.assertEqual(len(Book.objects.raw("SELECT * FROM raw_query_book")), 4)
-        self.assertEqual(
-            len(Book.objects.raw("SELECT * FROM raw_query_book WHERE id = 0")), 0
-        )
+        self.assertEqual(len(Book.objects.raw("SELECT * FROM raw_query_book WHERE id = 0")), 0)

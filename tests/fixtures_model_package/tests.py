@@ -49,9 +49,7 @@ class FixtureTestCase(TestCase):
         )
 
         # Load a fixture that doesn't exist
-        with self.assertRaisesMessage(
-            CommandError, "No fixture named 'unknown' found."
-        ):
+        with self.assertRaisesMessage(CommandError, "No fixture named 'unknown' found."):
             management.call_command("loaddata", "unknown.json", verbosity=0)
 
         self.assertQuerySetEqual(

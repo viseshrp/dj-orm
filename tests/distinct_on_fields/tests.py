@@ -50,9 +50,7 @@ class DistinctOnTests(TestCase):
                 [self.p1_o1, self.p1_o2],
             ),
             (
-                Staff.objects.distinct("name", "organisation").order_by(
-                    "name", "organisation"
-                ),
+                Staff.objects.distinct("name", "organisation").order_by("name", "organisation"),
                 [self.p1_o1, self.p1_o2, self.p2_o1, self.p3_o1],
             ),
             (
@@ -102,17 +100,17 @@ class DistinctOnTests(TestCase):
             self.assertSequenceEqual(qset, expected)
             self.assertEqual(qset.count(), len(expected))
 
-        # Combining queries with non-unique query is not allowed.
+            # Combining queries with non-unique query is not allowed.
         base_qs = Celebrity.objects.all()
         msg = "Cannot combine a unique query with a non-unique query."
         with self.assertRaisesMessage(TypeError, msg):
             base_qs.distinct("id") & base_qs
-        # Combining queries with different distinct_fields is not allowed.
+            # Combining queries with different distinct_fields is not allowed.
         msg = "Cannot combine queries with different distinct fields."
         with self.assertRaisesMessage(TypeError, msg):
             base_qs.distinct("id") & base_qs.distinct("name")
 
-        # Test join unreffing
+            # Test join unreffing
         c1 = Celebrity.objects.distinct("greatest_fan__id", "greatest_fan__fan_of")
         self.assertIn("OUTER JOIN", str(c1.query))
         c2 = c1.distinct("pk")
@@ -141,8 +139,8 @@ class DistinctOnTests(TestCase):
         with self.assertRaisesMessage(NotImplementedError, msg):
             Celebrity.objects.distinct("id").annotate(Max("id"))[0]
 
-        # However this check is done only when the query executes, so you
-        # can use distinct() to remove the fields before execution.
+            # However this check is done only when the query executes, so you
+            # can use distinct() to remove the fields before execution.
         Celebrity.objects.distinct("id").annotate(Max("id")).distinct()[0]
         # distinct + aggregate not allowed
         msg = "aggregate() + distinct(fields) not implemented."
@@ -162,11 +160,7 @@ class DistinctOnTests(TestCase):
         Ordering shouldn't be cleared when distinct on fields are specified.
         refs #25081
         """
-        staff = (
-            Staff.objects.distinct("name")
-            .order_by("name", "-organisation")
-            .get(name="p1")
-        )
+        staff = Staff.objects.distinct("name").order_by("name", "-organisation").get(name="p1")
         self.assertEqual(staff.organisation, "o2")
 
     def test_distinct_on_mixed_case_annotation(self):

@@ -39,9 +39,7 @@ class GenericForeignKey(FieldCacheMixin, Field):
     one_to_many = False
     one_to_one = False
 
-    def __init__(
-        self, ct_field="content_type", fk_field="object_id", for_concrete_model=True
-    ):
+    def __init__(self, ct_field="content_type", fk_field="object_id", for_concrete_model=True):
         super().__init__(editable=False)
         self.ct_field = ct_field
         self.fk_field = fk_field
@@ -104,8 +102,7 @@ class GenericForeignKey(FieldCacheMixin, Field):
             return [
                 checks.Error(
                     "The GenericForeignKey content type references the "
-                    "nonexistent field '%s.%s'."
-                    % (self.model._meta.object_name, self.ct_field),
+                    "nonexistent field '%s.%s'." % (self.model._meta.object_name, self.ct_field),
                     obj=self,
                     id="contenttypes.E002",
                 )
@@ -161,8 +158,7 @@ class GenericForeignKey(FieldCacheMixin, Field):
 
     def get_prefetch_queryset(self, instances, queryset=None):
         warnings.warn(
-            "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() "
-            "instead.",
+            "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() instead.",
             RemovedInDjango60Warning,
             stacklevel=2,
         )
@@ -174,17 +170,13 @@ class GenericForeignKey(FieldCacheMixin, Field):
         custom_queryset_dict = {}
         if querysets is not None:
             for queryset in querysets:
-                ct_id = self.get_content_type(
-                    model=queryset.query.model, using=queryset.db
-                ).pk
+                ct_id = self.get_content_type(model=queryset.query.model, using=queryset.db).pk
                 if ct_id in custom_queryset_dict:
-                    raise ValueError(
-                        "Only one queryset is allowed for each content type."
-                    )
+                    raise ValueError("Only one queryset is allowed for each content type.")
                 custom_queryset_dict[ct_id] = queryset
 
-        # For efficiency, group the instances by content type and then do one
-        # query per model
+                # For efficiency, group the instances by content type and then do one
+                # query per model
         fk_dict = defaultdict(set)
         # We need one instance for each group in order to get the right db:
         instance_dict = {}
@@ -208,16 +200,15 @@ class GenericForeignKey(FieldCacheMixin, Field):
                 ct = self.get_content_type(id=ct_id, using=instance._state.db)
                 ret_val.extend(ct.get_all_objects_for_this_type(pk__in=fkeys))
 
-        # For doing the join in Python, we have to match both the FK val and the
-        # content type, so we use a callable that returns a (fk, class) pair.
+                # For doing the join in Python, we have to match both the FK val and the
+                # content type, so we use a callable that returns a (fk, class) pair.
+
         def gfk_key(obj):
             ct_id = getattr(obj, ct_attname)
             if ct_id is None:
                 return None
             else:
-                model = self.get_content_type(
-                    id=ct_id, using=obj._state.db
-                ).model_class()
+                model = self.get_content_type(id=ct_id, using=obj._state.db).model_class()
                 return (
                     model._meta.pk.get_prep_value(getattr(obj, self.fk_field)),
                     model,
@@ -236,10 +227,10 @@ class GenericForeignKey(FieldCacheMixin, Field):
         if instance is None:
             return self
 
-        # Don't use getattr(instance, self.ct_field) here because that might
-        # reload the same ContentType over and over (#5570). Instead, get the
-        # content type ID here, and later when the actual instance is needed,
-        # use ContentType.objects.get_for_id(), which has a global cache.
+            # Don't use getattr(instance, self.ct_field) here because that might
+            # reload the same ContentType over and over (#5570). Instead, get the
+            # content type ID here, and later when the actual instance is needed,
+            # use ContentType.objects.get_for_id(), which has a global cache.
         f = self.model._meta.get_field(self.ct_field)
         ct_id = getattr(instance, f.attname, None)
         pk_val = getattr(instance, self.fk_field)
@@ -248,9 +239,7 @@ class GenericForeignKey(FieldCacheMixin, Field):
         if rel_obj is None and self.is_cached(instance):
             return rel_obj
         if rel_obj is not None:
-            ct_match = (
-                ct_id == self.get_content_type(obj=rel_obj, using=instance._state.db).id
-            )
+            ct_match = ct_id == self.get_content_type(obj=rel_obj, using=instance._state.db).id
             pk_match = ct_match and rel_obj._meta.pk.to_python(pk_val) == rel_obj.pk
             if pk_match:
                 return rel_obj
@@ -259,9 +248,7 @@ class GenericForeignKey(FieldCacheMixin, Field):
         if ct_id is not None:
             ct = self.get_content_type(id=ct_id, using=instance._state.db)
             try:
-                rel_obj = ct.get_object_for_this_type(
-                    using=instance._state.db, pk=pk_val
-                )
+                rel_obj = ct.get_object_for_this_type(using=instance._state.db, pk=pk_val)
             except ObjectDoesNotExist:
                 pass
         self.set_cached_value(instance, rel_obj)
@@ -514,9 +501,7 @@ class GenericRelation(ForeignObject):
         if not cls._meta.abstract:
 
             def make_generic_foreign_order_accessors(related_model, model):
-                if self._is_matching_generic_foreign_key(
-                    model._meta.order_with_respect_to
-                ):
+                if self._is_matching_generic_foreign_key(model._meta.order_with_respect_to):
                     make_foreign_order_accessors(model, related_model)
 
             lazy_related_operation(
@@ -551,8 +536,7 @@ class GenericRelation(ForeignObject):
         """
         return self.remote_field.model._base_manager.db_manager(using).filter(
             **{
-                "%s__pk"
-                % self.content_type_field_name: ContentType.objects.db_manager(using)
+                "%s__pk" % self.content_type_field_name: ContentType.objects.db_manager(using)
                 .get_for_model(self.model, for_concrete_model=self.for_concrete_model)
                 .pk,
                 "%s__in" % self.object_id_field_name: [obj.pk for obj in objs],
@@ -642,8 +626,7 @@ def create_generic_related_manager(superclass, rel):
 
         def get_prefetch_queryset(self, instances, queryset=None):
             warnings.warn(
-                "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() "
-                "instead.",
+                "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() instead.",
                 RemovedInDjango60Warning,
                 stacklevel=2,
             )
@@ -654,8 +637,7 @@ def create_generic_related_manager(superclass, rel):
         def get_prefetch_querysets(self, instances, querysets=None):
             if querysets and len(querysets) != 1:
                 raise ValueError(
-                    "querysets argument of get_prefetch_querysets() should have a "
-                    "length of 1."
+                    "querysets argument of get_prefetch_querysets() should have a length of 1."
                 )
             queryset = querysets[0] if querysets else super().get_queryset()
             queryset._add_hints(instance=instances[0])
@@ -697,8 +679,7 @@ def create_generic_related_manager(superclass, rel):
             def check_and_update_obj(obj):
                 if not isinstance(obj, self.model):
                     raise TypeError(
-                        "'%s' instance expected, got %r"
-                        % (self.model._meta.object_name, obj)
+                        "'%s' instance expected, got %r" % (self.model._meta.object_name, obj)
                     )
                 setattr(obj, self.content_type_field_name, self.content_type)
                 setattr(obj, self.object_id_field_name, self.pk_val)

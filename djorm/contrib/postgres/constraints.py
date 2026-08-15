@@ -35,24 +35,17 @@ class ExclusionConstraint(BaseConstraint):
         violation_error_message=None,
     ):
         if index_type and index_type.lower() not in {"gist", "spgist"}:
-            raise ValueError(
-                "Exclusion constraints only support GiST or SP-GiST indexes."
-            )
+            raise ValueError("Exclusion constraints only support GiST or SP-GiST indexes.")
         if not expressions:
             raise ValueError(
-                "At least one expression is required to define an exclusion "
-                "constraint."
+                "At least one expression is required to define an exclusion constraint."
             )
-        if not all(
-            isinstance(expr, (list, tuple)) and len(expr) == 2 for expr in expressions
-        ):
+        if not all(isinstance(expr, (list, tuple)) and len(expr) == 2 for expr in expressions):
             raise ValueError("The expressions must be a list of 2-tuples.")
         if not isinstance(condition, (NoneType, Q)):
             raise ValueError("ExclusionConstraint.condition must be a Q instance.")
         if not isinstance(deferrable, (NoneType, Deferrable)):
-            raise ValueError(
-                "ExclusionConstraint.deferrable must be a Deferrable instance."
-            )
+            raise ValueError("ExclusionConstraint.deferrable must be a Deferrable instance.")
         if not isinstance(include, (NoneType, list, tuple)):
             raise ValueError("ExclusionConstraint.include must be a list or tuple.")
         self.expressions = expressions
@@ -97,17 +90,13 @@ class ExclusionConstraint(BaseConstraint):
         expressions = self._get_expressions(schema_editor, query)
         table = model._meta.db_table
         condition = self._get_condition_sql(compiler, schema_editor, query)
-        include = [
-            model._meta.get_field(field_name).column for field_name in self.include
-        ]
+        include = [model._meta.get_field(field_name).column for field_name in self.include]
         return Statement(
             self.template,
             table=Table(table, schema_editor.quote_name),
             name=schema_editor.quote_name(self.name),
             index_type=self.index_type,
-            expressions=Expressions(
-                table, expressions, compiler, schema_editor.quote_value
-            ),
+            expressions=Expressions(table, expressions, compiler, schema_editor.quote_value),
             where=" WHERE (%s)" % condition if condition else "",
             include=schema_editor._index_include_sql(model, include),
             deferrable=schema_editor._deferrable_constraint_sql(self.deferrable),
@@ -178,9 +167,7 @@ class ExclusionConstraint(BaseConstraint):
 
     def validate(self, model, instance, exclude=None, using=DEFAULT_DB_ALIAS):
         queryset = model._default_manager.using(using)
-        replacement_map = instance._get_field_expression_map(
-            meta=model._meta, exclude=exclude
-        )
+        replacement_map = instance._get_field_expression_map(meta=model._meta, exclude=exclude)
         replacements = {F(field): value for field, value in replacement_map.items()}
         lookups = []
         for expression, operator in self.expressions:

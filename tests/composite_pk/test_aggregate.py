@@ -32,9 +32,7 @@ class CompositePKAggregateTests(TestCase):
         cls.comment_6 = Comment.objects.create(id=6, user=cls.user_3, text="baz")
 
     def test_users_annotated_with_comments_id_count(self):
-        user_1, user_2, user_3 = User.objects.annotate(Count("comments__id")).order_by(
-            "pk"
-        )
+        user_1, user_2, user_3 = User.objects.annotate(Count("comments__id")).order_by("pk")
 
         self.assertEqual(user_1, self.user_1)
         self.assertEqual(user_1.comments__id__count, 2)
@@ -67,9 +65,7 @@ class CompositePKAggregateTests(TestCase):
 
     def test_users_annotated_with_comments_count_filter(self):
         user_1, user_2, user_3 = User.objects.annotate(
-            comments__count=Count(
-                "comments", filter=Q(pk__in=[self.user_1.pk, self.user_2.pk])
-            )
+            comments__count=Count("comments", filter=Q(pk__in=[self.user_1.pk, self.user_2.pk]))
         ).order_by("pk")
 
         self.assertEqual(user_1, self.user_1)
@@ -117,9 +113,7 @@ class CompositePKAggregateTests(TestCase):
     def test_filter_and_count_users_by_comments_fields(self):
         users = User.objects.filter(comments__id__gt=2).order_by("pk")
         self.assertEqual(users.count(), 4)
-        self.assertSequenceEqual(
-            users, (self.user_1, self.user_3, self.user_3, self.user_3)
-        )
+        self.assertSequenceEqual(users, (self.user_1, self.user_3, self.user_3, self.user_3))
 
         users = User.objects.filter(comments__text__icontains="foo").order_by("pk")
         self.assertEqual(users.count(), 3)
@@ -131,9 +125,7 @@ class CompositePKAggregateTests(TestCase):
 
     def test_order_by_comments_id_count(self):
         self.assertSequenceEqual(
-            User.objects.annotate(comments_count=Count("comments__id")).order_by(
-                "-comments_count"
-            ),
+            User.objects.annotate(comments_count=Count("comments__id")).order_by("-comments_count"),
             (self.user_3, self.user_1, self.user_2),
         )
 

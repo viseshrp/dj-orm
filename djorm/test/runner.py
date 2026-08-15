@@ -1005,7 +1005,15 @@ class DiscoverRunner:
     def run_checks(self, databases):
         # Checks are run after database creation since some checks require
         # database access.
-        call_command("check", verbosity=self.verbosity, databases=databases)
+        from djorm.core.checks import Tags, run_checks
+        from djorm.core.management.base import SystemCheckError
+
+        errors = run_checks(tags=[Tags.models, Tags.database], databases=databases)
+        visible_errors = [
+            error for error in errors if error.is_serious() and not error.is_silenced()
+        ]
+        if visible_errors:
+            raise SystemCheckError("\n".join(str(error) for error in visible_errors))
 
     def run_suite(self, suite, **kwargs):
         kwargs = self.get_test_runner_kwargs()

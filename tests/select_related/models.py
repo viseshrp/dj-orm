@@ -52,8 +52,7 @@ class Species(models.Model):
     name = models.CharField(max_length=50)
     genus = models.ForeignKey(Genus, models.CASCADE)
 
-
-# and we'll invent a new thing so we have a model with two foreign keys
+    # and we'll invent a new thing so we have a model with two foreign keys
 
 
 class HybridSpecies(models.Model):

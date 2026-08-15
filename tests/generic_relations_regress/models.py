@@ -83,8 +83,9 @@ class OddRelation2(models.Model):
     name = models.CharField(max_length=100)
     tlinks = GenericRelation(TextLink)
 
+    # models for test_q_object_or:
 
-# models for test_q_object_or:
+
 class Note(models.Model):
     content_type = models.ForeignKey(ContentType, models.CASCADE)
     object_id = models.PositiveIntegerField()
@@ -121,9 +122,7 @@ class Guild(models.Model):
 
 
 class Tag(models.Model):
-    content_type = models.ForeignKey(
-        ContentType, models.CASCADE, related_name="g_r_r_tags"
-    )
+    content_type = models.ForeignKey(ContentType, models.CASCADE, related_name="g_r_r_tags")
     object_id = models.CharField(max_length=15)
     content_object = GenericForeignKey()
     label = models.CharField(max_length=15)
@@ -181,8 +180,7 @@ class D(models.Model):
     class Meta:
         ordering = ("id",)
 
-
-# Ticket #22998
+        # Ticket #22998
 
 
 class Node(models.Model):

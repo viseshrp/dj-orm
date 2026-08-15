@@ -157,8 +157,8 @@ class LazyObjectTestCase(unittest.TestCase):
         for needle, haystack in test_data:
             self.assertIn(needle, self.lazy_wrap(haystack))
 
-        # __contains__ doesn't work when the haystack is a string and the
-        # needle a LazyObject.
+            # __contains__ doesn't work when the haystack is a string and the
+            # needle a LazyObject.
         for needle_haystack in test_data[1:]:
             self.assertIn(self.lazy_wrap(needle), haystack)
             self.assertIn(self.lazy_wrap(needle), self.lazy_wrap(haystack))
@@ -232,9 +232,9 @@ class LazyObjectTestCase(unittest.TestCase):
         self.assertEqual(unpickled.foo, obj.foo)
         self.assertEqual(unpickled.bar, obj.bar)
 
-    # Test copying lazy objects wrapping both builtin types and user-defined
-    # classes since a lot of the relevant code does __dict__ manipulation and
-    # builtin types don't have __dict__.
+        # Test copying lazy objects wrapping both builtin types and user-defined
+        # classes since a lot of the relevant code does __dict__ manipulation and
+        # builtin types don't have __dict__.
 
     def test_copy_list(self):
         # Copying a list works and returns the correct objects.
@@ -499,11 +499,7 @@ class SimpleLazyObjectPickleTestCase(TestCase):
             lazy_category.categoryinfo
             lazy_category_2 = SimpleLazyObject(lambda: category)
             with warnings.catch_warnings(record=True) as recorded:
-                self.assertEqual(
-                    pickle.loads(pickle.dumps(lazy_category, protocol)), category
-                )
-                self.assertEqual(
-                    pickle.loads(pickle.dumps(lazy_category_2, protocol)), category
-                )
+                self.assertEqual(pickle.loads(pickle.dumps(lazy_category, protocol)), category)
+                self.assertEqual(pickle.loads(pickle.dumps(lazy_category_2, protocol)), category)
                 # Assert that there were no warnings.
                 self.assertEqual(len(recorded), 0)

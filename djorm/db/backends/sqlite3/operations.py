@@ -38,11 +38,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         """
         fields = list(
             chain.from_iterable(
-                (
-                    field.fields
-                    if isinstance(field, models.CompositePrimaryKey)
-                    else [field]
-                )
+                (field.fields if isinstance(field, models.CompositePrimaryKey) else [field])
                 for field in fields
             )
         )
@@ -191,8 +187,8 @@ class DatabaseOperations(BaseDatabaseOperations):
                 values = self._quote_params_for_last_executed_query(values)
                 params = dict(zip(params, values))
             return sql % params
-        # For consistency with SQLiteCursorWrapper.execute(), just return sql
-        # when there are no parameters. See #13648 and #17158.
+            # For consistency with SQLiteCursorWrapper.execute(), just return sql
+            # when there are no parameters. See #13648 and #17158.
         else:
             return sql
 
@@ -233,9 +229,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         if tables and allow_cascade:
             # Simulate TRUNCATE CASCADE by recursively collecting the tables
             # referencing the tables to be flushed.
-            tables = set(
-                chain.from_iterable(self._references_graph(table) for table in tables)
-            )
+            tables = set(chain.from_iterable(self._references_graph(table) for table in tables))
         sql = [
             "%s %s %s;"
             % (
@@ -263,9 +257,7 @@ class DatabaseOperations(BaseDatabaseOperations):
                 style.SQL_KEYWORD("WHERE"),
                 style.SQL_FIELD(self.quote_name("name")),
                 style.SQL_KEYWORD("IN"),
-                ", ".join(
-                    ["'%s'" % sequence_info["table"] for sequence_info in sequences]
-                ),
+                ", ".join(["'%s'" % sequence_info["table"] for sequence_info in sequences]),
             ),
         ]
 
@@ -273,14 +265,13 @@ class DatabaseOperations(BaseDatabaseOperations):
         if value is None:
             return None
 
-        # SQLite doesn't support tz-aware datetimes
+            # SQLite doesn't support tz-aware datetimes
         if timezone.is_aware(value):
             if settings.USE_TZ:
                 value = timezone.make_naive(value, self.connection.timezone)
             else:
                 raise ValueError(
-                    "SQLite backend does not support timezone-aware datetimes when "
-                    "USE_TZ is False."
+                    "SQLite backend does not support timezone-aware datetimes when USE_TZ is False."
                 )
 
         return str(value)
@@ -289,7 +280,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         if value is None:
             return None
 
-        # SQLite doesn't support tz-aware datetimes
+            # SQLite doesn't support tz-aware datetimes
         if timezone.is_aware(value):
             raise ValueError("SQLite backend does not support timezone-aware times.")
 
@@ -337,9 +328,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         # float inaccuracy must be removed.
         create_decimal = decimal.Context(prec=15).create_decimal_from_float
         if isinstance(expression, Col):
-            quantize_value = decimal.Decimal(1).scaleb(
-                -expression.output_field.decimal_places
-            )
+            quantize_value = decimal.Decimal(1).scaleb(-expression.output_field.decimal_places)
 
             def converter(value, expression, connection):
                 if value is not None:
@@ -426,10 +415,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             return "ON CONFLICT(%s) DO UPDATE SET %s" % (
                 ", ".join(map(self.quote_name, unique_fields)),
                 ", ".join(
-                    [
-                        f"{field} = EXCLUDED.{field}"
-                        for field in map(self.quote_name, update_fields)
-                    ]
+                    [f"{field} = EXCLUDED.{field}" for field in map(self.quote_name, update_fields)]
                 ),
             )
         return super().on_conflict_suffix_sql(

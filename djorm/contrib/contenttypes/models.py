@@ -44,8 +44,8 @@ class ContentTypeManager(models.Manager):
         except KeyError:
             pass
 
-        # The ContentType entry was not found in the cache, therefore we
-        # proceed to load or create it.
+            # The ContentType entry was not found in the cache, therefore we
+            # proceed to load or create it.
         try:
             # Start with get() and not get_or_create() in order to use
             # the db_for_read (see #20401).
@@ -93,7 +93,7 @@ class ContentTypeManager(models.Manager):
                 for model in opts_models:
                     results[model] = ct
                 self._add_to_cache(self.db, ct)
-        # Create content types that weren't in the cache or DB.
+                # Create content types that weren't in the cache or DB.
         for (app_label, model_name), opts_models in needed_opts.items():
             ct = self.create(app_label=app_label, model=model_name)
             self._add_to_cache(self.db, ct)

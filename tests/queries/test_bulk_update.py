@@ -110,7 +110,7 @@ class BulkUpdateNoteTests(TestCase):
         Note.objects.bulk_update(self.notes, ["note"])
         self.assertEqual(set(Note.objects.values_list("note", flat=True)), {"test"})
 
-    # Tests that use self.notes go here, otherwise put them in another class.
+        # Tests that use self.notes go here, otherwise put them in another class.
 
 
 class BulkUpdateTests(TestCase):
@@ -129,9 +129,7 @@ class BulkUpdateTests(TestCase):
             Note.objects.bulk_update([], fields=["note"], batch_size=0)
 
     def test_nonexistent_field(self):
-        with self.assertRaisesMessage(
-            FieldDoesNotExist, "Note has no field named 'nonexistent'"
-        ):
+        with self.assertRaisesMessage(FieldDoesNotExist, "Note has no field named 'nonexistent'"):
             Note.objects.bulk_update([], ["nonexistent"])
 
     pk_fields_error = "bulk_update() cannot be used with primary key fields."
@@ -154,9 +152,7 @@ class BulkUpdateTests(TestCase):
         self.assertEqual(rows_updated, 0)
 
     def test_large_batch(self):
-        Note.objects.bulk_create(
-            [Note(note=str(i), misc=str(i)) for i in range(0, 2000)]
-        )
+        Note.objects.bulk_create([Note(note=str(i), misc=str(i)) for i in range(0, 2000)])
         notes = list(Note.objects.all())
         rows_updated = Note.objects.bulk_update(notes, ["note"])
         self.assertEqual(rows_updated, 2000)
@@ -190,9 +186,7 @@ class BulkUpdateTests(TestCase):
         self.assertEqual(model.custom_column, 2)
 
     def test_custom_pk(self):
-        custom_pks = [
-            CustomPk.objects.create(name="pk-%s" % i, extra="") for i in range(10)
-        ]
+        custom_pks = [CustomPk.objects.create(name="pk-%s" % i, extra="") for i in range(10)]
         for model in custom_pks:
             model.extra = "extra-%s" % model.pk
         CustomPk.objects.bulk_update(custom_pks, ["extra"])
@@ -210,15 +204,12 @@ class BulkUpdateTests(TestCase):
 
     def test_inherited_fields(self):
         special_categories = [
-            SpecialCategory.objects.create(name=str(i), special_name=str(i))
-            for i in range(10)
+            SpecialCategory.objects.create(name=str(i), special_name=str(i)) for i in range(10)
         ]
         for category in special_categories:
             category.name = "test-%s" % category.id
             category.special_name = "special-test-%s" % category.special_name
-        SpecialCategory.objects.bulk_update(
-            special_categories, ["name", "special_name"]
-        )
+        SpecialCategory.objects.bulk_update(special_categories, ["name", "special_name"])
         self.assertCountEqual(
             SpecialCategory.objects.values_list("name", flat=True),
             [cat.name for cat in special_categories],
@@ -236,9 +227,7 @@ class BulkUpdateTests(TestCase):
         self.assertCountEqual(Number.objects.filter(num=1), numbers)
 
     def test_f_expression(self):
-        notes = [
-            Note.objects.create(note="test_note", misc="test_misc") for _ in range(10)
-        ]
+        notes = [Note.objects.create(note="test_note", misc="test_misc") for _ in range(10)]
         for note in notes:
             note.misc = F("note")
         Note.objects.bulk_update(notes, ["misc"])
@@ -254,16 +243,11 @@ class BulkUpdateTests(TestCase):
     def test_ipaddressfield(self):
         for ip in ("2001::1", "1.2.3.4"):
             with self.subTest(ip=ip):
-                models = [
-                    CustomDbColumn.objects.create(ip_address="0.0.0.0")
-                    for _ in range(10)
-                ]
+                models = [CustomDbColumn.objects.create(ip_address="0.0.0.0") for _ in range(10)]
                 for model in models:
                     model.ip_address = ip
                 CustomDbColumn.objects.bulk_update(models, ["ip_address"])
-                self.assertCountEqual(
-                    CustomDbColumn.objects.filter(ip_address=ip), models
-                )
+                self.assertCountEqual(CustomDbColumn.objects.filter(ip_address=ip), models)
 
     def test_datetime_field(self):
         articles = [
@@ -285,9 +269,7 @@ class BulkUpdateTests(TestCase):
         for obj in objs:
             obj.json_field = {"c": obj.json_field["a"] + 1}
         JSONFieldNullable.objects.bulk_update(objs, ["json_field"])
-        self.assertCountEqual(
-            JSONFieldNullable.objects.filter(json_field__has_key="c"), objs
-        )
+        self.assertCountEqual(JSONFieldNullable.objects.filter(json_field__has_key="c"), objs)
 
     @skipUnlessDBFeature("supports_json_field")
     def test_json_field_sql_null(self):
@@ -322,8 +304,7 @@ class BulkUpdateTests(TestCase):
         parent = RelatedObject.objects.create()
         parent.single = SingleObject()
         msg = (
-            "bulk_update() prohibited to prevent data loss due to unsaved "
-            "related object 'single'."
+            "bulk_update() prohibited to prevent data loss due to unsaved related object 'single'."
         )
         with self.assertRaisesMessage(ValueError, msg):
             RelatedObject.objects.bulk_update([parent], fields=["single"])

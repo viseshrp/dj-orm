@@ -24,9 +24,7 @@ class ManyToManyTests(TestCase):
         cls.p3 = Publication.objects.create(title="Science Weekly")
         cls.p4 = Publication.objects.create(title="Highlights for Children")
 
-        cls.a1 = Article.objects.create(
-            headline="Django lets you build web apps easily"
-        )
+        cls.a1 = Article.objects.create(headline="Django lets you build web apps easily")
         cls.a1.publications.add(cls.p1)
 
         cls.a2 = Article.objects.create(headline="NASA uses Python")
@@ -48,7 +46,7 @@ class ManyToManyTests(TestCase):
         )
         with self.assertRaisesMessage(ValueError, msg):
             getattr(a5, "publications")
-        # Save it!
+            # Save it!
         a5.save()
         # Associate the Article with a Publication.
         a5.publications.add(self.p1)
@@ -67,14 +65,13 @@ class ManyToManyTests(TestCase):
 
         # Adding an object of the wrong type raises TypeError
         msg = (
-            "'Publication' instance expected, got <Article: Django lets you create web "
-            "apps easily>"
+            "'Publication' instance expected, got <Article: Django lets you create web apps easily>"
         )
         with self.assertRaisesMessage(TypeError, msg):
             with transaction.atomic():
                 a6.publications.add(a5)
 
-        # Add a Publication directly via publications.add by using keyword arguments.
+                # Add a Publication directly via publications.add by using keyword arguments.
         p5 = a6.publications.create(title="Highlights for Adults")
         self.assertSequenceEqual(
             a6.publications.all(),
@@ -226,9 +223,7 @@ class ManyToManyTests(TestCase):
             [self.a3, self.a2, self.a2, self.a4],
         )
         self.assertSequenceEqual(
-            Article.objects.filter(
-                publications__title__startswith="Science"
-            ).distinct(),
+            Article.objects.filter(publications__title__startswith="Science").distinct(),
             [self.a3, self.a2, self.a4],
         )
 
@@ -237,15 +232,11 @@ class ManyToManyTests(TestCase):
             Article.objects.filter(publications__title__startswith="Science").count(), 4
         )
         self.assertEqual(
-            Article.objects.filter(publications__title__startswith="Science")
-            .distinct()
-            .count(),
+            Article.objects.filter(publications__title__startswith="Science").distinct().count(),
             3,
         )
         self.assertSequenceEqual(
-            Article.objects.filter(
-                publications__in=[self.p1.id, self.p2.id]
-            ).distinct(),
+            Article.objects.filter(publications__in=[self.p1.id, self.p2.id]).distinct(),
             [self.a1, self.a3, self.a2, self.a4],
         )
         self.assertSequenceEqual(
@@ -268,12 +259,8 @@ class ManyToManyTests(TestCase):
         # Reverse m2m queries are supported (i.e., starting at the table that
         # doesn't have a ManyToManyField).
         python_journal = [self.p1]
-        self.assertSequenceEqual(
-            Publication.objects.filter(id__exact=self.p1.id), python_journal
-        )
-        self.assertSequenceEqual(
-            Publication.objects.filter(pk=self.p1.id), python_journal
-        )
+        self.assertSequenceEqual(Publication.objects.filter(id__exact=self.p1.id), python_journal)
+        self.assertSequenceEqual(Publication.objects.filter(pk=self.p1.id), python_journal)
         self.assertSequenceEqual(
             Publication.objects.filter(article__headline__startswith="NASA"),
             [self.p4, self.p2, self.p2, self.p3, self.p1],
@@ -282,15 +269,9 @@ class ManyToManyTests(TestCase):
         self.assertSequenceEqual(
             Publication.objects.filter(article__id__exact=self.a1.id), python_journal
         )
-        self.assertSequenceEqual(
-            Publication.objects.filter(article__pk=self.a1.id), python_journal
-        )
-        self.assertSequenceEqual(
-            Publication.objects.filter(article=self.a1.id), python_journal
-        )
-        self.assertSequenceEqual(
-            Publication.objects.filter(article=self.a1), python_journal
-        )
+        self.assertSequenceEqual(Publication.objects.filter(article__pk=self.a1.id), python_journal)
+        self.assertSequenceEqual(Publication.objects.filter(article=self.a1.id), python_journal)
+        self.assertSequenceEqual(Publication.objects.filter(article=self.a1), python_journal)
 
         self.assertSequenceEqual(
             Publication.objects.filter(article__in=[self.a1.id, self.a2.id]).distinct(),
@@ -478,9 +459,7 @@ class ManyToManyTests(TestCase):
         # (#19816).
         self.p1.article_set.set([self.a1, self.a2])
 
-        qs = self.p1.article_set.filter(
-            headline="Django lets you build web apps easily"
-        )
+        qs = self.p1.article_set.filter(headline="Django lets you build web apps easily")
         self.p1.article_set.set(qs)
 
         self.assertEqual(1, self.p1.article_set.count())
@@ -567,31 +546,22 @@ class ManyToManyTests(TestCase):
         a5 = Article.objects.create(headline="deleted")
         a5.publications.add(self.p2)
         with self.assertNumQueries(2) as ctx:
-            self.assertEqual(
-                self.p2.article_set.count(), self.p2.article_set.all().count()
-            )
+            self.assertEqual(self.p2.article_set.count(), self.p2.article_set.all().count())
         self.assertIn("JOIN", ctx.captured_queries[0]["sql"])
         with self.assertNumQueries(2) as ctx:
-            self.assertEqual(
-                self.p3.article_set.exists(), self.p3.article_set.all().exists()
-            )
+            self.assertEqual(self.p3.article_set.exists(), self.p3.article_set.all().exists())
         self.assertIn("JOIN", ctx.captured_queries[0]["sql"])
 
     def test_get_prefetch_queryset_warning(self):
         articles = Article.objects.all()
-        msg = (
-            "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() "
-            "instead."
-        )
+        msg = "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() instead."
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:
             self.a1.publications.get_prefetch_queryset(articles)
         self.assertEqual(ctx.filename, __file__)
 
     def test_get_prefetch_querysets_invalid_querysets_length(self):
         articles = Article.objects.all()
-        msg = (
-            "querysets argument of get_prefetch_querysets() should have a length of 1."
-        )
+        msg = "querysets argument of get_prefetch_querysets() should have a length of 1."
         with self.assertRaisesMessage(ValueError, msg):
             self.a1.publications.get_prefetch_querysets(
                 instances=articles,
@@ -609,9 +579,7 @@ class ManyToManyQueryTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.article = Article.objects.create(
-            headline="Django lets you build Web apps easily"
-        )
+        cls.article = Article.objects.create(headline="Django lets you build Web apps easily")
         cls.nullable_target_article = NullableTargetArticle.objects.create(
             headline="The python is good"
         )

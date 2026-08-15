@@ -22,9 +22,7 @@ def get_normalized_value(value, lhs):
         sources = composite.unnest(lhs.output_field.path_infos[-1].target_fields)
         for source in sources:
             while not isinstance(value, source.model) and source.remote_field:
-                source = source.remote_field.model._meta.get_field(
-                    source.remote_field.field_name
-                )
+                source = source.remote_field.model._meta.get_field(source.remote_field.field_name)
             try:
                 value_list.append(getattr(value, source.attname))
             except AttributeError:
@@ -61,9 +59,7 @@ class RelatedIn(In):
                     # Run the target field's get_prep_value. We can safely
                     # assume there is only one as we don't get to the direct
                     # value branch otherwise.
-                    target_field = self.lhs.output_field.path_infos[-1].target_fields[
-                        -1
-                    ]
+                    target_field = self.lhs.output_field.path_infos[-1].target_fields[-1]
                     self.rhs = [target_field.get_prep_value(v) for v in self.rhs]
             elif not getattr(self.rhs, "has_select_fields", True) and not getattr(
                 self.lhs.field.target_field, "primary_key", False
@@ -96,9 +92,7 @@ class RelatedIn(In):
 
 class RelatedLookupMixin:
     def get_prep_lookup(self):
-        if not isinstance(self.lhs, ColPairs) and not hasattr(
-            self.rhs, "resolve_expression"
-        ):
+        if not isinstance(self.lhs, ColPairs) and not hasattr(self.rhs, "resolve_expression"):
             # If we get here, we are dealing with single-column relations.
             self.rhs = get_normalized_value(self.rhs, self.lhs)[0]
             # We need to run the related field's get_prep_value(). Consider case
@@ -116,9 +110,7 @@ class RelatedLookupMixin:
     def as_sql(self, compiler, connection):
         if isinstance(self.lhs, ColPairs):
             if not self.rhs_is_direct_value():
-                raise ValueError(
-                    f"'{self.lookup_name}' doesn't support multi-column subqueries."
-                )
+                raise ValueError(f"'{self.lookup_name}' doesn't support multi-column subqueries.")
             self.rhs = get_normalized_value(self.rhs, self.lhs)
             lookup_class = tuple_lookups[self.lookup_name]
             lookup = lookup_class(self.lhs, self.rhs)

@@ -128,12 +128,10 @@ class Lookup(Expression):
         if hasattr(value, "as_sql"):
             sql, params = compiler.compile(value)
             if isinstance(value, ColPairs):
-                raise ValueError(
-                    "CompositePrimaryKey cannot be used as a lookup value."
-                )
-            # Ensure expression is wrapped in parentheses to respect operator
-            # precedence but avoid double wrapping as it can be misinterpreted
-            # on some backends (e.g. subqueries on SQLite).
+                raise ValueError("CompositePrimaryKey cannot be used as a lookup value.")
+                # Ensure expression is wrapped in parentheses to respect operator
+                # precedence but avoid double wrapping as it can be misinterpreted
+                # on some backends (e.g. subqueries on SQLite).
             if not isinstance(value, Value) and sql and sql[0] != "(":
                 sql = "(%s)" % sql
             return sql, params
@@ -183,13 +181,9 @@ class Lookup(Expression):
     ):
         c = self.copy()
         c.is_summary = summarize
-        c.lhs = self.lhs.resolve_expression(
-            query, allow_joins, reuse, summarize, for_save
-        )
+        c.lhs = self.lhs.resolve_expression(query, allow_joins, reuse, summarize, for_save)
         if hasattr(self.rhs, "resolve_expression"):
-            c.rhs = self.rhs.resolve_expression(
-                query, allow_joins, reuse, summarize, for_save
-            )
+            c.rhs = self.rhs.resolve_expression(query, allow_joins, reuse, summarize, for_save)
         return c
 
     def select_format(self, compiler, sql, params):
@@ -234,8 +228,7 @@ class BuiltinLookup(Lookup):
         field_internal_type = self.lhs.output_field.get_internal_type()
         if (
             hasattr(connection.ops.__class__, "field_cast_sql")
-            and connection.ops.__class__.field_cast_sql
-            is not BaseDatabaseOperations.field_cast_sql
+            and connection.ops.__class__.field_cast_sql is not BaseDatabaseOperations.field_cast_sql
         ):
             warnings.warn(
                 (
@@ -245,12 +238,8 @@ class BuiltinLookup(Lookup):
                 RemovedInDjango60Warning,
             )
             db_type = self.lhs.output_field.db_type(connection=connection)
-            lhs_sql = (
-                connection.ops.field_cast_sql(db_type, field_internal_type) % lhs_sql
-            )
-        lhs_sql = (
-            connection.ops.lookup_cast(self.lookup_name, field_internal_type) % lhs_sql
-        )
+            lhs_sql = connection.ops.field_cast_sql(db_type, field_internal_type) % lhs_sql
+        lhs_sql = connection.ops.lookup_cast(self.lookup_name, field_internal_type) % lhs_sql
         return lhs_sql, list(params)
 
     def as_sql(self, compiler, connection):
@@ -277,19 +266,14 @@ class FieldGetDbPrepValueMixin:
         # output_field.
         field = getattr(self.lhs.output_field, "target_field", None)
         get_db_prep_value = (
-            getattr(field, "get_db_prep_value", None)
-            or self.lhs.output_field.get_db_prep_value
+            getattr(field, "get_db_prep_value", None) or self.lhs.output_field.get_db_prep_value
         )
         if not self.get_db_prep_lookup_value_is_iterable:
             value = [value]
         return (
             "%s",
             [
-                (
-                    v
-                    if hasattr(v, "as_sql")
-                    else get_db_prep_value(v, connection, prepared=True)
-                )
+                (v if hasattr(v, "as_sql") else get_db_prep_value(v, connection, prepared=True))
                 for v in value
             ],
         )
@@ -416,9 +400,7 @@ class Exact(FieldGetDbPrepValueMixin, BuiltinLookup):
         if (
             isinstance(self.rhs, bool)
             and getattr(self.lhs, "conditional", False)
-            and connection.ops.conditional_expression_supported_in_where_clause(
-                self.lhs
-            )
+            and connection.ops.conditional_expression_supported_in_where_clause(self.lhs)
         ):
             lhs_sql, params = self.process_lhs(compiler, connection)
             template = "%s" if self.rhs else "NOT %s"
@@ -466,9 +448,7 @@ class IntegerFieldOverflow:
         rhs = self.rhs
         if isinstance(rhs, int):
             field_internal_type = self.lhs.output_field.get_internal_type()
-            min_value, max_value = connection.ops.integer_field_range(
-                field_internal_type
-            )
+            min_value, max_value = connection.ops.integer_field_range(field_internal_type)
             if min_value is not None and rhs < min_value:
                 raise self.underflow_exception
             if max_value is not None and rhs > max_value:
@@ -554,8 +534,8 @@ class In(FieldGetDbPrepValueIterableMixin, BuiltinLookup):
             if not rhs:
                 raise EmptyResultSet
 
-            # rhs should be an iterable; use batch_process_rhs() to
-            # prepare/transform those values.
+                # rhs should be an iterable; use batch_process_rhs() to
+                # prepare/transform those values.
             sqls, sqls_params = self.batch_process_rhs(compiler, connection, rhs)
             placeholder = "(" + ", ".join(sqls) + ")"
             return (placeholder, sqls_params)
@@ -566,11 +546,7 @@ class In(FieldGetDbPrepValueIterableMixin, BuiltinLookup):
 
     def as_sql(self, compiler, connection):
         max_in_list_size = connection.ops.max_in_list_size()
-        if (
-            self.rhs_is_direct_value()
-            and max_in_list_size
-            and len(self.rhs) > max_in_list_size
-        ):
+        if self.rhs_is_direct_value() and max_in_list_size and len(self.rhs) > max_in_list_size:
             return self.split_parameter_list_as_sql(compiler, connection)
         return super().as_sql(compiler, connection)
 
@@ -612,9 +588,7 @@ class PatternLookup(BuiltinLookup):
         # SQL reference values or SQL transformations we need the correct
         # pattern added.
         if hasattr(self.rhs, "as_sql") or self.bilateral_transforms:
-            pattern = connection.pattern_ops[self.lookup_name].format(
-                connection.pattern_esc
-            )
+            pattern = connection.pattern_ops[self.lookup_name].format(connection.pattern_esc)
             return pattern.format(rhs)
         else:
             return super().get_rhs_op(connection, rhs)
@@ -622,9 +596,7 @@ class PatternLookup(BuiltinLookup):
     def process_rhs(self, qn, connection):
         rhs, params = super().process_rhs(qn, connection)
         if self.rhs_is_direct_value() and params and not self.bilateral_transforms:
-            params[0] = self.param_pattern % connection.ops.prep_for_like_query(
-                params[0]
-            )
+            params[0] = self.param_pattern % connection.ops.prep_for_like_query(params[0])
         return rhs, params
 
 
@@ -675,13 +647,10 @@ class IsNull(BuiltinLookup):
 
     def as_sql(self, compiler, connection):
         if not isinstance(self.rhs, bool):
-            raise ValueError(
-                "The QuerySet value for an isnull lookup must be True or False."
-            )
+            raise ValueError("The QuerySet value for an isnull lookup must be True or False.")
         if isinstance(self.lhs, Value):
             if self.lhs.value is None or (
-                self.lhs.value == ""
-                and connection.features.interprets_empty_strings_as_nulls
+                self.lhs.value == "" and connection.features.interprets_empty_strings_as_nulls
             ):
                 result_exception = FullResultSet if self.rhs else EmptyResultSet
             else:
@@ -795,9 +764,7 @@ class UUIDTextMixin:
 
             if self.rhs_is_direct_value():
                 self.rhs = Value(self.rhs)
-            self.rhs = Replace(
-                self.rhs, Value("-"), Value(""), output_field=CharField()
-            )
+            self.rhs = Replace(self.rhs, Value("-"), Value(""), output_field=CharField())
         rhs, params = super().process_rhs(qn, connection)
         return rhs, params
 

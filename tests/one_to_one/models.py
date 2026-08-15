@@ -85,12 +85,11 @@ class HiddenPointer(models.Model):
 
 
 class ToFieldPointer(models.Model):
-    target = models.OneToOneField(
-        Target, models.CASCADE, to_field="name", primary_key=True
-    )
+    target = models.OneToOneField(Target, models.CASCADE, to_field="name", primary_key=True)
+
+    # Test related objects visibility.
 
 
-# Test related objects visibility.
 class SchoolManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_public=True)

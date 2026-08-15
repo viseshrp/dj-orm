@@ -27,9 +27,7 @@ class TimesinceTests(TestCase):
 
     def test_ignore_microseconds_and_seconds(self):
         """Microseconds and seconds are ignored."""
-        self.assertEqual(
-            timesince(self.t, self.t + self.onemicrosecond), "0\xa0minutes"
-        )
+        self.assertEqual(timesince(self.t, self.t + self.onemicrosecond), "0\xa0minutes")
         self.assertEqual(timesince(self.t, self.t + self.onesecond), "0\xa0minutes")
 
     def test_other_units(self):
@@ -74,9 +72,7 @@ class TimesinceTests(TestCase):
         When the second date occurs before the first, we should always
         get 0 minutes.
         """
-        self.assertEqual(
-            timesince(self.t, self.t - self.onemicrosecond), "0\xa0minutes"
-        )
+        self.assertEqual(timesince(self.t, self.t - self.onemicrosecond), "0\xa0minutes")
         self.assertEqual(timesince(self.t, self.t - self.onesecond), "0\xa0minutes")
         self.assertEqual(timesince(self.t, self.t - self.oneminute), "0\xa0minutes")
         self.assertEqual(timesince(self.t, self.t - self.onehour), "0\xa0minutes")
@@ -177,14 +173,7 @@ class TimesinceTests(TestCase):
         self.assertEqual(timeuntil(self.t, t), "1000\xa0years")
 
     def test_depth(self):
-        t = (
-            self.t
-            + self.oneyear
-            + self.onemonth
-            + self.oneweek
-            + self.oneday
-            + self.onehour
-        )
+        t = self.t + self.oneyear + self.onemonth + self.oneweek + self.oneday + self.onehour
         tests = [
             (t, 1, "1\xa0year"),
             (t, 2, "1\xa0year, 1\xa0month"),

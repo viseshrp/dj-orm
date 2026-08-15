@@ -14,7 +14,7 @@ class FieldDoesNotExist(Exception):
 
 
 class AppRegistryNotReady(Exception):
-    'The djorm.apps registry is not populated yet'
+    """The djorm.apps registry is not populated yet"""
 
     pass
 

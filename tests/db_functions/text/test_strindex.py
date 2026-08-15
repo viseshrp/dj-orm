@@ -12,9 +12,7 @@ class StrIndexTests(TestCase):
         Author.objects.create(name="J. R. R. Tolkien")
         Author.objects.create(name="Terry Pratchett")
         authors = Author.objects.annotate(fullstop=StrIndex("name", Value("R.")))
-        self.assertQuerySetEqual(
-            authors.order_by("name"), [9, 4, 0], lambda a: a.fullstop
-        )
+        self.assertQuerySetEqual(authors.order_by("name"), [9, 4, 0], lambda a: a.fullstop)
 
     def test_annotate_textfield(self):
         Article.objects.create(
@@ -28,9 +26,7 @@ class StrIndexTests(TestCase):
             written=timezone.now(),
         )
         articles = Article.objects.annotate(title_pos=StrIndex("text", "title"))
-        self.assertQuerySetEqual(
-            articles.order_by("title"), [15, 0], lambda a: a.title_pos
-        )
+        self.assertQuerySetEqual(articles.order_by("title"), [15, 0], lambda a: a.title_pos)
 
     def test_order_by(self):
         Author.objects.create(name="Terry Pratchett")

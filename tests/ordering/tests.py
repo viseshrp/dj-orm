@@ -32,18 +32,10 @@ from .models import (
 class OrderingTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.a1 = Article.objects.create(
-            headline="Article 1", pub_date=datetime(2005, 7, 26)
-        )
-        cls.a2 = Article.objects.create(
-            headline="Article 2", pub_date=datetime(2005, 7, 27)
-        )
-        cls.a3 = Article.objects.create(
-            headline="Article 3", pub_date=datetime(2005, 7, 27)
-        )
-        cls.a4 = Article.objects.create(
-            headline="Article 4", pub_date=datetime(2005, 7, 28)
-        )
+        cls.a1 = Article.objects.create(headline="Article 1", pub_date=datetime(2005, 7, 26))
+        cls.a2 = Article.objects.create(headline="Article 2", pub_date=datetime(2005, 7, 27))
+        cls.a3 = Article.objects.create(headline="Article 3", pub_date=datetime(2005, 7, 27))
+        cls.a4 = Article.objects.create(headline="Article 4", pub_date=datetime(2005, 7, 28))
         cls.author_1 = Author.objects.create(name="Name 1")
         cls.author_2 = Author.objects.create(name="Name 2")
         for i in range(2):
@@ -135,9 +127,7 @@ class OrderingTests(TestCase):
     def test_order_by_nulls_first_and_last(self):
         msg = "nulls_first and nulls_last are mutually exclusive"
         with self.assertRaisesMessage(ValueError, msg):
-            Article.objects.order_by(
-                F("author").desc(nulls_last=True, nulls_first=True)
-            )
+            Article.objects.order_by(F("author").desc(nulls_last=True, nulls_first=True))
 
     def assertQuerySetEqualReversible(self, queryset, sequence):
         self.assertSequenceEqual(queryset, sequence)
@@ -156,15 +146,11 @@ class OrderingTests(TestCase):
             [self.a3, self.a4, self.a1, self.a2],
         )
         self.assertQuerySetEqualReversible(
-            Article.objects.order_by(
-                Upper("author__name").desc(nulls_last=True), "headline"
-            ),
+            Article.objects.order_by(Upper("author__name").desc(nulls_last=True), "headline"),
             [self.a4, self.a3, self.a1, self.a2],
         )
         self.assertQuerySetEqualReversible(
-            Article.objects.order_by(
-                Upper("author__name").asc(nulls_last=True), "headline"
-            ),
+            Article.objects.order_by(Upper("author__name").asc(nulls_last=True), "headline"),
             [self.a3, self.a4, self.a1, self.a2],
         )
         self.assertQuerySetEqualReversible(
@@ -187,15 +173,11 @@ class OrderingTests(TestCase):
             [self.a1, self.a2, self.a4, self.a3],
         )
         self.assertQuerySetEqualReversible(
-            Article.objects.order_by(
-                Upper("author__name").asc(nulls_first=True), "headline"
-            ),
+            Article.objects.order_by(Upper("author__name").asc(nulls_first=True), "headline"),
             [self.a1, self.a2, self.a3, self.a4],
         )
         self.assertQuerySetEqualReversible(
-            Article.objects.order_by(
-                Upper("author__name").desc(nulls_first=True), "headline"
-            ),
+            Article.objects.order_by(Upper("author__name").desc(nulls_first=True), "headline"),
             [self.a1, self.a2, self.a4, self.a3],
         )
         self.assertQuerySetEqualReversible(
@@ -341,9 +323,7 @@ class OrderingTests(TestCase):
         Ordering can be based on fields included from an 'extra' clause
         """
         self.assertQuerySetEqual(
-            Article.objects.extra(
-                select={"foo": "pub_date"}, order_by=["foo", "headline"]
-            ),
+            Article.objects.extra(select={"foo": "pub_date"}, order_by=["foo", "headline"]),
             [
                 "Article 1",
                 "Article 2",
@@ -359,9 +339,7 @@ class OrderingTests(TestCase):
         protected by quoting.
         """
         self.assertQuerySetEqual(
-            Article.objects.extra(
-                select={"order": "pub_date"}, order_by=["order", "headline"]
-            ),
+            Article.objects.extra(select={"order": "pub_date"}, order_by=["order", "headline"]),
             [
                 "Article 1",
                 "Article 2",
@@ -645,9 +623,7 @@ class OrderingTests(TestCase):
 
     def test_order_by_expression_ref(self):
         self.assertQuerySetEqual(
-            Author.objects.annotate(upper_name=Upper("name")).order_by(
-                Length("upper_name")
-            ),
+            Author.objects.annotate(upper_name=Upper("name")).order_by(Length("upper_name")),
             Author.objects.order_by(Length(Upper("name"))),
         )
 
@@ -670,7 +646,5 @@ class OrderingTests(TestCase):
         )
 
     def test_order_by_expr_query_reuse(self):
-        qs = Author.objects.annotate(num=Count("article")).order_by(
-            F("num").desc(), "pk"
-        )
+        qs = Author.objects.annotate(num=Count("article")).order_by(F("num").desc(), "pk")
         self.assertCountEqual(qs, qs.iterator())

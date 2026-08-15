@@ -43,17 +43,13 @@ class StorageEngineTests(TestCase):
             with default_connection.cursor() as cursor:
                 cursor.execute(create_sql % "InnoDB")
                 self.assertEqual(
-                    default_connection.introspection.get_storage_engine(
-                        cursor, table_name
-                    ),
+                    default_connection.introspection.get_storage_engine(cursor, table_name),
                     "InnoDB",
                 )
             with other_connection.cursor() as cursor:
                 cursor.execute(create_sql % "MyISAM")
                 self.assertEqual(
-                    other_connection.introspection.get_storage_engine(
-                        cursor, table_name
-                    ),
+                    other_connection.introspection.get_storage_engine(cursor, table_name),
                     "MyISAM",
                 )
         finally:

@@ -23,9 +23,8 @@ def get_connection_copy():
     # Get a copy of the default connection. (Can't use django.db.connection
     # because it'll modify the default connection itself.)
     test_connection = copy.copy(connections[DEFAULT_DB_ALIAS])
-    test_connection.settings_dict = copy.deepcopy(
-        connections[DEFAULT_DB_ALIAS].settings_dict
-    )
+    test_connection.settings_dict = copy.deepcopy(connections[DEFAULT_DB_ALIAS].settings_dict)
+    test_connection.connection = None
     return test_connection
 
 
@@ -59,17 +58,13 @@ class TestDbSignatureTests(SimpleTestCase):
 @override_settings(INSTALLED_APPS=["backends.base.app_unmigrated"])
 @mock.patch.object(connection, "ensure_connection")
 @mock.patch.object(connection, "prepare_database")
-@mock.patch(
-    'djorm.db.migrations.recorder.MigrationRecorder.has_table', return_value=False
-)
-@mock.patch('djorm.core.management.commands.migrate.Command.sync_apps')
+@mock.patch("djorm.db.migrations.recorder.MigrationRecorder.has_table", return_value=False)
+@mock.patch("djorm.core.management.commands.migrate.Command.sync_apps")
 class TestDbCreationTests(SimpleTestCase):
     available_apps = ["backends.base.app_unmigrated"]
 
-    @mock.patch('djorm.db.migrations.executor.MigrationExecutor.migrate')
-    def test_migrate_test_setting_false(
-        self, mocked_migrate, mocked_sync_apps, *mocked_objects
-    ):
+    @mock.patch("djorm.db.migrations.executor.MigrationExecutor.migrate")
+    def test_migrate_test_setting_false(self, mocked_migrate, mocked_sync_apps, *mocked_objects):
         test_connection = get_connection_copy()
         test_connection.settings_dict["TEST"]["MIGRATE"] = False
         creation = test_connection.creation_class(test_connection)
@@ -80,7 +75,7 @@ class TestDbCreationTests(SimpleTestCase):
         try:
             with mock.patch.object(creation, "_create_test_db"):
                 creation.create_test_db(verbosity=0, autoclobber=True, serialize=False)
-            # Migrations don't run.
+                # Migrations don't run.
             mocked_migrate.assert_called()
             args, kwargs = mocked_migrate.call_args
             self.assertEqual(args, ([],))
@@ -93,7 +88,7 @@ class TestDbCreationTests(SimpleTestCase):
             with mock.patch.object(creation, "_destroy_test_db"):
                 creation.destroy_test_db(old_database_name, verbosity=0)
 
-    @mock.patch('djorm.db.migrations.executor.MigrationRecorder.ensure_schema')
+    @mock.patch("djorm.db.migrations.executor.MigrationRecorder.ensure_schema")
     def test_migrate_test_setting_false_ensure_schema(
         self,
         mocked_ensure_schema,
@@ -110,7 +105,7 @@ class TestDbCreationTests(SimpleTestCase):
         try:
             with mock.patch.object(creation, "_create_test_db"):
                 creation.create_test_db(verbosity=0, autoclobber=True, serialize=False)
-            # The django_migrations table is not created.
+                # The django_migrations table is not created.
             mocked_ensure_schema.assert_not_called()
             # App is synced.
             mocked_sync_apps.assert_called()
@@ -120,10 +115,8 @@ class TestDbCreationTests(SimpleTestCase):
             with mock.patch.object(creation, "_destroy_test_db"):
                 creation.destroy_test_db(old_database_name, verbosity=0)
 
-    @mock.patch('djorm.db.migrations.executor.MigrationExecutor.migrate')
-    def test_migrate_test_setting_true(
-        self, mocked_migrate, mocked_sync_apps, *mocked_objects
-    ):
+    @mock.patch("djorm.db.migrations.executor.MigrationExecutor.migrate")
+    def test_migrate_test_setting_true(self, mocked_migrate, mocked_sync_apps, *mocked_objects):
         test_connection = get_connection_copy()
         test_connection.settings_dict["TEST"]["MIGRATE"] = True
         creation = test_connection.creation_class(test_connection)
@@ -134,7 +127,7 @@ class TestDbCreationTests(SimpleTestCase):
         try:
             with mock.patch.object(creation, "_create_test_db"):
                 creation.create_test_db(verbosity=0, autoclobber=True, serialize=False)
-            # Migrations run.
+                # Migrations run.
             mocked_migrate.assert_called()
             args, kwargs = mocked_migrate.call_args
             self.assertEqual(args, ([("app_unmigrated", "0001_initial")],))
@@ -146,7 +139,7 @@ class TestDbCreationTests(SimpleTestCase):
                 creation.destroy_test_db(old_database_name, verbosity=0)
 
     @mock.patch.dict(os.environ, {"RUNNING_DJANGOS_TEST_SUITE": ""})
-    @mock.patch('djorm.db.migrations.executor.MigrationExecutor.migrate')
+    @mock.patch("djorm.db.migrations.executor.MigrationExecutor.migrate")
     @mock.patch.object(BaseDatabaseCreation, "mark_expected_failures_and_skips")
     def test_mark_expected_failures_and_skips_call(
         self, mark_expected_failures_and_skips, *mocked_objects
@@ -203,7 +196,7 @@ class TestDeserializeDbFromString(TransactionTestCase):
         obj_1.obj = obj_2
         obj_1.save()
         # Serialize objects.
-        with mock.patch('djorm.db.migrations.loader.MigrationLoader') as loader:
+        with mock.patch("djorm.db.migrations.loader.MigrationLoader") as loader:
             # serialize_db_to_string() serializes only migrated apps, so mark
             # the backends app as migrated.
             loader_instance = loader.return_value
@@ -225,7 +218,7 @@ class TestDeserializeDbFromString(TransactionTestCase):
         obj_a.obj = obj_b
         obj_a.save()
         # Serialize objects.
-        with mock.patch('djorm.db.migrations.loader.MigrationLoader') as loader:
+        with mock.patch("djorm.db.migrations.loader.MigrationLoader") as loader:
             # serialize_db_to_string() serializes only migrated apps, so mark
             # the backends app as migrated.
             loader_instance = loader.return_value
@@ -242,7 +235,7 @@ class TestDeserializeDbFromString(TransactionTestCase):
 
     def test_serialize_db_to_string_base_manager(self):
         SchoolClass.objects.create(year=1000, last_updated=datetime.datetime.now())
-        with mock.patch('djorm.db.migrations.loader.MigrationLoader') as loader:
+        with mock.patch("djorm.db.migrations.loader.MigrationLoader") as loader:
             # serialize_db_to_string() serializes only migrated apps, so mark
             # the backends app as migrated.
             loader_instance = loader.return_value
@@ -252,12 +245,10 @@ class TestDeserializeDbFromString(TransactionTestCase):
         self.assertIn('"year": 1000', data)
 
     def test_serialize_db_to_string_base_manager_with_prefetch_related(self):
-        sclass = SchoolClass.objects.create(
-            year=2000, last_updated=datetime.datetime.now()
-        )
+        sclass = SchoolClass.objects.create(year=2000, last_updated=datetime.datetime.now())
         bus = SchoolBus.objects.create(number=1)
         bus.schoolclasses.add(sclass)
-        with mock.patch('djorm.db.migrations.loader.MigrationLoader') as loader:
+        with mock.patch("djorm.db.migrations.loader.MigrationLoader") as loader:
             # serialize_db_to_string() serializes only migrated apps, so mark
             # the backends app as migrated.
             loader_instance = loader.return_value

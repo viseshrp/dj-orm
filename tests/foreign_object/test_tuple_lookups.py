@@ -58,20 +58,13 @@ class TupleLookupsTests(TestCase):
                 lhs = (F("customer_code"), F("company_code"))
                 rhs = (customer.customer_id, customer.company)
                 lookup = TupleExact(lhs, rhs)
-                self.assertSequenceEqual(
-                    Contact.objects.filter(lookup).order_by("id"), contacts
-                )
+                self.assertSequenceEqual(Contact.objects.filter(lookup).order_by("id"), contacts)
 
     def test_exact_subquery(self):
-        msg = (
-            "The QuerySet value for the exact lookup must have 2 selected "
-            "fields (received 1)"
-        )
+        msg = "The QuerySet value for the exact lookup must have 2 selected fields (received 1)"
         with self.assertRaisesMessage(ValueError, msg):
             subquery = Customer.objects.filter(id=self.customer_1.id)[:1]
-            self.assertSequenceEqual(
-                Contact.objects.filter(customer=subquery).order_by("id"), ()
-            )
+            self.assertSequenceEqual(Contact.objects.filter(customer=subquery).order_by("id"), ())
 
     def test_in(self):
         cust_1, cust_2, cust_3, cust_4, cust_5 = (
@@ -116,9 +109,7 @@ class TupleLookupsTests(TestCase):
                 lhs = (F("customer_code"), F("company_code"))
                 rhs = [(c.customer_id, c.company) for c in customers]
                 lookup = TupleIn(lhs, rhs)
-                self.assertSequenceEqual(
-                    Contact.objects.filter(lookup).order_by("id"), contacts
-                )
+                self.assertSequenceEqual(Contact.objects.filter(lookup).order_by("id"), contacts)
 
     @skipUnlessDBFeature("allow_sliced_subqueries_with_in")
     def test_in_subquery(self):
@@ -142,10 +133,7 @@ class TupleLookupsTests(TestCase):
     def test_tuple_in_subquery_must_have_2_fields(self):
         lhs = (F("customer_code"), F("company_code"))
         rhs = Customer.objects.values_list("customer_id").query
-        msg = (
-            "The QuerySet value for the 'in' lookup must have 2 selected "
-            "fields (received 1)"
-        )
+        msg = "The QuerySet value for the 'in' lookup must have 2 selected fields (received 1)"
         with self.assertRaisesMessage(ValueError, msg):
             TupleIn(lhs, rhs)
 
@@ -194,8 +182,7 @@ class TupleLookupsTests(TestCase):
             with self.subTest(rhs=rhs):
                 with self.assertRaisesMessage(
                     ValueError,
-                    "'in' lookup of ('customer_code', 'company_code') "
-                    "must have 2 elements each",
+                    "'in' lookup of ('customer_code', 'company_code') must have 2 elements each",
                 ):
                     TupleIn((F("customer_code"), F("company_code")), rhs)
 
@@ -234,14 +221,10 @@ class TupleLookupsTests(TestCase):
                 lhs = (F("customer_code"), F("company_code"))
                 rhs = (customer.customer_id, customer.company)
                 lookup = TupleLessThan(lhs, rhs)
-                self.assertSequenceEqual(
-                    Contact.objects.filter(lookup).order_by("id"), contacts
-                )
+                self.assertSequenceEqual(Contact.objects.filter(lookup).order_by("id"), contacts)
 
     def test_lt_subquery(self):
-        with self.assertRaisesMessage(
-            ValueError, "'lt' doesn't support multi-column subqueries."
-        ):
+        with self.assertRaisesMessage(ValueError, "'lt' doesn't support multi-column subqueries."):
             subquery = Customer.objects.filter(id=self.customer_1.id)[:1]
             self.assertSequenceEqual(
                 Contact.objects.filter(customer__lt=subquery).order_by("id"), ()
@@ -282,14 +265,10 @@ class TupleLookupsTests(TestCase):
                 lhs = (F("customer_code"), F("company_code"))
                 rhs = (customer.customer_id, customer.company)
                 lookup = TupleLessThanOrEqual(lhs, rhs)
-                self.assertSequenceEqual(
-                    Contact.objects.filter(lookup).order_by("id"), contacts
-                )
+                self.assertSequenceEqual(Contact.objects.filter(lookup).order_by("id"), contacts)
 
     def test_lte_subquery(self):
-        with self.assertRaisesMessage(
-            ValueError, "'lte' doesn't support multi-column subqueries."
-        ):
+        with self.assertRaisesMessage(ValueError, "'lte' doesn't support multi-column subqueries."):
             subquery = Customer.objects.filter(id=self.customer_1.id)[:1]
             self.assertSequenceEqual(
                 Contact.objects.filter(customer__lte=subquery).order_by("id"), ()
@@ -322,14 +301,10 @@ class TupleLookupsTests(TestCase):
                 lhs = (F("customer_code"), F("company_code"))
                 rhs = (customer.customer_id, customer.company)
                 lookup = TupleGreaterThan(lhs, rhs)
-                self.assertSequenceEqual(
-                    Contact.objects.filter(lookup).order_by("id"), contacts
-                )
+                self.assertSequenceEqual(Contact.objects.filter(lookup).order_by("id"), contacts)
 
     def test_gt_subquery(self):
-        with self.assertRaisesMessage(
-            ValueError, "'gt' doesn't support multi-column subqueries."
-        ):
+        with self.assertRaisesMessage(ValueError, "'gt' doesn't support multi-column subqueries."):
             subquery = Customer.objects.filter(id=self.customer_1.id)[:1]
             self.assertSequenceEqual(
                 Contact.objects.filter(customer__gt=subquery).order_by("id"), ()
@@ -370,14 +345,10 @@ class TupleLookupsTests(TestCase):
                 lhs = (F("customer_code"), F("company_code"))
                 rhs = (customer.customer_id, customer.company)
                 lookup = TupleGreaterThanOrEqual(lhs, rhs)
-                self.assertSequenceEqual(
-                    Contact.objects.filter(lookup).order_by("id"), contacts
-                )
+                self.assertSequenceEqual(Contact.objects.filter(lookup).order_by("id"), contacts)
 
     def test_gte_subquery(self):
-        with self.assertRaisesMessage(
-            ValueError, "'gte' doesn't support multi-column subqueries."
-        ):
+        with self.assertRaisesMessage(ValueError, "'gte' doesn't support multi-column subqueries."):
             subquery = Customer.objects.filter(id=self.customer_1.id)[:1]
             self.assertSequenceEqual(
                 Contact.objects.filter(customer__gte=subquery).order_by("id"), ()

@@ -103,7 +103,7 @@ class ModelBase(type):
         if not parents:
             return super_new(cls, name, bases, attrs)
 
-        # Create the class.
+            # Create the class.
         module = attrs.pop("__module__")
         new_attrs = {"__module__": module}
         classcell = attrs.pop("__classcell__", None)
@@ -186,16 +186,14 @@ class ModelBase(type):
         # If the model is a proxy, ensure that the base class
         # hasn't been swapped out.
         if is_proxy and base_meta and base_meta.swapped:
-            raise TypeError(
-                "%s cannot proxy the swapped model '%s'." % (name, base_meta.swapped)
-            )
+            raise TypeError("%s cannot proxy the swapped model '%s'." % (name, base_meta.swapped))
 
-        # Add remaining attributes (those with a contribute_to_class() method)
-        # to the class.
+            # Add remaining attributes (those with a contribute_to_class() method)
+            # to the class.
         for obj_name, obj in contributable_attrs.items():
             new_class.add_to_class(obj_name, obj)
 
-        # All the fields of any type declared on this model
+            # All the fields of any type declared on this model
         new_fields = chain(
             new_class._meta.local_fields,
             new_class._meta.local_many_to_many,
@@ -219,34 +217,31 @@ class ModelBase(type):
                     base = parent
                 elif parent._meta.concrete_model is not base._meta.concrete_model:
                     raise TypeError(
-                        "Proxy model '%s' has more than one non-abstract model base "
-                        "class." % name
+                        "Proxy model '%s' has more than one non-abstract model base class." % name
                     )
             if base is None:
-                raise TypeError(
-                    "Proxy model '%s' has no non-abstract model base class." % name
-                )
+                raise TypeError("Proxy model '%s' has no non-abstract model base class." % name)
             new_class._meta.setup_proxy(base)
             new_class._meta.concrete_model = base._meta.concrete_model
         else:
             new_class._meta.concrete_model = new_class
 
-        # Collect the parent links for multi-table inheritance.
+            # Collect the parent links for multi-table inheritance.
         parent_links = {}
         for base in reversed([new_class] + parents):
             # Conceptually equivalent to `if base is Model`.
             if not hasattr(base, "_meta"):
                 continue
-            # Skip concrete parent classes.
+                # Skip concrete parent classes.
             if base != new_class and not base._meta.abstract:
                 continue
-            # Locate OneToOneField instances.
+                # Locate OneToOneField instances.
             for field in base._meta.local_fields:
                 if isinstance(field, OneToOneField) and field.remote_field.parent_link:
                     related = resolve_relation(new_class, field.remote_field.model)
                     parent_links[make_model_tuple(related)] = field
 
-        # Track fields inherited from base models.
+                    # Track fields inherited from base models.
         inherited_attributes = set()
         # Do the appropriate setup for any model parents.
         for base in new_class.mro():
@@ -274,7 +269,7 @@ class ModelBase(type):
                     else:
                         inherited_attributes.add(field.name)
 
-                # Concrete classes...
+                        # Concrete classes...
                 base = base._meta.concrete_model
                 base_key = make_model_tuple(base)
                 if base_key in parent_links:
@@ -301,8 +296,8 @@ class ModelBase(type):
                             )
                         )
 
-                    # Only add the ptr field if it's not already present;
-                    # e.g. migrations will already have it specified
+                        # Only add the ptr field if it's not already present;
+                        # e.g. migrations will already have it specified
                     if not hasattr(new_class, attr_name):
                         new_class.add_to_class(attr_name, field)
                 else:
@@ -327,11 +322,11 @@ class ModelBase(type):
                                 if field == parent_link:
                                     base_parents[parent] = new_field
 
-                # Pass any non-abstract parent classes onto child.
+                                    # Pass any non-abstract parent classes onto child.
                 new_class._meta.parents.update(base_parents)
 
-            # Inherit private fields (like GenericForeignKey) from the parent
-            # class
+                # Inherit private fields (like GenericForeignKey) from the parent
+                # class
             for field in base._meta.private_fields:
                 if field.name in field_names:
                     if not base._meta.abstract:
@@ -350,11 +345,9 @@ class ModelBase(type):
                         field.mti_inherited = True
                     new_class.add_to_class(field.name, field)
 
-        # Copy indexes so that index names are unique when models extend an
-        # abstract model.
-        new_class._meta.indexes = [
-            copy.deepcopy(idx) for idx in new_class._meta.indexes
-        ]
+                    # Copy indexes so that index names are unique when models extend an
+                    # abstract model.
+        new_class._meta.indexes = [copy.deepcopy(idx) for idx in new_class._meta.indexes]
 
         if abstract:
             # Abstract base models can't be instantiated and don't appear in
@@ -380,9 +373,7 @@ class ModelBase(type):
         opts._prepare(cls)
 
         if opts.order_with_respect_to:
-            cls.get_next_in_order = partialmethod(
-                cls._get_next_or_previous_in_order, is_next=True
-            )
+            cls.get_next_in_order = partialmethod(cls._get_next_or_previous_in_order, is_next=True)
             cls.get_previous_in_order = partialmethod(
                 cls._get_next_or_previous_in_order, is_next=False
             )
@@ -397,16 +388,14 @@ class ModelBase(type):
                 remote = wrt.remote_field.model
                 lazy_related_operation(make_foreign_order_accessors, cls, remote)
 
-        # Give the class a docstring -- its definition.
+                # Give the class a docstring -- its definition.
         if cls.__doc__ is None:
             cls.__doc__ = "%s(%s)" % (
                 cls.__name__,
                 ", ".join(f.name for f in opts.fields),
             )
 
-        get_absolute_url_override = settings.ABSOLUTE_URL_OVERRIDES.get(
-            opts.label_lower
-        )
+        get_absolute_url_override = settings.ABSOLUTE_URL_OVERRIDES.get(opts.label_lower)
         if get_absolute_url_override:
             setattr(cls, "get_absolute_url", get_absolute_url_override)
 
@@ -420,9 +409,9 @@ class ModelBase(type):
             manager.auto_created = True
             cls.add_to_class("objects", manager)
 
-        # Set the name of _meta.indexes. This can't be done in
-        # Options.contribute_to_class() because fields haven't been added to
-        # the model at that point.
+            # Set the name of _meta.indexes. This can't be done in
+            # Options.contribute_to_class() because fields haven't been added to
+            # the model at that point.
         for index in cls._meta.indexes:
             if not index.name:
                 index.set_name_with_model(cls)
@@ -504,8 +493,8 @@ class Model(AltersData, metaclass=ModelBase):
                         f"keyword arguments for field '{field.name}'."
                     )
 
-        # Now we're left with the unprocessed fields that *must* come from
-        # keywords, or default.
+                    # Now we're left with the unprocessed fields that *must* come from
+                    # keywords, or default.
 
         for field in fields_iter:
             is_related_object = False
@@ -567,8 +556,7 @@ class Model(AltersData, metaclass=ModelBase):
             if unexpected:
                 unexpected_names = ", ".join(repr(n) for n in unexpected)
                 raise TypeError(
-                    f"{cls.__name__}() got unexpected keyword arguments: "
-                    f"{unexpected_names}"
+                    f"{cls.__name__}() got unexpected keyword arguments: {unexpected_names}"
                 )
         super().__init__()
         post_init.send(sender=cls, instance=self)
@@ -636,8 +624,7 @@ class Model(AltersData, metaclass=ModelBase):
             if pickled_version != djorm.__version__:
                 warnings.warn(
                     "Pickled model instance's Django version %s does not "
-                    "match the current version %s."
-                    % (pickled_version, djorm.__version__),
+                    "match the current version %s." % (pickled_version, djorm.__version__),
                     RuntimeWarning,
                     stacklevel=2,
                 )
@@ -667,19 +654,14 @@ class Model(AltersData, metaclass=ModelBase):
     def _is_pk_set(self, meta=None):
         pk_val = self._get_pk_val(meta)
         return not (
-            pk_val is None
-            or (isinstance(pk_val, tuple) and any(f is None for f in pk_val))
+            pk_val is None or (isinstance(pk_val, tuple) and any(f is None for f in pk_val))
         )
 
     def get_deferred_fields(self):
         """
         Return a set containing names of deferred fields for this instance.
         """
-        return {
-            f.attname
-            for f in self._meta.concrete_fields
-            if f.attname not in self.__dict__
-        }
+        return {f.attname for f in self._meta.concrete_fields if f.attname not in self.__dict__}
 
     def refresh_from_db(self, using=None, fields=None, from_queryset=None):
         """
@@ -727,11 +709,7 @@ class Model(AltersData, metaclass=ModelBase):
             db_instance_qs = db_instance_qs.only(*fields)
         elif deferred_fields:
             db_instance_qs = db_instance_qs.only(
-                *{
-                    f.attname
-                    for f in self._meta.concrete_fields
-                    if f.attname not in deferred_fields
-                }
+                *{f.attname for f in self._meta.concrete_fields if f.attname not in deferred_fields}
             )
 
         db_instance = db_instance_qs.get()
@@ -748,12 +726,12 @@ class Model(AltersData, metaclass=ModelBase):
                 elif field.is_cached(self):
                     field.delete_cached_value(self)
 
-        # Clear cached relations.
+                    # Clear cached relations.
         for rel in self._meta.related_objects:
             if (fields is None or rel.name in fields) and rel.is_cached(self):
                 rel.delete_cached_value(self)
 
-        # Clear cached private relations.
+                # Clear cached private relations.
         for field in self._meta.private_fields:
             if (
                 (fields is None or field.name in fields)
@@ -786,7 +764,8 @@ class Model(AltersData, metaclass=ModelBase):
             return getattr(self, field_name)
         return getattr(self, field.attname)
 
-    # RemovedInDjango60Warning: When the deprecation ends, remove completely.
+        # RemovedInDjango60Warning: When the deprecation ends, remove completely.
+
     def _parse_save_params(self, *args, method_name, **kwargs):
         defaults = {
             "force_insert": False,
@@ -814,8 +793,7 @@ class Model(AltersData, metaclass=ModelBase):
                 if param_value is not defaults[param_name]:
                     # Recreate the proper TypeError message from Python.
                     raise TypeError(
-                        f"Model.{method_name}() got multiple values for argument "
-                        f"'{param_name}'"
+                        f"Model.{method_name}() got multiple values for argument '{param_name}'"
                     )
                 return args[arg_index]
 
@@ -823,10 +801,11 @@ class Model(AltersData, metaclass=ModelBase):
 
         return [get_param(k, v, i) for i, (k, v) in enumerate(kwargs.items())]
 
-    # RemovedInDjango60Warning: When the deprecation ends, replace with:
-    # def save(
-    #   self, *, force_insert=False, force_update=False, using=None, update_fields=None,
-    # ):
+        # RemovedInDjango60Warning: When the deprecation ends, replace with:
+        # def save(
+        #   self, *, force_insert=False, force_update=False, using=None, update_fields=None,
+        # ):
+
     def save(
         self,
         *args,
@@ -883,13 +862,9 @@ class Model(AltersData, metaclass=ModelBase):
                     % ", ".join(not_updatable_fields)
                 )
 
-        # If saving to the same database, and this model is deferred, then
-        # automatically do an "update_fields" save on the loaded fields.
-        elif (
-            not force_insert
-            and deferred_non_generated_fields
-            and using == self._state.db
-        ):
+                # If saving to the same database, and this model is deferred, then
+                # automatically do an "update_fields" save on the loaded fields.
+        elif not force_insert and deferred_non_generated_fields and using == self._state.db:
             field_names = set()
             pk_fields = self._meta.pk_fields
             for field in self._meta.concrete_fields:
@@ -992,7 +967,7 @@ class Model(AltersData, metaclass=ModelBase):
                 using=using,
                 update_fields=update_fields,
             )
-        # A transaction isn't needed if one query is issued.
+            # A transaction isn't needed if one query is issued.
         if meta.parents:
             context_manager = transaction.atomic(using=using, savepoint=False)
         else:
@@ -1002,9 +977,7 @@ class Model(AltersData, metaclass=ModelBase):
             if not raw:
                 # Validate force insert only when parents are inserted.
                 force_insert = self._validate_force_insert(force_insert)
-                parent_inserted = self._save_parents(
-                    cls, using, update_fields, force_insert
-                )
+                parent_inserted = self._save_parents(cls, using, update_fields, force_insert)
             updated = self._save_table(
                 raw,
                 cls,
@@ -1013,7 +986,7 @@ class Model(AltersData, metaclass=ModelBase):
                 using,
                 update_fields,
             )
-        # Store the database on which the object was saved
+            # Store the database on which the object was saved
         self._state.db = using
         # Once saved, this is no longer a to-be-added instance.
         self._state.adding = False
@@ -1031,9 +1004,7 @@ class Model(AltersData, metaclass=ModelBase):
 
     save_base.alters_data = True
 
-    def _save_parents(
-        self, cls, using, update_fields, force_insert, updated_parents=None
-    ):
+    def _save_parents(self, cls, using, update_fields, force_insert, updated_parents=None):
         """Save all the parents of cls using values from self."""
         meta = cls._meta
         inserted = False
@@ -1066,7 +1037,7 @@ class Model(AltersData, metaclass=ModelBase):
                 updated_parents[parent] = updated
             elif not parent_updated:
                 inserted = True
-            # Set the parent's PK value to self.
+                # Set the parent's PK value to self.
             if field:
                 setattr(self, field.attname, self._get_pk_val(parent._meta))
                 # Since we didn't have an instance of the parent handy set
@@ -1094,9 +1065,7 @@ class Model(AltersData, metaclass=ModelBase):
         meta = cls._meta
         pk_fields = meta.pk_fields
         non_pks_non_generated = [
-            f
-            for f in meta.local_concrete_fields
-            if f not in pk_fields and not f.generated
+            f for f in meta.local_concrete_fields if f not in pk_fields and not f.generated
         ]
 
         if update_fields:
@@ -1122,7 +1091,7 @@ class Model(AltersData, metaclass=ModelBase):
             and all(f.has_default() or f.has_db_default() for f in meta.pk_fields)
         ):
             force_insert = True
-        # If possible, try an UPDATE. If that doesn't update anything, do an INSERT.
+            # If possible, try an UPDATE. If that doesn't update anything, do an INSERT.
         if pk_set and not force_insert:
             base_qs = cls._base_manager.using(using)
             values = [
@@ -1135,9 +1104,7 @@ class Model(AltersData, metaclass=ModelBase):
             ]
             forced_update = update_fields or force_update
             pk_val = self._get_pk_val(meta)
-            updated = self._do_update(
-                base_qs, using, pk_val, values, update_fields, forced_update
-            )
+            updated = self._do_update(base_qs, using, pk_val, values, update_fields, forced_update)
             if force_update and not updated:
                 raise DatabaseError("Forced update did not affect any rows.")
             if update_fields and not updated:
@@ -1166,9 +1133,7 @@ class Model(AltersData, metaclass=ModelBase):
                 if not f.generated and (pk_set or f is not meta.auto_field)
             ]
             returning_fields = meta.db_returning_fields
-            results = self._do_insert(
-                cls._base_manager, using, fields, returning_fields, raw
-            )
+            results = self._do_insert(cls._base_manager, using, fields, returning_fields, raw)
             if results:
                 for value, field in zip(results[0], returning_fields):
                     setattr(self, field.attname, value)
@@ -1223,18 +1188,18 @@ class Model(AltersData, metaclass=ModelBase):
         for field in self._meta.concrete_fields:
             if fields and field not in fields:
                 continue
-            # If the related field isn't cached, then an instance hasn't been
-            # assigned and there's no need to worry about this check.
+                # If the related field isn't cached, then an instance hasn't been
+                # assigned and there's no need to worry about this check.
             if field.is_relation and field.is_cached(self):
                 obj = getattr(self, field.name, None)
                 if not obj:
                     continue
-                # A pk may have been assigned manually to a model instance not
-                # saved to the database (or auto-generated in a case like
-                # UUIDField), but we allow the save to proceed and rely on the
-                # database to raise an IntegrityError if applicable. If
-                # constraints aren't supported by the database, there's the
-                # unavoidable risk of data corruption.
+                    # A pk may have been assigned manually to a model instance not
+                    # saved to the database (or auto-generated in a case like
+                    # UUIDField), but we allow the save to proceed and rely on the
+                    # database to raise an IntegrityError if applicable. If
+                    # constraints aren't supported by the database, there's the
+                    # unavoidable risk of data corruption.
                 if not obj._is_pk_set():
                     # Remove the object from a related instance cache.
                     if not field.remote_field.multiple:
@@ -1247,21 +1212,15 @@ class Model(AltersData, metaclass=ModelBase):
                     # Set related object if it has been saved after an
                     # assignment.
                     setattr(self, field.name, obj)
-                # If the relationship's pk/to_field was changed, clear the
-                # cached relationship.
-                if getattr(obj, field.target_field.attname) != getattr(
-                    self, field.attname
-                ):
+                    # If the relationship's pk/to_field was changed, clear the
+                    # cached relationship.
+                if getattr(obj, field.target_field.attname) != getattr(self, field.attname):
                     field.delete_cached_value(self)
-        # GenericForeignKeys are private.
+                    # GenericForeignKeys are private.
         for field in self._meta.private_fields:
             if fields and field not in fields:
                 continue
-            if (
-                field.is_relation
-                and field.is_cached(self)
-                and hasattr(field, "fk_field")
-            ):
+            if field.is_relation and field.is_cached(self) and hasattr(field, "fk_field"):
                 obj = field.get_cached_value(self, default=None)
                 if obj and not obj._is_pk_set():
                     raise ValueError(
@@ -1294,9 +1253,7 @@ class Model(AltersData, metaclass=ModelBase):
         value = getattr(self, field.attname)
         choices_dict = dict(make_hashable(field.flatchoices))
         # force_str() to coerce lazy strings.
-        return force_str(
-            choices_dict.get(make_hashable(value), value), strings_only=True
-        )
+        return force_str(choices_dict.get(make_hashable(value), value), strings_only=True)
 
     def _get_next_or_previous_by_FIELD(self, field, is_next, **kwargs):
         if not self._is_pk_set():
@@ -1330,8 +1287,7 @@ class Model(AltersData, metaclass=ModelBase):
                 self.__class__._default_manager.filter(**filter_args)
                 .filter(
                     **{
-                        "_order__%s"
-                        % op: self.__class__._default_manager.values("_order").filter(
+                        "_order__%s" % op: self.__class__._default_manager.values("_order").filter(
                             **{self._meta.pk.name: self.pk}
                         )
                     }
@@ -1352,10 +1308,7 @@ class Model(AltersData, metaclass=ModelBase):
             if field.name in exclude:
                 continue
             if field.generated:
-                if any(
-                    ref[0] in exclude
-                    for ref in self._get_expr_references(field.expression)
-                ):
+                if any(ref[0] in exclude for ref in self._get_expr_references(field.expression)):
                     continue
                 generated_fields.append(field)
                 continue
@@ -1377,9 +1330,7 @@ class Model(AltersData, metaclass=ModelBase):
 
     def prepare_database_save(self, field):
         if not self._is_pk_set():
-            raise ValueError(
-                "Unsaved model instance %r cannot be used in an ORM query." % self
-            )
+            raise ValueError("Unsaved model instance %r cannot be used in an ORM query." % self)
         return getattr(self, field.remote_field.get_related_field().attname)
 
     def clean(self):
@@ -1425,13 +1376,9 @@ class Model(AltersData, metaclass=ModelBase):
             constraints = [(self.__class__, self._meta.total_unique_constraints)]
         for parent_class in self._meta.all_parents:
             if parent_class._meta.unique_together:
-                unique_togethers.append(
-                    (parent_class, parent_class._meta.unique_together)
-                )
+                unique_togethers.append((parent_class, parent_class._meta.unique_together))
             if include_meta_constraints and parent_class._meta.total_unique_constraints:
-                constraints.append(
-                    (parent_class, parent_class._meta.total_unique_constraints)
-                )
+                constraints.append((parent_class, parent_class._meta.total_unique_constraints))
 
         for model_class, unique_together in unique_togethers:
             for check in unique_together:
@@ -1445,7 +1392,7 @@ class Model(AltersData, metaclass=ModelBase):
                     if not any(name in exclude for name in constraint.fields):
                         unique_checks.append((model_class, constraint.fields))
 
-        # These are checks for the unique_for_<date/year/month>.
+                        # These are checks for the unique_for_<date/year/month>.
         date_checks = []
 
         # Gather a list of checks for fields declared as unique and add them to
@@ -1488,8 +1435,7 @@ class Model(AltersData, metaclass=ModelBase):
                 lookup_value = getattr(self, f.attname)
                 # TODO: Handle multiple backends with different feature flags.
                 if lookup_value is None or (
-                    lookup_value == ""
-                    and connection.features.interprets_empty_strings_as_nulls
+                    lookup_value == "" and connection.features.interprets_empty_strings_as_nulls
                 ):
                     # no value, skip the lookup
                     continue
@@ -1498,7 +1444,7 @@ class Model(AltersData, metaclass=ModelBase):
                     continue
                 lookup_kwargs[str(field_name)] = lookup_value
 
-            # some fields were skipped, no reason to do the check
+                # some fields were skipped, no reason to do the check
             if len(unique_check) != len(lookup_kwargs):
                 continue
 
@@ -1538,9 +1484,7 @@ class Model(AltersData, metaclass=ModelBase):
                 lookup_kwargs["%s__month" % unique_for] = date.month
                 lookup_kwargs["%s__year" % unique_for] = date.year
             else:
-                lookup_kwargs["%s__%s" % (unique_for, lookup_type)] = getattr(
-                    date, lookup_type
-                )
+                lookup_kwargs["%s__%s" % (unique_for, lookup_type)] = getattr(date, lookup_type)
             lookup_kwargs[field] = getattr(self, field)
 
             qs = model_class._default_manager.filter(**lookup_kwargs)
@@ -1592,11 +1536,9 @@ class Model(AltersData, metaclass=ModelBase):
                 params=params,
             )
 
-        # unique_together
+            # unique_together
         else:
-            field_labels = [
-                capfirst(opts.get_field(f).verbose_name) for f in unique_check
-            ]
+            field_labels = [capfirst(opts.get_field(f).verbose_name) for f in unique_check]
             params["field_labels"] = get_text_list(field_labels, _("and"))
             return ValidationError(
                 message=_("%(model_name)s with this %(field_labels)s already exists."),
@@ -1621,10 +1563,7 @@ class Model(AltersData, metaclass=ModelBase):
                 try:
                     constraint.validate(model_class, self, exclude=exclude, using=using)
                 except ValidationError as e:
-                    if (
-                        getattr(e, "code", None) == "unique"
-                        and len(constraint.fields) == 1
-                    ):
+                    if getattr(e, "code", None) == "unique" and len(constraint.fields) == 1:
                         errors.setdefault(constraint.fields[0], []).append(e)
                     else:
                         errors = e.update_error_dict(errors)
@@ -1648,14 +1587,14 @@ class Model(AltersData, metaclass=ModelBase):
         except ValidationError as e:
             errors = e.update_error_dict(errors)
 
-        # Form.clean() is run even if other validation fails, so do the
-        # same with Model.clean() for consistency.
+            # Form.clean() is run even if other validation fails, so do the
+            # same with Model.clean() for consistency.
         try:
             self.clean()
         except ValidationError as e:
             errors = e.update_error_dict(errors)
 
-        # Run unique checks, but only for fields that passed validation.
+            # Run unique checks, but only for fields that passed validation.
         if validate_unique:
             for name in errors:
                 if name != NON_FIELD_ERRORS and name not in exclude:
@@ -1665,7 +1604,7 @@ class Model(AltersData, metaclass=ModelBase):
             except ValidationError as e:
                 errors = e.update_error_dict(errors)
 
-        # Run constraints checks, but only for fields that passed validation.
+                # Run constraints checks, but only for fields that passed validation.
         if validate_constraints:
             for name in errors:
                 if name != NON_FIELD_ERRORS and name not in exclude:
@@ -1690,12 +1629,12 @@ class Model(AltersData, metaclass=ModelBase):
         for f in self._meta.fields:
             if f.name in exclude or f.generated:
                 continue
-            # Skip validation for empty fields with blank=True. The developer
-            # is responsible for making sure they have a valid value.
+                # Skip validation for empty fields with blank=True. The developer
+                # is responsible for making sure they have a valid value.
             raw_value = getattr(self, f.attname)
             if f.blank and raw_value in f.empty_values:
                 continue
-            # Skip validation for empty fields when db_default is used.
+                # Skip validation for empty fields when db_default is used.
             if isinstance(raw_value, DatabaseDefault):
                 continue
             try:
@@ -1751,10 +1690,7 @@ class Model(AltersData, metaclass=ModelBase):
             and cls._meta.pk.auto_created
             and
             # Inherited PKs are checked in parents models.
-            not (
-                isinstance(cls._meta.pk, OneToOneField)
-                and cls._meta.pk.remote_field.parent_link
-            )
+            not (isinstance(cls._meta.pk, OneToOneField) and cls._meta.pk.remote_field.parent_link)
             and not settings.is_overridden("DEFAULT_AUTO_FIELD")
             and cls._meta.app_config
             and not cls._meta.app_config._is_default_auto_field_overridden
@@ -1768,7 +1704,7 @@ class Model(AltersData, metaclass=ModelBase):
                         f"Configure the DEFAULT_AUTO_FIELD setting or the "
                         f"{cls._meta.app_config.__class__.__qualname__}."
                         f"default_auto_field attribute to point to a subclass "
-                        f"of AutoField, e.g. 'django.db.models.BigAutoField'."
+                        f"of AutoField, e.g. 'djorm.db.models.BigAutoField'."
                     ),
                     obj=cls,
                     id="models.W042",
@@ -1811,8 +1747,7 @@ class Model(AltersData, metaclass=ModelBase):
             if hint:
                 errors.append(
                     checks.Error(
-                        f"{field_name!r} cannot be included in the composite primary "
-                        "key.",
+                        f"{field_name!r} cannot be included in the composite primary key.",
                         hint=hint,
                         obj=cls,
                         id="models.E042",
@@ -1825,8 +1760,7 @@ class Model(AltersData, metaclass=ModelBase):
                 duplicates = ", ".join(repr(field) for field in rest)
                 errors.append(
                     checks.Error(
-                        f"{duplicates} cannot be included in the composite primary "
-                        "key.",
+                        f"{duplicates} cannot be included in the composite primary key.",
                         hint=f"{duplicates} and {field_name!r} are the same fields.",
                         obj=cls,
                         id="models.E042",
@@ -1868,8 +1802,7 @@ class Model(AltersData, metaclass=ModelBase):
             except ValueError:
                 errors.append(
                     checks.Error(
-                        "'%s' is not of the form 'app_label.app_name'."
-                        % cls._meta.swappable,
+                        "'%s' is not of the form 'app_label.app_name'." % cls._meta.swappable,
                         id="models.E001",
                     )
                 )
@@ -1878,8 +1811,7 @@ class Model(AltersData, metaclass=ModelBase):
                 errors.append(
                     checks.Error(
                         "'%s' references '%s.%s', which has not been "
-                        "installed, or is abstract."
-                        % (cls._meta.swappable, app_label, model_name),
+                        "installed, or is abstract." % (cls._meta.swappable, app_label, model_name),
                         id="models.E002",
                     )
                 )
@@ -1942,8 +1874,7 @@ class Model(AltersData, metaclass=ModelBase):
                 errors.append(
                     checks.Error(
                         "The model has two identical many-to-many relations "
-                        "through the intermediate model '%s'."
-                        % f.remote_field.through._meta.label,
+                        "through the intermediate model '%s'." % f.remote_field.through._meta.label,
                         obj=cls,
                         id="models.E003",
                     )
@@ -1955,9 +1886,7 @@ class Model(AltersData, metaclass=ModelBase):
     @classmethod
     def _check_id_field(cls):
         """Check if `id` field is a primary key."""
-        fields = [
-            f for f in cls._meta.local_fields if f.name == "id" and f != cls._meta.pk
-        ]
+        fields = [f for f in cls._meta.local_fields if f.name == "id" and f != cls._meta.pk]
         # fields is empty or consists of the invalid "id" field
         if fields and not fields[0].primary_key and cls._meta.pk.name == "id":
             return [
@@ -1995,15 +1924,15 @@ class Model(AltersData, metaclass=ModelBase):
                 used_fields[f.name] = f
                 used_fields[f.attname] = f
 
-        # Check that fields defined in the model don't clash with fields from
-        # parents, including auto-generated fields like multi-table inheritance
-        # child accessors.
+                # Check that fields defined in the model don't clash with fields from
+                # parents, including auto-generated fields like multi-table inheritance
+                # child accessors.
         for parent in cls._meta.all_parents:
             for f in parent._meta.get_fields():
                 if f not in used_fields:
                     used_fields[f.name] = f
 
-        # Check that parent links in diamond-shaped MTI models don't clash.
+                    # Check that parent links in diamond-shaped MTI models don't clash.
         for parent_link in cls._meta.parents.values():
             if not parent_link:
                 continue
@@ -2024,9 +1953,7 @@ class Model(AltersData, metaclass=ModelBase):
             # field "id" and automatically added unique field "id", both
             # defined at the same model. This special case is considered in
             # _check_id_field and here we ignore it.
-            id_conflict = (
-                f.name == "id" and clash and clash.name == "id" and clash.model == cls
-            )
+            id_conflict = f.name == "id" and clash and clash.name == "id" and clash.model == cls
             if clash and not id_conflict:
                 errors.append(
                     checks.Error(
@@ -2103,8 +2030,7 @@ class Model(AltersData, metaclass=ModelBase):
             if accessor in property_names:
                 errors.append(
                     checks.Error(
-                        "The property '%s' clashes with a related field "
-                        "accessor." % accessor,
+                        "The property '%s' clashes with a related field accessor." % accessor,
                         obj=cls,
                         id="models.E025",
                     )
@@ -2117,8 +2043,7 @@ class Model(AltersData, metaclass=ModelBase):
         if sum(1 for f in cls._meta.local_fields if f.primary_key) > 1:
             errors.append(
                 checks.Error(
-                    "The model cannot have more than one field with "
-                    "'primary_key=True'.",
+                    "The model cannot have more than one field with 'primary_key=True'.",
                     obj=cls,
                     id="models.E026",
                 )
@@ -2137,10 +2062,7 @@ class Model(AltersData, metaclass=ModelBase):
                 )
             ]
 
-        elif any(
-            not isinstance(fields, (tuple, list))
-            for fields in cls._meta.unique_together
-        ):
+        elif any(not isinstance(fields, (tuple, list)) for fields in cls._meta.unique_together):
             return [
                 checks.Error(
                     "All 'unique_together' elements must be lists or tuples.",
@@ -2183,9 +2105,7 @@ class Model(AltersData, metaclass=ModelBase):
                 )
             if index.contains_expressions:
                 for expression in index.expressions:
-                    references.update(
-                        ref[0] for ref in cls._get_expr_references(expression)
-                    )
+                    references.update(ref[0] for ref in cls._get_expr_references(expression))
         for db in databases:
             if not router.allow_migrate_model(db, cls):
                 continue
@@ -2196,8 +2116,7 @@ class Model(AltersData, metaclass=ModelBase):
             ) and any(index.condition is not None for index in cls._meta.indexes):
                 errors.append(
                     checks.Warning(
-                        "%s does not support indexes with conditions."
-                        % connection.display_name,
+                        "%s does not support indexes with conditions." % connection.display_name,
                         hint=(
                             "Conditions will be ignored. Silence this warning "
                             "if you don't care about it."
@@ -2228,8 +2147,7 @@ class Model(AltersData, metaclass=ModelBase):
             ) and any(index.contains_expressions for index in cls._meta.indexes):
                 errors.append(
                     checks.Warning(
-                        "%s does not support indexes on expressions."
-                        % connection.display_name,
+                        "%s does not support indexes on expressions." % connection.display_name,
                         hint=(
                             "An index won't be created. Silence this warning "
                             "if you don't care about it."
@@ -2238,9 +2156,7 @@ class Model(AltersData, metaclass=ModelBase):
                         id="models.W043",
                     )
                 )
-        fields = [
-            field for index in cls._meta.indexes for field, _ in index.fields_orders
-        ]
+        fields = [field for index in cls._meta.indexes for field, _ in index.fields_orders]
         fields += [include for index in cls._meta.indexes for include in index.include]
         fields += references
         errors.extend(cls._check_local_fields(fields, "indexes"))
@@ -2386,8 +2302,8 @@ class Model(AltersData, metaclass=ModelBase):
                             )
                         )
 
-        # Skip ordering on pk. This is always a valid order_by field
-        # but is an alias and therefore won't be found by opts.get_field.
+                        # Skip ordering on pk. This is always a valid order_by field
+                        # but is an alias and therefore won't be found by opts.get_field.
         fields = {f for f in fields if f != "pk"}
 
         # Check for invalid or nonexistent fields in ordering.
@@ -2476,8 +2392,8 @@ class Model(AltersData, metaclass=ModelBase):
             if isinstance(f.remote_field.through, str):
                 continue
 
-            # Check if auto-generated name for the M2M field is too long
-            # for the database.
+                # Check if auto-generated name for the M2M field is too long
+                # for the database.
             for m2m in f.remote_field.through._meta.local_fields:
                 if (
                     m2m.db_column is None
@@ -2527,12 +2443,11 @@ class Model(AltersData, metaclass=ModelBase):
                 errors.extend(constraint._check(cls, connection))
         return errors
 
+        ############################################
+        # HELPER FUNCTIONS (CURRIED MODEL METHODS) #
+        ############################################
 
-############################################
-# HELPER FUNCTIONS (CURRIED MODEL METHODS) #
-############################################
-
-# ORDERING METHODS #########################
+        # ORDERING METHODS #########################
 
 
 def method_set_order(self, ordered_obj, id_list, using=None):
@@ -2563,10 +2478,9 @@ def make_foreign_order_accessors(model, related_model):
         partialmethod(method_set_order, model),
     )
 
-
-########
-# MISC #
-########
+    ########
+    # MISC #
+    ########
 
 
 def model_unpickle(model_id):

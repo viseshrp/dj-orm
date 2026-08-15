@@ -12,13 +12,11 @@ def setup(set_prefix=True):
     Set the thread-local urlresolvers script prefix if `set_prefix` is True.
     """
     from djorm.apps import apps
+    from djorm._ext.setup_helpers import set_script_prefix_if_available
     from djorm.conf import settings
-    from djorm.urls import set_script_prefix
     from djorm.utils.log import configure_logging
 
     configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)
     if set_prefix:
-        set_script_prefix(
-            "/" if settings.FORCE_SCRIPT_NAME is None else settings.FORCE_SCRIPT_NAME
-        )
+        set_script_prefix_if_available(settings.FORCE_SCRIPT_NAME)
     apps.populate(settings.INSTALLED_APPS)

@@ -76,9 +76,7 @@ class NestedIntegerArrayModel(PostgreSQLModel):
 class OtherTypesArrayModel(PostgreSQLModel):
     ips = ArrayField(models.GenericIPAddressField(), default=list)
     uuids = ArrayField(models.UUIDField(), default=list)
-    decimals = ArrayField(
-        models.DecimalField(max_digits=5, decimal_places=2), default=list
-    )
+    decimals = ArrayField(models.DecimalField(max_digits=5, decimal_places=2), default=list)
     tags = ArrayField(TagField(), blank=True, null=True)
     json = ArrayField(models.JSONField(default=dict), default=list)
     int_ranges = ArrayField(IntegerRangeField(), blank=True, null=True)
@@ -109,9 +107,10 @@ class SmallAutoFieldModel(models.Model):
 class BigAutoFieldModel(models.Model):
     id = models.BigAutoField(primary_key=True)
 
+    # Scene/Character/Line models are used to test full text search. They're
+    # populated with content from Monty Python and the Holy Grail.
 
-# Scene/Character/Line models are used to test full text search. They're
-# populated with content from Monty Python and the Holy Grail.
+
 class Scene(models.Model):
     scene = models.TextField()
     setting = models.CharField(max_length=255)
@@ -157,9 +156,7 @@ class RangeLookupsModel(PostgreSQLModel):
     timestamp = models.DateTimeField(blank=True, null=True)
     date = models.DateField(blank=True, null=True)
     small_integer = models.SmallIntegerField(blank=True, null=True)
-    decimal_field = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True
-    )
+    decimal_field = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
 
 
 class ArrayFieldSubclass(ArrayField):

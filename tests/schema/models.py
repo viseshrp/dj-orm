@@ -187,8 +187,9 @@ class TagUniqueRename(models.Model):
         apps = new_apps
         db_table = "schema_tag"
 
+        # Based on tests/reserved_names/models.py
 
-# Based on tests/reserved_names/models.py
+
 class Thing(models.Model):
     when = models.CharField(max_length=1, primary_key=True)
 

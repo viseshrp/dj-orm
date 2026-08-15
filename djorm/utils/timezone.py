@@ -39,9 +39,10 @@ def get_fixed_timezone(offset):
     name = sign + hhmm
     return timezone(timedelta(minutes=offset), name)
 
+    # In order to avoid accessing settings at compile time,
+    # wrap the logic in a function and cache the result.
 
-# In order to avoid accessing settings at compile time,
-# wrap the logic in a function and cache the result.
+
 @functools.lru_cache
 def get_default_timezone():
     """
@@ -51,8 +52,9 @@ def get_default_timezone():
     """
     return zoneinfo.ZoneInfo(settings.TIME_ZONE)
 
+    # This function exists for consistency with get_current_timezone_name
 
-# This function exists for consistency with get_current_timezone_name
+
 def get_default_timezone_name():
     """Return the name of the default time zone."""
     return _get_timezone_name(get_default_timezone())
@@ -78,11 +80,10 @@ def _get_timezone_name(timezone):
     """
     return timezone.tzname(None) or str(timezone)
 
+    # Timezone selection functions.
 
-# Timezone selection functions.
-
-# These functions don't change os.environ['TZ'] and call time.tzset()
-# because it isn't thread safe.
+    # These functions don't change os.environ['TZ'] and call time.tzset()
+    # because it isn't thread safe.
 
 
 def activate(timezone):
@@ -111,7 +112,17 @@ def deactivate():
 
 
 class override(ContextDecorator):
-    '\n    Temporarily set the time zone for the current thread.\n\n    This is a context manager that uses djorm.utils.timezone.activate()\n    to set the timezone on entry and restores the previously active timezone\n    on exit.\n\n    The ``timezone`` argument must be an instance of a ``tzinfo`` subclass, a\n    time zone name, or ``None``. If it is ``None``, Django enables the default\n    time zone.\n    '
+    """
+    Temporarily set the time zone for the current thread.
+
+    This is a context manager that uses djorm.utils.timezone.activate()
+    to set the timezone on entry and restores the previously active timezone
+    on exit.
+
+    The ``timezone`` argument must be an instance of a ``tzinfo`` subclass, a
+    time zone name, or ``None``. If it is ``None``, Django enables the default
+    time zone.
+    """
 
     def __init__(self, timezone):
         self.timezone = timezone
@@ -129,8 +140,7 @@ class override(ContextDecorator):
         else:
             _active.value = self.old_timezone
 
-
-# Templates
+            # Templates
 
 
 def template_localtime(value, use_tz=None):
@@ -150,8 +160,7 @@ def template_localtime(value, use_tz=None):
     )
     return localtime(value) if should_convert else value
 
-
-# Utilities
+    # Utilities
 
 
 def localtime(value=None, timezone=None):
@@ -168,7 +177,7 @@ def localtime(value=None, timezone=None):
         value = now()
     if timezone is None:
         timezone = get_current_timezone()
-    # Emulate the behavior of astimezone() on Python < 3.6.
+        # Emulate the behavior of astimezone() on Python < 3.6.
     if is_naive(value):
         raise ValueError("localtime() cannot be applied to a naive datetime")
     return value.astimezone(timezone)
@@ -193,9 +202,8 @@ def now():
     """
     return datetime.now(tz=timezone.utc if settings.USE_TZ else None)
 
-
-# By design, these four functions don't perform any checks on their arguments.
-# The caller should ensure that they don't receive an invalid value like None.
+    # By design, these four functions don't perform any checks on their arguments.
+    # The caller should ensure that they don't receive an invalid value like None.
 
 
 def is_aware(value):
@@ -228,10 +236,10 @@ def make_aware(value, timezone=None):
     """Make a naive datetime.datetime in a given time zone aware."""
     if timezone is None:
         timezone = get_current_timezone()
-    # Check that we won't overwrite the timezone of an aware datetime.
+        # Check that we won't overwrite the timezone of an aware datetime.
     if is_aware(value):
         raise ValueError("make_aware expects a naive datetime, got %s" % value)
-    # This may be wrong around DST changes!
+        # This may be wrong around DST changes!
     return value.replace(tzinfo=timezone)
 
 
@@ -239,7 +247,7 @@ def make_naive(value, timezone=None):
     """Make an aware datetime.datetime naive in a given time zone."""
     if timezone is None:
         timezone = get_current_timezone()
-    # Emulate the behavior of astimezone() on Python < 3.6.
+        # Emulate the behavior of astimezone() on Python < 3.6.
     if is_naive(value):
         raise ValueError("make_naive() cannot be applied to a naive datetime")
     return value.astimezone(timezone).replace(tzinfo=None)

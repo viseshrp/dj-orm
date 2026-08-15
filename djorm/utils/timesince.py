@@ -57,13 +57,13 @@ def timesince(d, now=None, reversed=False, time_strings=None, depth=2):
         time_strings = TIME_STRINGS
     if depth <= 0:
         raise ValueError("depth must be greater than 0.")
-    # Convert datetime.date to datetime.datetime for comparison.
+        # Convert datetime.date to datetime.datetime for comparison.
     if not isinstance(d, datetime.datetime):
         d = datetime.datetime(d.year, d.month, d.day)
     if now and not isinstance(now, datetime.datetime):
         now = datetime.datetime(now.year, now.month, now.day)
 
-    # Compared datetimes must be in the same time zone.
+        # Compared datetimes must be in the same time zone.
     if not now:
         now = datetime.datetime.now(d.tzinfo if is_aware(d) else None)
     elif is_aware(now) and is_aware(d):
@@ -79,7 +79,7 @@ def timesince(d, now=None, reversed=False, time_strings=None, depth=2):
         # d is in the future compared to now, stop processing.
         return avoid_wrapping(time_strings["minute"] % {"num": 0})
 
-    # Get years and months.
+        # Get years and months.
     total_months = (now.year - d.year) * 12 + (now.month - d.month)
     if d.day > now.day or (d.day == now.day and d.time() > now.time()):
         total_months -= 1
@@ -112,8 +112,8 @@ def timesince(d, now=None, reversed=False, time_strings=None, depth=2):
         partials.append(count)
         remaining_time -= chunk * count
 
-    # Find the first non-zero part (if any) and then build the result, until
-    # depth.
+        # Find the first non-zero part (if any) and then build the result, until
+        # depth.
     i = 0
     for i, value in enumerate(partials):
         if value != 0:

@@ -1,4 +1,4 @@
-"Tests related to djorm.db.backends that haven't been organized."
+"""Tests related to djorm.db.backends that haven't been organized."""
 
 import datetime
 import threading
@@ -77,7 +77,7 @@ class LastExecutedQueryTest(TestCase):
         with connection.cursor() as cursor:
             if connection.vendor == "oracle":
                 cursor.statement = None
-            # No previous query has been run.
+                # No previous query has been run.
             connection.ops.last_executed_query(cursor, "", ())
             # Previous query crashed.
             connection.ops.last_executed_query(cursor, "SELECT %s" + suffix, (1,))
@@ -90,9 +90,7 @@ class LastExecutedQueryTest(TestCase):
 
     def test_query_encoding(self):
         """last_executed_query() returns a string."""
-        data = RawData.objects.filter(raw_data=b"\x00\x46  \xfe").extra(
-            select={"föö": 1}
-        )
+        data = RawData.objects.filter(raw_data=b"\x00\x46  \xfe").extra(select={"föö": 1})
         sql, params = data.query.sql_with_params()
         with data.query.get_compiler("default").execute_sql(CURSOR) as cursor:
             last_sql = cursor.db.ops.last_executed_query(cursor, sql, params)
@@ -158,9 +156,7 @@ class LastExecutedQueryTest(TestCase):
         with connection.cursor() as cursor:
             params = [42, 42, 1]
             cursor.execute(sql, params)
-            last_executed_query = connection.ops.last_executed_query(
-                cursor, sql, params
-            )
+            last_executed_query = connection.ops.last_executed_query(cursor, sql, params)
             self.assertEqual(
                 last_executed_query,
                 f"UPDATE {table} SET {root_column} = 42 + 42 WHERE {id_column} = 1",
@@ -204,9 +200,7 @@ class LongNameTest(TransactionTestCase):
         An m2m save of a model with a long name and a long m2m field name
         doesn't error (#8901).
         """
-        obj = (
-            VeryLongModelNameZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ.objects.create()
-        )
+        obj = VeryLongModelNameZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ.objects.create()
         rel_obj = Person.objects.create(first_name="Django", last_name="Reinhardt")
         obj.m2m_also_quite_long_zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.add(rel_obj)
 
@@ -220,9 +214,7 @@ class LongNameTest(TransactionTestCase):
 
         # Some convenience aliases
         VLM = VeryLongModelNameZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
-        VLM_m2m = (
-            VLM.m2m_also_quite_long_zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.through
-        )
+        VLM_m2m = VLM.m2m_also_quite_long_zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.through
         tables = [
             VLM._meta.db_table,
             VLM_m2m._meta.db_table,
@@ -239,21 +231,20 @@ class SequenceResetTest(TestCase):
         Post.objects.create(id=10, name="1st post", text="hello world")
 
         # Reset the sequences for the database
-        commands = connections[DEFAULT_DB_ALIAS].ops.sequence_reset_sql(
-            no_style(), [Post]
-        )
+        commands = connections[DEFAULT_DB_ALIAS].ops.sequence_reset_sql(no_style(), [Post])
         with connection.cursor() as cursor:
             for sql in commands:
                 cursor.execute(sql)
 
-        # If we create a new object now, it should have a PK greater
-        # than the PK we specified manually.
+                # If we create a new object now, it should have a PK greater
+                # than the PK we specified manually.
         obj = Post.objects.create(name="New post", text="goodbye world")
         self.assertGreater(obj.pk, 10)
 
+        # This test needs to run outside of a transaction, otherwise closing the
+        # connection would implicitly rollback and cause problems during teardown.
 
-# This test needs to run outside of a transaction, otherwise closing the
-# connection would implicitly rollback and cause problems during teardown.
+
 class ConnectionCreatedSignalTest(TransactionTestCase):
     available_apps = []
 
@@ -407,12 +398,8 @@ class BackendTestCase(TransactionTestCase):
                 )
             )
             self.assertEqual(cursor.fetchone(), ("Clark", "Kent"))
-            self.assertEqual(
-                list(cursor.fetchmany(2)), [("Jane", "Doe"), ("John", "Doe")]
-            )
-            self.assertEqual(
-                list(cursor.fetchall()), [("Mary", "Agnelline"), ("Peter", "Parker")]
-            )
+            self.assertEqual(list(cursor.fetchmany(2)), [("Jane", "Doe"), ("John", "Doe")])
+            self.assertEqual(list(cursor.fetchall()), [("Mary", "Agnelline"), ("Peter", "Parker")])
 
     def test_unicode_password(self):
         old_password = connection.settings_dict["PASSWORD"]
@@ -459,9 +446,9 @@ class BackendTestCase(TransactionTestCase):
         """
         with connection.cursor() as cursor:
             self.assertIsInstance(cursor, CursorWrapper)
-        # Both InterfaceError and ProgrammingError seem to be used when
-        # accessing closed cursor (psycopg has InterfaceError, rest seem
-        # to use ProgrammingError).
+            # Both InterfaceError and ProgrammingError seem to be used when
+            # accessing closed cursor (psycopg has InterfaceError, rest seem
+            # to use ProgrammingError).
         with self.assertRaises(connection.features.closed_cursor_error_class):
             # cursor should be closed, so no queries should be possible.
             cursor.execute("SELECT 1" + connection.features.bare_select_suffix)
@@ -478,7 +465,8 @@ class BackendTestCase(TransactionTestCase):
             self.assertIsInstance(cursor, CursorWrapper)
         self.assertTrue(cursor.closed)
 
-    # Unfortunately with sqlite3 the in-memory test database cannot be closed.
+        # Unfortunately with sqlite3 the in-memory test database cannot be closed.
+
     @skipUnlessDBFeature("test_db_allows_multiple_connections")
     def test_is_usable_after_database_disconnects(self):
         """
@@ -487,7 +475,7 @@ class BackendTestCase(TransactionTestCase):
         # Open a connection to the database.
         with connection.cursor():
             pass
-        # Emulate a connection close by the database.
+            # Emulate a connection close by the database.
         connection._close()
         # Even then is_usable() should not raise an exception.
         try:
@@ -531,7 +519,8 @@ class BackendTestCase(TransactionTestCase):
         self.assertEqual(list(connection.queries[0]), ["sql", "time"])
         self.assertEqual(connection.queries[0]["sql"], "2 times: %s" % sql)
 
-    # Unfortunately with sqlite3 the in-memory test database cannot be closed.
+        # Unfortunately with sqlite3 the in-memory test database cannot be closed.
+
     @skipUnlessDBFeature("test_db_allows_multiple_connections")
     @override_settings(DEBUG=True)
     def test_queries_limit(self):
@@ -560,10 +549,7 @@ class BackendTestCase(TransactionTestCase):
                 cursor.execute("SELECT 3" + new_connection.features.bare_select_suffix)
                 cursor.execute("SELECT 4" + new_connection.features.bare_select_suffix)
 
-            msg = (
-                "Limit for query logging exceeded, only the last 3 queries will be "
-                "returned."
-            )
+            msg = "Limit for query logging exceeded, only the last 3 queries will be returned."
             with self.assertWarnsMessage(UserWarning, msg) as ctx:
                 self.assertEqual(3, len(new_connection.queries))
             self.assertEqual(ctx.filename, __file__)
@@ -572,7 +558,7 @@ class BackendTestCase(TransactionTestCase):
             BaseDatabaseWrapper.queries_limit = old_queries_limit
             new_connection.close()
 
-    @mock.patch('djorm.db.backends.utils.logger')
+    @mock.patch("djorm.db.backends.utils.logger")
     @override_settings(DEBUG=True)
     def test_queries_logger(self, mocked_logger):
         sql = "SELECT 1" + connection.features.bare_select_suffix
@@ -600,9 +586,10 @@ class BackendTestCase(TransactionTestCase):
         with self.settings(TIME_ZONE=None, USE_TZ=False):
             connection.init_connection_state()
 
+            # These tests aren't conditional because it would require differentiating
+            # between MySQL+InnoDB and MySQL+MYISAM (something we currently can't do).
 
-# These tests aren't conditional because it would require differentiating
-# between MySQL+InnoDB and MySQL+MYISAM (something we currently can't do).
+
 class FkConstraintsTests(TransactionTestCase):
     available_apps = ["backends"]
 
@@ -626,8 +613,8 @@ class FkConstraintsTests(TransactionTestCase):
             pass
         else:
             self.skipTest("This backend does not support integrity checks.")
-        # Now that we know this backend supports integrity checks we make sure
-        # constraints are also enforced for proxy  Refs #17519
+            # Now that we know this backend supports integrity checks we make sure
+            # constraints are also enforced for proxy  Refs #17519
         a2 = Article(
             headline="This is another test",
             reporter=self.r,
@@ -657,9 +644,9 @@ class FkConstraintsTests(TransactionTestCase):
             pass
         else:
             self.skipTest("This backend does not support integrity checks.")
-        # Now that we know this backend supports integrity checks we make sure
-        # constraints are also enforced for proxy  Refs #17519
-        # Create another article
+            # Now that we know this backend supports integrity checks we make sure
+            # constraints are also enforced for proxy  Refs #17519
+            # Create another article
         r_proxy = ReporterProxy.objects.get(pk=self.r.pk)
         Article.objects.create(
             headline="Another article",
@@ -762,7 +749,10 @@ class ThreadTests(TransactionTestCase):
     available_apps = ["backends"]
 
     def test_default_connection_thread_local(self):
-        '\n        The default connection (i.e. djorm.db.connection) is different for\n        each thread (#17258).\n        '
+        """
+        The default connection (i.e. djorm.db.connection) is different for
+        each thread (#17258).
+        """
         # Map connections by id because connections with identical aliases
         # have the same hash.
         connections_dict = {}
@@ -788,10 +778,8 @@ class ThreadTests(TransactionTestCase):
                 t = threading.Thread(target=runner)
                 t.start()
                 t.join()
-            # Each created connection got different inner connection.
-            self.assertEqual(
-                len({conn.connection for conn in connections_dict.values()}), 3
-            )
+                # Each created connection got different inner connection.
+            self.assertEqual(len({conn.connection for conn in connections_dict.values()}), 3)
         finally:
             # Finish by closing the connections opened by the other threads
             # (the connection opened in the main thread will automatically be
@@ -860,7 +848,8 @@ class ThreadTests(TransactionTestCase):
             t.start()
             t.join()
 
-        # Without touching thread sharing, which should be False by default.
+            # Without touching thread sharing, which should be False by default.
+
         exceptions = []
         do_thread()
         # Forbidden!
@@ -912,7 +901,8 @@ class ThreadTests(TransactionTestCase):
                 except DatabaseError as e:
                     exceptions.add(e)
 
-            # Enable thread sharing
+                    # Enable thread sharing
+
             connections["default"].inc_thread_sharing()
             try:
                 t2 = threading.Thread(target=runner2, args=[connections["default"]])
@@ -979,9 +969,7 @@ class DBConstraintTestCase(TestCase):
         self.assertEqual(Object.objects.count(), 2)
         self.assertEqual(obj.related_objects.count(), 1)
 
-        intermediary_model = Object._meta.get_field(
-            "related_objects"
-        ).remote_field.through
+        intermediary_model = Object._meta.get_field("related_objects").remote_field.through
         intermediary_model.objects.create(from_object_id=obj.id, to_object_id=12345)
         self.assertEqual(obj.related_objects.count(), 1)
         self.assertEqual(intermediary_model.objects.count(), 2)

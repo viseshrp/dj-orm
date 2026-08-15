@@ -31,9 +31,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         with self._maindb_connection.cursor() as cursor:
             if self._test_database_create():
                 try:
-                    self._execute_test_db_creation(
-                        cursor, parameters, verbosity, keepdb
-                    )
+                    self._execute_test_db_creation(cursor, parameters, verbosity, keepdb)
                 except Exception as e:
                     if "ORA-01543" not in str(e):
                         # All errors except "tablespace already exists" cancel tests
@@ -42,8 +40,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                     if not autoclobber:
                         confirm = input(
                             "It appears the test database, %s, already exists. "
-                            "Type 'yes' to delete it, or 'no' to cancel: "
-                            % parameters["user"]
+                            "Type 'yes' to delete it, or 'no' to cancel: " % parameters["user"]
                         )
                     if autoclobber or confirm == "yes":
                         if verbosity >= 1:
@@ -52,9 +49,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                                 % self.connection.alias
                             )
                         try:
-                            self._execute_test_db_destruction(
-                                cursor, parameters, verbosity
-                            )
+                            self._execute_test_db_destruction(cursor, parameters, verbosity)
                         except DatabaseError as e:
                             if "ORA-29857" in str(e):
                                 self._handle_objects_preventing_db_destruction(
@@ -63,24 +58,15 @@ class DatabaseCreation(BaseDatabaseCreation):
                             else:
                                 # Ran into a database error that isn't about
                                 # leftover objects in the tablespace.
-                                self.log(
-                                    "Got an error destroying the old test database: %s"
-                                    % e
-                                )
+                                self.log("Got an error destroying the old test database: %s" % e)
                                 sys.exit(2)
                         except Exception as e:
-                            self.log(
-                                "Got an error destroying the old test database: %s" % e
-                            )
+                            self.log("Got an error destroying the old test database: %s" % e)
                             sys.exit(2)
                         try:
-                            self._execute_test_db_creation(
-                                cursor, parameters, verbosity, keepdb
-                            )
+                            self._execute_test_db_creation(cursor, parameters, verbosity, keepdb)
                         except Exception as e:
-                            self.log(
-                                "Got an error recreating the test database: %s" % e
-                            )
+                            self.log("Got an error recreating the test database: %s" % e)
                             sys.exit(2)
                     else:
                         self.log("Tests cancelled.")
@@ -99,8 +85,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                     if not autoclobber:
                         confirm = input(
                             "It appears the test user, %s, already exists. Type "
-                            "'yes' to delete it, or 'no' to cancel: "
-                            % parameters["user"]
+                            "'yes' to delete it, or 'no' to cancel: " % parameters["user"]
                         )
                     if autoclobber or confirm == "yes":
                         try:
@@ -109,16 +94,14 @@ class DatabaseCreation(BaseDatabaseCreation):
                             self._destroy_test_user(cursor, parameters, verbosity)
                             if verbosity >= 1:
                                 self.log("Creating test user...")
-                            self._create_test_user(
-                                cursor, parameters, verbosity, keepdb
-                            )
+                            self._create_test_user(cursor, parameters, verbosity, keepdb)
                         except Exception as e:
                             self.log("Got an error recreating the test user: %s" % e)
                             sys.exit(2)
                     else:
                         self.log("Tests cancelled.")
                         sys.exit(1)
-        # Done with main user -- test user and tablespaces created.
+                        # Done with main user -- test user and tablespaces created.
         self._maindb_connection.close()
         self._switch_to_test_user(parameters)
         return self.connection.settings_dict["NAME"]
@@ -136,17 +119,17 @@ class DatabaseCreation(BaseDatabaseCreation):
         real_settings["SAVED_USER"] = self.connection.settings_dict["SAVED_USER"] = (
             self.connection.settings_dict["USER"]
         )
-        real_settings["SAVED_PASSWORD"] = self.connection.settings_dict[
-            "SAVED_PASSWORD"
-        ] = self.connection.settings_dict["PASSWORD"]
+        real_settings["SAVED_PASSWORD"] = self.connection.settings_dict["SAVED_PASSWORD"] = (
+            self.connection.settings_dict["PASSWORD"]
+        )
         real_test_settings = real_settings["TEST"]
         test_settings = self.connection.settings_dict["TEST"]
-        real_test_settings["USER"] = real_settings["USER"] = test_settings["USER"] = (
-            self.connection.settings_dict["USER"]
-        ) = parameters["user"]
-        real_settings["PASSWORD"] = self.connection.settings_dict["PASSWORD"] = (
-            parameters["password"]
-        )
+        real_test_settings["USER"] = real_settings["USER"] = test_settings[
+            "USER"
+        ] = self.connection.settings_dict["USER"] = parameters["user"]
+        real_settings["PASSWORD"] = self.connection.settings_dict["PASSWORD"] = parameters[
+            "password"
+        ]
 
     def set_as_test_mirror(self, primary_settings_dict):
         """
@@ -156,9 +139,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         self.connection.settings_dict["USER"] = primary_settings_dict["USER"]
         self.connection.settings_dict["PASSWORD"] = primary_settings_dict["PASSWORD"]
 
-    def _handle_objects_preventing_db_destruction(
-        self, cursor, parameters, verbosity, autoclobber
-    ):
+    def _handle_objects_preventing_db_destruction(self, cursor, parameters, verbosity, autoclobber):
         # There are objects in the test tablespace which prevent dropping it
         # The easy fix is to drop the test user -- but are we allowed to do so?
         self.log(
@@ -182,8 +163,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                 try:
                     if verbosity >= 1:
                         self.log(
-                            "Destroying old test database for alias '%s'..."
-                            % self.connection.alias
+                            "Destroying old test database for alias '%s'..." % self.connection.alias
                         )
                     self._execute_test_db_destruction(cursor, parameters, verbosity)
                 except Exception as e:
@@ -206,9 +186,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         database already exists. Return the name of the test database created.
         """
         if not self.connection.is_pool:
-            self.connection.settings_dict["USER"] = self.connection.settings_dict[
-                "SAVED_USER"
-            ]
+            self.connection.settings_dict["USER"] = self.connection.settings_dict["SAVED_USER"]
             self.connection.settings_dict["PASSWORD"] = self.connection.settings_dict[
                 "SAVED_PASSWORD"
             ]
@@ -256,7 +234,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                 AUTOEXTEND ON NEXT %(extsize_tmp)s MAXSIZE %(maxsize_tmp)s
                 """,
             ]
-        # Ignore "tablespace already exists" error when keepdb is on.
+            # Ignore "tablespace already exists" error when keepdb is on.
         acceptable_ora_err = "ORA-01543" if keepdb else None
         self._execute_allow_fail_statements(
             cursor, statements, parameters, verbosity, acceptable_ora_err
@@ -288,8 +266,8 @@ class DatabaseCreation(BaseDatabaseCreation):
         if not success and self._test_settings_get("PASSWORD") is None:
             set_password = 'ALTER USER %(user)s IDENTIFIED BY "%(password)s"'
             self._execute_statements(cursor, [set_password], parameters, verbosity)
-        # Most test suites can be run without "create view" and
-        # "create materialized view" privileges. But some need it.
+            # Most test suites can be run without "create view" and
+            # "create materialized view" privileges. But some need it.
         for object_type in ("VIEW", "MATERIALIZED VIEW"):
             extra = "GRANT CREATE %(object_type)s TO %(user)s"
             parameters["object_type"] = object_type
@@ -306,8 +284,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         if verbosity >= 2:
             self.log("_execute_test_db_destruction(): dbname=%s" % parameters["user"])
         statements = [
-            "DROP TABLESPACE %(tblspace)s "
-            "INCLUDING CONTENTS AND DATAFILES CASCADE CONSTRAINTS",
+            "DROP TABLESPACE %(tblspace)s INCLUDING CONTENTS AND DATAFILES CASCADE CONSTRAINTS",
             "DROP TABLESPACE %(tblspace_temp)s "
             "INCLUDING CONTENTS AND DATAFILES CASCADE CONSTRAINTS",
         ]
@@ -346,9 +323,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         """
         try:
             # Statement can fail when acceptable_ora_err is not None
-            allow_quiet_fail = (
-                acceptable_ora_err is not None and len(acceptable_ora_err) > 0
-            )
+            allow_quiet_fail = acceptable_ora_err is not None and len(acceptable_ora_err) > 0
             self._execute_statements(
                 cursor,
                 statements,

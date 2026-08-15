@@ -71,8 +71,7 @@ class Eaten(models.Model):
     food = models.ForeignKey(Food, models.CASCADE, to_field="name")
     meal = models.CharField(max_length=20)
 
-
-# Models for #15776
+    # Models for #15776
 
 
 class Policy(models.Model):
@@ -94,8 +93,7 @@ class Item(models.Model):
         Location, models.SET(42), default=1, db_constraint=False, related_name="+"
     )
 
-
-# Models for #16128
+    # Models for #16128
 
 
 class File(models.Model):
@@ -164,6 +162,4 @@ class Collector(models.Model):
     best_toy = models.ForeignKey(
         Toy, default=get_best_toy, on_delete=models.SET_DEFAULT, related_name="toys"
     )
-    worst_toy = models.ForeignKey(
-        Toy, models.SET(get_worst_toy), related_name="bad_toys"
-    )
+    worst_toy = models.ForeignKey(Toy, models.SET(get_worst_toy), related_name="bad_toys")

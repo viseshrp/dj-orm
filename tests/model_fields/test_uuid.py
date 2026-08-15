@@ -48,25 +48,17 @@ class TestSaveLoad(TestCase):
         self.assertIsNone(loaded.field)
 
     def test_pk_validated(self):
-        with self.assertRaisesMessage(
-            exceptions.ValidationError, "is not a valid UUID"
-        ):
+        with self.assertRaisesMessage(exceptions.ValidationError, "is not a valid UUID"):
             PrimaryKeyUUIDModel.objects.get(pk={})
 
-        with self.assertRaisesMessage(
-            exceptions.ValidationError, "is not a valid UUID"
-        ):
+        with self.assertRaisesMessage(exceptions.ValidationError, "is not a valid UUID"):
             PrimaryKeyUUIDModel.objects.get(pk=[])
 
     def test_wrong_value(self):
-        with self.assertRaisesMessage(
-            exceptions.ValidationError, "is not a valid UUID"
-        ):
+        with self.assertRaisesMessage(exceptions.ValidationError, "is not a valid UUID"):
             UUIDModel.objects.get(field="not-a-uuid")
 
-        with self.assertRaisesMessage(
-            exceptions.ValidationError, "is not a valid UUID"
-        ):
+        with self.assertRaisesMessage(exceptions.ValidationError, "is not a valid UUID"):
             UUIDModel.objects.create(field="not-a-uuid")
 
 
@@ -119,29 +111,21 @@ class TestQuerying(TestCase):
 
     def test_exact(self):
         self.assertSequenceEqual(
-            NullableUUIDModel.objects.filter(
-                field__exact="550e8400e29b41d4a716446655440000"
-            ),
+            NullableUUIDModel.objects.filter(field__exact="550e8400e29b41d4a716446655440000"),
             [self.objs[1]],
         )
         self.assertSequenceEqual(
-            NullableUUIDModel.objects.filter(
-                field__exact="550e8400-e29b-41d4-a716-446655440000"
-            ),
+            NullableUUIDModel.objects.filter(field__exact="550e8400-e29b-41d4-a716-446655440000"),
             [self.objs[1]],
         )
 
     def test_iexact(self):
         self.assertSequenceEqualWithoutHyphens(
-            NullableUUIDModel.objects.filter(
-                field__iexact="550E8400E29B41D4A716446655440000"
-            ),
+            NullableUUIDModel.objects.filter(field__iexact="550E8400E29B41D4A716446655440000"),
             [self.objs[1]],
         )
         self.assertSequenceEqual(
-            NullableUUIDModel.objects.filter(
-                field__iexact="550E8400-E29B-41D4-A716-446655440000"
-            ),
+            NullableUUIDModel.objects.filter(field__iexact="550E8400-E29B-41D4-A716-446655440000"),
             [self.objs[1]],
         )
 
@@ -219,9 +203,7 @@ class TestQuerying(TestCase):
         )
         self.assertSequenceEqual(
             NullableUUIDModel.objects.annotate(
-                value=Concat(
-                    Value("8400"), Value("-"), Value("e29b"), output_field=CharField()
-                ),
+                value=Concat(Value("8400"), Value("-"), Value("e29b"), output_field=CharField()),
             ).filter(field__contains=F("value")),
             [self.objs[1]],
         )
@@ -239,8 +221,7 @@ class TestSerialization(SimpleTestCase):
         '"model": "model_fields.uuidmodel", "pk": null}]'
     )
     nullable_test_data = (
-        '[{"fields": {"field": null}, '
-        '"model": "model_fields.nullableuuidmodel", "pk": null}]'
+        '[{"fields": {"field": null}, "model": "model_fields.nullableuuidmodel", "pk": null}]'
     )
 
     def test_dumping(self):
@@ -250,14 +231,10 @@ class TestSerialization(SimpleTestCase):
 
     def test_loading(self):
         instance = list(serializers.deserialize("json", self.test_data))[0].object
-        self.assertEqual(
-            instance.field, uuid.UUID("550e8400-e29b-41d4-a716-446655440000")
-        )
+        self.assertEqual(instance.field, uuid.UUID("550e8400-e29b-41d4-a716-446655440000"))
 
     def test_nullable_loading(self):
-        instance = list(serializers.deserialize("json", self.nullable_test_data))[
-            0
-        ].object
+        instance = list(serializers.deserialize("json", self.nullable_test_data))[0].object
         self.assertIsNone(instance.field)
 
 

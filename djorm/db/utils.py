@@ -106,8 +106,8 @@ def load_backend(backend_name):
     backend name, or raise an error if it doesn't exist.
     """
     # This backend was renamed in Django 1.9.
-    if backend_name == 'djorm.db.backends.postgresql_psycopg2':
-        backend_name = 'djorm.db.backends.postgresql'
+    if backend_name == "djorm.db.backends.postgresql_psycopg2":
+        backend_name = "djorm.db.backends.postgresql"
 
     try:
         return import_module("%s.base" % backend_name)
@@ -121,7 +121,7 @@ def load_backend(backend_name):
             for _, name, ispkg in pkgutil.iter_modules(djorm.db.backends.__path__)
             if ispkg and name not in {"base", "dummy"}
         ]
-        if backend_name not in ['djorm.db.backends.%s' % b for b in builtin_backends]:
+        if backend_name not in ["djorm.db.backends.%s" % b for b in builtin_backends]:
             backend_reprs = map(repr, sorted(builtin_backends))
             raise ImproperlyConfigured(
                 "%r isn't an available database backend or couldn't be "
@@ -147,21 +147,19 @@ class ConnectionHandler(BaseConnectionHandler):
     def configure_settings(self, databases):
         databases = super().configure_settings(databases)
         if databases == {}:
-            databases[DEFAULT_DB_ALIAS] = {"ENGINE": 'djorm.db.backends.dummy'}
+            databases[DEFAULT_DB_ALIAS] = {"ENGINE": "djorm.db.backends.dummy"}
         elif DEFAULT_DB_ALIAS not in databases:
-            raise ImproperlyConfigured(
-                f"You must define a '{DEFAULT_DB_ALIAS}' database."
-            )
+            raise ImproperlyConfigured(f"You must define a '{DEFAULT_DB_ALIAS}' database.")
         elif databases[DEFAULT_DB_ALIAS] == {}:
-            databases[DEFAULT_DB_ALIAS]["ENGINE"] = 'djorm.db.backends.dummy'
+            databases[DEFAULT_DB_ALIAS]["ENGINE"] = "djorm.db.backends.dummy"
 
-        # Configure default settings.
+            # Configure default settings.
         for conn in databases.values():
             conn.setdefault("ATOMIC_REQUESTS", False)
             conn.setdefault("AUTOCOMMIT", True)
-            conn.setdefault("ENGINE", 'djorm.db.backends.dummy')
-            if conn["ENGINE"] == 'djorm.db.backends.' or not conn["ENGINE"]:
-                conn["ENGINE"] = 'djorm.db.backends.dummy'
+            conn.setdefault("ENGINE", "djorm.db.backends.dummy")
+            if conn["ENGINE"] == "djorm.db.backends." or not conn["ENGINE"]:
+                conn["ENGINE"] = "djorm.db.backends.dummy"
             conn.setdefault("CONN_MAX_AGE", 0)
             conn.setdefault("CONN_HEALTH_CHECKS", False)
             conn.setdefault("OPTIONS", {})

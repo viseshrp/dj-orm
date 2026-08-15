@@ -58,9 +58,7 @@ class Command(BaseCommand):
                 if interactive:
                     ct_info = []
                     for ct in to_remove:
-                        ct_info.append(
-                            "    - Content type for %s.%s" % (ct.app_label, ct.model)
-                        )
+                        ct_info.append("    - Content type for %s.%s" % (ct.app_label, ct.model))
                         collector = NoFastDeleteCollector(using=using, origin=ct)
                         collector.collect([ct])
 
@@ -96,8 +94,7 @@ class Command(BaseCommand):
                     for ct in to_remove:
                         if verbosity >= 2:
                             self.stdout.write(
-                                "Deleting stale content type '%s | %s'"
-                                % (ct.app_label, ct.model)
+                                "Deleting stale content type '%s | %s'" % (ct.app_label, ct.model)
                             )
                         ct.delete()
                 else:

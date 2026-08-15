@@ -25,9 +25,7 @@ class Book(models.Model):
 
 
 class BookFkAsPk(models.Model):
-    book = models.ForeignKey(
-        Book, models.CASCADE, primary_key=True, db_column="not_the_default"
-    )
+    book = models.ForeignKey(Book, models.CASCADE, primary_key=True, db_column="not_the_default")
 
 
 class Coffee(models.Model):

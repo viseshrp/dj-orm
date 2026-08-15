@@ -18,11 +18,7 @@ class PerformConstraintChecksTest(TestCase):
             product.full_clean()
         self.assertEqual(
             cm.exception.message_dict,
-            {
-                "__all__": [
-                    "Constraint “price_gt_discounted_price_validation” is violated."
-                ]
-            },
+            {"__all__": ["Constraint “price_gt_discounted_price_validation” is violated."]},
         )
 
     @skipUnlessDBFeature("supports_table_check_constraints")
@@ -32,11 +28,7 @@ class PerformConstraintChecksTest(TestCase):
             product.full_clean()
         self.assertEqual(
             cm.exception.message_dict,
-            {
-                "__all__": [
-                    "Constraint “price_gt_discounted_price_validation” is violated."
-                ]
-            },
+            {"__all__": ["Constraint “price_gt_discounted_price_validation” is violated."]},
         )
 
     @skipUnlessDBFeature("supports_table_check_constraints")
@@ -59,12 +51,9 @@ class PerformConstraintChecksTest(TestCase):
                     cm.exception.message_dict,
                     {
                         "__all__": [
-                            "Unique constraint product with this Name and Color "
-                            "already exists."
+                            "Unique constraint product with this Name and Color already exists."
                         ],
-                        "rank": [
-                            "Unique constraint product with this Rank already exists."
-                        ],
+                        "rank": ["Unique constraint product with this Rank already exists."],
                     },
                 )
 
@@ -81,11 +70,7 @@ class PerformConstraintChecksTest(TestCase):
             product.full_clean()
         self.assertEqual(
             cm.exception.message_dict,
-            {
-                "__all__": [
-                    "Constraint “name_without_color_uniq_validation” is violated."
-                ]
-            },
+            {"__all__": ["Constraint “name_without_color_uniq_validation” is violated."]},
         )
 
     @skipUnlessDBFeature("supports_partial_indexes")

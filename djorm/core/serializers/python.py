@@ -52,9 +52,7 @@ class Serializer(base.Serializer):
         self._current[field.name] = self._value_from_field(obj, field)
 
     def handle_fk_field(self, obj, field):
-        if self.use_natural_foreign_keys and hasattr(
-            field.remote_field.model, "natural_key"
-        ):
+        if self.use_natural_foreign_keys and hasattr(field.remote_field.model, "natural_key"):
             related = getattr(obj, field.name)
             if related:
                 value = related.natural_key()
@@ -66,18 +64,14 @@ class Serializer(base.Serializer):
 
     def handle_m2m_field(self, obj, field):
         if field.remote_field.through._meta.auto_created:
-            if self.use_natural_foreign_keys and hasattr(
-                field.remote_field.model, "natural_key"
-            ):
+            if self.use_natural_foreign_keys and hasattr(field.remote_field.model, "natural_key"):
 
                 def m2m_value(value):
                     return value.natural_key()
 
                 def queryset_iterator(obj, field):
                     attr = getattr(obj, field.name)
-                    chunk_size = (
-                        2000 if getattr(attr, "prefetch_cache_name", None) else None
-                    )
+                    chunk_size = 2000 if getattr(attr, "prefetch_cache_name", None) else None
                     return attr.iterator(chunk_size)
 
             else:
@@ -108,9 +102,7 @@ class Deserializer(base.Deserializer):
     stream or a string) to the constructor
     """
 
-    def __init__(
-        self, object_list, *, using=DEFAULT_DB_ALIAS, ignorenonexistent=False, **options
-    ):
+    def __init__(self, object_list, *, using=DEFAULT_DB_ALIAS, ignorenonexistent=False, **options):
         super().__init__(object_list, **options)
         self.handle_forward_references = options.pop("handle_forward_references", False)
         self.using = using
@@ -143,9 +135,7 @@ class Deserializer(base.Deserializer):
             try:
                 data[Model._meta.pk.attname] = Model._meta.pk.to_python(obj.get("pk"))
             except Exception as e:
-                raise base.DeserializationError.WithData(
-                    e, obj["model"], obj.get("pk"), None
-                )
+                raise base.DeserializationError.WithData(e, obj["model"], obj.get("pk"), None)
 
         if Model not in self.field_names_cache:
             self.field_names_cache[Model] = {f.name for f in Model._meta.get_fields()}
@@ -160,9 +150,7 @@ class Deserializer(base.Deserializer):
             field = Model._meta.get_field(field_name)
 
             # Handle M2M relations
-            if field.remote_field and isinstance(
-                field.remote_field, models.ManyToManyRel
-            ):
+            if field.remote_field and isinstance(field.remote_field, models.ManyToManyRel):
                 try:
                     values = self._handle_m2m_field_node(field, field_value)
                     if values == base.DEFER_FIELD:
@@ -174,10 +162,8 @@ class Deserializer(base.Deserializer):
                         e.original_exc, obj["model"], obj.get("pk"), e.pk
                     )
 
-            # Handle FK fields
-            elif field.remote_field and isinstance(
-                field.remote_field, models.ManyToOneRel
-            ):
+                    # Handle FK fields
+            elif field.remote_field and isinstance(field.remote_field, models.ManyToOneRel):
                 try:
                     value = self._handle_fk_field_node(field, field_value)
                     if value == base.DEFER_FIELD:
@@ -189,7 +175,7 @@ class Deserializer(base.Deserializer):
                         e, obj["model"], obj.get("pk"), field_value
                     )
 
-            # Handle all other fields
+                    # Handle all other fields
             else:
                 try:
                     data[field.name] = field.to_python(field_value)
@@ -217,6 +203,4 @@ class Deserializer(base.Deserializer):
         try:
             return apps.get_model(model_identifier)
         except (LookupError, TypeError):
-            raise base.DeserializationError(
-                f"Invalid model identifier: {model_identifier}"
-            )
+            raise base.DeserializationError(f"Invalid model identifier: {model_identifier}")

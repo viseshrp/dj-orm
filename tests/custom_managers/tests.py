@@ -36,9 +36,7 @@ class CustomManagerTests(TestCase):
         )
 
         cls.p1 = Person.objects.create(first_name="Bugs", last_name="Bunny", fun=True)
-        cls.droopy = Person.objects.create(
-            first_name="Droopy", last_name="Dog", fun=False
-        )
+        cls.droopy = Person.objects.create(first_name="Droopy", last_name="Dog", fun=False)
 
     def test_custom_manager_basic(self):
         """
@@ -69,8 +67,7 @@ class CustomManagerTests(TestCase):
                 manager._optin_private_method()
                 # Methods with queryset_only=True aren't copied even if they are public.
                 msg = (
-                    "%r object has no attribute 'optout_public_method'"
-                    % manager.__class__.__name__
+                    "%r object has no attribute 'optout_public_method'" % manager.__class__.__name__
                 )
                 with self.assertRaisesMessage(AttributeError, msg):
                     manager.optout_public_method()
@@ -148,9 +145,7 @@ class CustomManagerTests(TestCase):
         )
 
     def test_fk_related_manager(self):
-        Person.objects.create(
-            first_name="Bugs", last_name="Bunny", fun=True, favorite_book=self.b1
-        )
+        Person.objects.create(first_name="Bugs", last_name="Bunny", fun=True, favorite_book=self.b1)
         Person.objects.create(
             first_name="Droopy", last_name="Dog", fun=False, favorite_book=self.b1
         )
@@ -250,9 +245,7 @@ class CustomManagerTests(TestCase):
         self.b1.authors.add(droopy)
         bugs = FunPerson.objects.create(first_name="Bugs", last_name="Bunny", fun=True)
         self.b1.fun_authors.add(bugs)
-        droopy = FunPerson.objects.create(
-            first_name="Droopy", last_name="Dog", fun=False
-        )
+        droopy = FunPerson.objects.create(first_name="Droopy", last_name="Dog", fun=False)
         self.b1.fun_authors.add(droopy)
 
         self.assertQuerySetEqual(
@@ -334,9 +327,7 @@ class CustomManagerTests(TestCase):
         self.test_removal_through_default_fk_related_manager(bulk=False)
 
     def test_removal_through_specified_fk_related_manager(self, bulk=True):
-        Person.objects.create(
-            first_name="Bugs", last_name="Bunny", fun=True, favorite_book=self.b1
-        )
+        Person.objects.create(first_name="Bugs", last_name="Bunny", fun=True, favorite_book=self.b1)
         droopy = Person.objects.create(
             first_name="Droopy", last_name="Dog", fun=False, favorite_book=self.b1
         )
@@ -392,9 +383,7 @@ class CustomManagerTests(TestCase):
 
         self.b1.fun_people_favorite_things.remove(droopy, bulk=bulk)
         self.assertQuerySetEqual(
-            FunPerson._base_manager.order_by("first_name").filter(
-                favorite_thing_id=self.b1.pk
-            ),
+            FunPerson._base_manager.order_by("first_name").filter(favorite_thing_id=self.b1.pk),
             [
                 "Bugs",
                 "Droopy",
@@ -405,9 +394,7 @@ class CustomManagerTests(TestCase):
 
         self.b1.fun_people_favorite_things.remove(bugs, bulk=bulk)
         self.assertQuerySetEqual(
-            FunPerson._base_manager.order_by("first_name").filter(
-                favorite_thing_id=self.b1.pk
-            ),
+            FunPerson._base_manager.order_by("first_name").filter(favorite_thing_id=self.b1.pk),
             [
                 "Droopy",
             ],
@@ -419,9 +406,7 @@ class CustomManagerTests(TestCase):
 
         self.b1.fun_people_favorite_things.clear(bulk=bulk)
         self.assertQuerySetEqual(
-            FunPerson._base_manager.order_by("first_name").filter(
-                favorite_thing_id=self.b1.pk
-            ),
+            FunPerson._base_manager.order_by("first_name").filter(favorite_thing_id=self.b1.pk),
             [
                 "Droopy",
             ],
@@ -485,9 +470,7 @@ class CustomManagerTests(TestCase):
     def test_removal_through_default_m2m_related_manager(self):
         bugs = FunPerson.objects.create(first_name="Bugs", last_name="Bunny", fun=True)
         self.b1.fun_authors.add(bugs)
-        droopy = FunPerson.objects.create(
-            first_name="Droopy", last_name="Dog", fun=False
-        )
+        droopy = FunPerson.objects.create(first_name="Droopy", last_name="Dog", fun=False)
         self.b1.fun_authors.add(droopy)
 
         self.b1.fun_authors.remove(droopy)
@@ -570,7 +553,7 @@ class CustomManagerTests(TestCase):
         mgr = models.Manager()
         as_manager, mgr_path, qs_path, args, kwargs = mgr.deconstruct()
         self.assertFalse(as_manager)
-        self.assertEqual(mgr_path, 'djorm.db.models.manager.Manager')
+        self.assertEqual(mgr_path, "djorm.db.models.manager.Manager")
         self.assertEqual(args, ())
         self.assertEqual(kwargs, {})
 
@@ -584,9 +567,7 @@ class CustomManagerTests(TestCase):
         mgr = DeconstructibleCustomManager("a", "b")
         as_manager, mgr_path, qs_path, args, kwargs = mgr.deconstruct()
         self.assertFalse(as_manager)
-        self.assertEqual(
-            mgr_path, "custom_managers.models.DeconstructibleCustomManager"
-        )
+        self.assertEqual(mgr_path, "custom_managers.models.DeconstructibleCustomManager")
         self.assertEqual(
             args,
             (
@@ -599,9 +580,7 @@ class CustomManagerTests(TestCase):
         mgr = DeconstructibleCustomManager("x", "y", c=3, d=4)
         as_manager, mgr_path, qs_path, args, kwargs = mgr.deconstruct()
         self.assertFalse(as_manager)
-        self.assertEqual(
-            mgr_path, "custom_managers.models.DeconstructibleCustomManager"
-        )
+        self.assertEqual(mgr_path, "custom_managers.models.DeconstructibleCustomManager")
         self.assertEqual(
             args,
             (
@@ -615,7 +594,7 @@ class CustomManagerTests(TestCase):
         mgr = CustomManager("arg")
         msg = (
             "Could not find manager BaseCustomManagerFromCustomQuerySet in "
-            'djorm.db.models.manager.\n'
+            "djorm.db.models.manager.\n"
             "Please note that you need to inherit from managers you "
             "dynamically generated with 'from_queryset()'."
         )

@@ -17,8 +17,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
             model.check(),
             [
                 checks.Error(
-                    "IPAddressField has been removed except for support in "
-                    "historical migrations.",
+                    "IPAddressField has been removed except for support in historical migrations.",
                     hint="Use GenericIPAddressField instead.",
                     obj=IPAddressModel._meta.get_field("ip"),
                     id="fields.E900",
@@ -38,9 +37,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
                     "CommaSeparatedIntegerField is removed except for support in "
                     "historical migrations.",
                     hint=(
-                        "Use "
-                        "CharField(validators=[validate_comma_separated_integer_list]) "
-                        "instead."
+                        "Use CharField(validators=[validate_comma_separated_integer_list]) instead."
                     ),
                     obj=CommaSeparatedIntegerModel._meta.get_field("csi"),
                     id="fields.E901",
@@ -57,8 +54,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
             model.check(),
             [
                 checks.Error(
-                    "NullBooleanField is removed except for support in historical "
-                    "migrations.",
+                    "NullBooleanField is removed except for support in historical migrations.",
                     hint="Use BooleanField(null=True, blank=True) instead.",
                     obj=NullBooleanFieldModel._meta.get_field("nb"),
                     id="fields.E903",
@@ -77,9 +73,9 @@ class DeprecatedFieldsTests(SimpleTestCase):
             PostgresJSONFieldModel.check(),
             [
                 checks.Error(
-                    'djorm.contrib.postgres.fields.JSONField is removed except '
+                    "djorm.contrib.postgres.fields.JSONField is removed except "
                     "for support in historical migrations.",
-                    hint='Use djorm.db.models.JSONField instead.',
+                    hint="Use djorm.db.models.JSONField instead.",
                     obj=PostgresJSONFieldModel._meta.get_field("field"),
                     id="fields.E904",
                 ),
@@ -105,7 +101,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
             PostgresCIFieldsModel.check(),
             [
                 checks.Error(
-                    'djorm.contrib.postgres.fields.CICharField is removed except for '
+                    "djorm.contrib.postgres.fields.CICharField is removed except for "
                     "support in historical migrations.",
                     hint=(
                         'Use CharField(db_collation="…") with a case-insensitive '
@@ -115,7 +111,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
                     id="fields.E905",
                 ),
                 checks.Error(
-                    'djorm.contrib.postgres.fields.CIEmailField is removed except for '
+                    "djorm.contrib.postgres.fields.CIEmailField is removed except for "
                     "support in historical migrations.",
                     hint=(
                         'Use EmailField(db_collation="…") with a case-insensitive '
@@ -125,7 +121,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
                     id="fields.E906",
                 ),
                 checks.Error(
-                    'djorm.contrib.postgres.fields.CITextField is removed except for '
+                    "djorm.contrib.postgres.fields.CITextField is removed except for "
                     "support in historical migrations.",
                     hint=(
                         'Use TextField(db_collation="…") with a case-insensitive '
@@ -136,7 +132,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
                 ),
                 checks.Error(
                     "Base field for array has errors:\n"
-                    '    djorm.contrib.postgres.fields.CITextField is removed except '
+                    "    djorm.contrib.postgres.fields.CITextField is removed except "
                     "for support in historical migrations. (fields.E907)",
                     obj=PostgresCIFieldsModel._meta.get_field("array_ci_text"),
                     id="postgres.E001",

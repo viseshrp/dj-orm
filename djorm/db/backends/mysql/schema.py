@@ -16,17 +16,14 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
 
     sql_delete_unique = "ALTER TABLE %(table)s DROP INDEX %(name)s"
     sql_create_column_inline_fk = (
-        ", ADD CONSTRAINT %(name)s FOREIGN KEY (%(column)s) "
-        "REFERENCES %(to_table)s(%(to_column)s)"
+        ", ADD CONSTRAINT %(name)s FOREIGN KEY (%(column)s) REFERENCES %(to_table)s(%(to_column)s)"
     )
     sql_delete_fk = "ALTER TABLE %(table)s DROP FOREIGN KEY %(name)s"
 
     sql_delete_index = "DROP INDEX %(name)s ON %(table)s"
     sql_rename_index = "ALTER TABLE %(table)s RENAME INDEX %(old_name)s TO %(new_name)s"
 
-    sql_create_pk = (
-        "ALTER TABLE %(table)s ADD CONSTRAINT %(name)s PRIMARY KEY (%(columns)s)"
-    )
+    sql_create_pk = "ALTER TABLE %(table)s ADD CONSTRAINT %(name)s PRIMARY KEY (%(columns)s)"
     sql_delete_pk = "ALTER TABLE %(table)s DROP PRIMARY KEY"
 
     sql_create_index = "CREATE INDEX %(name)s ON %(table)s (%(columns)s)%(extra)s"
@@ -55,19 +52,14 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     def quote_value(self, value):
         self.connection.ensure_connection()
         # MySQLdb escapes to string, PyMySQL to bytes.
-        quoted = self.connection.connection.escape(
-            value, self.connection.connection.encoders
-        )
+        quoted = self.connection.connection.escape(value, self.connection.connection.encoders)
         if isinstance(value, str) and isinstance(quoted, bytes):
             quoted = quoted.decode()
         return quoted
 
     def _is_limited_data_type(self, field):
         db_type = field.db_type(self.connection)
-        return (
-            db_type is not None
-            and db_type.lower() in self.connection._limited_data_types
-        )
+        return db_type is not None and db_type.lower() in self.connection._limited_data_types
 
     def _is_text_or_blob(self, field):
         db_type = field.db_type(self.connection)
@@ -195,9 +187,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
 
         first_field = model._meta.get_field(first_field_name)
         if first_field.get_internal_type() == "ForeignKey":
-            column = self.connection.introspection.identifier_converter(
-                first_field.column
-            )
+            column = self.connection.introspection.identifier_converter(first_field.column)
             with self.connection.cursor() as cursor:
                 constraint_names = [
                     name
@@ -206,12 +196,10 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                     ).items()
                     if infodict["index"] and infodict["columns"][0] == column
                 ]
-            # There are no other indexes that starts with the FK field, only
-            # the index that is expected to be deleted.
+                # There are no other indexes that starts with the FK field, only
+                # the index that is expected to be deleted.
             if len(constraint_names) == 1:
-                self.execute(
-                    self._create_index_sql(model, fields=[first_field], suffix="")
-                )
+                self.execute(self._create_index_sql(model, fields=[first_field], suffix=""))
 
     def _delete_composed_index(self, model, fields, *args):
         self._create_missing_fk_index(model, fields=fields)
@@ -247,10 +235,10 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             2,
         ):
             return super()._field_db_check(field, field_db_params)
-        # On MySQL and MariaDB < 10.5.2 (no support for
-        # "ALTER TABLE ... RENAME COLUMN" statements), check constraints with
-        # the column name as it requires explicit recreation when the column is
-        # renamed.
+            # On MySQL and MariaDB < 10.5.2 (no support for
+            # "ALTER TABLE ... RENAME COLUMN" statements), check constraints with
+            # the column name as it requires explicit recreation when the column is
+            # renamed.
         return field_db_params["check"]
 
     def _rename_field_sql(self, table, old_field, new_field, new_type):

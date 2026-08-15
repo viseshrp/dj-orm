@@ -94,9 +94,7 @@ class JSONObjectTests(TestCase):
         self.assertEqual(obj.json_object, {"text": "x" * 4000})
 
     def test_order_by_key(self):
-        qs = Author.objects.annotate(attrs=JSONObject(alias=F("alias"))).order_by(
-            "attrs__alias"
-        )
+        qs = Author.objects.annotate(attrs=JSONObject(alias=F("alias"))).order_by("attrs__alias")
         self.assertQuerySetEqual(qs, Author.objects.order_by("alias"))
 
     def test_order_by_nested_key(self):

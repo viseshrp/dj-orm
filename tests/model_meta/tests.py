@@ -155,9 +155,7 @@ class RelatedObjectsTests(OptionsBaseTests):
         for model, expected in TEST_RESULTS[result_key].items():
             objects = [
                 (field, self._model(model, field))
-                for field in model._meta.get_fields(
-                    include_hidden=True, include_parents=False
-                )
+                for field in model._meta.get_fields(include_hidden=True, include_parents=False)
                 if field.auto_created and not field.concrete
             ]
             self.assertEqual(
@@ -185,9 +183,7 @@ class GetFieldByNameTests(OptionsBaseTests):
         self.assertIsInstance(field_info[0], ManyToManyField)
 
     def test_get_related_object(self):
-        field_info = self._details(
-            Person, Person._meta.get_field("relating_baseperson")
-        )
+        field_info = self._details(Person, Person._meta.get_field("relating_baseperson"))
         self.assertEqual(field_info[1:], (BasePerson, False, False))
         self.assertIsInstance(field_info[0], ForeignObjectRel)
 
@@ -197,9 +193,7 @@ class GetFieldByNameTests(OptionsBaseTests):
         self.assertIsInstance(field_info[0], ForeignObjectRel)
 
     def test_get_generic_relation(self):
-        field_info = self._details(
-            Person, Person._meta.get_field("generic_relation_base")
-        )
+        field_info = self._details(Person, Person._meta.get_field("generic_relation_base"))
         self.assertEqual(field_info[1:], (None, True, False))
         self.assertIsInstance(field_info[0], GenericRelation)
 
@@ -283,9 +277,7 @@ class RelationTreeTests(SimpleTestCase):
 
         # All the other models should already have their relation tree
         # in the internal __dict__ .
-        all_models_but_abstractperson = (
-            m for m in self.all_models if m is not AbstractPerson
-        )
+        all_models_but_abstractperson = (m for m in self.all_models if m is not AbstractPerson)
         for m in all_models_but_abstractperson:
             self.assertIn("_relation_tree", m._meta.__dict__)
 
@@ -313,9 +305,7 @@ class RelationTreeTests(SimpleTestCase):
         )
         # Testing hidden related objects
         self.assertEqual(
-            sorted(
-                field.related_query_name() for field in BasePerson._meta._relation_tree
-            ),
+            sorted(field.related_query_name() for field in BasePerson._meta._relation_tree),
             sorted(
                 [
                     "+",
@@ -343,10 +333,7 @@ class RelationTreeTests(SimpleTestCase):
             ),
         )
         self.assertEqual(
-            [
-                field.related_query_name()
-                for field in AbstractPerson._meta._relation_tree
-            ],
+            [field.related_query_name() for field in AbstractPerson._meta._relation_tree],
             [],
         )
 
@@ -371,9 +358,7 @@ class PropertyNamesTests(SimpleTestCase):
         self.assertEqual(BasePerson().test_instance_only_descriptor, 1)
         with self.assertRaisesMessage(AttributeError, "Instance only"):
             AbstractPerson.test_instance_only_descriptor
-        self.assertEqual(
-            AbstractPerson._meta._property_names, frozenset(["pk", "test_property"])
-        )
+        self.assertEqual(AbstractPerson._meta._property_names, frozenset(["pk", "test_property"]))
 
 
 class ReturningFieldsTests(SimpleTestCase):

@@ -47,7 +47,7 @@ class TestConnectionOnCommit(TransactionTestCase):
         def robust_callback():
             raise ForcedError("robust callback")
 
-        with self.assertLogs('djorm.db.backends.base', "ERROR") as cm:
+        with self.assertLogs("djorm.db.backends.base", "ERROR") as cm:
             transaction.on_commit(robust_callback, robust=True)
             self.do(1)
 
@@ -67,7 +67,7 @@ class TestConnectionOnCommit(TransactionTestCase):
         def robust_callback():
             raise ForcedError("robust callback")
 
-        with self.assertLogs('djorm.db.backends', "ERROR") as cm:
+        with self.assertLogs("djorm.db.backends", "ERROR") as cm:
             with transaction.atomic():
                 transaction.on_commit(robust_callback, robust=True)
                 self.do(1)
@@ -113,18 +113,18 @@ class TestConnectionOnCommit(TransactionTestCase):
             # one successful savepoint
             with transaction.atomic():
                 self.do(1)
-            # one failed savepoint
+                # one failed savepoint
             try:
                 with transaction.atomic():
                     self.do(2)
                     raise ForcedError()
             except ForcedError:
                 pass
-            # another successful savepoint
+                # another successful savepoint
             with transaction.atomic():
                 self.do(3)
 
-        # only hooks registered during successful savepoints execute
+                # only hooks registered during successful savepoints execute
         self.assertDone([1, 3])
 
     def test_no_hooks_run_from_failed_transaction(self):
@@ -234,9 +234,7 @@ class TestConnectionOnCommit(TransactionTestCase):
     def test_db_query_in_hook(self):
         with transaction.atomic():
             Thing.objects.create(num=1)
-            transaction.on_commit(
-                lambda: [self.notify(t.num) for t in Thing.objects.all()]
-            )
+            transaction.on_commit(lambda: [self.notify(t.num) for t in Thing.objects.all()])
 
         self.assertDone([1])
 

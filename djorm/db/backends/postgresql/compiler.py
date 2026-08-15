@@ -28,9 +28,7 @@ class InsertUnnest(list):
 class SQLCompiler(BaseSQLCompiler):
     def quote_name_unless_alias(self, name):
         if "$" in name:
-            raise ValueError(
-                "Dollar signs are not permitted in column aliases on PostgreSQL."
-            )
+            raise ValueError("Dollar signs are not permitted in column aliases on PostgreSQL.")
         return super().quote_name_unless_alias(name)
 
 
@@ -62,8 +60,8 @@ class SQLInsertCompiler(BaseSQLInsertCompiler):
             or any(any(hasattr(value, "as_sql") for value in row) for row in value_rows)
         ):
             return super().assemble_as_sql(fields, value_rows)
-        # Manually remove parameters from `db_type` to ensure no data
-        # truncation takes place (e.g. varchar[] instead of varchar(50)[]).
+            # Manually remove parameters from `db_type` to ensure no data
+            # truncation takes place (e.g. varchar[] instead of varchar(50)[]).
         db_types = [field.db_type(self.connection).split("(")[0] for field in fields]
         return InsertUnnest(["(%%s)::%s[]" % db_type for db_type in db_types]), [
             list(map(list, zip(*value_rows)))

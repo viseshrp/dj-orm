@@ -27,9 +27,7 @@ from .models import (
 class GetOrCreateTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        Person.objects.create(
-            first_name="John", last_name="Lennon", birthday=date(1940, 10, 9)
-        )
+        Person.objects.create(first_name="John", last_name="Lennon", birthday=date(1940, 10, 9))
 
     def test_get_or_create_method_with_get(self):
         created = Person.objects.get_or_create(
@@ -84,9 +82,7 @@ class GetOrCreateTests(TestCase):
 
     def test_get_or_create_with_model_property_defaults(self):
         """Using a property with a setter implemented is allowed."""
-        t, _ = Thing.objects.get_or_create(
-            defaults={"capitalized_name_property": "annie"}, pk=1
-        )
+        t, _ = Thing.objects.get_or_create(defaults={"capitalized_name_property": "annie"}, pk=1)
         self.assertEqual(t.name, "Annie")
 
     def test_get_or_create_on_related_manager(self):
@@ -138,15 +134,11 @@ class GetOrCreateTests(TestCase):
         self.assertEqual(fred.books.count(), 1)
 
         # Use the publisher's primary key value instead of a model instance.
-        _, created = ed.books.get_or_create(
-            name="The Great Book of Ed", publisher_id=p.id
-        )
+        _, created = ed.books.get_or_create(name="The Great Book of Ed", publisher_id=p.id)
         self.assertTrue(created)
 
         # Try get_or_create again, this time nothing should be created.
-        _, created = ed.books.get_or_create(
-            name="The Great Book of Ed", publisher_id=p.id
-        )
+        _, created = ed.books.get_or_create(name="The Great Book of Ed", publisher_id=p.id)
         self.assertFalse(created)
 
         # The publisher should have three books.
@@ -238,7 +230,7 @@ class GetOrCreateTestsWithManualPKs(TestCase):
             # pk 123456789 doesn't exist, so the tag object will be created.
             # Saving triggers a unique constraint violation on 'text'.
             Tag.objects.get_or_create(pk=123456789, defaults={"text": "foo"})
-        # Tag objects can be created after the error.
+            # Tag objects can be created after the error.
         Tag.objects.create(text="bar")
 
     def test_get_or_create_empty(self):
@@ -293,9 +285,7 @@ class GetOrCreateThroughManyToMany(TestCase):
 
 class UpdateOrCreateTests(TestCase):
     def test_update(self):
-        Person.objects.create(
-            first_name="John", last_name="Lennon", birthday=date(1940, 10, 9)
-        )
+        Person.objects.create(first_name="John", last_name="Lennon", birthday=date(1940, 10, 9))
         p, created = Person.objects.update_or_create(
             first_name="John",
             last_name="Lennon",
@@ -363,9 +353,7 @@ class UpdateOrCreateTests(TestCase):
 
     def test_update_or_create_with_model_property_defaults(self):
         """Using a property with a setter implemented is allowed."""
-        t, _ = Thing.objects.update_or_create(
-            defaults={"capitalized_name_property": "annie"}, pk=1
-        )
+        t, _ = Thing.objects.update_or_create(defaults={"capitalized_name_property": "annie"}, pk=1)
         self.assertEqual(t.name, "Annie")
 
     def test_error_contains_full_traceback(self):
@@ -426,9 +414,7 @@ class UpdateOrCreateTests(TestCase):
         """
         p = Publisher.objects.create(name="Acme Publishing")
         author = Author.objects.create(name="Ted")
-        book, created = author.books.update_or_create(
-            name="The Book of Ed & Fred", publisher=p
-        )
+        book, created = author.books.update_or_create(name="The Book of Ed & Fred", publisher=p)
         self.assertIs(created, True)
         self.assertEqual(author.books.count(), 1)
         book, created = author.books.update_or_create(
@@ -451,9 +437,7 @@ class UpdateOrCreateTests(TestCase):
         book.authors.add(author)
         self.assertEqual(author.books.count(), 1)
         name = "The Book of Django"
-        book, created = author.books.update_or_create(
-            defaults={"name": name}, id=book.id
-        )
+        book, created = author.books.update_or_create(defaults={"name": name}, id=book.id)
         self.assertFalse(created)
         self.assertEqual(book.name, name)
         # create_defaults should be ignored.
@@ -556,9 +540,7 @@ class UpdateOrCreateTests(TestCase):
 
     def test_defaults_not_evaluated_unless_needed(self):
         """`defaults` aren't evaluated if the instance isn't created."""
-        Person.objects.create(
-            first_name="John", last_name="Lennon", birthday=date(1940, 10, 9)
-        )
+        Person.objects.create(first_name="John", last_name="Lennon", birthday=date(1940, 10, 9))
 
         def raise_exception():
             raise AssertionError
@@ -590,15 +572,11 @@ class UpdateOrCreateTests(TestCase):
                         defaults=defaults,
                     )
                 self.assertIs(created, False)
-                update_sqls = [
-                    q["sql"] for q in captured_queries if q["sql"].startswith("UPDATE")
-                ]
+                update_sqls = [q["sql"] for q in captured_queries if q["sql"].startswith("UPDATE")]
                 self.assertEqual(len(update_sqls), 1)
                 update_sql = update_sqls[0]
                 self.assertIsNotNone(update_sql)
-                self.assertIn(
-                    connection.ops.quote_name("publisher_id_column"), update_sql
-                )
+                self.assertIn(connection.ops.quote_name("publisher_id_column"), update_sql)
                 self.assertIn(connection.ops.quote_name("updated"), update_sql)
                 # Name should not be updated.
                 self.assertNotIn(connection.ops.quote_name("name"), update_sql)
@@ -651,9 +629,7 @@ class UpdateOrCreateTransactionTests(TransactionTestCase):
                     return True
             return False
 
-        Person.objects.create(
-            first_name="John", last_name="Lennon", birthday=date(1940, 10, 9)
-        )
+        Person.objects.create(first_name="John", last_name="Lennon", birthday=date(1940, 10, 9))
 
         # update_or_create in a separate thread
         t = Thread(target=update_birthday_slowly)
@@ -663,7 +639,7 @@ class UpdateOrCreateTransactionTests(TransactionTestCase):
         if not lock_wait():
             self.skipTest("Database took too long to lock the row")
 
-        # Update during lock
+            # Update during lock
         Person.objects.filter(first_name="John").update(last_name="NotLennon")
         after_update = datetime.now()
 
@@ -726,9 +702,7 @@ class UpdateOrCreateTransactionTests(TransactionTestCase):
         wait_or_fail(locked_for_update, "Database took too long to lock row")
         # Create object *after* initial attempt by update_or_create to get obj
         # but before creation attempt.
-        person = Person(
-            first_name="John", last_name="Lennon", birthday=date(1940, 10, 9)
-        )
+        person = Person(first_name="John", last_name="Lennon", birthday=date(1940, 10, 9))
         # Don't use person.save() as it's gated by the save_allowed event.
         person_save(person, force_insert=True)
         # Now that the row is created allow the update_or_create() logic to
@@ -762,9 +736,7 @@ class UpdateOrCreateTransactionTests(TransactionTestCase):
 class InvalidCreateArgumentsTests(TransactionTestCase):
     available_apps = ["get_or_create"]
     msg = "Invalid field name(s) for model Thing: 'nonexistent'."
-    bad_field_msg = (
-        "Cannot resolve keyword 'nonexistent' into field. Choices are: id, name, tags"
-    )
+    bad_field_msg = "Cannot resolve keyword 'nonexistent' into field. Choices are: id, name, tags"
 
     def test_get_or_create_with_invalid_defaults(self):
         with self.assertRaisesMessage(FieldError, self.msg):
@@ -780,9 +752,7 @@ class InvalidCreateArgumentsTests(TransactionTestCase):
 
     def test_update_or_create_with_invalid_create_defaults(self):
         with self.assertRaisesMessage(FieldError, self.msg):
-            Thing.objects.update_or_create(
-                name="a", create_defaults={"nonexistent": "b"}
-            )
+            Thing.objects.update_or_create(name="a", create_defaults={"nonexistent": "b"})
 
     def test_update_or_create_with_invalid_kwargs(self):
         with self.assertRaisesMessage(FieldError, self.bad_field_msg):
@@ -790,24 +760,15 @@ class InvalidCreateArgumentsTests(TransactionTestCase):
 
     def test_multiple_invalid_fields(self):
         with self.assertRaisesMessage(FieldError, self.bad_field_msg):
-            Thing.objects.update_or_create(
-                name="a", nonexistent="b", defaults={"invalid": "c"}
-            )
+            Thing.objects.update_or_create(name="a", nonexistent="b", defaults={"invalid": "c"})
 
     def test_property_attribute_without_setter_defaults(self):
         with self.assertRaisesMessage(
             FieldError, "Invalid field name(s) for model Thing: 'name_in_all_caps'"
         ):
-            Thing.objects.update_or_create(
-                name="a", defaults={"name_in_all_caps": "FRANK"}
-            )
+            Thing.objects.update_or_create(name="a", defaults={"name_in_all_caps": "FRANK"})
 
     def test_property_attribute_without_setter_kwargs(self):
-        msg = (
-            "Cannot resolve keyword 'name_in_all_caps' into field. Choices are: id, "
-            "name, tags"
-        )
+        msg = "Cannot resolve keyword 'name_in_all_caps' into field. Choices are: id, name, tags"
         with self.assertRaisesMessage(FieldError, msg):
-            Thing.objects.update_or_create(
-                name_in_all_caps="FRANK", defaults={"name": "Frank"}
-            )
+            Thing.objects.update_or_create(name_in_all_caps="FRANK", defaults={"name": "Frank"})

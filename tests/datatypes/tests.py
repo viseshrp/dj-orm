@@ -23,9 +23,7 @@ class DataTypesTestCase(TestCase):
         d = Donut(name="Apple Fritter")
         d.baked_date = datetime.date(year=1938, month=6, day=4)
         d.baked_time = datetime.time(hour=5, minute=30)
-        d.consumed_at = datetime.datetime(
-            year=2007, month=4, day=20, hour=16, minute=19, second=59
-        )
+        d.consumed_at = datetime.datetime(year=2007, month=4, day=20, hour=16, minute=19, second=59)
         d.save()
 
         d2 = Donut.objects.get(name="Apple Fritter")
@@ -36,9 +34,7 @@ class DataTypesTestCase(TestCase):
     def test_time_field(self):
         # Test for ticket #12059: TimeField wrongly handling datetime.datetime object.
         d = Donut(name="Apple Fritter")
-        d.baked_time = datetime.datetime(
-            year=2007, month=4, day=20, hour=16, minute=19, second=59
-        )
+        d.baked_time = datetime.datetime(year=2007, month=4, day=20, hour=16, minute=19, second=59)
         d.save()
 
         d2 = Donut.objects.get(name="Apple Fritter")
@@ -58,12 +54,8 @@ class DataTypesTestCase(TestCase):
             baked_date=datetime.datetime(year=2006, month=1, day=1),
             consumed_at=datetime.datetime(year=2006, month=1, day=1),
         )
-        self.assertEqual(
-            "Date Test 2007", Donut.objects.filter(baked_date__year=2007)[0].name
-        )
-        self.assertEqual(
-            "Date Test 2006", Donut.objects.filter(baked_date__year=2006)[0].name
-        )
+        self.assertEqual("Date Test 2007", Donut.objects.filter(baked_date__year=2007)[0].name)
+        self.assertEqual("Date Test 2006", Donut.objects.filter(baked_date__year=2006)[0].name)
 
         Donut.objects.create(
             name="Apple Fritter",

@@ -36,9 +36,7 @@ class QuerySetSetOperationTests(TestCase):
         Number.objects.bulk_create(Number(num=i, other_num=10 - i) for i in range(10))
 
     def assertNumbersEqual(self, queryset, expected_numbers, ordered=True):
-        self.assertQuerySetEqual(
-            queryset, expected_numbers, operator.attrgetter("num"), ordered
-        )
+        self.assertQuerySetEqual(queryset, expected_numbers, operator.attrgetter("num"), ordered)
 
     def test_simple_union(self):
         qs1 = Number.objects.filter(num__lte=1)
@@ -442,9 +440,9 @@ class QuerySetSetOperationTests(TestCase):
         qs1 = ReservedName.objects.annotate(row_type=Value("rn")).values_list(
             "name", "order", "row_type"
         )
-        qs2 = Celebrity.objects.annotate(
-            row_type=Value("cb"), order=Value(-10)
-        ).values_list("name", "order", "row_type")
+        qs2 = Celebrity.objects.annotate(row_type=Value("cb"), order=Value(-10)).values_list(
+            "name", "order", "row_type"
+        )
         self.assertSequenceEqual(
             qs1.union(qs2).order_by("order"),
             [("c1", -10, "cb"), ("rn1", 10, "rn")],
@@ -557,9 +555,7 @@ class QuerySetSetOperationTests(TestCase):
             ordered=False,
         )
 
-    @skipUnlessDBFeature(
-        "supports_slicing_ordering_in_compound", "allow_sliced_subqueries_with_in"
-    )
+    @skipUnlessDBFeature("supports_slicing_ordering_in_compound", "allow_sliced_subqueries_with_in")
     def test_union_in_with_ordering_and_slice(self):
         qs1 = Number.objects.filter(num__gt=7).order_by("num")[:1]
         qs2 = Number.objects.filter(num__lt=2).order_by("-num")[:1]
@@ -608,9 +604,7 @@ class QuerySetSetOperationTests(TestCase):
             connection.ops.quote_name(Number._meta.pk.column),
             captured_sql,
         )
-        self.assertEqual(
-            captured_sql.count(connection.ops.limit_offset_sql(None, 1)), 1
-        )
+        self.assertEqual(captured_sql.count(connection.ops.limit_offset_sql(None, 1)), 1)
 
     def test_exists_union_empty_result(self):
         qs = Number.objects.filter(pk__in=[])
@@ -696,14 +690,14 @@ class QuerySetSetOperationTests(TestCase):
         # 'id' is not part of the select
         with self.assertRaisesMessage(DatabaseError, msg):
             list(qs1.union(qs2).order_by("id"))
-        # 'num' got realiased to num2
+            # 'num' got realiased to num2
         with self.assertRaisesMessage(DatabaseError, msg):
             list(qs1.union(qs2).order_by("num"))
         with self.assertRaisesMessage(DatabaseError, msg):
             list(qs1.union(qs2).order_by(F("num")))
         with self.assertRaisesMessage(DatabaseError, msg):
             list(qs1.union(qs2).order_by(F("num").desc()))
-        # switched order, now 'exists' again:
+            # switched order, now 'exists' again:
         list(qs2.union(qs1).order_by("num"))
 
     @skipUnlessDBFeature("supports_select_difference", "supports_select_intersection")

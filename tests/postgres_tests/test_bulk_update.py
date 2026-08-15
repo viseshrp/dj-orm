@@ -36,19 +36,13 @@ class BulkSaveTests(PostgreSQLTestCase):
         ]
         for Model, field, initial, new in test_data:
             with self.subTest(model=Model, field=field):
-                instances = Model.objects.bulk_create(
-                    Model(**{field: initial}) for _ in range(20)
-                )
+                instances = Model.objects.bulk_create(Model(**{field: initial}) for _ in range(20))
                 for instance in instances:
                     setattr(instance, field, new)
                 Model.objects.bulk_update(instances, [field])
-                self.assertSequenceEqual(
-                    Model.objects.filter(**{field: new}), instances
-                )
+                self.assertSequenceEqual(Model.objects.filter(**{field: new}), instances)
 
     def test_bulk_create(self):
         OffByOneModel.objects.bulk_create(OffByOneModel(one_off=0) for _ in range(20))
 
-        self.assertSequenceEqual(
-            [m.one_off for m in OffByOneModel.objects.all()], 20 * [1]
-        )
+        self.assertSequenceEqual([m.one_off for m in OffByOneModel.objects.all()], 20 * [1])

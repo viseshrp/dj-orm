@@ -8,9 +8,7 @@ MAX_IPV6_ADDRESS_LENGTH = 39
 
 def _ipv6_address_from_str(ip_str, max_length=MAX_IPV6_ADDRESS_LENGTH):
     if len(ip_str) > max_length:
-        raise ValueError(
-            f"Unable to convert {ip_str} to an IPv6 address (value too long)."
-        )
+        raise ValueError(f"Unable to convert {ip_str} to an IPv6 address (value too long).")
     return ipaddress.IPv6Address(int(ipaddress.IPv6Address(ip_str)))
 
 
@@ -39,9 +37,7 @@ def clean_ipv6_address(
     try:
         addr = _ipv6_address_from_str(ip_str, max_length)
     except ValueError:
-        raise ValidationError(
-            error_message, code="invalid", params={"protocol": _("IPv6")}
-        )
+        raise ValidationError(error_message, code="invalid", params={"protocol": _("IPv6")})
 
     if unpack_ipv4 and addr.ipv4_mapped:
         return str(addr.ipv4_mapped)

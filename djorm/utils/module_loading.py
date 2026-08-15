@@ -30,8 +30,7 @@ def import_string(dotted_path):
         return cached_import(module_path, class_name)
     except AttributeError as err:
         raise ImportError(
-            'Module "%s" does not define a "%s" attribute/class'
-            % (module_path, class_name)
+            'Module "%s" does not define a "%s" attribute/class' % (module_path, class_name)
         ) from err
 
 
@@ -64,9 +63,9 @@ def autodiscover_modules(*args, **kwargs):
                 if register_to:
                     register_to._registry = before_import_registry
 
-                # Decide whether to bubble up this error. If the app just
-                # doesn't have the module in question, we can ignore the error
-                # attempting to import it, otherwise we want it to bubble up.
+                    # Decide whether to bubble up this error. If the app just
+                    # doesn't have the module in question, we can ignore the error
+                    # attempting to import it, otherwise we want it to bubble up.
                 if module_has_submodule(app_config.module, module_to_search):
                     raise
 

@@ -23,18 +23,12 @@ class IndexTestMixin:
     def test_name_auto_generation(self):
         index = self.index_class(fields=["field"])
         index.set_name_with_model(CharFieldModel)
-        self.assertRegex(
-            index.name, r"postgres_te_field_[0-9a-f]{6}_%s" % self.index_class.suffix
-        )
+        self.assertRegex(index.name, r"postgres_te_field_[0-9a-f]{6}_%s" % self.index_class.suffix)
 
     def test_deconstruction_no_customization(self):
-        index = self.index_class(
-            fields=["title"], name="test_title_%s" % self.index_class.suffix
-        )
+        index = self.index_class(fields=["title"], name="test_title_%s" % self.index_class.suffix)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(
-            path, 'djorm.contrib.postgres.indexes.%s' % self.index_class.__name__
-        )
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.%s" % self.index_class.__name__)
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -62,7 +56,7 @@ class BloomIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
     def test_deconstruction(self):
         index = BloomIndex(fields=["title"], name="test_bloom", length=80, columns=[4])
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.contrib.postgres.indexes.BloomIndex')
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.BloomIndex")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -114,7 +108,7 @@ class BrinIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
             pages_per_range=16,
         )
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.contrib.postgres.indexes.BrinIndex')
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.BrinIndex")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -142,7 +136,7 @@ class BTreeIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
     def test_deconstruction(self):
         index = BTreeIndex(fields=["title"], name="test_title_btree")
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.contrib.postgres.indexes.BTreeIndex')
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.BTreeIndex")
         self.assertEqual(args, ())
         self.assertEqual(kwargs, {"fields": ["title"], "name": "test_title_btree"})
 
@@ -153,7 +147,7 @@ class BTreeIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
             deduplicate_items=False,
         )
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.contrib.postgres.indexes.BTreeIndex')
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.BTreeIndex")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -180,7 +174,7 @@ class GinIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
             gin_pending_list_limit=128,
         )
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.contrib.postgres.indexes.GinIndex')
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.GinIndex")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -200,11 +194,9 @@ class GistIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
         self.assertEqual(GistIndex.suffix, "gist")
 
     def test_deconstruction(self):
-        index = GistIndex(
-            fields=["title"], name="test_title_gist", buffering=False, fillfactor=80
-        )
+        index = GistIndex(fields=["title"], name="test_title_gist", buffering=False, fillfactor=80)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.contrib.postgres.indexes.GistIndex')
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.GistIndex")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -226,11 +218,9 @@ class HashIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
     def test_deconstruction(self):
         index = HashIndex(fields=["title"], name="test_title_hash", fillfactor=80)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.contrib.postgres.indexes.HashIndex')
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.HashIndex")
         self.assertEqual(args, ())
-        self.assertEqual(
-            kwargs, {"fields": ["title"], "name": "test_title_hash", "fillfactor": 80}
-        )
+        self.assertEqual(kwargs, {"fields": ["title"], "name": "test_title_hash", "fillfactor": 80})
 
 
 class SpGistIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
@@ -242,7 +232,7 @@ class SpGistIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
     def test_deconstruction(self):
         index = SpGistIndex(fields=["title"], name="test_title_spgist", fillfactor=80)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.contrib.postgres.indexes.SpGistIndex')
+        self.assertEqual(path, "djorm.contrib.postgres.indexes.SpGistIndex")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs, {"fields": ["title"], "name": "test_title_spgist", "fillfactor": 80}
@@ -266,9 +256,7 @@ class SchemaTests(PostgreSQLTestCase):
 
     def test_gin_index(self):
         # Ensure the table is there and doesn't have an index.
-        self.assertNotIn(
-            "field", self.get_constraints(IntegerArrayModel._meta.db_table)
-        )
+        self.assertNotIn("field", self.get_constraints(IntegerArrayModel._meta.db_table))
         # Add the index
         index_name = "integer_array_model_field_gin"
         index = GinIndex(fields=["field"], name=index_name)
@@ -280,9 +268,7 @@ class SchemaTests(PostgreSQLTestCase):
         # Drop the index
         with connection.schema_editor() as editor:
             editor.remove_index(IntegerArrayModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(IntegerArrayModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(IntegerArrayModel._meta.db_table))
 
     def test_gin_fastupdate(self):
         index_name = "integer_array_gin_fastupdate"
@@ -294,25 +280,19 @@ class SchemaTests(PostgreSQLTestCase):
         self.assertEqual(constraints[index_name]["options"], ["fastupdate=off"])
         with connection.schema_editor() as editor:
             editor.remove_index(IntegerArrayModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(IntegerArrayModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(IntegerArrayModel._meta.db_table))
 
     def test_partial_gin_index(self):
         with register_lookup(CharField, Length):
             index_name = "char_field_gin_partial_idx"
-            index = GinIndex(
-                fields=["field"], name=index_name, condition=Q(field__length=40)
-            )
+            index = GinIndex(fields=["field"], name=index_name, condition=Q(field__length=40))
             with connection.schema_editor() as editor:
                 editor.add_index(CharFieldModel, index)
             constraints = self.get_constraints(CharFieldModel._meta.db_table)
             self.assertEqual(constraints[index_name]["type"], "gin")
             with connection.schema_editor() as editor:
                 editor.remove_index(CharFieldModel, index)
-            self.assertNotIn(
-                index_name, self.get_constraints(CharFieldModel._meta.db_table)
-            )
+            self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_partial_gin_index_with_tablespace(self):
         with register_lookup(CharField, Length):
@@ -333,9 +313,7 @@ class SchemaTests(PostgreSQLTestCase):
             self.assertEqual(constraints[index_name]["type"], "gin")
             with connection.schema_editor() as editor:
                 editor.remove_index(CharFieldModel, index)
-            self.assertNotIn(
-                index_name, self.get_constraints(CharFieldModel._meta.db_table)
-            )
+            self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_gin_parameters(self):
         index_name = "integer_array_gin_params"
@@ -360,9 +338,7 @@ class SchemaTests(PostgreSQLTestCase):
         )
         with connection.schema_editor() as editor:
             editor.remove_index(IntegerArrayModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(IntegerArrayModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(IntegerArrayModel._meta.db_table))
 
     def test_trigram_op_class_gin_index(self):
         index_name = "trigram_op_class_gin"
@@ -404,9 +380,7 @@ class SchemaTests(PostgreSQLTestCase):
         self.assertEqual(constraints[index_name]["type"], BloomIndex.suffix)
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_bloom_parameters(self):
         index_name = "char_field_model_field_bloom_params"
@@ -418,9 +392,7 @@ class SchemaTests(PostgreSQLTestCase):
         self.assertEqual(constraints[index_name]["options"], ["length=512", "col1=3"])
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_brin_index(self):
         index_name = "char_field_model_field_brin"
@@ -432,9 +404,7 @@ class SchemaTests(PostgreSQLTestCase):
         self.assertEqual(constraints[index_name]["options"], ["pages_per_range=4"])
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_brin_parameters(self):
         index_name = "char_field_brin_params"
@@ -446,9 +416,7 @@ class SchemaTests(PostgreSQLTestCase):
         self.assertEqual(constraints[index_name]["options"], ["autosummarize=on"])
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_btree_index(self):
         # Ensure the table is there and doesn't have an index.
@@ -464,9 +432,7 @@ class SchemaTests(PostgreSQLTestCase):
         # Drop the index.
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_btree_parameters(self):
         index_name = "integer_array_btree_parameters"
@@ -483,9 +449,7 @@ class SchemaTests(PostgreSQLTestCase):
         )
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_gist_index(self):
         # Ensure the table is there and doesn't have an index.
@@ -501,27 +465,19 @@ class SchemaTests(PostgreSQLTestCase):
         # Drop the index.
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_gist_parameters(self):
         index_name = "integer_array_gist_buffering"
-        index = GistIndex(
-            fields=["field"], name=index_name, buffering=True, fillfactor=80
-        )
+        index = GistIndex(fields=["field"], name=index_name, buffering=True, fillfactor=80)
         with connection.schema_editor() as editor:
             editor.add_index(CharFieldModel, index)
         constraints = self.get_constraints(CharFieldModel._meta.db_table)
         self.assertEqual(constraints[index_name]["type"], GistIndex.suffix)
-        self.assertEqual(
-            constraints[index_name]["options"], ["buffering=on", "fillfactor=80"]
-        )
+        self.assertEqual(constraints[index_name]["options"], ["buffering=on", "fillfactor=80"])
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_gist_include(self):
         index_name = "scene_gist_include_setting"
@@ -587,9 +543,7 @@ class SchemaTests(PostgreSQLTestCase):
         # Drop the index.
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_hash_parameters(self):
         index_name = "integer_array_hash_fillfactor"
@@ -601,9 +555,7 @@ class SchemaTests(PostgreSQLTestCase):
         self.assertEqual(constraints[index_name]["options"], ["fillfactor=80"])
         with connection.schema_editor() as editor:
             editor.remove_index(CharFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(CharFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(CharFieldModel._meta.db_table))
 
     def test_spgist_index(self):
         # Ensure the table is there and doesn't have an index.
@@ -619,9 +571,7 @@ class SchemaTests(PostgreSQLTestCase):
         # Drop the index.
         with connection.schema_editor() as editor:
             editor.remove_index(TextFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(TextFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(TextFieldModel._meta.db_table))
 
     def test_spgist_parameters(self):
         index_name = "text_field_model_spgist_fillfactor"
@@ -633,9 +583,7 @@ class SchemaTests(PostgreSQLTestCase):
         self.assertEqual(constraints[index_name]["options"], ["fillfactor=80"])
         with connection.schema_editor() as editor:
             editor.remove_index(TextFieldModel, index)
-        self.assertNotIn(
-            index_name, self.get_constraints(TextFieldModel._meta.db_table)
-        )
+        self.assertNotIn(index_name, self.get_constraints(TextFieldModel._meta.db_table))
 
     def test_spgist_include(self):
         index_name = "scene_spgist_include_setting"

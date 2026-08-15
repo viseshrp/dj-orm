@@ -26,10 +26,9 @@ class CreateExtension(Operation):
             return
         if not self.extension_exists(schema_editor, self.name):
             schema_editor.execute(
-                "CREATE EXTENSION IF NOT EXISTS %s"
-                % schema_editor.quote_name(self.name)
+                "CREATE EXTENSION IF NOT EXISTS %s" % schema_editor.quote_name(self.name)
             )
-        # Clear cached, stale oids.
+            # Clear cached, stale oids.
         get_hstore_oids.cache_clear()
         get_citext_oids.cache_clear()
         # Registering new type handlers cannot be done before the extension is
@@ -48,7 +47,7 @@ class CreateExtension(Operation):
             schema_editor.execute(
                 "DROP EXTENSION IF EXISTS %s" % schema_editor.quote_name(self.name)
             )
-        # Clear cached, stale oids.
+            # Clear cached, stale oids.
         get_hstore_oids.cache_clear()
         get_citext_oids.cache_clear()
 
@@ -201,9 +200,7 @@ class CollationOperation(Operation):
             "CREATE COLLATION %(name)s (%(args)s)"
             % {
                 "name": schema_editor.quote_name(self.name),
-                "args": ", ".join(
-                    f"{option}={value}" for option, value in args.items()
-                ),
+                "args": ", ".join(f"{option}={value}" for option, value in args.items()),
             }
         )
 
@@ -278,9 +275,7 @@ class AddConstraintNotValid(AddConstraint):
 
     def __init__(self, model_name, constraint):
         if not isinstance(constraint, CheckConstraint):
-            raise TypeError(
-                "AddConstraintNotValid.constraint must be a check constraint."
-            )
+            raise TypeError("AddConstraintNotValid.constraint must be a check constraint.")
         super().__init__(model_name, constraint)
 
     def describe(self):

@@ -102,9 +102,7 @@ class CompositePKFilterTests(TestCase):
 
         for obj, objs in test_cases:
             with self.subTest(obj=obj, objs=objs):
-                self.assertSequenceEqual(
-                    Comment.objects.filter(pk__gt=obj.pk).order_by("pk"), objs
-                )
+                self.assertSequenceEqual(Comment.objects.filter(pk__gt=obj.pk).order_by("pk"), objs)
 
     def test_filter_comments_by_pk_gte(self):
         c11, c12, c13, c24, c15 = (
@@ -146,9 +144,7 @@ class CompositePKFilterTests(TestCase):
 
         for obj, objs in test_cases:
             with self.subTest(obj=obj, objs=objs):
-                self.assertSequenceEqual(
-                    Comment.objects.filter(pk__lt=obj.pk).order_by("pk"), objs
-                )
+                self.assertSequenceEqual(Comment.objects.filter(pk__lt=obj.pk).order_by("pk"), objs)
 
     def test_filter_comments_by_pk_lte(self):
         c11, c12, c13, c24, c15 = (
@@ -182,9 +178,7 @@ class CompositePKFilterTests(TestCase):
         for objs in test_cases:
             with self.subTest(objs=objs):
                 pks = [obj.pk for obj in objs]
-                self.assertSequenceEqual(
-                    Comment.objects.filter(pk__in=pks).order_by("pk"), objs
-                )
+                self.assertSequenceEqual(Comment.objects.filter(pk__in=pks).order_by("pk"), objs)
 
     def test_filter_comments_by_pk_in_subquery(self):
         self.assertSequenceEqual(
@@ -195,9 +189,7 @@ class CompositePKFilterTests(TestCase):
         )
         self.assertSequenceEqual(
             Comment.objects.filter(
-                pk__in=Comment.objects.filter(pk=self.comment_1.pk).values(
-                    "tenant_id", "id"
-                ),
+                pk__in=Comment.objects.filter(pk=self.comment_1.pk).values("tenant_id", "id"),
             ),
             [self.comment_1],
         )
@@ -211,10 +203,7 @@ class CompositePKFilterTests(TestCase):
         )
 
     def test_filter_by_pk_in_subquery_invalid_selected_columns(self):
-        msg = (
-            "The QuerySet value for the 'in' lookup must have 2 selected "
-            "fields (received 3)"
-        )
+        msg = "The QuerySet value for the 'in' lookup must have 2 selected fields (received 3)"
         with self.assertRaisesMessage(ValueError, msg):
             Comment.objects.filter(pk__in=Comment.objects.values("pk", "text"))
 
@@ -239,16 +228,12 @@ class CompositePKFilterTests(TestCase):
 
     def test_filter_comments_by_user_and_exclude_by_pk(self):
         self.assertSequenceEqual(
-            Comment.objects.filter(user=self.user_1)
-            .exclude(pk=self.comment_1.pk)
-            .order_by("pk"),
+            Comment.objects.filter(user=self.user_1).exclude(pk=self.comment_1.pk).order_by("pk"),
             (self.comment_2, self.comment_5),
         )
 
     def test_filter_comments_by_user_and_contains(self):
-        self.assertIs(
-            Comment.objects.filter(user=self.user_1).contains(self.comment_1), True
-        )
+        self.assertIs(Comment.objects.filter(user=self.user_1).contains(self.comment_1), True)
 
     def test_filter_query_does_not_mutate(self):
         queryset = User.objects.filter(comments__in=Comment.objects.all())
@@ -511,9 +496,7 @@ class CompositePKFilterTests(TestCase):
         )
         self.assertSequenceEqual(
             Comment.objects.filter(
-                pk__in=Comment.objects.filter(pk=self.comment_1.pk).values(
-                    "tenant_id", "id"
-                )[:1],
+                pk__in=Comment.objects.filter(pk=self.comment_1.pk).values("tenant_id", "id")[:1],
             ),
             [self.comment_1],
         )
@@ -561,7 +544,5 @@ class CompositePKFilterTests(TestCase):
 @skipUnlessDBFeature("supports_tuple_lookups")
 class CompositePKFilterTupleLookupFallbackTests(CompositePKFilterTests):
     def setUp(self):
-        feature_patch = patch.object(
-            connection.features, "supports_tuple_lookups", False
-        )
+        feature_patch = patch.object(connection.features, "supports_tuple_lookups", False)
         self.enterContext(feature_patch)

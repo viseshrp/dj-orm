@@ -9,9 +9,7 @@ from djorm.db.backends.base.introspection import TableInfo
 from djorm.db.models import Index
 from djorm.utils.regex_helper import _lazy_re_compile
 
-FieldInfo = namedtuple(
-    "FieldInfo", BaseFieldInfo._fields + ("pk", "has_json_constraint")
-)
+FieldInfo = namedtuple("FieldInfo", BaseFieldInfo._fields + ("pk", "has_json_constraint"))
 
 field_size_re = _lazy_re_compile(r"^\s*(?:var)?char\s*\(\s*(\d+)\s*\)\s*$")
 
@@ -21,10 +19,11 @@ def get_field_size(name):
     m = field_size_re.search(name)
     return int(m[1]) if m else None
 
+    # This light wrapper "fakes" a dictionary interface, because some SQLite data
+    # types include variables in them -- e.g. "varchar(30)" -- and can't be matched
+    # as a simple dictionary lookup.
 
-# This light wrapper "fakes" a dictionary interface, because some SQLite data
-# types include variables in them -- e.g. "varchar(30)" -- and can't be matched
-# as a simple dictionary lookup.
+
 class FlexibleFieldLookupDict:
     # Maps SQL types to Django Field types. Some of the SQL types have multiple
     # entries here because SQLite allows for anything and doesn't normalize the
@@ -88,9 +87,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         Return a description of the table with the DB-API cursor.description
         interface.
         """
-        cursor.execute(
-            "PRAGMA table_xinfo(%s)" % self.connection.ops.quote_name(table_name)
-        )
+        cursor.execute("PRAGMA table_xinfo(%s)" % self.connection.ops.quote_name(table_name))
         table_info = cursor.fetchall()
         if not table_info:
             raise DatabaseError(f"Table {table_name} does not exist (empty pragma).")
@@ -137,9 +134,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         ]
         # If the primary key is composed of multiple columns they should not
         # be individually marked as pk.
-        primary_key = [
-            index for index, field_info in enumerate(table_description) if field_info.pk
-        ]
+        primary_key = [index for index, field_info in enumerate(table_description) if field_info.pk]
         if len(primary_key) > 1:
             for index in primary_key:
                 table_description[index] = table_description[index]._replace(pk=False)
@@ -154,9 +149,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         Return a dictionary of {column_name: (ref_column_name, ref_table_name)}
         representing all foreign keys in the given table.
         """
-        cursor.execute(
-            "PRAGMA foreign_key_list(%s)" % self.connection.ops.quote_name(table_name)
-        )
+        cursor.execute("PRAGMA foreign_key_list(%s)" % self.connection.ops.quote_name(table_name))
         return {
             column_name: (ref_column_name, ref_table_name)
             for (
@@ -170,9 +163,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         }
 
     def get_primary_key_columns(self, cursor, table_name):
-        cursor.execute(
-            "PRAGMA table_info(%s)" % self.connection.ops.quote_name(table_name)
-        )
+        cursor.execute("PRAGMA table_info(%s)" % self.connection.ops.quote_name(table_name))
         return [name for _, name, *_, pk in cursor.fetchall() if pk]
 
     def _parse_column_or_constraint_definition(self, tokens, columns):
@@ -196,11 +187,9 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             elif braces_deep == 0 and token.match(sqlparse.tokens.Punctuation, ","):
                 # End of current column or constraint definition.
                 break
-            # Detect column or constraint definition by first token.
+                # Detect column or constraint definition by first token.
             if is_constraint_definition is None:
-                is_constraint_definition = token.match(
-                    sqlparse.tokens.Keyword, "CONSTRAINT"
-                )
+                is_constraint_definition = token.match(sqlparse.tokens.Keyword, "CONSTRAINT")
                 if is_constraint_definition:
                     continue
             if is_constraint_definition:
@@ -210,7 +199,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                         constraint_name = token.value
                     elif token.ttype == sqlparse.tokens.Literal.String.Symbol:
                         constraint_name = token.value[1:-1]
-                # Start constraint columns parsing after UNIQUE keyword.
+                        # Start constraint columns parsing after UNIQUE keyword.
                 if token.match(sqlparse.tokens.Keyword, "UNIQUE"):
                     unique = True
                     unique_braces_deep = braces_deep
@@ -233,7 +222,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                         field_name = token.value[1:-1]
                 if token.match(sqlparse.tokens.Keyword, "UNIQUE"):
                     unique_columns = [field_name]
-            # Start constraint columns parsing after CHECK keyword.
+                    # Start constraint columns parsing after CHECK keyword.
             if token.match(sqlparse.tokens.Keyword, "CHECK"):
                 check = True
                 check_braces_deep = braces_deep
@@ -286,7 +275,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         for token in tokens:
             if token.match(sqlparse.tokens.Punctuation, "("):
                 break
-        # Parse columns and constraint definition
+                # Parse columns and constraint definition
         while True:
             (
                 constraint_name,
@@ -299,17 +288,13 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                     constraints[constraint_name] = unique
                 else:
                     unnamed_constrains_index += 1
-                    constraints[
-                        "__unnamed_constraint_%s__" % unnamed_constrains_index
-                    ] = unique
+                    constraints["__unnamed_constraint_%s__" % unnamed_constrains_index] = unique
             if check:
                 if constraint_name:
                     constraints[constraint_name] = check
                 else:
                     unnamed_constrains_index += 1
-                    constraints[
-                        "__unnamed_constraint_%s__" % unnamed_constrains_index
-                    ] = check
+                    constraints["__unnamed_constraint_%s__" % unnamed_constrains_index] = check
             if end_token.match(sqlparse.tokens.Punctuation, ")"):
                 break
         return constraints
@@ -330,15 +315,11 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             # table_name is a view.
             pass
         else:
-            columns = {
-                info.name for info in self.get_table_description(cursor, table_name)
-            }
+            columns = {info.name for info in self.get_table_description(cursor, table_name)}
             constraints.update(self._parse_table_constraints(table_schema, columns))
 
-        # Get the index info
-        cursor.execute(
-            "PRAGMA index_list(%s)" % self.connection.ops.quote_name(table_name)
-        )
+            # Get the index info
+        cursor.execute("PRAGMA index_list(%s)" % self.connection.ops.quote_name(table_name))
         for row in cursor.fetchall():
             # SQLite 3.8.9+ has 5 columns, however older versions only give 3
             # columns. Discard last 2 columns if there.
@@ -358,10 +339,8 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             if not sql:
                 # An inline constraint
                 continue
-            # Get the index info for that index
-            cursor.execute(
-                "PRAGMA index_info(%s)" % self.connection.ops.quote_name(index)
-            )
+                # Get the index info for that index
+            cursor.execute("PRAGMA index_info(%s)" % self.connection.ops.quote_name(index))
             for index_rank, column_rank, column in cursor.fetchall():
                 if index not in constraints:
                     constraints[index] = {
@@ -373,14 +352,14 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                         "index": True,
                     }
                 constraints[index]["columns"].append(column)
-            # Add type and column orders for indexes
+                # Add type and column orders for indexes
             if constraints[index]["index"]:
                 # SQLite doesn't support any index type other than b-tree
                 constraints[index]["type"] = Index.suffix
                 orders = self._get_index_columns_orders(sql)
                 if orders is not None:
                     constraints[index]["orders"] = orders
-        # Get the PK
+                    # Get the PK
         pk_columns = self.get_primary_key_columns(cursor, table_name)
         if pk_columns:
             # SQLite doesn't actually give a name to the PK constraint,

@@ -37,9 +37,7 @@ class DateFormatTests(SimpleTestCase):
         ltz = get_default_timezone()
         dt = make_aware(datetime(2009, 5, 16, 5, 30, 30), ltz)
         self.assertEqual(datetime.fromtimestamp(int(format(dt, "U")), ltz), dt)
-        self.assertEqual(
-            datetime.fromtimestamp(int(format(dt, "U"))), dt.replace(tzinfo=None)
-        )
+        self.assertEqual(datetime.fromtimestamp(int(format(dt, "U"))), dt.replace(tzinfo=None))
 
     @requires_tz_support
     def test_datetime_with_tzinfo(self):
@@ -114,9 +112,7 @@ class DateFormatTests(SimpleTestCase):
 
     def test_date_formats_c_format(self):
         timestamp = datetime(2008, 5, 19, 11, 45, 23, 123456)
-        self.assertEqual(
-            dateformat.format(timestamp, "c"), "2008-05-19T11:45:23.123456"
-        )
+        self.assertEqual(dateformat.format(timestamp, "c"), "2008-05-19T11:45:23.123456")
 
     def test_time_formats(self):
         # Specifiers 'I', 'r', and 'U' are covered in test_timezones().
@@ -171,9 +167,7 @@ class DateFormatTests(SimpleTestCase):
                 ("Z", "3600"),
             ]:
                 with self.subTest(specifier=specifier):
-                    self.assertEqual(
-                        dateformat.format(my_birthday, specifier), expected
-                    )
+                    self.assertEqual(dateformat.format(my_birthday, specifier), expected)
 
             self.assertEqual(dateformat.format(aware_dt, "e"), "-0330")
             self.assertEqual(
@@ -191,7 +185,7 @@ class DateFormatTests(SimpleTestCase):
                 with self.subTest(specifier=specifier):
                     self.assertEqual(dateformat.time_format(noon, specifier), "")
 
-        # Ticket #16924 -- We don't need timezone support to test this
+                    # Ticket #16924 -- We don't need timezone support to test this
         self.assertEqual(dateformat.format(aware_dt, "O"), "-0330")
 
     def test_invalid_time_format_specifiers(self):

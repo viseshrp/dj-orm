@@ -75,7 +75,7 @@ def normalize_together(option_together):
         first_element = option_together[0]
         if not isinstance(first_element, (tuple, list)):
             option_together = (option_together,)
-        # Normalize everything to tuples
+            # Normalize everything to tuples
         return tuple(tuple(ot) for ot in option_together)
     except TypeError:
         # If the value of option_together isn't valid, return it
@@ -214,19 +214,17 @@ class Options:
                 self.constraints = self._format_names(self.constraints)
                 self.indexes = self._format_names(self.indexes)
 
-            # verbose_name_plural is a special case because it uses a 's'
-            # by default.
+                # verbose_name_plural is a special case because it uses a 's'
+                # by default.
             if self.verbose_name_plural is None:
                 self.verbose_name_plural = format_lazy("{}s", self.verbose_name)
 
-            # order_with_respect_and ordering are mutually exclusive.
+                # order_with_respect_and ordering are mutually exclusive.
             self._ordering_clash = bool(self.ordering and self.order_with_respect_to)
 
             # Any leftover attributes must be invalid.
             if meta_attrs != {}:
-                raise TypeError(
-                    "'class Meta' got invalid attribute(s): %s" % ",".join(meta_attrs)
-                )
+                raise TypeError("'class Meta' got invalid attribute(s): %s" % ",".join(meta_attrs))
         else:
             self.verbose_name_plural = format_lazy("{}s", self.verbose_name)
         del self.meta
@@ -234,9 +232,7 @@ class Options:
         # If the db_table wasn't provided, use the app_label + model_name.
         if not self.db_table:
             self.db_table = "%s_%s" % (self.app_label, self.model_name)
-            self.db_table = truncate_name(
-                self.db_table, connection.ops.max_name_length()
-            )
+            self.db_table = truncate_name(self.db_table, connection.ops.max_name_length())
 
         if self.swappable:
             setting_changed.connect(self.setting_changed)
@@ -260,8 +256,7 @@ class Options:
         if self.app_config and self.app_config._is_default_auto_field_overridden:
             app_config_class = type(self.app_config)
             source = (
-                f"{app_config_class.__module__}."
-                f"{app_config_class.__qualname__}.default_auto_field"
+                f"{app_config_class.__module__}.{app_config_class.__qualname__}.default_auto_field"
             )
         else:
             source = "DEFAULT_AUTO_FIELD"
@@ -270,15 +265,11 @@ class Options:
         try:
             pk_class = import_string(pk_class_path)
         except ImportError as e:
-            msg = (
-                f"{source} refers to the module '{pk_class_path}' that could "
-                f"not be imported."
-            )
+            msg = f"{source} refers to the module '{pk_class_path}' that could not be imported."
             raise ImproperlyConfigured(msg) from e
         if not issubclass(pk_class, AutoField):
             raise ValueError(
-                f"Primary key '{pk_class_path}' referred by {source} must "
-                f"subclass AutoField."
+                f"Primary key '{pk_class_path}' referred by {source} must subclass AutoField."
             )
         return pk_class
 
@@ -294,14 +285,10 @@ class Options:
                     if f.name == query or f.attname == query
                 )
             except StopIteration:
-                raise FieldDoesNotExist(
-                    "%s has no field named '%s'" % (self.object_name, query)
-                )
+                raise FieldDoesNotExist("%s has no field named '%s'" % (self.object_name, query))
 
             self.ordering = ("_order",)
-            if not any(
-                isinstance(field, OrderWrt) for field in model._meta.local_fields
-            ):
+            if not any(isinstance(field, OrderWrt) for field in model._meta.local_fields):
                 model.add_to_class("_order", OrderWrt())
         else:
             self.order_with_respect_to = None
@@ -314,9 +301,7 @@ class Options:
                 # Look for a local field with the same name as the
                 # first parent link. If a local field has already been
                 # created, use it instead of promoting the parent
-                already_created = [
-                    fld for fld in self.local_fields if fld.name == field.name
-                ]
+                already_created = [fld for fld in self.local_fields if fld.name == field.name]
                 if already_created:
                     field = already_created[0]
                 field.primary_key = True
@@ -343,19 +328,15 @@ class Options:
             bisect.insort(self.local_fields, field)
             self.setup_pk(field)
 
-        # If the field being added is a relation to another known field,
-        # expire the cache on this field and the forward cache on the field
-        # being referenced, because there will be new relationships in the
-        # cache. Otherwise, expire the cache of references *to* this field.
-        # The mechanism for getting at the related model is slightly odd -
-        # ideally, we'd just ask for field.related_model. However, related_model
-        # is a cached property, and all the models haven't been loaded yet, so
-        # we need to make sure we don't cache a string reference.
-        if (
-            field.is_relation
-            and hasattr(field.remote_field, "model")
-            and field.remote_field.model
-        ):
+            # If the field being added is a relation to another known field,
+            # expire the cache on this field and the forward cache on the field
+            # being referenced, because there will be new relationships in the
+            # cache. Otherwise, expire the cache of references *to* this field.
+            # The mechanism for getting at the related model is slightly odd -
+            # ideally, we'd just ask for field.related_model. However, related_model
+            # is a cached property, and all the models haven't been loaded yet, so
+            # we need to make sure we don't cache a string reference.
+        if field.is_relation and hasattr(field.remote_field, "model") and field.remote_field.model:
             try:
                 field.remote_field.model._meta._expire_cache(forward=False)
             except AttributeError:
@@ -397,8 +378,7 @@ class Options:
             return self.required_db_vendor == connection.vendor
         if self.required_db_features:
             return all(
-                getattr(connection.features, feat, False)
-                for feat in self.required_db_features
+                getattr(connection.features, feat, False) for feat in self.required_db_features
             )
         return True
 
@@ -431,10 +411,7 @@ class Options:
                     # or as part of validation.
                     return swapped_for
 
-                if (
-                    "%s.%s" % (swapped_label, swapped_object.lower())
-                    != self.label_lower
-                ):
+                if "%s.%s" % (swapped_label, swapped_object.lower()) != self.label_lower:
                     return swapped_for
         return None
 
@@ -571,9 +548,7 @@ class Options:
         combined with filtering of field properties is the public API for
         obtaining this field list.
         """
-        return make_immutable_fields_list(
-            "concrete_fields", (f for f in self.fields if f.concrete)
-        )
+        return make_immutable_fields_list("concrete_fields", (f for f in self.fields if f.concrete))
 
     @cached_property
     def local_concrete_fields(self):
@@ -599,11 +574,7 @@ class Options:
         """
         return make_immutable_fields_list(
             "many_to_many",
-            (
-                f
-                for f in self._get_fields(reverse=False)
-                if f.is_relation and f.many_to_many
-            ),
+            (f for f in self._get_fields(reverse=False) if f.is_relation and f.many_to_many),
         )
 
     @cached_property
@@ -617,16 +588,10 @@ class Options:
         combined with filtering of field properties is the public API for
         obtaining this field list.
         """
-        all_related_fields = self._get_fields(
-            forward=False, reverse=True, include_hidden=True
-        )
+        all_related_fields = self._get_fields(forward=False, reverse=True, include_hidden=True)
         return make_immutable_fields_list(
             "related_objects",
-            (
-                obj
-                for obj in all_related_fields
-                if not obj.hidden or obj.field.many_to_many
-            ),
+            (obj for obj in all_related_fields if not obj.hidden or obj.field.many_to_many),
         )
 
     @cached_property
@@ -682,9 +647,7 @@ class Options:
             # field map.
             return self.fields_map[field_name]
         except KeyError:
-            raise FieldDoesNotExist(
-                "%s has no field named '%s'" % (self.object_name, field_name)
-            )
+            raise FieldDoesNotExist("%s has no field named '%s'" % (self.object_name, field_name))
 
     def get_base_chain(self, model):
         """
@@ -750,7 +713,7 @@ class Options:
         """
         if self.model is parent:
             return []
-        # Skip the chain of proxy to the concrete proxied model.
+            # Skip the chain of proxy to the concrete proxied model.
         proxied_model = self.concrete_model
         path = []
         opts = self
@@ -828,12 +791,10 @@ class Options:
             # __dict__ takes precedence over a data descriptor (such as
             # @cached_property). This means that the _meta._relation_tree is
             # only called if related_objects is not in __dict__.
-            related_objects = related_objects_graph[
-                model._meta.concrete_model._meta.label
-            ]
+            related_objects = related_objects_graph[model._meta.concrete_model._meta.label]
             model._meta.__dict__["_relation_tree"] = related_objects
-        # It seems it is possible that self is not in all_models, so guard
-        # against that with default for get().
+            # It seems it is possible that self is not in all_models, so guard
+            # against that with default for get().
         return self.__dict__.get("_relation_tree", EMPTY_RELATION_TREE)
 
     @cached_property
@@ -865,9 +826,7 @@ class Options:
         """
         if include_parents is False:
             include_parents = PROXY_PARENTS
-        return self._get_fields(
-            include_parents=include_parents, include_hidden=include_hidden
-        )
+        return self._get_fields(include_parents=include_parents, include_hidden=include_hidden)
 
     def _get_fields(
         self,
@@ -889,14 +848,12 @@ class Options:
           parent chain to the model's concrete model.
         """
         if include_parents not in (True, False, PROXY_PARENTS):
-            raise TypeError(
-                "Invalid argument for include_parents: %s" % (include_parents,)
-            )
-        # This helper function is used to allow recursion in ``get_fields()``
-        # implementation and to provide a fast way for Django's internals to
-        # access specific subsets of fields.
+            raise TypeError("Invalid argument for include_parents: %s" % (include_parents,))
+            # This helper function is used to allow recursion in ``get_fields()``
+            # implementation and to provide a fast way for Django's internals to
+            # access specific subsets of fields.
 
-        # Creates a cache key composed of all arguments
+            # Creates a cache key composed of all arguments
         cache_key = (forward, reverse, include_parents, include_hidden, topmost_call)
 
         try:
@@ -928,8 +885,7 @@ class Options:
                     topmost_call=False,
                 ):
                     if (
-                        not getattr(obj, "parent_link", False)
-                        or obj.model == self.concrete_model
+                        not getattr(obj, "parent_link", False) or obj.model == self.concrete_model
                     ) and obj not in parent_fields:
                         fields.append(obj)
                         parent_fields.add(obj)
@@ -956,8 +912,8 @@ class Options:
             if topmost_call:
                 fields += self.private_fields
 
-        # In order to avoid list manipulation. Always
-        # return a shallow copy of the results
+                # In order to avoid list manipulation. Always
+                # return a shallow copy of the results
         fields = make_immutable_fields_list("get_fields()", fields)
 
         # Store result into cache for later access
@@ -1024,9 +980,7 @@ class Options:
         Return a set of reverse one to one field names pointing to the current
         model.
         """
-        return frozenset(
-            field.name for field in self.related_objects if field.one_to_one
-        )
+        return frozenset(field.name for field in self.related_objects if field.one_to_one)
 
     @cached_property
     def db_returning_fields(self):

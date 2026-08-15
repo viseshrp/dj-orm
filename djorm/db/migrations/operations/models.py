@@ -30,9 +30,7 @@ class ModelOperation(Operation):
         return name.lower() == self.name_lower
 
     def reduce(self, operation, app_label):
-        return super().reduce(operation, app_label) or self.can_reduce_through(
-            operation, app_label
-        )
+        return super().reduce(operation, app_label) or self.can_reduce_through(operation, app_label)
 
     def can_reduce_through(self, operation, app_label):
         return not operation.references_model(self.name, app_label)
@@ -59,7 +57,9 @@ class CreateModel(ModelOperation):
                 (
                     base._meta.label_lower
                     if hasattr(base, "_meta")
-                    else base.lower() if isinstance(base, str) else base
+                    else base.lower()
+                    if isinstance(base, str)
+                    else base
                 )
                 for base in self.bases
             ),
@@ -127,7 +127,7 @@ class CreateModel(ModelOperation):
         if name_lower == self.name_lower:
             return True
 
-        # Check we didn't inherit from the model
+            # Check we didn't inherit from the model
         reference_model_tuple = (app_label, name_lower)
         for base in self.bases:
             if (
@@ -137,11 +137,9 @@ class CreateModel(ModelOperation):
             ):
                 return True
 
-        # Check we have no FKs/M2Ms with it
+                # Check we have no FKs/M2Ms with it
         for _name, field in self.fields:
-            if field_references(
-                (app_label, self.name_lower), field, reference_model_tuple
-            ):
+            if field_references((app_label, self.name_lower), field, reference_model_tuple):
                 return True
         return False
 
@@ -152,10 +150,7 @@ class CreateModel(ModelOperation):
             and not self.options.get("proxy", False)
         ):
             return []
-        elif (
-            isinstance(operation, RenameModel)
-            and self.name_lower == operation.old_name_lower
-        ):
+        elif isinstance(operation, RenameModel) and self.name_lower == operation.old_name_lower:
             return [
                 CreateModel(
                     operation.new_name,
@@ -165,10 +160,7 @@ class CreateModel(ModelOperation):
                     managers=self.managers,
                 ),
             ]
-        elif (
-            isinstance(operation, AlterModelOptions)
-            and self.name_lower == operation.name_lower
-        ):
+        elif isinstance(operation, AlterModelOptions) and self.name_lower == operation.name_lower:
             options = {**self.options, **operation.options}
             for key in operation.ALTER_OPTION_KEYS:
                 if key not in operation.options:
@@ -182,10 +174,7 @@ class CreateModel(ModelOperation):
                     managers=self.managers,
                 ),
             ]
-        elif (
-            isinstance(operation, AlterModelManagers)
-            and self.name_lower == operation.name_lower
-        ):
+        elif isinstance(operation, AlterModelManagers) and self.name_lower == operation.name_lower:
             return [
                 CreateModel(
                     self.name,
@@ -195,10 +184,7 @@ class CreateModel(ModelOperation):
                     managers=operation.managers,
                 ),
             ]
-        elif (
-            isinstance(operation, AlterModelTable)
-            and self.name_lower == operation.name_lower
-        ):
+        elif isinstance(operation, AlterModelTable) and self.name_lower == operation.name_lower:
             return [
                 CreateModel(
                     self.name,
@@ -260,8 +246,7 @@ class CreateModel(ModelOperation):
                 ),
             ]
         elif (
-            isinstance(operation, FieldOperation)
-            and self.name_lower == operation.model_name_lower
+            isinstance(operation, FieldOperation) and self.name_lower == operation.model_name_lower
         ):
             if isinstance(operation, AddField):
                 return [
@@ -295,9 +280,7 @@ class CreateModel(ModelOperation):
                             filter(
                                 bool,
                                 (
-                                    tuple(
-                                        f for f in fields if f != operation.name_lower
-                                    )
+                                    tuple(f for f in fields if f != operation.name_lower)
                                     for fields in option
                                 ),
                             )
@@ -311,9 +294,7 @@ class CreateModel(ModelOperation):
                     CreateModel(
                         self.name,
                         fields=[
-                            (n, v)
-                            for n, v in self.fields
-                            if n.lower() != operation.name_lower
+                            (n, v) for n, v in self.fields if n.lower() != operation.name_lower
                         ],
                         options=options,
                         bases=self.bases,
@@ -327,8 +308,7 @@ class CreateModel(ModelOperation):
                     if option:
                         options[option_name] = {
                             tuple(
-                                operation.new_name if f == operation.old_name else f
-                                for f in fields
+                                operation.new_name if f == operation.old_name else f for f in fields
                             )
                             for fields in option
                         }
@@ -348,8 +328,7 @@ class CreateModel(ModelOperation):
                     ),
                 ]
         elif (
-            isinstance(operation, IndexOperation)
-            and self.name_lower == operation.model_name_lower
+            isinstance(operation, IndexOperation) and self.name_lower == operation.model_name_lower
         ):
             if isinstance(operation, AddIndex):
                 return [
@@ -516,10 +495,8 @@ class RenameModel(ModelOperation):
                     related_object.field,
                     to_field,
                 )
-            # Rename M2M fields whose name is based on this model's name.
-            fields = zip(
-                old_model._meta.local_many_to_many, new_model._meta.local_many_to_many
-            )
+                # Rename M2M fields whose name is based on this model's name.
+            fields = zip(old_model._meta.local_many_to_many, new_model._meta.local_many_to_many)
             for old_field, new_field in fields:
                 # Skip self-referential fields as these are renamed above.
                 if (
@@ -527,7 +504,7 @@ class RenameModel(ModelOperation):
                     or not new_field.remote_field.through._meta.auto_created
                 ):
                     continue
-                # Rename columns and the M2M table.
+                    # Rename columns and the M2M table.
                 schema_editor._alter_many_to_many(
                     new_model,
                     old_field,
@@ -551,9 +528,7 @@ class RenameModel(ModelOperation):
         self.new_name, self.old_name = self.old_name, self.new_name
 
     def references_model(self, name, app_label):
-        return (
-            name.lower() == self.old_name_lower or name.lower() == self.new_name_lower
-        )
+        return name.lower() == self.old_name_lower or name.lower() == self.new_name_lower
 
     def describe(self):
         return "Rename model %s to %s" % (self.old_name, self.new_name)
@@ -563,18 +538,15 @@ class RenameModel(ModelOperation):
         return "rename_%s_%s" % (self.old_name_lower, self.new_name_lower)
 
     def reduce(self, operation, app_label):
-        if (
-            isinstance(operation, RenameModel)
-            and self.new_name_lower == operation.old_name_lower
-        ):
+        if isinstance(operation, RenameModel) and self.new_name_lower == operation.old_name_lower:
             return [
                 RenameModel(
                     self.old_name,
                     operation.new_name,
                 ),
             ]
-        # Skip `ModelOperation.reduce` as we want to run `references_model`
-        # against self.new_name.
+            # Skip `ModelOperation.reduce` as we want to run `references_model`
+            # against self.new_name.
         return super(ModelOperation, self).reduce(
             operation, app_label
         ) or not operation.references_model(self.new_name, app_label)
@@ -725,8 +697,7 @@ class AlterTogetherOptionOperation(ModelOptionOperation):
 
     def references_field(self, model_name, name, app_label):
         return self.references_model(model_name, app_label) and (
-            not self.option_value
-            or any((name in fields) for fields in self.option_value)
+            not self.option_value or any((name in fields) for fields in self.option_value)
         )
 
     def describe(self):
@@ -799,18 +770,12 @@ class AlterOrderWithRespectTo(ModelOptionOperation):
         if self.allow_migrate_model(schema_editor.connection.alias, to_model):
             from_model = from_state.apps.get_model(app_label, self.name)
             # Remove a field if we need to
-            if (
-                from_model._meta.order_with_respect_to
-                and not to_model._meta.order_with_respect_to
-            ):
-                schema_editor.remove_field(
-                    from_model, from_model._meta.get_field("_order")
-                )
-            # Add a field if we need to (altering the column is untouched as
-            # it's likely a rename)
+            if from_model._meta.order_with_respect_to and not to_model._meta.order_with_respect_to:
+                schema_editor.remove_field(from_model, from_model._meta.get_field("_order"))
+                # Add a field if we need to (altering the column is untouched as
+                # it's likely a rename)
             elif (
-                to_model._meta.order_with_respect_to
-                and not from_model._meta.order_with_respect_to
+                to_model._meta.order_with_respect_to and not from_model._meta.order_with_respect_to
             ):
                 field = to_model._meta.get_field("_order")
                 if not field.has_default():
@@ -1048,13 +1013,10 @@ class RenameIndex(IndexOperation):
     def __init__(self, model_name, new_name, old_name=None, old_fields=None):
         if not old_name and not old_fields:
             raise ValueError(
-                "RenameIndex requires one of old_name and old_fields arguments to be "
-                "set."
+                "RenameIndex requires one of old_name and old_fields arguments to be set."
             )
         if old_name and old_fields:
-            raise ValueError(
-                "RenameIndex.old_name and old_fields are mutually exclusive."
-            )
+            raise ValueError("RenameIndex.old_name and old_fields are mutually exclusive.")
         self.model_name = model_name
         self.new_name = new_name
         self.old_name = old_name
@@ -1093,9 +1055,7 @@ class RenameIndex(IndexOperation):
                 self.old_fields,
             )
         else:
-            state.rename_index(
-                app_label, self.model_name_lower, self.old_name, self.new_name
-            )
+            state.rename_index(app_label, self.model_name_lower, self.old_name, self.new_name)
 
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
         model = to_state.apps.get_model(app_label, self.model_name)
@@ -1104,9 +1064,7 @@ class RenameIndex(IndexOperation):
 
         if self.old_fields:
             from_model = from_state.apps.get_model(app_label, self.model_name)
-            columns = [
-                from_model._meta.get_field(field).column for field in self.old_fields
-            ]
+            columns = [from_model._meta.get_field(field).column for field in self.old_fields]
             matching_index_name = schema_editor._constraint_names(
                 from_model,
                 column_names=columns,
@@ -1129,7 +1087,7 @@ class RenameIndex(IndexOperation):
         else:
             from_model_state = from_state.models[app_label, self.model_name_lower]
             old_index = from_model_state.get_index_by_name(self.old_name)
-        # Don't alter when the index name is not changed.
+            # Don't alter when the index name is not changed.
         if old_index.name == self.new_name:
             return
 
@@ -1158,13 +1116,8 @@ class RenameIndex(IndexOperation):
 
     def describe(self):
         if self.old_name:
-            return (
-                f"Rename index {self.old_name} on {self.model_name} to {self.new_name}"
-            )
-        return (
-            f"Rename unnamed index for {self.old_fields} on {self.model_name} to "
-            f"{self.new_name}"
-        )
+            return f"Rename index {self.old_name} on {self.model_name} to {self.new_name}"
+        return f"Rename unnamed index for {self.old_fields} on {self.model_name} to {self.new_name}"
 
     @property
     def migration_name_fragment(self):
@@ -1304,9 +1257,7 @@ class AlterConstraint(IndexOperation):
         self.constraint = constraint
 
     def state_forwards(self, app_label, state):
-        state.alter_constraint(
-            app_label, self.model_name_lower, self.name, self.constraint
-        )
+        state.alter_constraint(app_label, self.model_name_lower, self.name, self.constraint)
 
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
         pass

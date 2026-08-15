@@ -95,9 +95,7 @@ class JSONFieldColumnType(models.Model):
         }
 
 
-test_collation = SimpleLazyObject(
-    lambda: connection.features.test_collations.get("non_default")
-)
+test_collation = SimpleLazyObject(lambda: connection.features.test_collations.get("non_default"))
 
 
 class CharFieldDbCollation(models.Model):
@@ -142,9 +140,7 @@ class FuncUniqueConstraint(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                Lower("name"), models.F("rank"), name="index_lower_name"
-            )
+            models.UniqueConstraint(Lower("name"), models.F("rank"), name="index_lower_name")
         ]
         required_db_features = {"supports_expression_indexes"}
 

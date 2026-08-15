@@ -123,7 +123,7 @@ class Command(BaseCommand):
         if self.scriptable:
             self.stderr.style_func = None
 
-        # Make sure the app they asked for exists
+            # Make sure the app they asked for exists
         app_labels = set(app_labels)
         has_bad_labels = False
         for app_label in app_labels:
@@ -135,19 +135,17 @@ class Command(BaseCommand):
         if has_bad_labels:
             sys.exit(2)
 
-        # Load the current graph state. Pass in None for the connection so
-        # the loader doesn't try to resolve replaced migrations from DB.
+            # Load the current graph state. Pass in None for the connection so
+            # the loader doesn't try to resolve replaced migrations from DB.
         loader = MigrationLoader(None, ignore_no_migrations=True)
 
         # Raise an error if any migrations are applied before their dependencies.
         consistency_check_labels = {config.label for config in apps.get_app_configs()}
         # Non-default databases are only checked if database routers used.
-        aliases_to_check = (
-            connections if settings.DATABASE_ROUTERS else [DEFAULT_DB_ALIAS]
-        )
+        aliases_to_check = connections if settings.DATABASE_ROUTERS else [DEFAULT_DB_ALIAS]
         for alias in sorted(aliases_to_check):
             connection = connections[alias]
-            if connection.settings_dict["ENGINE"] != 'djorm.db.backends.dummy' and any(
+            if connection.settings_dict["ENGINE"] != "djorm.db.backends.dummy" and any(
                 # At least one model must be migrated to the database.
                 router.allow_migrate(
                     connection.alias, app_label, model_name=model._meta.object_name
@@ -163,8 +161,8 @@ class Command(BaseCommand):
                         "performed for database connection '%s': %s" % (alias, error),
                         RuntimeWarning,
                     )
-        # Before anything else, see if there's conflicting apps and drop out
-        # hard if there are any and they don't want to merge
+                    # Before anything else, see if there's conflicting apps and drop out
+                    # hard if there are any and they don't want to merge
         conflicts = loader.detect_conflicts()
 
         # If app_labels is specified, filter out conflicting migrations for
@@ -186,13 +184,13 @@ class Command(BaseCommand):
                 "'python manage.py makemigrations --merge'" % name_str
             )
 
-        # If they want to merge and there's nothing to merge, then politely exit
+            # If they want to merge and there's nothing to merge, then politely exit
         if self.merge and not conflicts:
             self.log("No conflicts detected to merge.")
             return
 
-        # If they want to merge and there is something to merge, then
-        # divert into the merge code
+            # If they want to merge and there is something to merge, then
+            # divert into the merge code
         if self.merge and conflicts:
             return self.handle_merge(loader, conflicts)
 
@@ -209,7 +207,7 @@ class Command(BaseCommand):
                 verbosity=self.verbosity,
                 log=self.log,
             )
-        # Set up autodetector
+            # Set up autodetector
         autodetector = self.autodetector(
             loader.project_state(),
             ProjectState.from_apps(apps),
@@ -219,10 +217,8 @@ class Command(BaseCommand):
         # If they want to make an empty migration, make one for each app
         if self.empty:
             if not app_labels:
-                raise CommandError(
-                    "You must supply at least one app label when using --empty."
-                )
-            # Make a fake changes() result we can pass to arrange_for_graph
+                raise CommandError("You must supply at least one app label when using --empty.")
+                # Make a fake changes() result we can pass to arrange_for_graph
             changes = {app: [Migration("custom", app)] for app in app_labels}
             changes = autodetector.arrange_for_graph(
                 changes=changes,
@@ -232,7 +228,7 @@ class Command(BaseCommand):
             self.write_migration_files(changes)
             return
 
-        # Detect changes
+            # Detect changes
         changes = autodetector.changes(
             graph=loader.graph,
             trim_to_apps=app_labels or None,
@@ -247,10 +243,7 @@ class Command(BaseCommand):
                     if len(app_labels) == 1:
                         self.log("No changes detected in app '%s'" % app_labels.pop())
                     else:
-                        self.log(
-                            "No changes detected in apps '%s'"
-                            % ("', '".join(app_labels))
-                        )
+                        self.log("No changes detected in apps '%s'" % ("', '".join(app_labels)))
                 else:
                     self.log("No changes detected")
         else:
@@ -278,13 +271,9 @@ class Command(BaseCommand):
             # Updated migration cannot be a squash migration, a dependency of
             # another migration, and cannot be already applied.
             if leaf_migration.replaces:
-                raise CommandError(
-                    f"Cannot update squash migration '{leaf_migration}'."
-                )
+                raise CommandError(f"Cannot update squash migration '{leaf_migration}'.")
             if leaf_migration_node in loader.applied_migrations:
-                raise CommandError(
-                    f"Cannot update applied migration '{leaf_migration}'."
-                )
+                raise CommandError(f"Cannot update applied migration '{leaf_migration}'.")
             depending_migrations = [
                 migration
                 for migration in loader.disk_migrations.values()
@@ -298,25 +287,21 @@ class Command(BaseCommand):
                     f"Cannot update migration '{leaf_migration}' that migrations "
                     f"{formatted_migrations} depend on."
                 )
-            # Build new migration.
+                # Build new migration.
             for migration in app_migrations:
                 leaf_migration.operations.extend(migration.operations)
 
                 for dependency in migration.dependencies:
                     if isinstance(dependency, SwappableTuple):
                         if settings.AUTH_USER_MODEL == dependency.setting:
-                            leaf_migration.dependencies.append(
-                                ("__setting__", "AUTH_USER_MODEL")
-                            )
+                            leaf_migration.dependencies.append(("__setting__", "AUTH_USER_MODEL"))
                         else:
                             leaf_migration.dependencies.append(dependency)
                     elif dependency[0] != migration.app_label:
                         leaf_migration.dependencies.append(dependency)
-            # Optimize migration.
+                        # Optimize migration.
             optimizer = MigrationOptimizer()
-            leaf_migration.operations = optimizer.optimize(
-                leaf_migration.operations, app_label
-            )
+            leaf_migration.operations = optimizer.optimize(leaf_migration.operations, app_label)
             # Update name.
             previous_migration_path = MigrationWriter(leaf_migration).path
             name_fragment = self.migration_name or leaf_migration.suggest_name()
@@ -360,7 +345,7 @@ class Command(BaseCommand):
                         init_path = os.path.join(migrations_directory, "__init__.py")
                         if not os.path.isfile(init_path):
                             open(init_path, "w").close()
-                        # We just do this once per app
+                            # We just do this once per app
                         directory_created[app_label] = True
                     migration_string = writer.as_string()
                     with open(writer.path, "w", encoding="utf-8") as fh:
@@ -387,9 +372,7 @@ class Command(BaseCommand):
                     # will log the migrations rather than saving the file to
                     # the disk.
                     self.log(
-                        self.style.MIGRATE_HEADING(
-                            "Full migrations file '%s':" % writer.filename
-                        )
+                        self.style.MIGRATE_HEADING("Full migrations file '%s':" % writer.filename)
                     )
                     self.log(writer.as_string())
         run_formatters(self.written_files, stderr=self.stderr)
@@ -438,10 +421,8 @@ class Command(BaseCommand):
                 )
             )
             if not common_ancestor_count:
-                raise ValueError(
-                    "Could not find common ancestor of %s" % migration_names
-                )
-            # Now work out the operations along each divergent branch
+                raise ValueError("Could not find common ancestor of %s" % migration_names)
+                # Now work out the operations along each divergent branch
             for migration in merge_migrations:
                 migration.branch = migration.ancestry[common_ancestor_count:]
                 migrations_ops = (
@@ -449,9 +430,9 @@ class Command(BaseCommand):
                     for node_app, node_name in migration.branch
                 )
                 migration.merged_operations = sum(migrations_ops, [])
-            # In future, this could use some of the Optimizer code
-            # (can_optimize_through) to automatically see if they're
-            # mergeable. For now, we always just prompt the user.
+                # In future, this could use some of the Optimizer code
+                # (can_optimize_through) to automatically see if they're
+                # mergeable. For now, we always just prompt the user.
             if self.verbosity > 0:
                 self.log(self.style.MIGRATE_HEADING("Merging %s" % app_label))
                 for migration in merge_migrations:
@@ -462,8 +443,7 @@ class Command(BaseCommand):
                 # If they still want to merge it, then write out an empty
                 # file depending on the migrations needing merging.
                 numbers = [
-                    self.autodetector.parse_number(migration.name)
-                    for migration in merge_migrations
+                    self.autodetector.parse_number(migration.name) for migration in merge_migrations
                 ]
                 try:
                     biggest_number = max(x for x in numbers if x is not None)
@@ -474,8 +454,7 @@ class Command(BaseCommand):
                     (Migration,),
                     {
                         "dependencies": [
-                            (app_label, migration.name)
-                            for migration in merge_migrations
+                            (app_label, migration.name) for migration in merge_migrations
                         ],
                     },
                 )
@@ -484,9 +463,7 @@ class Command(BaseCommand):
                     parts.append(self.migration_name)
                 else:
                     parts.append("merge")
-                    leaf_names = "_".join(
-                        sorted(migration.name for migration in merge_migrations)
-                    )
+                    leaf_names = "_".join(sorted(migration.name for migration in merge_migrations))
                     if len(leaf_names) > 47:
                         parts.append(get_migration_name_timestamp())
                     else:

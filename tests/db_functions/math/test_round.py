@@ -28,9 +28,7 @@ class RoundTests(TestCase):
 
     def test_decimal(self):
         DecimalModel.objects.create(n1=Decimal("-12.9"), n2=Decimal("0.6"))
-        obj = DecimalModel.objects.annotate(
-            n1_round=Round("n1"), n2_round=Round("n2")
-        ).first()
+        obj = DecimalModel.objects.annotate(n1_round=Round("n1"), n2_round=Round("n2")).first()
         self.assertIsInstance(obj.n1_round, Decimal)
         self.assertIsInstance(obj.n2_round, Decimal)
         self.assertAlmostEqual(obj.n1_round, obj.n1, places=0)
@@ -55,9 +53,7 @@ class RoundTests(TestCase):
 
     def test_float(self):
         FloatModel.objects.create(f1=-27.55, f2=0.55)
-        obj = FloatModel.objects.annotate(
-            f1_round=Round("f1"), f2_round=Round("f2")
-        ).first()
+        obj = FloatModel.objects.annotate(f1_round=Round("f1"), f2_round=Round("f2")).first()
         self.assertIsInstance(obj.f1_round, float)
         self.assertIsInstance(obj.f2_round, float)
         self.assertAlmostEqual(obj.f1_round, obj.f1, places=0)

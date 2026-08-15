@@ -110,8 +110,8 @@ class DeconstructableSerializer(BaseSerializer):
     @staticmethod
     def _serialize_path(path):
         module, name = path.rsplit(".", 1)
-        if module == 'djorm.db.models':
-            imports = {'from djorm.db import models'}
+        if module == "djorm.db.models":
+            imports = {"from djorm.db import models"}
             name = "models.%s" % name
         else:
             imports = {"import %s" % module}
@@ -148,12 +148,7 @@ class EnumSerializer(BaseSerializer):
         else:
             members = (self.value,)
         return (
-            " | ".join(
-                [
-                    f"{module}.{enum_class.__qualname__}[{item.name!r}]"
-                    for item in members
-                ]
-            ),
+            " | ".join([f"{module}.{enum_class.__qualname__}[{item.name!r}]" for item in members]),
             {"import %s" % module},
         )
 
@@ -172,15 +167,13 @@ class FrozensetSerializer(BaseUnorderedSequenceSerializer):
 
 class FunctionTypeSerializer(BaseSerializer):
     def serialize(self):
-        if getattr(self.value, "__self__", None) and isinstance(
-            self.value.__self__, type
-        ):
+        if getattr(self.value, "__self__", None) and isinstance(self.value.__self__, type):
             klass = self.value.__self__
             module = klass.__module__
             return "%s.%s.%s" % (module, klass.__qualname__, self.value.__name__), {
                 "import %s" % module
             }
-        # Further error checking
+            # Further error checking
         if self.value.__name__ == "<lambda>":
             raise ValueError("Cannot serialize function: lambda")
         if self.value.__module__ is None:
@@ -193,9 +186,7 @@ class FunctionTypeSerializer(BaseSerializer):
                 "import %s" % self.value.__module__
             }
 
-        raise ValueError(
-            "Could not find function %s in %s.\n" % (self.value.__name__, module_name)
-        )
+        raise ValueError("Could not find function %s in %s.\n" % (self.value.__name__, module_name))
 
 
 class FunctoolsPartialSerializer(BaseSerializer):
@@ -203,9 +194,7 @@ class FunctoolsPartialSerializer(BaseSerializer):
         # Serialize functools.partial() arguments
         func_string, func_imports = serializer_factory(self.value.func).serialize()
         args_string, args_imports = serializer_factory(self.value.args).serialize()
-        keywords_string, keywords_imports = serializer_factory(
-            self.value.keywords
-        ).serialize()
+        keywords_string, keywords_imports = serializer_factory(self.value.keywords).serialize()
         # Add any imports needed by arguments
         imports = {"import functools", *func_imports, *args_imports, *keywords_imports}
         return (
@@ -228,8 +217,8 @@ class IterableSerializer(BaseSerializer):
             item_string, item_imports = serializer_factory(item).serialize()
             imports.update(item_imports)
             strings.append(item_string)
-        # When len(strings)==0, the empty iterable should be serialized as
-        # "()", not "(,)" because (,) is invalid Python syntax.
+            # When len(strings)==0, the empty iterable should be serialized as
+            # "()", not "(,)" because (,) is invalid Python syntax.
         value = "(%s)" if len(strings) != 1 else "(%s,)"
         return value % (", ".join(strings)), imports
 
@@ -274,9 +263,7 @@ class PathSerializer(BaseSerializer):
 
 class RegexSerializer(BaseSerializer):
     def serialize(self):
-        regex_pattern, pattern_imports = serializer_factory(
-            self.value.pattern
-        ).serialize()
+        regex_pattern, pattern_imports = serializer_factory(self.value.pattern).serialize()
         # Turn off default implicit flags (e.g. re.U) because regexes with the
         # same implicit and explicit flags aren't equal.
         flags = self.value.flags ^ re.compile("").flags
@@ -302,9 +289,7 @@ class SetSerializer(BaseUnorderedSequenceSerializer):
 
 class SettingsReferenceSerializer(BaseSerializer):
     def serialize(self):
-        return "settings.%s" % self.value.setting_name, {
-            'from djorm.conf import settings'
-        }
+        return "settings.%s" % self.value.setting_name, {"from djorm.conf import settings"}
 
 
 class TupleSerializer(BaseSequenceSerializer):
@@ -317,7 +302,7 @@ class TupleSerializer(BaseSequenceSerializer):
 class TypeSerializer(BaseSerializer):
     def serialize(self):
         special_cases = [
-            (models.Model, "models.Model", ['from djorm.db import models']),
+            (models.Model, "models.Model", ["from djorm.db import models"]),
             (types.NoneType, "types.NoneType", ["import types"]),
         ]
         for case, string, imports in special_cases:
@@ -328,9 +313,7 @@ class TypeSerializer(BaseSerializer):
             if module == builtins.__name__:
                 return self.value.__name__, set()
             else:
-                return "%s.%s" % (module, self.value.__qualname__), {
-                    "import %s" % module
-                }
+                return "%s.%s" % (module, self.value.__qualname__), {"import %s" % module}
 
 
 class UUIDSerializer(BaseSerializer):
@@ -366,9 +349,7 @@ class Serializer:
     @classmethod
     def register(cls, type_, serializer):
         if not issubclass(serializer, BaseSerializer):
-            raise ValueError(
-                "'%s' must inherit from 'BaseSerializer'." % serializer.__name__
-            )
+            raise ValueError("'%s' must inherit from 'BaseSerializer'." % serializer.__name__)
         cls._registry[type_] = serializer
 
     @classmethod
@@ -392,7 +373,7 @@ def serializer_factory(value):
         return OperationSerializer(value)
     if isinstance(value, type):
         return TypeSerializer(value)
-    # Anything that knows how to deconstruct itself.
+        # Anything that knows how to deconstruct itself.
     if hasattr(value, "deconstruct"):
         return DeconstructableSerializer(value)
     for type_, serializer_cls in Serializer._registry.items():

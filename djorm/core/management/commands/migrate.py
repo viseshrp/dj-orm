@@ -16,9 +16,7 @@ from djorm.utils.text import Truncator
 
 class Command(BaseCommand):
     autodetector = MigrationAutodetector
-    help = (
-        "Updates database schema. Manages both apps with migrations and those without."
-    )
+    help = "Updates database schema. Manages both apps with migrations and those without."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -43,10 +41,7 @@ class Command(BaseCommand):
             "--database",
             default=DEFAULT_DB_ALIAS,
             choices=tuple(connections),
-            help=(
-                'Nominates a database to synchronize. Defaults to the "default" '
-                "database."
-            ),
+            help=('Nominates a database to synchronize. Defaults to the "default" database.'),
         )
         parser.add_argument(
             "--fake",
@@ -105,7 +100,7 @@ class Command(BaseCommand):
             if module_has_submodule(app_config.module, "management"):
                 import_module(".management", app_config.name)
 
-        # Get the database we're operating from
+                # Get the database we're operating from
         connection = connections[database]
 
         # Hook for backends needing any database preparation
@@ -129,7 +124,7 @@ class Command(BaseCommand):
                 "'python manage.py makemigrations --merge'" % name_str
             )
 
-        # If they supplied command line arguments, work out what they mean.
+            # If they supplied command line arguments, work out what they mean.
         run_syncdb = options["run_syncdb"]
         target_app_labels_only = True
         if options["app_label"]:
@@ -142,8 +137,7 @@ class Command(BaseCommand):
             if run_syncdb:
                 if app_label in executor.loader.migrated_apps:
                     raise CommandError(
-                        "Can't use run_syncdb with app '%s' as it has migrations."
-                        % app_label
+                        "Can't use run_syncdb with app '%s' as it has migrations." % app_label
                     )
             elif app_label not in executor.loader.migrated_apps:
                 raise CommandError("App '%s' does not have migrations." % app_label)
@@ -154,9 +148,7 @@ class Command(BaseCommand):
                 targets = [(app_label, None)]
             else:
                 try:
-                    migration = executor.loader.get_migration_by_prefix(
-                        app_label, migration_name
-                    )
+                    migration = executor.loader.get_migration_by_prefix(app_label, migration_name)
                 except AmbiguityError:
                     raise CommandError(
                         "More than one migration matches '%s' in app '%s'. "
@@ -179,17 +171,13 @@ class Command(BaseCommand):
                 targets = [target]
             target_app_labels_only = False
         elif options["app_label"]:
-            targets = [
-                key for key in executor.loader.graph.leaf_nodes() if key[0] == app_label
-            ]
+            targets = [key for key in executor.loader.graph.leaf_nodes() if key[0] == app_label]
         else:
             targets = executor.loader.graph.leaf_nodes()
 
         if options["prune"]:
             if not options["app_label"]:
-                raise CommandError(
-                    "Migrations can be pruned only when an app is specified."
-                )
+                raise CommandError("Migrations can be pruned only when an app is specified.")
             if self.verbosity > 0:
                 self.stdout.write("Pruning migrations:", self.style.MIGRATE_HEADING)
             to_prune = sorted(
@@ -246,9 +234,7 @@ class Command(BaseCommand):
                 for migration, backwards in plan:
                     self.stdout.write(str(migration), self.style.MIGRATE_HEADING)
                     for operation in migration.operations:
-                        message, is_error = self.describe_operation(
-                            operation, backwards
-                        )
+                        message, is_error = self.describe_operation(operation, backwards)
                         style = self.style.WARNING if is_error else None
                         self.stdout.write("    " + message, style)
                 if options["check_unapplied"]:
@@ -261,7 +247,7 @@ class Command(BaseCommand):
         if options["prune"]:
             return
 
-        # At this point, ignore run_syncdb if there aren't any apps to sync.
+            # At this point, ignore run_syncdb if there aren't any apps to sync.
         run_syncdb = options["run_syncdb"] and executor.loader.unmigrated_apps
         # Print some useful info
         if self.verbosity >= 1:
@@ -269,9 +255,7 @@ class Command(BaseCommand):
             if run_syncdb:
                 if options["app_label"]:
                     self.stdout.write(
-                        self.style.MIGRATE_LABEL(
-                            "  Synchronize unmigrated app: %s" % app_label
-                        )
+                        self.style.MIGRATE_LABEL("  Synchronize unmigrated app: %s" % app_label)
                     )
                 else:
                     self.stdout.write(
@@ -286,8 +270,7 @@ class Command(BaseCommand):
             else:
                 if targets[0][1] is None:
                     self.stdout.write(
-                        self.style.MIGRATE_LABEL("  Unapply all migrations: ")
-                        + str(targets[0][0])
+                        self.style.MIGRATE_LABEL("  Unapply all migrations: ") + str(targets[0][0])
                     )
                 else:
                     self.stdout.write(
@@ -317,7 +300,7 @@ class Command(BaseCommand):
             else:
                 self.sync_apps(connection, executor.loader.unmigrated_apps)
 
-        # Migrate!
+                # Migrate!
         if self.verbosity >= 1:
             self.stdout.write(self.style.MIGRATE_HEADING("Running migrations:"))
         if not plan:
@@ -395,9 +378,7 @@ class Command(BaseCommand):
                 self.stdout.write("  Applying %s..." % migration, ending="")
                 self.stdout.flush()
             elif action == "apply_success":
-                elapsed = (
-                    " (%.3fs)" % (time.monotonic() - self.start) if compute_time else ""
-                )
+                elapsed = " (%.3fs)" % (time.monotonic() - self.start) if compute_time else ""
                 if fake:
                     self.stdout.write(self.style.SUCCESS(" FAKED" + elapsed))
                 else:
@@ -408,9 +389,7 @@ class Command(BaseCommand):
                 self.stdout.write("  Unapplying %s..." % migration, ending="")
                 self.stdout.flush()
             elif action == "unapply_success":
-                elapsed = (
-                    " (%.3fs)" % (time.monotonic() - self.start) if compute_time else ""
-                )
+                elapsed = " (%.3fs)" % (time.monotonic() - self.start) if compute_time else ""
                 if fake:
                     self.stdout.write(self.style.SUCCESS(" FAKED" + elapsed))
                 else:
@@ -421,9 +400,7 @@ class Command(BaseCommand):
                 self.stdout.write("  Rendering model states...", ending="")
                 self.stdout.flush()
             elif action == "render_success":
-                elapsed = (
-                    " (%.3fs)" % (time.monotonic() - self.start) if compute_time else ""
-                )
+                elapsed = " (%.3fs)" % (time.monotonic() - self.start) if compute_time else ""
                 self.stdout.write(self.style.SUCCESS(" DONE" + elapsed))
 
     def sync_apps(self, connection, app_labels):
@@ -431,7 +408,7 @@ class Command(BaseCommand):
         with connection.cursor() as cursor:
             tables = connection.introspection.table_names(cursor)
 
-        # Build the manifest of apps and models that are to be synchronized.
+            # Build the manifest of apps and models that are to be synchronized.
         all_models = [
             (
                 app_config.label,
@@ -448,10 +425,7 @@ class Command(BaseCommand):
             converter = connection.introspection.identifier_converter
             return not (
                 (converter(opts.db_table) in tables)
-                or (
-                    opts.auto_created
-                    and converter(opts.auto_created._meta.db_table) in tables
-                )
+                or (opts.auto_created and converter(opts.auto_created._meta.db_table) in tables)
             )
 
         manifest = {
@@ -470,16 +444,13 @@ class Command(BaseCommand):
                         continue
                     if self.verbosity >= 3:
                         self.stdout.write(
-                            "    Processing %s.%s model"
-                            % (app_name, model._meta.object_name)
+                            "    Processing %s.%s model" % (app_name, model._meta.object_name)
                         )
                     if self.verbosity >= 1:
-                        self.stdout.write(
-                            "    Creating table %s" % model._meta.db_table
-                        )
+                        self.stdout.write("    Creating table %s" % model._meta.db_table)
                     editor.create_model(model)
 
-            # Deferred SQL is executed when exiting the editor's context.
+                    # Deferred SQL is executed when exiting the editor's context.
             if self.verbosity >= 1:
                 self.stdout.write("    Running deferred SQL...")
 

@@ -33,9 +33,7 @@ class Tag(models.Model):
         null=True,
         related_name="children",
     )
-    category = models.ForeignKey(
-        NamedCategory, models.SET_NULL, null=True, default=None
-    )
+    category = models.ForeignKey(NamedCategory, models.SET_NULL, null=True, default=None)
 
     class Meta:
         ordering = ["name"]
@@ -157,9 +155,8 @@ class Number(models.Model):
     def __str__(self):
         return str(self.num)
 
-
-# Symmetrical m2m field with a normal field using the reverse accessor name
-# ("valid").
+        # Symmetrical m2m field with a normal field using the reverse accessor name
+        # ("valid").
 
 
 class Valid(models.Model):
@@ -169,9 +166,8 @@ class Valid(models.Model):
     class Meta:
         ordering = ["valid"]
 
-
-# Some funky cross-linked models for testing a couple of infinite recursion
-# cases.
+        # Some funky cross-linked models for testing a couple of infinite recursion
+        # cases.
 
 
 class X(models.Model):
@@ -181,9 +177,8 @@ class X(models.Model):
 class Y(models.Model):
     x1 = models.ForeignKey(X, models.CASCADE, related_name="y1")
 
-
-# Some models with a cycle in the default ordering. This would be bad if we
-# didn't catch the infinite loop.
+    # Some models with a cycle in the default ordering. This would be bad if we
+    # didn't catch the infinite loop.
 
 
 class LoopX(models.Model):
@@ -206,8 +201,7 @@ class LoopZ(models.Model):
     class Meta:
         ordering = ["z"]
 
-
-# A model and custom default manager combination.
+        # A model and custom default manager combination.
 
 
 class CustomManager(models.Manager):
@@ -227,8 +221,7 @@ class ManagedModel(models.Model):
     def __str__(self):
         return self.data
 
-
-# An inter-related setup with multiple paths from Child to Detail.
+        # An inter-related setup with multiple paths from Child to Detail.
 
 
 class Detail(models.Model):
@@ -251,8 +244,7 @@ class Child(models.Model):
     person = models.OneToOneField(Member, models.CASCADE, primary_key=True)
     parent = models.ForeignKey(Member, models.CASCADE, related_name="children")
 
-
-# Custom primary keys interfered with ordering in the past.
+    # Custom primary keys interfered with ordering in the past.
 
 
 class CustomPk(models.Model):
@@ -272,9 +264,8 @@ class CustomPkTag(models.Model):
     custom_pk = models.ManyToManyField(CustomPk)
     tag = models.CharField(max_length=20)
 
-
-# An inter-related setup with a model subclass that has a nullable
-# path to another model, and a return path from that model.
+    # An inter-related setup with a model subclass that has a nullable
+    # path to another model, and a return path from that model.
 
 
 class Celebrity(models.Model):
@@ -292,8 +283,7 @@ class TvChef(Celebrity):
 class Fan(models.Model):
     fan_of = models.ForeignKey(Celebrity, models.CASCADE)
 
-
-# Multiple foreign keys
+    # Multiple foreign keys
 
 
 class LeafA(models.Model):
@@ -319,8 +309,7 @@ class ReservedName(models.Model):
     def __str__(self):
         return self.name
 
-
-# A simpler shared-foreign-key setup that can expose some problems.
+        # A simpler shared-foreign-key setup that can expose some problems.
 
 
 class SharedConnection(models.Model):
@@ -337,8 +326,7 @@ class PointerA(models.Model):
 class PointerB(models.Model):
     connection = models.ForeignKey(SharedConnection, models.CASCADE)
 
-
-# Multi-layer ordering
+    # Multi-layer ordering
 
 
 class SingleObject(models.Model):
@@ -400,8 +388,7 @@ class Node(models.Model):
     def __str__(self):
         return str(self.num)
 
-
-# Bug #12252
+        # Bug #12252
 
 
 class ObjectA(models.Model):
@@ -442,9 +429,7 @@ class ObjectC(models.Model):
     name = models.CharField(max_length=50)
     objecta = models.ForeignKey(ObjectA, models.SET_NULL, null=True)
     objectb = models.ForeignKey(ObjectB, models.SET_NULL, null=True)
-    childobjecta = models.ForeignKey(
-        ChildObjectA, models.SET_NULL, null=True, related_name="ca_pk"
-    )
+    childobjecta = models.ForeignKey(ChildObjectA, models.SET_NULL, null=True, related_name="ca_pk")
 
     def __str__(self):
         return self.name
@@ -476,9 +461,7 @@ class MixedCaseFieldCategoryItem(models.Model):
 
 
 class MixedCaseDbColumnCategoryItem(models.Model):
-    category = models.ForeignKey(
-        SimpleCategory, models.CASCADE, db_column="CaTeGoRy_Id"
-    )
+    category = models.ForeignKey(SimpleCategory, models.CASCADE, db_column="CaTeGoRy_Id")
 
 
 class OneToOneCategory(models.Model):
@@ -491,19 +474,13 @@ class OneToOneCategory(models.Model):
 
 class CategoryRelationship(models.Model):
     first = models.ForeignKey(SimpleCategory, models.CASCADE, related_name="first_rel")
-    second = models.ForeignKey(
-        SimpleCategory, models.CASCADE, related_name="second_rel"
-    )
+    second = models.ForeignKey(SimpleCategory, models.CASCADE, related_name="second_rel")
 
 
 class CommonMixedCaseForeignKeys(models.Model):
     category = models.ForeignKey(CategoryItem, models.CASCADE)
-    mixed_case_field_category = models.ForeignKey(
-        MixedCaseFieldCategoryItem, models.CASCADE
-    )
-    mixed_case_db_column_category = models.ForeignKey(
-        MixedCaseDbColumnCategoryItem, models.CASCADE
-    )
+    mixed_case_field_category = models.ForeignKey(MixedCaseFieldCategoryItem, models.CASCADE)
+    mixed_case_db_column_category = models.ForeignKey(MixedCaseDbColumnCategoryItem, models.CASCADE)
 
 
 class NullableName(models.Model):
@@ -541,22 +518,17 @@ class Job(models.Model):
 
 class JobResponsibilities(models.Model):
     job = models.ForeignKey(Job, models.CASCADE, to_field="name")
-    responsibility = models.ForeignKey(
-        "Responsibility", models.CASCADE, to_field="description"
-    )
+    responsibility = models.ForeignKey("Responsibility", models.CASCADE, to_field="description")
 
 
 class Responsibility(models.Model):
     description = models.CharField(max_length=20, unique=True)
-    jobs = models.ManyToManyField(
-        Job, through=JobResponsibilities, related_name="responsibilities"
-    )
+    jobs = models.ManyToManyField(Job, through=JobResponsibilities, related_name="responsibilities")
 
     def __str__(self):
         return self.description
 
-
-# Models for disjunction join promotion low level testing.
+        # Models for disjunction join promotion low level testing.
 
 
 class FK1(models.Model):
@@ -622,8 +594,7 @@ class MyObject(models.Model):
     data = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
-# Models for #17600 regressions
+    # Models for #17600 regressions
 
 
 class Order(models.Model):
@@ -693,9 +664,7 @@ class Person(models.Model):
 
 class Company(models.Model):
     name = models.CharField(max_length=128)
-    employees = models.ManyToManyField(
-        Person, related_name="employers", through="Employment"
-    )
+    employees = models.ManyToManyField(Person, related_name="employers", through="Employment")
 
     def __str__(self):
         return self.name
@@ -745,8 +714,9 @@ class Ticket23605B(models.Model):
 class Ticket23605C(models.Model):
     field_c0 = models.FloatField()
 
+    # db_table names have capital letters to ensure they are quoted in queries.
 
-# db_table names have capital letters to ensure they are quoted in queries.
+
 class Individual(models.Model):
     alive = models.BooleanField()
 
@@ -755,9 +725,7 @@ class Individual(models.Model):
 
 
 class RelatedIndividual(models.Model):
-    related = models.ForeignKey(
-        Individual, models.CASCADE, related_name="related_individual"
-    )
+    related = models.ForeignKey(Individual, models.CASCADE, related_name="related_individual")
 
     class Meta:
         db_table = "RelatedIndividual"

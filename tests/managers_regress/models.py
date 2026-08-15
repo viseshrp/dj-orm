@@ -28,7 +28,8 @@ class AbstractBase1(models.Model):
     class Meta:
         abstract = True
 
-    # Custom managers
+        # Custom managers
+
     manager1 = OnlyFred()
     manager2 = OnlyBarney()
     objects = models.Manager()
@@ -40,11 +41,13 @@ class AbstractBase2(models.Model):
     class Meta:
         abstract = True
 
-    # Custom manager
+        # Custom manager
+
     restricted = Value42()
 
+    # No custom manager on this class to make sure the default case doesn't break.
 
-# No custom manager on this class to make sure the default case doesn't break.
+
 class AbstractBase3(models.Model):
     comment = models.CharField(max_length=50)
 
@@ -60,10 +63,11 @@ class Parent(models.Model):
     def __str__(self):
         return self.name
 
+        # Managers from base classes are inherited and, if no manager is specified
+        # *and* the parent has a manager specified, the first one (in the MRO) will
+        # become the default.
 
-# Managers from base classes are inherited and, if no manager is specified
-# *and* the parent has a manager specified, the first one (in the MRO) will
-# become the default.
+
 class Child1(AbstractBase1):
     data = models.CharField(max_length=25)
 
@@ -113,8 +117,9 @@ class Child6(Child4):
 class Child7(Parent):
     objects = models.Manager()
 
+    # RelatedManagers
 
-# RelatedManagers
+
 class RelatedModel(models.Model):
     test_gfk = GenericRelation(
         "RelationModel", content_type_field="gfk_ctype", object_id_field="gfk_id"

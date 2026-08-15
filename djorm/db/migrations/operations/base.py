@@ -53,7 +53,11 @@ class Operation:
         return self
 
     def deconstruct(self):
-        '\n        Return a 3-tuple of class import path (or just name if it lives\n        under djorm.db.migrations), positional arguments, and keyword\n        arguments.\n        '
+        """
+        Return a 3-tuple of class import path (or just name if it lives
+        under djorm.db.migrations), positional arguments, and keyword
+        arguments.
+        """
         return (
             self.__class__.__name__,
             self._constructor_args[0],
@@ -65,9 +69,7 @@ class Operation:
         Take the state from the previous migration, and mutate it
         so that it matches what this migration would perform.
         """
-        raise NotImplementedError(
-            "subclasses of Operation must provide a state_forwards() method"
-        )
+        raise NotImplementedError("subclasses of Operation must provide a state_forwards() method")
 
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
         """

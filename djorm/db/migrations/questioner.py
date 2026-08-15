@@ -29,10 +29,10 @@ class MigrationQuestioner:
         # If it was specified on the command line, definitely true
         if app_label in self.specified_apps:
             return True
-        # Otherwise, we look to see if it has a migrations module
-        # without any Python files in it, apart from __init__.py.
-        # Apps from the new app template will have these; the Python
-        # file check will ensure we skip South ones.
+            # Otherwise, we look to see if it has a migrations module
+            # without any Python files in it, apart from __init__.py.
+            # Apps from the new app template will have these; the Python
+            # file check will ensure we skip South ones.
         try:
             app_config = apps.get_app_config(app_label)
         except LookupError:  # It's a fake app.
@@ -88,12 +88,8 @@ class MigrationQuestioner:
 
 
 class InteractiveMigrationQuestioner(MigrationQuestioner):
-    def __init__(
-        self, defaults=None, specified_apps=None, dry_run=None, prompt_output=None
-    ):
-        super().__init__(
-            defaults=defaults, specified_apps=specified_apps, dry_run=dry_run
-        )
+    def __init__(self, defaults=None, specified_apps=None, dry_run=None, prompt_output=None):
+        super().__init__(defaults=defaults, specified_apps=specified_apps, dry_run=dry_run)
         self.prompt_output = prompt_output or OutputWrapper(sys.stdout)
 
     def _boolean_input(self, question, default=None):
@@ -136,11 +132,10 @@ class InteractiveMigrationQuestioner(MigrationQuestioner):
         self.prompt_output.write("Please enter the default value as valid Python.")
         if default:
             self.prompt_output.write(
-                f"Accept the default '{default}' by pressing 'Enter' or "
-                f"provide another value."
+                f"Accept the default '{default}' by pressing 'Enter' or provide another value."
             )
         self.prompt_output.write(
-            'The datetime and djorm.utils.timezone modules are available, so '
+            "The datetime and djorm.utils.timezone modules are available, so "
             "it is possible to provide e.g. timezone.now as a value."
         )
         self.prompt_output.write("Type 'exit' to exit this prompt")
@@ -239,8 +234,7 @@ class InteractiveMigrationQuestioner(MigrationQuestioner):
         """Was this model really renamed?"""
         msg = "Was the model %s.%s renamed to %s? [y/N]"
         return self._boolean_input(
-            msg
-            % (old_model_state.app_label, old_model_state.name, new_model_state.name),
+            msg % (old_model_state.app_label, old_model_state.name, new_model_state.name),
             False,
         )
 
@@ -261,8 +255,7 @@ class InteractiveMigrationQuestioner(MigrationQuestioner):
                 f"default. This is because the database needs something to "
                 f"populate existing rows.\n",
                 [
-                    "Provide a one-off default now which will be set on all "
-                    "existing rows",
+                    "Provide a one-off default now which will be set on all existing rows",
                     "Quit and manually define a default value in models.py.",
                 ],
             )
@@ -313,18 +306,14 @@ class NonInteractiveMigrationQuestioner(MigrationQuestioner):
 
     def log_lack_of_migration(self, field_name, model_name, reason):
         if self.verbosity > 0:
-            self.log(
-                f"Field '{field_name}' on model '{model_name}' not migrated: "
-                f"{reason}."
-            )
+            self.log(f"Field '{field_name}' on model '{model_name}' not migrated: {reason}.")
 
     def ask_not_null_addition(self, field_name, model_name):
         # We can't ask the user, so act like the user aborted.
         self.log_lack_of_migration(
             field_name,
             model_name,
-            "it is impossible to add a non-nullable field without specifying "
-            "a default",
+            "it is impossible to add a non-nullable field without specifying a default",
         )
         sys.exit(3)
 
@@ -341,7 +330,6 @@ class NonInteractiveMigrationQuestioner(MigrationQuestioner):
         self.log_lack_of_migration(
             field_name,
             model_name,
-            "it is impossible to add a field with 'auto_now_add=True' without "
-            "specifying a default",
+            "it is impossible to add a field with 'auto_now_add=True' without specifying a default",
         )
         sys.exit(3)

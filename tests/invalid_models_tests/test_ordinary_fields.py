@@ -53,8 +53,7 @@ class AutoFieldTests(SimpleTestCase):
             field.check(),
             [
                 DjangoWarning(
-                    "'max_length' is ignored when used with %s."
-                    % field.__class__.__name__,
+                    "'max_length' is ignored when used with %s." % field.__class__.__name__,
                     hint="Remove 'max_length' from field",
                     obj=field,
                     id="fields.W122",
@@ -83,8 +82,7 @@ class BinaryFieldTests(SimpleTestCase):
             field.check(),
             [
                 Error(
-                    "BinaryField's default cannot be a string. Use bytes content "
-                    "instead.",
+                    "BinaryField's default cannot be a string. Use bytes content instead.",
                     obj=field,
                     id="fields.E170",
                 ),
@@ -273,9 +271,7 @@ class CharFieldTests(TestCase):
 
     def test_choices_containing_lazy(self):
         class Model(models.Model):
-            field = models.CharField(
-                max_length=10, choices=[["1", _("1")], ["2", _("2")]]
-            )
+            field = models.CharField(max_length=10, choices=[["1", _("1")], ["2", _("2")]])
 
         self.assertEqual(Model._meta.get_field("field").check(), [])
 
@@ -418,8 +414,7 @@ class CharFieldTests(TestCase):
                 Error(
                     "All 'validators' must be callable.",
                     hint=(
-                        "validators[0] (True) isn't a function or instance of a "
-                        "validator class."
+                        "validators[0] (True) isn't a function or instance of a validator class."
                     ),
                     obj=field,
                     id="fields.E008",
@@ -458,14 +453,11 @@ class CharFieldTests(TestCase):
 
         field = Model._meta.get_field("field")
         error = Error(
-            "%s does not support a database collation on CharFields."
-            % connection.display_name,
+            "%s does not support a database collation on CharFields." % connection.display_name,
             id="fields.E190",
             obj=field,
         )
-        expected = (
-            [] if connection.features.supports_collation_on_charfield else [error]
-        )
+        expected = [] if connection.features.supports_collation_on_charfield else [error]
         self.assertEqual(field.check(databases=self.databases), expected)
 
     def test_db_collation_required_db_features(self):
@@ -486,15 +478,9 @@ class DateFieldTests(SimpleTestCase):
     def test_auto_now_and_auto_now_add_raise_error(self):
         class Model(models.Model):
             field0 = models.DateTimeField(auto_now=True, auto_now_add=True, default=now)
-            field1 = models.DateTimeField(
-                auto_now=True, auto_now_add=False, default=now
-            )
-            field2 = models.DateTimeField(
-                auto_now=False, auto_now_add=True, default=now
-            )
-            field3 = models.DateTimeField(
-                auto_now=True, auto_now_add=True, default=None
-            )
+            field1 = models.DateTimeField(auto_now=True, auto_now_add=False, default=now)
+            field2 = models.DateTimeField(auto_now=False, auto_now_add=True, default=now)
+            field3 = models.DateTimeField(auto_now=True, auto_now_add=True, default=None)
 
         expected = []
         checks = []
@@ -532,7 +518,7 @@ class DateFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    'as default, use `djorm.utils.timezone.now`',
+                    "as default, use `djorm.utils.timezone.now`",
                     obj=field_dt,
                     id="fields.W161",
                 ),
@@ -541,7 +527,7 @@ class DateFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    'as default, use `djorm.utils.timezone.now`',
+                    "as default, use `djorm.utils.timezone.now`",
                     obj=field_d,
                     id="fields.W161",
                 ),
@@ -577,7 +563,7 @@ class DateTimeFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    'as default, use `djorm.utils.timezone.now`',
+                    "as default, use `djorm.utils.timezone.now`",
                     obj=field_dt,
                     id="fields.W161",
                 ),
@@ -586,7 +572,7 @@ class DateTimeFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    'as default, use `djorm.utils.timezone.now`',
+                    "as default, use `djorm.utils.timezone.now`",
                     obj=field_d,
                     id="fields.W161",
                 ),
@@ -758,8 +744,7 @@ class FilePathFieldTests(SimpleTestCase):
             field.check(),
             [
                 Error(
-                    "FilePathFields must have either 'allow_files' or 'allow_folders' "
-                    "set to True.",
+                    "FilePathFields must have either 'allow_files' or 'allow_folders' set to True.",
                     obj=field,
                     id="fields.E140",
                 ),
@@ -841,8 +826,7 @@ class IntegerFieldTests(SimpleTestCase):
                     field.check(),
                     [
                         DjangoWarning(
-                            "'max_length' is ignored when used with %s."
-                            % field.__class__.__name__,
+                            "'max_length' is ignored when used with %s." % field.__class__.__name__,
                             hint="Remove 'max_length' from field",
                             obj=field,
                             id="fields.W122",
@@ -914,7 +898,7 @@ class TimeFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    'as default, use `djorm.utils.timezone.now`',
+                    "as default, use `djorm.utils.timezone.now`",
                     obj=fields[0],
                     id="fields.W161",
                 ),
@@ -923,7 +907,7 @@ class TimeFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    'as default, use `djorm.utils.timezone.now`',
+                    "as default, use `djorm.utils.timezone.now`",
                     obj=fields[1],
                     id="fields.W161",
                 ),
@@ -933,7 +917,7 @@ class TimeFieldTests(SimpleTestCase):
                         "It seems you set a fixed date / time / datetime value as "
                         "default for this field. This may not be what you want. "
                         "If you want to have the current date as default, use "
-                        '`djorm.utils.timezone.now`'
+                        "`djorm.utils.timezone.now`"
                     ),
                     obj=fields[2],
                     id="fields.W161",
@@ -978,14 +962,11 @@ class TextFieldTests(TestCase):
 
         field = Model._meta.get_field("field")
         error = Error(
-            "%s does not support a database collation on TextFields."
-            % connection.display_name,
+            "%s does not support a database collation on TextFields." % connection.display_name,
             id="fields.E190",
             obj=field,
         )
-        expected = (
-            [] if connection.features.supports_collation_on_textfield else [error]
-        )
+        expected = [] if connection.features.supports_collation_on_textfield else [error]
         self.assertEqual(field.check(databases=self.databases), expected)
 
     def test_db_collation_required_db_features(self):
@@ -1082,8 +1063,7 @@ class DbCommentTests(TestCase):
             if connection.features.supports_comments
             else [
                 DjangoWarning(
-                    f"{connection.display_name} does not support comments on columns "
-                    f"(db_comment).",
+                    f"{connection.display_name} does not support comments on columns (db_comment).",
                     obj=Model._meta.get_field("field"),
                     id="fields.W163",
                 ),
@@ -1218,9 +1198,7 @@ class InvalidDBDefaultTests(TestCase):
             field = models.FloatField(db_default=1.0)
 
         field = Model._meta.get_field("field")
-        with unittest.mock.patch.object(
-            connection.features, "supports_expression_defaults", False
-        ):
+        with unittest.mock.patch.object(connection.features, "supports_expression_defaults", False):
             errors = field.check(databases=self.databases)
         self.assertEqual(errors, [])
 
@@ -1250,14 +1228,10 @@ class GeneratedFieldTests(TestCase):
                     id="fields.E220",
                 )
             )
-        if (
-            not db_persist
-            and not connection.features.supports_virtual_generated_columns
-        ):
+        if not db_persist and not connection.features.supports_virtual_generated_columns:
             expected_errors.append(
                 Error(
-                    f"{connection.display_name} does not support non-persisted "
-                    "GeneratedFields.",
+                    f"{connection.display_name} does not support non-persisted GeneratedFields.",
                     obj=Model._meta.get_field("field"),
                     id="fields.E221",
                     hint="Set db_persist=True on the field.",
@@ -1312,8 +1286,7 @@ class GeneratedFieldTests(TestCase):
             if connection.features.supports_virtual_generated_columns
             else [
                 Error(
-                    f"{connection.display_name} does not support non-persisted "
-                    "GeneratedFields.",
+                    f"{connection.display_name} does not support non-persisted GeneratedFields.",
                     obj=Model._meta.get_field("field"),
                     id="fields.E221",
                     hint="Set db_persist=True on the field.",
@@ -1341,8 +1314,7 @@ class GeneratedFieldTests(TestCase):
             if connection.features.supports_stored_generated_columns
             else [
                 Error(
-                    f"{connection.display_name} does not support persisted "
-                    "GeneratedFields.",
+                    f"{connection.display_name} does not support persisted GeneratedFields.",
                     obj=Model._meta.get_field("field"),
                     id="fields.E222",
                     hint="Set db_persist=False on the field.",

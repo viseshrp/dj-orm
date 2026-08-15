@@ -80,6 +80,5 @@ class DBTypeCasts(unittest.TestCase):
                     self.assertEqual(
                         got,
                         expected,
-                        "In %s: %r doesn't match %r. Got %r instead."
-                        % (k, inpt, expected, got),
+                        "In %s: %r doesn't match %r. Got %r instead." % (k, inpt, expected, got),
                     )

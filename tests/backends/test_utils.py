@@ -1,4 +1,4 @@
-'Tests for djorm.db.backends.utils'
+"""Tests for djorm.db.backends.utils"""
 
 from decimal import Decimal, Rounded
 
@@ -24,12 +24,8 @@ class TestUtils(SimpleTestCase):
         self.assertEqual(truncate_name("some_long_table", 10, 3), "some_loa38")
         self.assertEqual(truncate_name("some_long_table"), "some_long_table")
         # "user"."table" syntax
-        self.assertEqual(
-            truncate_name('username"."some_table', 10), 'username"."some_table'
-        )
-        self.assertEqual(
-            truncate_name('username"."some_long_table', 10), 'username"."some_la38a'
-        )
+        self.assertEqual(truncate_name('username"."some_table', 10), 'username"."some_table')
+        self.assertEqual(truncate_name('username"."some_long_table', 10), 'username"."some_la38a')
         self.assertEqual(
             truncate_name('username"."some_long_table', 10, 3), 'username"."some_loa38'
         )
@@ -37,12 +33,8 @@ class TestUtils(SimpleTestCase):
     def test_split_identifier(self):
         self.assertEqual(split_identifier("some_table"), ("", "some_table"))
         self.assertEqual(split_identifier('"some_table"'), ("", "some_table"))
-        self.assertEqual(
-            split_identifier('namespace"."some_table'), ("namespace", "some_table")
-        )
-        self.assertEqual(
-            split_identifier('"namespace"."some_table"'), ("namespace", "some_table")
-        )
+        self.assertEqual(split_identifier('namespace"."some_table'), ("namespace", "some_table"))
+        self.assertEqual(split_identifier('"namespace"."some_table"'), ("namespace", "some_table"))
 
     def test_format_number(self):
         def equal(value, max_d, places, result):
@@ -97,8 +89,8 @@ class CursorWrapperTests(TransactionTestCase):
     def _test_procedure(self, procedure_sql, params, param_types, kparams=None):
         with connection.cursor() as cursor:
             cursor.execute(procedure_sql)
-        # Use a new cursor because in MySQL a procedure can't be used in the
-        # same cursor in which it was created.
+            # Use a new cursor because in MySQL a procedure can't be used in the
+            # same cursor in which it was created.
         with connection.cursor() as cursor:
             cursor.callproc("test_procedure", params, kparams)
         with connection.schema_editor() as editor:
@@ -106,9 +98,7 @@ class CursorWrapperTests(TransactionTestCase):
 
     @skipUnlessDBFeature("create_test_procedure_without_params_sql")
     def test_callproc_without_params(self):
-        self._test_procedure(
-            connection.features.create_test_procedure_without_params_sql, [], []
-        )
+        self._test_procedure(connection.features.create_test_procedure_without_params_sql, [], [])
 
     @skipUnlessDBFeature("create_test_procedure_with_int_param_sql")
     def test_callproc_with_int_params(self):
@@ -118,9 +108,7 @@ class CursorWrapperTests(TransactionTestCase):
             ["INTEGER"],
         )
 
-    @skipUnlessDBFeature(
-        "create_test_procedure_with_int_param_sql", "supports_callproc_kwargs"
-    )
+    @skipUnlessDBFeature("create_test_procedure_with_int_param_sql", "supports_callproc_kwargs")
     def test_callproc_kparams(self):
         self._test_procedure(
             connection.features.create_test_procedure_with_int_param_sql,
@@ -131,10 +119,7 @@ class CursorWrapperTests(TransactionTestCase):
 
     @skipIfDBFeature("supports_callproc_kwargs")
     def test_unsupported_callproc_kparams_raises_error(self):
-        msg = (
-            "Keyword parameters for callproc are not supported on this database "
-            "backend."
-        )
+        msg = "Keyword parameters for callproc are not supported on this database backend."
         with self.assertRaisesMessage(NotSupportedError, msg):
             with connection.cursor() as cursor:
                 cursor.callproc("test_procedure", [], {"P_I": 1})

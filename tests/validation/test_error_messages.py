@@ -20,9 +20,7 @@ class ValidationMessagesTest(TestCase):
 
     def test_boolean_field_raises_error_message(self):
         f = models.BooleanField()
-        self._test_validation_messages(
-            f, "fõo", ["“fõo” value must be either True or False."]
-        )
+        self._test_validation_messages(f, "fõo", ["“fõo” value must be either True or False."])
 
     def test_nullable_boolean_field_raises_error_message(self):
         f = models.BooleanField(null=True)
@@ -36,9 +34,7 @@ class ValidationMessagesTest(TestCase):
 
     def test_decimal_field_raises_error_message(self):
         f = models.DecimalField()
-        self._test_validation_messages(
-            f, "fõo", ["“fõo” value must be a decimal number."]
-        )
+        self._test_validation_messages(f, "fõo", ["“fõo” value must be a decimal number."])
 
     def test_null_boolean_field_raises_error_message(self):
         f = models.BooleanField(null=True)
@@ -51,34 +47,22 @@ class ValidationMessagesTest(TestCase):
         self._test_validation_messages(
             f,
             "fõo",
-            [
-                "“fõo” value has an invalid date format. It must be in YYYY-MM-DD "
-                "format."
-            ],
+            ["“fõo” value has an invalid date format. It must be in YYYY-MM-DD format."],
         )
         self._test_validation_messages(
             f,
             "aaaa-10-10",
-            [
-                "“aaaa-10-10” value has an invalid date format. It must be in "
-                "YYYY-MM-DD format."
-            ],
+            ["“aaaa-10-10” value has an invalid date format. It must be in YYYY-MM-DD format."],
         )
         self._test_validation_messages(
             f,
             "2011-13-10",
-            [
-                "“2011-13-10” value has the correct format (YYYY-MM-DD) but it is an "
-                "invalid date."
-            ],
+            ["“2011-13-10” value has the correct format (YYYY-MM-DD) but it is an invalid date."],
         )
         self._test_validation_messages(
             f,
             "2011-10-32",
-            [
-                "“2011-10-32” value has the correct format (YYYY-MM-DD) but it is an "
-                "invalid date."
-            ],
+            ["“2011-10-32” value has the correct format (YYYY-MM-DD) but it is an invalid date."],
         )
 
     def test_datetime_field_raises_error_message(self):
@@ -96,10 +80,7 @@ class ValidationMessagesTest(TestCase):
         self._test_validation_messages(
             f,
             "2011-10-32",
-            [
-                "“2011-10-32” value has the correct format (YYYY-MM-DD) but it is an "
-                "invalid date."
-            ],
+            ["“2011-10-32” value has the correct format (YYYY-MM-DD) but it is an invalid date."],
         )
         # Correct format but invalid date/time
         self._test_validation_messages(
@@ -117,10 +98,7 @@ class ValidationMessagesTest(TestCase):
         self._test_validation_messages(
             f,
             "fõo",
-            [
-                "“fõo” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
-                "format."
-            ],
+            ["“fõo” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] format."],
         )
         # Correct format but invalid time
         self._test_validation_messages(

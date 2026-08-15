@@ -1,4 +1,7 @@
-'\nBase classes for writing management commands (named commands which can\nbe executed through ``djorm`` or ``manage.py``).\n'
+"""
+Base classes for writing management commands (named commands which can
+be executed through ``djorm`` or ``manage.py``).
+"""
 
 import argparse
 import os
@@ -50,9 +53,7 @@ class CommandParser(ArgumentParser):
     command is called programmatically.
     """
 
-    def __init__(
-        self, *, missing_args_message=None, called_from_command_line=None, **kwargs
-    ):
+    def __init__(self, *, missing_args_message=None, called_from_command_line=None, **kwargs):
         self.missing_args_message = missing_args_message
         self.called_from_command_line = called_from_command_line
         if PY314:
@@ -62,9 +63,7 @@ class CommandParser(ArgumentParser):
 
     def parse_args(self, args=None, namespace=None):
         # Catch missing argument for a better error message
-        if self.missing_args_message and not (
-            args or any(not arg.startswith("-") for arg in args)
-        ):
+        if self.missing_args_message and not (args or any(not arg.startswith("-") for arg in args)):
             self.error(self.missing_args_message)
         return super().parse_args(args, namespace)
 
@@ -132,9 +131,7 @@ class DjangoHelpFormatter(HelpFormatter):
     }
 
     def _reordered_actions(self, actions):
-        return sorted(
-            actions, key=lambda a: set(a.option_strings) & self.show_last != set()
-        )
+        return sorted(actions, key=lambda a: set(a.option_strings) & self.show_last != set())
 
     def add_usage(self, usage, actions, *args, **kwargs):
         super().add_usage(usage, self._reordered_actions(actions), *args, **kwargs)
@@ -186,7 +183,76 @@ TextIOBase.register(OutputWrapper)
 
 
 class BaseCommand:
-    "\n    The base class from which all management commands ultimately\n    derive.\n\n    Use this class if you want access to all of the mechanisms which\n    parse the command-line arguments and work out what code to call in\n    response; if you don't need to change any of that behavior,\n    consider using one of the subclasses defined in this file.\n\n    If you are interested in overriding/customizing various aspects of\n    the command-parsing and -execution behavior, the normal flow works\n    as follows:\n\n    1. ``djorm`` or ``manage.py`` loads the command class\n       and calls its ``run_from_argv()`` method.\n\n    2. The ``run_from_argv()`` method calls ``create_parser()`` to get\n       an ``ArgumentParser`` for the arguments, parses them, performs\n       any environment changes requested by options like\n       ``pythonpath``, and then calls the ``execute()`` method,\n       passing the parsed arguments.\n\n    3. The ``execute()`` method attempts to carry out the command by\n       calling the ``handle()`` method with the parsed arguments; any\n       output produced by ``handle()`` will be printed to standard\n       output and, if the command is intended to produce a block of\n       SQL statements, will be wrapped in ``BEGIN`` and ``COMMIT``.\n\n    4. If ``handle()`` or ``execute()`` raised any exception (e.g.\n       ``CommandError``), ``run_from_argv()`` will  instead print an error\n       message to ``stderr``.\n\n    Thus, the ``handle()`` method is typically the starting point for\n    subclasses; many built-in commands and command types either place\n    all of their logic in ``handle()``, or perform some additional\n    parsing work in ``handle()`` and then delegate from it to more\n    specialized methods as needed.\n\n    Several attributes affect behavior at various steps along the way:\n\n    ``help``\n        A short description of the command, which will be printed in\n        help messages.\n\n    ``output_transaction``\n        A boolean indicating whether the command outputs SQL\n        statements; if ``True``, the output will automatically be\n        wrapped with ``BEGIN;`` and ``COMMIT;``. Default value is\n        ``False``.\n\n    ``requires_migrations_checks``\n        A boolean; if ``True``, the command prints a warning if the set of\n        migrations on disk don't match the migrations in the database.\n\n    ``requires_system_checks``\n        A list or tuple of tags, e.g. [Tags.staticfiles, Tags.models]. System\n        checks registered in the chosen tags will be checked for errors prior\n        to executing the command. The value '__all__' can be used to specify\n        that all system checks should be performed. Default value is '__all__'.\n\n        To validate an individual application's models\n        rather than all applications' models, call\n        ``self.check(app_configs)`` from ``handle()``, where ``app_configs``\n        is the list of application's configuration provided by the\n        app registry.\n\n    ``stealth_options``\n        A tuple of any options the command uses which aren't defined by the\n        argument parser.\n    "
+    """
+    The base class from which all management commands ultimately
+    derive.
+
+    Use this class if you want access to all of the mechanisms which
+    parse the command-line arguments and work out what code to call in
+    response; if you don't need to change any of that behavior,
+    consider using one of the subclasses defined in this file.
+
+    If you are interested in overriding/customizing various aspects of
+    the command-parsing and -execution behavior, the normal flow works
+    as follows:
+
+    1. ``djorm`` or ``manage.py`` loads the command class
+       and calls its ``run_from_argv()`` method.
+
+    2. The ``run_from_argv()`` method calls ``create_parser()`` to get
+       an ``ArgumentParser`` for the arguments, parses them, performs
+       any environment changes requested by options like
+       ``pythonpath``, and then calls the ``execute()`` method,
+       passing the parsed arguments.
+
+    3. The ``execute()`` method attempts to carry out the command by
+       calling the ``handle()`` method with the parsed arguments; any
+       output produced by ``handle()`` will be printed to standard
+       output and, if the command is intended to produce a block of
+       SQL statements, will be wrapped in ``BEGIN`` and ``COMMIT``.
+
+    4. If ``handle()`` or ``execute()`` raised any exception (e.g.
+       ``CommandError``), ``run_from_argv()`` will  instead print an error
+       message to ``stderr``.
+
+    Thus, the ``handle()`` method is typically the starting point for
+    subclasses; many built-in commands and command types either place
+    all of their logic in ``handle()``, or perform some additional
+    parsing work in ``handle()`` and then delegate from it to more
+    specialized methods as needed.
+
+    Several attributes affect behavior at various steps along the way:
+
+    ``help``
+        A short description of the command, which will be printed in
+        help messages.
+
+    ``output_transaction``
+        A boolean indicating whether the command outputs SQL
+        statements; if ``True``, the output will automatically be
+        wrapped with ``BEGIN;`` and ``COMMIT;``. Default value is
+        ``False``.
+
+    ``requires_migrations_checks``
+        A boolean; if ``True``, the command prints a warning if the set of
+        migrations on disk don't match the migrations in the database.
+
+    ``requires_system_checks``
+        A list or tuple of tags, e.g. [Tags.staticfiles, Tags.models]. System
+        checks registered in the chosen tags will be checked for errors prior
+        to executing the command. The value '__all__' can be used to specify
+        that all system checks should be performed. Default value is '__all__'.
+
+        To validate an individual application's models
+        rather than all applications' models, call
+        ``self.check(app_configs)`` from ``handle()``, where ``app_configs``
+        is the list of application's configuration provided by the
+        app registry.
+
+    ``stealth_options``
+        A tuple of any options the command uses which aren't defined by the
+        argument parser.
+    """
 
     # Metadata about this command.
     help = ""
@@ -271,10 +337,7 @@ class BaseCommand:
         self.add_base_argument(
             parser,
             "--pythonpath",
-            help=(
-                "A directory to add to the Python path, e.g. "
-                '"/home/djangoprojects/myproject".'
-            ),
+            help=('A directory to add to the Python path, e.g. "/home/djangoprojects/myproject".'),
         )
         self.add_base_argument(
             parser,
@@ -350,7 +413,7 @@ class BaseCommand:
             if options.traceback:
                 raise
 
-            # SystemCheckError takes care of its own formatting.
+                # SystemCheckError takes care of its own formatting.
             if isinstance(e, SystemCheckError):
                 self.stderr.write(str(e), lambda x: x)
             else:
@@ -371,9 +434,7 @@ class BaseCommand:
         force-skipped).
         """
         if options["force_color"] and options["no_color"]:
-            raise CommandError(
-                "The --no-color and --force-color options can't be used together."
-            )
+            raise CommandError("The --no-color and --force-color options can't be used together.")
         if options["force_color"]:
             self.style = color_style(force_color=True)
         elif options["no_color"]:
@@ -432,9 +493,7 @@ class BaseCommand:
         visible_issue_count = 0  # excludes silenced warnings
 
         if all_issues:
-            debugs = [
-                e for e in all_issues if e.level < checks.INFO and not e.is_silenced()
-            ]
+            debugs = [e for e in all_issues if e.level < checks.INFO and not e.is_silenced()]
             infos = [
                 e
                 for e in all_issues
@@ -451,9 +510,7 @@ class BaseCommand:
                 if checks.ERROR <= e.level < checks.CRITICAL and not e.is_silenced()
             ]
             criticals = [
-                e
-                for e in all_issues
-                if checks.CRITICAL <= e.level and not e.is_silenced()
+                e for e in all_issues if checks.CRITICAL <= e.level and not e.is_silenced()
             ]
             sorted_issues = [
                 (criticals, "CRITICALS"),
@@ -467,11 +524,7 @@ class BaseCommand:
                 if issues:
                     visible_issue_count += len(issues)
                     formatted = (
-                        (
-                            self.style.ERROR(str(e))
-                            if e.is_serious()
-                            else self.style.WARNING(str(e))
-                        )
+                        (self.style.ERROR(str(e)) if e.is_serious() else self.style.WARNING(str(e)))
                         for e in issues
                     )
                     formatted = "\n".join(sorted(formatted))
@@ -488,9 +541,7 @@ class BaseCommand:
                     "no issues"
                     if visible_issue_count == 0
                     else (
-                        "1 issue"
-                        if visible_issue_count == 1
-                        else "%s issues" % visible_issue_count
+                        "1 issue" if visible_issue_count == 1 else "%s issues" % visible_issue_count
                     )
                 ),
                 len(all_issues) - visible_issue_count,
@@ -523,9 +574,7 @@ class BaseCommand:
 
         plan = executor.migration_plan(executor.loader.graph.leaf_nodes())
         if plan:
-            apps_waiting_migration = sorted(
-                {migration.app_label for migration, backwards in plan}
-            )
+            apps_waiting_migration = sorted({migration.app_label for migration, backwards in plan})
             self.stdout.write(
                 self.style.NOTICE(
                     "\nYou have %(unapplied_migration_count)s unapplied migration(s). "
@@ -537,18 +586,14 @@ class BaseCommand:
                     }
                 )
             )
-            self.stdout.write(
-                self.style.NOTICE("Run 'python manage.py migrate' to apply them.")
-            )
+            self.stdout.write(self.style.NOTICE("Run 'python manage.py migrate' to apply them."))
 
     def handle(self, *args, **options):
         """
         The actual logic of the command. Subclasses must implement
         this method.
         """
-        raise NotImplementedError(
-            "subclasses of BaseCommand must provide a handle() method"
-        )
+        raise NotImplementedError("subclasses of BaseCommand must provide a handle() method")
 
 
 class AppCommand(BaseCommand):
@@ -576,9 +621,7 @@ class AppCommand(BaseCommand):
         try:
             app_configs = [apps.get_app_config(app_label) for app_label in app_labels]
         except (LookupError, ImportError) as e:
-            raise CommandError(
-                "%s. Are you sure your INSTALLED_APPS setting is correct?" % e
-            )
+            raise CommandError("%s. Are you sure your INSTALLED_APPS setting is correct?" % e)
         output = []
         for app_config in app_configs:
             app_output = self.handle_app_config(app_config, **options)
@@ -634,6 +677,4 @@ class LabelCommand(BaseCommand):
         Perform the command's actions for ``label``, which will be the
         string as given on the command line.
         """
-        raise NotImplementedError(
-            "subclasses of LabelCommand must provide a handle_label() method"
-        )
+        raise NotImplementedError("subclasses of LabelCommand must provide a handle_label() method")

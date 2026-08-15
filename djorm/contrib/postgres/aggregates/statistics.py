@@ -22,9 +22,7 @@ class StatAggregate(Aggregate):
     def __init__(self, y, x, output_field=None, filter=None, default=None):
         if not x or not y:
             raise ValueError("Both y and x must be provided.")
-        super().__init__(
-            y, x, output_field=output_field, filter=filter, default=default
-        )
+        super().__init__(y, x, output_field=output_field, filter=filter, default=default)
 
 
 class Corr(StatAggregate):

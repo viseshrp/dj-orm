@@ -35,15 +35,17 @@ class ATan2(NumericOutputFieldMixin, Func):
     arity = 2
 
     def as_sqlite(self, compiler, connection, **extra_context):
-        if not getattr(
-            connection.ops, "spatialite", False
-        ) or connection.ops.spatial_version >= (5, 0, 0):
+        if not getattr(connection.ops, "spatialite", False) or connection.ops.spatial_version >= (
+            5,
+            0,
+            0,
+        ):
             return self.as_sql(compiler, connection)
-        # This function is usually ATan2(y, x), returning the inverse tangent
-        # of y / x, but it's ATan2(x, y) on SpatiaLite < 5.0.0.
-        # Cast integers to float to avoid inconsistent/buggy behavior if the
-        # arguments are mixed between integer and float or decimal.
-        # https://www.gaia-gis.it/fossil/libspatialite/tktview?name=0f72cca3a2
+            # This function is usually ATan2(y, x), returning the inverse tangent
+            # of y / x, but it's ATan2(x, y) on SpatiaLite < 5.0.0.
+            # Cast integers to float to avoid inconsistent/buggy behavior if the
+            # arguments are mixed between integer and float or decimal.
+            # https://www.gaia-gis.it/fossil/libspatialite/tktview?name=0f72cca3a2
         clone = self.copy()
         clone.set_source_expressions(
             [
@@ -116,8 +118,8 @@ class Log(FixDecimalInputMixin, NumericOutputFieldMixin, Func):
     def as_sqlite(self, compiler, connection, **extra_context):
         if not getattr(connection.ops, "spatialite", False):
             return self.as_sql(compiler, connection)
-        # This function is usually Log(b, x) returning the logarithm of x to
-        # the base b, but on SpatiaLite it's Log(x, b).
+            # This function is usually Log(b, x) returning the logarithm of x to
+            # the base b, but on SpatiaLite it's Log(x, b).
         clone = self.copy()
         clone.set_source_expressions(self.get_source_expressions()[::-1])
         return clone.as_sql(compiler, connection, **extra_context)
@@ -133,9 +135,7 @@ class Pi(NumericOutputFieldMixin, Func):
     arity = 0
 
     def as_oracle(self, compiler, connection, **extra_context):
-        return super().as_sql(
-            compiler, connection, template=str(math.pi), **extra_context
-        )
+        return super().as_sql(compiler, connection, template=str(math.pi), **extra_context)
 
 
 class Power(NumericOutputFieldMixin, Func):
@@ -164,9 +164,7 @@ class Random(NumericOutputFieldMixin, Func):
         return super().as_sql(compiler, connection, function="RAND", **extra_context)
 
     def as_oracle(self, compiler, connection, **extra_context):
-        return super().as_sql(
-            compiler, connection, function="DBMS_RANDOM.VALUE", **extra_context
-        )
+        return super().as_sql(compiler, connection, function="DBMS_RANDOM.VALUE", **extra_context)
 
     def as_sqlite(self, compiler, connection, **extra_context):
         return super().as_sql(compiler, connection, function="RAND", **extra_context)

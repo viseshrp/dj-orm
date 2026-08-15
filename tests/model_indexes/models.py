@@ -13,9 +13,7 @@ class Book(models.Model):
         indexes = [
             models.Index(fields=["title"]),
             models.Index(fields=["isbn", "id"]),
-            models.Index(
-                fields=["barcode"], name="%(app_label)s_%(class)s_barcode_idx"
-            ),
+            models.Index(fields=["barcode"], name="%(app_label)s_%(class)s_barcode_idx"),
         ]
 
 

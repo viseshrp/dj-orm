@@ -43,9 +43,7 @@ class ManyToManyFieldTests(SimpleTestCase):
 
             class Through(models.Model):
                 referred = models.ForeignKey("Referred", on_delete=models.CASCADE)
-                referent = models.ForeignKey(
-                    "ConcreteReferent", on_delete=models.CASCADE
-                )
+                referent = models.ForeignKey("ConcreteReferent", on_delete=models.CASCADE)
 
                 class Meta:
                     app_label = label
@@ -54,9 +52,7 @@ class ManyToManyFieldTests(SimpleTestCase):
                 class Meta:
                     app_label = label
 
-            self.assertEqual(
-                ConcreteReferent._meta.get_field("reference").related_model, Referred
-            )
+            self.assertEqual(ConcreteReferent._meta.get_field("reference").related_model, Referred)
             self.assertEqual(ConcreteReferent.reference.through, Through)
 
         assert_app_model_resolved("model_fields")
@@ -102,6 +98,4 @@ class ManyToManyFieldDBTests(TestCase):
         obj = ManyToMany.objects.create()
         related_obj = ManyToMany.objects.create()
         obj.m2m.add(related_obj)
-        self.assertEqual(
-            obj._meta.get_field("m2m").value_from_object(obj), [related_obj]
-        )
+        self.assertEqual(obj._meta.get_field("m2m").value_from_object(obj), [related_obj])

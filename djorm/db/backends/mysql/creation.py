@@ -46,11 +46,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                     if verbosity >= 1:
                         self.log(
                             "Destroying old test database for alias %s..."
-                            % (
-                                self._get_database_display_str(
-                                    verbosity, target_database_name
-                                ),
-                            )
+                            % (self._get_database_display_str(verbosity, target_database_name),)
                         )
                     cursor.execute("DROP DATABASE %(dbname)s" % test_db_params)
                     self._execute_create_test_db(cursor, test_db_params, keepdb)
@@ -74,9 +70,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         load_cmd = cmd_args
         load_cmd[-1] = target_database_name
 
-        with subprocess.Popen(
-            dump_cmd, stdout=subprocess.PIPE, env=dump_env
-        ) as dump_proc:
+        with subprocess.Popen(dump_cmd, stdout=subprocess.PIPE, env=dump_env) as dump_proc:
             with subprocess.Popen(
                 load_cmd,
                 stdin=dump_proc.stdout,

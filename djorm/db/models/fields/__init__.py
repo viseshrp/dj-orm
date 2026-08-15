@@ -8,7 +8,10 @@ from base64 import b64decode, b64encode
 from collections.abc import Iterable
 from functools import partialmethod, total_ordering
 
-from djorm import forms
+try:
+    from djorm import forms
+except ImportError:
+    forms = None
 from djorm.apps import apps
 from djorm.conf import settings
 from djorm.core import checks, exceptions, validators
@@ -79,30 +82,30 @@ class Empty:
 class NOT_PROVIDED:
     pass
 
+    # The values to use for "blank" in SelectFields. Will be appended to the start
+    # of most "choices" lists.
 
-# The values to use for "blank" in SelectFields. Will be appended to the start
-# of most "choices" lists.
+
 BLANK_CHOICE_DASH = [("", "---------")]
 
 
 def _load_field(app_label, model_name, field_name):
     return apps.get_model(app_label, model_name)._meta.get_field(field_name)
 
-
-# A guide to Field parameters:
-#
-#   * name:      The name of the field specified in the model.
-#   * attname:   The attribute to use on the model object. This is the same as
-#                "name", except in the case of ForeignKeys, where "_id" is
-#                appended.
-#   * db_column: The db_column specified in the model (or None).
-#   * column:    The database column for this field. This is the same as
-#                "attname", except if db_column is specified.
-#
-# Code that introspects values, or does other dynamic things, should use
-# attname. For example, this gets the primary key value of object "obj":
-#
-#     getattr(obj, opts.pk.attname)
+    # A guide to Field parameters:
+    #
+    #   * name:      The name of the field specified in the model.
+    #   * attname:   The attribute to use on the model object. This is the same as
+    #                "name", except in the case of ForeignKeys, where "_id" is
+    #                appended.
+    #   * db_column: The db_column specified in the model (or None).
+    #   * column:    The database column for this field. This is the same as
+    #                "attname", except if db_column is specified.
+    #
+    # Code that introspects values, or does other dynamic things, should use
+    # attname. For example, this gets the primary key value of object "obj":
+    #
+    #     getattr(obj, opts.pk.attname)
 
 
 def _empty(of_cls):
@@ -113,6 +116,10 @@ def _empty(of_cls):
 
 def return_None():
     return None
+
+
+def _forms_unavailable():
+    raise ImportError("djorm.forms is not available in this fork.")
 
 
 @total_ordering
@@ -138,8 +145,7 @@ class Field(RegisterLookupMixin):
         "unique_for_date": _(
             # Translators: The 'lookup_type' is one of 'date', 'year' or
             # 'month'. Eg: "Title must be unique for pub_date year"
-            "%(field_label)s must be unique for "
-            "%(date_field_label)s %(lookup_type)s."
+            "%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
         ),
     }
     system_check_deprecated_details = None
@@ -177,9 +183,7 @@ class Field(RegisterLookupMixin):
 
     # Generic field type description, usually overridden by subclasses
     def _description(self):
-        return _("Field of type: %(field_type)s") % {
-            "field_type": self.__class__.__name__
-        }
+        return _("Field of type: %(field_type)s") % {"field_type": self.__class__.__name__}
 
     description = property(_description)
 
@@ -346,24 +350,18 @@ class Field(RegisterLookupMixin):
                     choice_max_length = max(
                         [
                             choice_max_length,
-                            *(
-                                len(value)
-                                for value, _ in group_choices
-                                if isinstance(value, str)
-                            ),
+                            *(len(value) for value, _ in group_choices if isinstance(value, str)),
                         ]
                     )
             except (TypeError, ValueError):
                 # No groups, choices in the form [value, display]
                 value, human_name = group_name, group_choices
-                if not self._choices_is_value(value) or not self._choices_is_value(
-                    human_name
-                ):
+                if not self._choices_is_value(value) or not self._choices_is_value(human_name):
                     break
                 if self.max_length is not None and isinstance(value, str):
                     choice_max_length = max(choice_max_length, len(value))
 
-            # Special case: choices=['ab']
+                    # Special case: choices=['ab']
             if isinstance(choices_group, str):
                 break
         else:
@@ -413,8 +411,7 @@ class Field(RegisterLookupMixin):
 
             if not (
                 connection.features.supports_expression_defaults
-                or "supports_expression_defaults"
-                in self.model._meta.required_db_features
+                or "supports_expression_defaults" in self.model._meta.required_db_features
             ):
                 msg = (
                     f"{connection.display_name} does not support default database "
@@ -469,10 +466,7 @@ class Field(RegisterLookupMixin):
             return [
                 checks.Error(
                     "Primary keys must not have null=True.",
-                    hint=(
-                        "Set null=False on the field, or "
-                        "remove primary_key=True argument."
-                    ),
+                    hint=("Set null=False on the field, or remove primary_key=True argument."),
                     obj=self,
                     id="fields.E007",
                 )
@@ -537,9 +531,7 @@ class Field(RegisterLookupMixin):
         return []
 
     def get_col(self, alias, output_field=None):
-        if alias == self.model._meta.db_table and (
-            output_field is None or output_field == self
-        ):
+        if alias == self.model._meta.db_table and (output_field is None or output_field == self):
             return self.cached_col
         from djorm.db.models.expressions import Col
 
@@ -568,7 +560,37 @@ class Field(RegisterLookupMixin):
         return sql, params
 
     def deconstruct(self):
-        "\n        Return enough information to recreate the field as a 4-tuple:\n\n         * The name of the field on the model, if contribute_to_class() has\n           been run.\n         * The import path of the field, including the class, e.g.\n           djorm.db.models.IntegerField. This should be the most portable\n           version, so less specific may be better.\n         * A list of positional arguments.\n         * A dict of keyword arguments.\n\n        Note that the positional or keyword arguments must contain values of\n        the following types (including inner values of collection types):\n\n         * None, bool, str, int, float, complex, set, frozenset, list, tuple,\n           dict\n         * UUID\n         * datetime.datetime (naive), datetime.date\n         * top-level classes, top-level functions - will be referenced by their\n           full import path\n         * Storage instances - these have their own deconstruct() method\n\n        This is because the values here must be serialized into a text format\n        (possibly new Python code, possibly JSON) and these are the only types\n        with encoding handlers defined.\n\n        There's no need to return the exact way the field was instantiated this\n        time, just ensure that the resulting field is the same - prefer keyword\n        arguments over positional ones, and omit parameters with their default\n        values.\n        "
+        """
+        Return enough information to recreate the field as a 4-tuple:
+
+         * The name of the field on the model, if contribute_to_class() has
+           been run.
+         * The import path of the field, including the class, e.g.
+           djorm.db.models.IntegerField. This should be the most portable
+           version, so less specific may be better.
+         * A list of positional arguments.
+         * A dict of keyword arguments.
+
+        Note that the positional or keyword arguments must contain values of
+        the following types (including inner values of collection types):
+
+         * None, bool, str, int, float, complex, set, frozenset, list, tuple,
+           dict
+         * UUID
+         * datetime.datetime (naive), datetime.date
+         * top-level classes, top-level functions - will be referenced by their
+           full import path
+         * Storage instances - these have their own deconstruct() method
+
+        This is because the values here must be serialized into a text format
+        (possibly new Python code, possibly JSON) and these are the only types
+        with encoding handlers defined.
+
+        There's no need to return the exact way the field was instantiated this
+        time, just ensure that the resulting field is the same - prefer keyword
+        arguments over positional ones, and omit parameters with their default
+        values.
+        """
         # Short-form way of fetching all the default parameters
         keywords = {}
         possibles = {
@@ -607,30 +629,30 @@ class Field(RegisterLookupMixin):
             value = getattr(self, attr_overrides.get(name, name))
             if isinstance(value, CallableChoiceIterator):
                 value = value.func
-            # Do correct kind of comparison
+                # Do correct kind of comparison
             if name in equals_comparison:
                 if value != default:
                     keywords[name] = value
             else:
                 if value is not default:
                     keywords[name] = value
-        # Work out path - we shorten it for known Django core fields
+                    # Work out path - we shorten it for known Django core fields
         path = "%s.%s" % (self.__class__.__module__, self.__class__.__qualname__)
-        if path.startswith('djorm.db.models.fields.related'):
-            path = path.replace('djorm.db.models.fields.related', 'djorm.db.models')
-        elif path.startswith('djorm.db.models.fields.files'):
-            path = path.replace('djorm.db.models.fields.files', 'djorm.db.models')
-        elif path.startswith('djorm.db.models.fields.generated'):
-            path = path.replace('djorm.db.models.fields.generated', 'djorm.db.models')
-        elif path.startswith('djorm.db.models.fields.json'):
-            path = path.replace('djorm.db.models.fields.json', 'djorm.db.models')
-        elif path.startswith('djorm.db.models.fields.proxy'):
-            path = path.replace('djorm.db.models.fields.proxy', 'djorm.db.models')
-        elif path.startswith('djorm.db.models.fields.composite'):
-            path = path.replace('djorm.db.models.fields.composite', 'djorm.db.models')
-        elif path.startswith('djorm.db.models.fields'):
-            path = path.replace('djorm.db.models.fields', 'djorm.db.models')
-        # Return basic info - other fields should override this.
+        if path.startswith("djorm.db.models.fields.related"):
+            path = path.replace("djorm.db.models.fields.related", "djorm.db.models")
+        elif path.startswith("djorm.db.models.fields.files"):
+            path = path.replace("djorm.db.models.fields.files", "djorm.db.models")
+        elif path.startswith("djorm.db.models.fields.generated"):
+            path = path.replace("djorm.db.models.fields.generated", "djorm.db.models")
+        elif path.startswith("djorm.db.models.fields.json"):
+            path = path.replace("djorm.db.models.fields.json", "djorm.db.models")
+        elif path.startswith("djorm.db.models.fields.proxy"):
+            path = path.replace("djorm.db.models.fields.proxy", "djorm.db.models")
+        elif path.startswith("djorm.db.models.fields.composite"):
+            path = path.replace("djorm.db.models.fields.composite", "djorm.db.models")
+        elif path.startswith("djorm.db.models.fields"):
+            path = path.replace("djorm.db.models.fields", "djorm.db.models")
+            # Return basic info - other fields should override this.
         return (self.name, path, [], keywords)
 
     def clone(self):
@@ -726,7 +748,11 @@ class Field(RegisterLookupMixin):
         return None
 
     def to_python(self, value):
-        "\n        Convert the input value into the expected Python data type, raising\n        djorm.core.exceptions.ValidationError if the data can't be converted.\n        Return the converted value. Subclasses should override this.\n        "
+        """
+        Convert the input value into the expected Python data type, raising
+        djorm.core.exceptions.ValidationError if the data can't be converted.
+        Return the converted value. Subclasses should override this.
+        """
         return value
 
     @cached_property
@@ -814,9 +840,7 @@ class Field(RegisterLookupMixin):
         """
         data = self.db_type_parameters(connection)
         try:
-            return (
-                connection.data_type_check_constraints[self.get_internal_type()] % data
-            )
+            return connection.data_type_check_constraints[self.get_internal_type()] % data
         except KeyError:
             return None
 
@@ -898,9 +922,7 @@ class Field(RegisterLookupMixin):
     @property
     def db_returning(self):
         """Private API intended only to be used by Django itself."""
-        return (
-            self.has_db_default() and connection.features.can_return_columns_from_insert
-        )
+        return self.has_db_default() and connection.features.can_return_columns_from_insert
 
     def set_attributes_from_name(self, name):
         self.name = self.name or name
@@ -999,9 +1021,7 @@ class Field(RegisterLookupMixin):
         if self.has_db_default():
             from djorm.db.models.expressions import DatabaseDefault
 
-            return lambda: DatabaseDefault(
-                self._db_default_expression, output_field=self
-            )
+            return lambda: DatabaseDefault(self._db_default_expression, output_field=self)
 
         if (
             not self.empty_strings_allowed
@@ -1045,9 +1065,7 @@ class Field(RegisterLookupMixin):
         qs = rel_model._default_manager.complex_filter(limit_choices_to)
         if ordering:
             qs = qs.order_by(*ordering)
-        return (blank_choice if include_blank else []) + [
-            (choice_func(x), str(x)) for x in qs
-        ]
+        return (blank_choice if include_blank else []) + [(choice_func(x), str(x)) for x in qs]
 
     def value_to_string(self, obj):
         """
@@ -1065,7 +1083,7 @@ class Field(RegisterLookupMixin):
         setattr(instance, self.name, data)
 
     def formfield(self, form_class=None, choices_form_class=None, **kwargs):
-        'Return a djorm.forms.Field instance for this field.'
+        """Return a djorm.forms.Field instance for this field."""
         defaults = {
             "required": not self.blank,
             "label": capfirst(self.verbose_name),
@@ -1079,9 +1097,7 @@ class Field(RegisterLookupMixin):
                 defaults["initial"] = self.get_default()
         if self.choices is not None:
             # Fields with choices get special treatment.
-            include_blank = self.blank or not (
-                self.has_default() or "initial" in kwargs
-            )
+            include_blank = self.blank or not (self.has_default() or "initial" in kwargs)
             defaults["choices"] = self.get_choices(include_blank=include_blank)
             defaults["coerce"] = self.to_python
             if self.null:
@@ -1089,10 +1105,12 @@ class Field(RegisterLookupMixin):
             if choices_form_class is not None:
                 form_class = choices_form_class
             else:
+                if forms is None:
+                    _forms_unavailable()
                 form_class = forms.TypedChoiceField
-            # Many of the subclass-specific formfield arguments (min_value,
-            # max_value) don't apply for choice fields, so be sure to only pass
-            # the values that TypedChoiceField will understand.
+                # Many of the subclass-specific formfield arguments (min_value,
+                # max_value) don't apply for choice fields, so be sure to only pass
+                # the values that TypedChoiceField will understand.
             for k in list(kwargs):
                 if k not in (
                     "coerce",
@@ -1110,6 +1128,8 @@ class Field(RegisterLookupMixin):
                     del kwargs[k]
         defaults.update(kwargs)
         if form_class is None:
+            if forms is None:
+                _forms_unavailable()
             form_class = forms.CharField
         return form_class(**defaults)
 
@@ -1160,6 +1180,8 @@ class BooleanField(Field):
             include_blank = not (self.has_default() or "initial" in kwargs)
             defaults = {"choices": self.get_choices(include_blank=include_blank)}
         else:
+            if forms is None:
+                _forms_unavailable()
             form_class = forms.NullBooleanField if self.null else forms.BooleanField
             # In HTML checkboxes, 'required' means "must be checked" which is
             # different from the choices case ("must select some value").
@@ -1194,8 +1216,7 @@ class CharField(Field):
         if self.max_length is None:
             if (
                 connection.features.supports_unlimited_charfield
-                or "supports_unlimited_charfield"
-                in self.model._meta.required_db_features
+                or "supports_unlimited_charfield" in self.model._meta.required_db_features
             ):
                 return []
             return [
@@ -1228,8 +1249,7 @@ class CharField(Field):
             connection = connections[db]
             if not (
                 self.db_collation is None
-                or "supports_collation_on_charfield"
-                in self.model._meta.required_db_features
+                or "supports_collation_on_charfield" in self.model._meta.required_db_features
                 or connection.features.supports_collation_on_charfield
             ):
                 errors.append(
@@ -1292,13 +1312,9 @@ class CommaSeparatedIntegerField(CharField):
     description = _("Comma-separated integers")
     system_check_removed_details = {
         "msg": (
-            "CommaSeparatedIntegerField is removed except for support in "
-            "historical migrations."
+            "CommaSeparatedIntegerField is removed except for support in historical migrations."
         ),
-        "hint": (
-            "Use CharField(validators=[validate_comma_separated_integer_list]) "
-            "instead."
-        ),
+        "hint": ("Use CharField(validators=[validate_comma_separated_integer_list]) instead."),
         "id": "fields.E901",
     }
 
@@ -1349,8 +1365,9 @@ class DateTimeCheckMixin:
     def _check_fix_default_value(self):
         return []
 
-    # Concrete subclasses use this in their implementations of
-    # _check_fix_default_value().
+        # Concrete subclasses use this in their implementations of
+        # _check_fix_default_value().
+
     def _check_if_value_fixed(self, value, now=None):
         """
         Check if the given value appears to have been provided as a "fixed"
@@ -1377,7 +1394,7 @@ class DateTimeCheckMixin:
                         "It seems you set a fixed date / time / datetime "
                         "value as default for this field. This may not be "
                         "what you want. If you want to have the current date "
-                        'as default, use `djorm.utils.timezone.now`'
+                        "as default, use `djorm.utils.timezone.now`"
                     ),
                     obj=self,
                     id="fields.W161",
@@ -1390,19 +1407,15 @@ class DateField(DateTimeCheckMixin, Field):
     empty_strings_allowed = False
     default_error_messages = {
         "invalid": _(
-            "“%(value)s” value has an invalid date format. It must be "
-            "in YYYY-MM-DD format."
+            "“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD format."
         ),
         "invalid_date": _(
-            "“%(value)s” value has the correct format (YYYY-MM-DD) "
-            "but it is an invalid date."
+            "“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid date."
         ),
     }
     description = _("Date (without time)")
 
-    def __init__(
-        self, verbose_name=None, name=None, auto_now=False, auto_now_add=False, **kwargs
-    ):
+    def __init__(self, verbose_name=None, name=None, auto_now=False, auto_now_add=False, **kwargs):
         self.auto_now, self.auto_now_add = auto_now, auto_now_add
         if auto_now or auto_now_add:
             kwargs["editable"] = False
@@ -1425,7 +1438,7 @@ class DateField(DateTimeCheckMixin, Field):
         else:
             # No explicit date / datetime value -- no checks necessary
             return []
-        # At this point, value is a date object.
+            # At this point, value is a date object.
         return self._check_if_value_fixed(value)
 
     def deconstruct(self):
@@ -1486,16 +1499,12 @@ class DateField(DateTimeCheckMixin, Field):
             setattr(
                 cls,
                 "get_next_by_%s" % self.name,
-                partialmethod(
-                    cls._get_next_or_previous_by_FIELD, field=self, is_next=True
-                ),
+                partialmethod(cls._get_next_or_previous_by_FIELD, field=self, is_next=True),
             )
             setattr(
                 cls,
                 "get_previous_by_%s" % self.name,
-                partialmethod(
-                    cls._get_next_or_previous_by_FIELD, field=self, is_next=False
-                ),
+                partialmethod(cls._get_next_or_previous_by_FIELD, field=self, is_next=False),
             )
 
     def get_prep_value(self, value):
@@ -1529,8 +1538,7 @@ class DateTimeField(DateField):
             "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."
         ),
         "invalid_date": _(
-            "“%(value)s” value has the correct format "
-            "(YYYY-MM-DD) but it is an invalid date."
+            "“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid date."
         ),
         "invalid_datetime": _(
             "“%(value)s” value has the correct format "
@@ -1553,7 +1561,7 @@ class DateTimeField(DateField):
         value = self.default
         if isinstance(value, (datetime.datetime, datetime.date)):
             return self._check_if_value_fixed(value)
-        # No explicit date / datetime value -- no checks necessary.
+            # No explicit date / datetime value -- no checks necessary.
         return []
 
     def get_internal_type(self):
@@ -1620,8 +1628,8 @@ class DateTimeField(DateField):
         else:
             return super().pre_save(model_instance, add)
 
-    # contribute_to_class is inherited from DateField, it registers
-    # get_next_by_FOO and get_prev_by_FOO
+            # contribute_to_class is inherited from DateField, it registers
+            # get_next_by_FOO and get_prev_by_FOO
 
     def get_prep_value(self, value):
         value = super().get_prep_value(value)
@@ -1936,8 +1944,7 @@ class FilePathField(Field):
         if not self.allow_files and not self.allow_folders:
             return [
                 checks.Error(
-                    "FilePathFields must have either 'allow_files' or 'allow_folders' "
-                    "set to True.",
+                    "FilePathFields must have either 'allow_files' or 'allow_folders' set to True.",
                     obj=self,
                     id="fields.E140",
                 )
@@ -2042,8 +2049,7 @@ class IntegerField(Field):
         if self.max_length is not None:
             return [
                 checks.Warning(
-                    "'max_length' is ignored when used with %s."
-                    % self.__class__.__name__,
+                    "'max_length' is ignored when used with %s." % self.__class__.__name__,
                     hint="Remove 'max_length' from field",
                     obj=self,
                     id="fields.W122",
@@ -2153,10 +2159,7 @@ class IPAddressField(Field):
     empty_strings_allowed = False
     description = _("IPv4 address")
     system_check_removed_details = {
-        "msg": (
-            "IPAddressField has been removed except for support in "
-            "historical migrations."
-        ),
+        "msg": ("IPAddressField has been removed except for support in historical migrations."),
         "hint": "Use GenericIPAddressField instead.",
         "id": "fields.E900",
     }
@@ -2196,9 +2199,7 @@ class GenericIPAddressField(Field):
     ):
         self.unpack_ipv4 = unpack_ipv4
         self.protocol = protocol
-        self.default_validators = validators.ip_address_validators(
-            protocol, unpack_ipv4
-        )
+        self.default_validators = validators.ip_address_validators(protocol, unpack_ipv4)
         kwargs["max_length"] = MAX_IPV6_ADDRESS_LENGTH
         super().__init__(verbose_name, name, *args, **kwargs)
 
@@ -2240,9 +2241,7 @@ class GenericIPAddressField(Field):
             value = str(value)
         value = value.strip()
         if ":" in value:
-            return clean_ipv6_address(
-                value, self.unpack_ipv4, self.error_messages["invalid"]
-            )
+            return clean_ipv6_address(value, self.unpack_ipv4, self.error_messages["invalid"])
         return value
 
     def get_db_prep_value(self, value, connection, prepared=False):
@@ -2278,10 +2277,7 @@ class NullBooleanField(BooleanField):
     }
     description = _("Boolean (Either True, False or None)")
     system_check_removed_details = {
-        "msg": (
-            "NullBooleanField is removed except for support in historical "
-            "migrations."
-        ),
+        "msg": ("NullBooleanField is removed except for support in historical migrations."),
         "hint": "Use BooleanField(null=True, blank=True) instead.",
         "id": "fields.E903",
     }
@@ -2303,11 +2299,7 @@ class PositiveIntegerRelDbTypeMixin:
         super().__init_subclass__(**kwargs)
         if not hasattr(cls, "integer_field_class"):
             cls.integer_field_class = next(
-                (
-                    parent
-                    for parent in cls.__mro__[1:]
-                    if issubclass(parent, IntegerField)
-                ),
+                (parent for parent in cls.__mro__[1:] if issubclass(parent, IntegerField)),
                 None,
             )
 
@@ -2375,9 +2367,7 @@ class SlugField(CharField):
     default_validators = [validators.validate_slug]
     description = _("Slug (up to %(max_length)s)")
 
-    def __init__(
-        self, *args, max_length=50, db_index=True, allow_unicode=False, **kwargs
-    ):
+    def __init__(self, *args, max_length=50, db_index=True, allow_unicode=False, **kwargs):
         self.allow_unicode = allow_unicode
         if self.allow_unicode:
             self.default_validators = [validators.validate_unicode_slug]
@@ -2430,8 +2420,7 @@ class TextField(Field):
             connection = connections[db]
             if not (
                 self.db_collation is None
-                or "supports_collation_on_textfield"
-                in self.model._meta.required_db_features
+                or "supports_collation_on_textfield" in self.model._meta.required_db_features
                 or connection.features.supports_collation_on_textfield
             ):
                 errors.append(
@@ -2489,8 +2478,7 @@ class TimeField(DateTimeCheckMixin, Field):
     empty_strings_allowed = False
     default_error_messages = {
         "invalid": _(
-            "“%(value)s” value has an invalid format. It must be in "
-            "HH:MM[:ss[.uuuuuu]] format."
+            "“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] format."
         ),
         "invalid_time": _(
             "“%(value)s” value has the correct format "
@@ -2499,9 +2487,7 @@ class TimeField(DateTimeCheckMixin, Field):
     }
     description = _("Time")
 
-    def __init__(
-        self, verbose_name=None, name=None, auto_now=False, auto_now_add=False, **kwargs
-    ):
+    def __init__(self, verbose_name=None, name=None, auto_now=False, auto_now_add=False, **kwargs):
         self.auto_now, self.auto_now_add = auto_now, auto_now_add
         if auto_now or auto_now_add:
             kwargs["editable"] = False
@@ -2527,7 +2513,7 @@ class TimeField(DateTimeCheckMixin, Field):
         else:
             # No explicit time / datetime value -- no checks necessary
             return []
-        # At this point, value is a datetime object.
+            # At this point, value is a datetime object.
         return self._check_if_value_fixed(value, now=now)
 
     def deconstruct(self):
@@ -2645,8 +2631,7 @@ class BinaryField(Field):
         if self.has_default() and isinstance(self.default, str):
             return [
                 checks.Error(
-                    "BinaryField's default cannot be a string. Use bytes "
-                    "content instead.",
+                    "BinaryField's default cannot be a string. Use bytes content instead.",
                     obj=self,
                     id="fields.E170",
                 )
@@ -2790,8 +2775,7 @@ class AutoFieldMixin:
     def contribute_to_class(self, cls, name, **kwargs):
         if cls._meta.auto_field:
             raise ValueError(
-                "Model %s can't have more than one auto-generated field."
-                % cls._meta.label
+                "Model %s can't have more than one auto-generated field." % cls._meta.label
             )
         super().contribute_to_class(cls, name, **kwargs)
         cls._meta.auto_field = self
@@ -2822,14 +2806,10 @@ class AutoFieldMeta(type):
         return (BigAutoField, SmallAutoField)
 
     def __instancecheck__(self, instance):
-        return isinstance(instance, self._subclasses) or super().__instancecheck__(
-            instance
-        )
+        return isinstance(instance, self._subclasses) or super().__instancecheck__(instance)
 
     def __subclasscheck__(self, subclass):
-        return issubclass(subclass, self._subclasses) or super().__subclasscheck__(
-            subclass
-        )
+        return issubclass(subclass, self._subclasses) or super().__subclasscheck__(subclass)
 
 
 class AutoField(AutoFieldMixin, IntegerField, metaclass=AutoFieldMeta):

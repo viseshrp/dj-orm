@@ -33,9 +33,7 @@ class ConcatTests(TestCase):
         )
 
     def test_gt_two_expressions(self):
-        with self.assertRaisesMessage(
-            ValueError, "Concat must take at least two expressions"
-        ):
+        with self.assertRaisesMessage(ValueError, "Concat must take at least two expressions"):
             Author.objects.annotate(joined=Concat("alias"))
 
     def test_many(self):
@@ -58,9 +56,7 @@ class ConcatTests(TestCase):
         )
 
     def test_mixed_char_text(self):
-        Article.objects.create(
-            title="The Title", text=lorem_ipsum, written=timezone.now()
-        )
+        Article.objects.create(title="The Title", text=lorem_ipsum, written=timezone.now())
         article = Article.objects.annotate(
             title_text=Concat("title", V(" - "), "text", output_field=TextField()),
         ).get(title="The Title")
@@ -68,9 +64,7 @@ class ConcatTests(TestCase):
         # Wrap the concat in something else to ensure that text is returned
         # rather than bytes.
         article = Article.objects.annotate(
-            title_text=Upper(
-                Concat("title", V(" - "), "text", output_field=TextField())
-            ),
+            title_text=Upper(Concat("title", V(" - "), "text", output_field=TextField())),
         ).get(title="The Title")
         expected = article.title + " - " + article.text
         self.assertEqual(expected.upper(), article.title_text)
@@ -83,9 +77,7 @@ class ConcatTests(TestCase):
         pair = ConcatPair(V("a"), V("b"))
         # Check nodes counts
         self.assertEqual(len(list(pair.flatten())), 3)
-        self.assertEqual(
-            len(list(pair.coalesce().flatten())), 7
-        )  # + 2 Coalesce + 2 Value()
+        self.assertEqual(len(list(pair.coalesce().flatten())), 7)  # + 2 Coalesce + 2 Value()
         self.assertEqual(len(list(pair.flatten())), 3)
 
     def test_sql_generation_idempotency(self):
@@ -97,9 +89,7 @@ class ConcatTests(TestCase):
         Author.objects.create(name="The Name", age=42)
         with self.assertNumQueries(1) as ctx:
             author = Author.objects.annotate(
-                name_text=Concat(
-                    "name", V(":"), "alias", V(":"), "age", output_field=TextField()
-                ),
+                name_text=Concat("name", V(":"), "alias", V(":"), "age", output_field=TextField()),
             ).get()
         self.assertEqual(author.name_text, "The Name::42")
         # Only non-string columns are casted on PostgreSQL.

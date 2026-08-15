@@ -41,15 +41,11 @@ class SelectRelatedTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.create_tree(
-            "Eukaryota Animalia Anthropoda Insecta Diptera Drosophilidae Drosophila "
-            "melanogaster"
+            "Eukaryota Animalia Anthropoda Insecta Diptera Drosophilidae Drosophila melanogaster"
         )
+        cls.create_tree("Eukaryota Animalia Chordata Mammalia Primates Hominidae Homo sapiens")
         cls.create_tree(
-            "Eukaryota Animalia Chordata Mammalia Primates Hominidae Homo sapiens"
-        )
-        cls.create_tree(
-            "Eukaryota Plantae Magnoliophyta Magnoliopsida Fabales Fabaceae Pisum "
-            "sativum"
+            "Eukaryota Plantae Magnoliophyta Magnoliopsida Fabales Fabaceae Pisum sativum"
         )
         cls.create_tree(
             "Eukaryota Fungi Basidiomycota Homobasidiomycatae Agaricales Amanitacae "
@@ -115,9 +111,7 @@ class SelectRelatedTests(TestCase):
         with self.assertNumQueries(5):
             world = Species.objects.select_related("genus__family")
             orders = [o.genus.family.order.name for o in world]
-            self.assertEqual(
-                sorted(orders), ["Agaricales", "Diptera", "Fabales", "Primates"]
-            )
+            self.assertEqual(sorted(orders), ["Agaricales", "Diptera", "Fabales", "Primates"])
 
     def test_select_related_with_extra(self):
         s = (
@@ -149,9 +143,7 @@ class SelectRelatedTests(TestCase):
         'genus.family' models, leading to the same number of queries as before.
         """
         with self.assertNumQueries(2):
-            world = Species.objects.filter(genus__name="Amanita").select_related(
-                "genus__family"
-            )
+            world = Species.objects.filter(genus__name="Amanita").select_related("genus__family")
             orders = [o.genus.family.order.name for o in world]
             self.assertEqual(orders, ["Agaricales"])
 
@@ -172,24 +164,18 @@ class SelectRelatedTests(TestCase):
 
     def test_chaining(self):
         parent_1, parent_2 = Species.objects.all()[:2]
-        HybridSpecies.objects.create(
-            name="hybrid", parent_1=parent_1, parent_2=parent_2
-        )
-        queryset = HybridSpecies.objects.select_related("parent_1").select_related(
-            "parent_2"
-        )
+        HybridSpecies.objects.create(name="hybrid", parent_1=parent_1, parent_2=parent_2)
+        queryset = HybridSpecies.objects.select_related("parent_1").select_related("parent_2")
         with self.assertNumQueries(1):
             obj = queryset[0]
             self.assertEqual(obj.parent_1, parent_1)
             self.assertEqual(obj.parent_2, parent_2)
 
     def test_reverse_relation_caching(self):
-        species = (
-            Species.objects.select_related("genus").filter(name="melanogaster").first()
-        )
+        species = Species.objects.select_related("genus").filter(name="melanogaster").first()
         with self.assertNumQueries(0):
             self.assertEqual(species.genus.name, "Drosophila")
-        # The species_set reverse relation isn't cached.
+            # The species_set reverse relation isn't cached.
         self.assertEqual(species.genus._state.fields_cache, {})
         with self.assertNumQueries(1):
             self.assertEqual(species.genus.species_set.first().name, "melanogaster")
@@ -217,51 +203,33 @@ class SelectRelatedValidationTests(SimpleTestCase):
     non-relational fields.
     """
 
-    non_relational_error = (
-        "Non-relational field given in select_related: '%s'. Choices are: %s"
-    )
-    invalid_error = (
-        "Invalid field name(s) given in select_related: '%s'. Choices are: %s"
-    )
+    non_relational_error = "Non-relational field given in select_related: '%s'. Choices are: %s"
+    invalid_error = "Invalid field name(s) given in select_related: '%s'. Choices are: %s"
 
     def test_non_relational_field(self):
-        with self.assertRaisesMessage(
-            FieldError, self.non_relational_error % ("name", "genus")
-        ):
+        with self.assertRaisesMessage(FieldError, self.non_relational_error % ("name", "genus")):
             list(Species.objects.select_related("name__some_field"))
 
-        with self.assertRaisesMessage(
-            FieldError, self.non_relational_error % ("name", "genus")
-        ):
+        with self.assertRaisesMessage(FieldError, self.non_relational_error % ("name", "genus")):
             list(Species.objects.select_related("name"))
 
-        with self.assertRaisesMessage(
-            FieldError, self.non_relational_error % ("name", "(none)")
-        ):
+        with self.assertRaisesMessage(FieldError, self.non_relational_error % ("name", "(none)")):
             list(Domain.objects.select_related("name"))
 
     def test_non_relational_field_nested(self):
-        with self.assertRaisesMessage(
-            FieldError, self.non_relational_error % ("name", "family")
-        ):
+        with self.assertRaisesMessage(FieldError, self.non_relational_error % ("name", "family")):
             list(Species.objects.select_related("genus__name"))
 
     def test_many_to_many_field(self):
-        with self.assertRaisesMessage(
-            FieldError, self.invalid_error % ("toppings", "(none)")
-        ):
+        with self.assertRaisesMessage(FieldError, self.invalid_error % ("toppings", "(none)")):
             list(Pizza.objects.select_related("toppings"))
 
     def test_reverse_relational_field(self):
-        with self.assertRaisesMessage(
-            FieldError, self.invalid_error % ("child_1", "genus")
-        ):
+        with self.assertRaisesMessage(FieldError, self.invalid_error % ("child_1", "genus")):
             list(Species.objects.select_related("child_1"))
 
     def test_invalid_field(self):
-        with self.assertRaisesMessage(
-            FieldError, self.invalid_error % ("invalid_field", "genus")
-        ):
+        with self.assertRaisesMessage(FieldError, self.invalid_error % ("invalid_field", "genus")):
             list(Species.objects.select_related("invalid_field"))
 
         with self.assertRaisesMessage(
@@ -269,9 +237,7 @@ class SelectRelatedValidationTests(SimpleTestCase):
         ):
             list(Species.objects.select_related("genus__related_invalid_field"))
 
-        with self.assertRaisesMessage(
-            FieldError, self.invalid_error % ("invalid_field", "(none)")
-        ):
+        with self.assertRaisesMessage(FieldError, self.invalid_error % ("invalid_field", "(none)")):
             list(Domain.objects.select_related("invalid_field"))
 
     def test_generic_relations(self):

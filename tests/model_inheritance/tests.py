@@ -62,9 +62,7 @@ class ModelInheritanceTests(TestCase):
 
         # However, the CommonInfo class cannot be used as a normal model (it
         # doesn't exist as a model).
-        with self.assertRaisesMessage(
-            AttributeError, "'CommonInfo' has no attribute 'objects'"
-        ):
+        with self.assertRaisesMessage(AttributeError, "'CommonInfo' has no attribute 'objects'"):
             CommonInfo.objects.all()
 
     def test_reverse_relation_for_different_hierarchy_tree(self):
@@ -155,7 +153,7 @@ class ModelInheritanceTests(TestCase):
         # 1 INSERT for each base.
         with self.assertNumQueries(4):
             common_child = CommonChild.objects.create()
-        # 3 SELECTs for the parents, 1 UPDATE for the child.
+            # 3 SELECTs for the parents, 1 UPDATE for the child.
         with self.assertNumQueries(4):
             common_child.save()
 
@@ -228,9 +226,7 @@ class ModelInheritanceTests(TestCase):
 
     def test_create_copy_with_inherited_m2m(self):
         restaurant = Restaurant.objects.create()
-        supplier = CustomSupplier.objects.create(
-            name="Central market", address="944 W. Fullerton"
-        )
+        supplier = CustomSupplier.objects.create(name="Central market", address="944 W. Fullerton")
         supplier.customers.set([restaurant])
         old_customers = supplier.customers.all()
         supplier.pk = None
@@ -487,16 +483,14 @@ class ModelInheritanceDataTests(TestCase):
             name="Well Lit", address="124 Sesame St", main_site=self.italian_restaurant
         )
 
-        self.assertEqual(
-            Restaurant.objects.get(lot__name="Well Lit").name, "Ristorante Miron"
-        )
+        self.assertEqual(Restaurant.objects.get(lot__name="Well Lit").name, "Ristorante Miron")
 
     def test_update_works_on_parent_and_child_models_at_once(self):
         # The update() command can update fields in parent and child classes at
         # once (although it executed multiple SQL queries to do so).
-        rows = Restaurant.objects.filter(
-            serves_hot_dogs=True, name__contains="D"
-        ).update(name="Demon Puppies", serves_hot_dogs=False)
+        rows = Restaurant.objects.filter(serves_hot_dogs=True, name__contains="D").update(
+            name="Demon Puppies", serves_hot_dogs=False
+        )
         self.assertEqual(rows, 1)
 
         r1 = Restaurant.objects.get(pk=self.restaurant.pk)
@@ -516,9 +510,7 @@ class ModelInheritanceDataTests(TestCase):
         # select_related works with fields from the parent object as if they
         # were a normal part of the model.
         self.assertNumQueries(2, lambda: ItalianRestaurant.objects.all()[0].chef)
-        self.assertNumQueries(
-            1, lambda: ItalianRestaurant.objects.select_related("chef")[0].chef
-        )
+        self.assertNumQueries(1, lambda: ItalianRestaurant.objects.select_related("chef")[0].chef)
 
     def test_select_related_defer(self):
         """
@@ -536,7 +528,7 @@ class ModelInheritanceDataTests(TestCase):
             objs = list(qs.all())
             self.assertTrue(objs[1].italianrestaurant.serves_gnocchi)
 
-        # Model fields where assigned correct values
+            # Model fields where assigned correct values
         self.assertEqual(qs[0].name, "Demon Dogs")
         self.assertEqual(qs[0].rating, 2)
         self.assertEqual(qs[1].italianrestaurant.name, "Ristorante Miron")
@@ -620,9 +612,7 @@ class InheritanceSameModelNameTests(SimpleTestCase):
                 app_label = "model_inheritance"
 
         class AbstractReferent(models.Model):
-            reference = models.ForeignKey(
-                Referenced, models.CASCADE, related_name=related_name
-            )
+            reference = models.ForeignKey(Referenced, models.CASCADE, related_name=related_name)
 
             class Meta:
                 app_label = "model_inheritance"
@@ -641,9 +631,7 @@ class InheritanceSameModelNameTests(SimpleTestCase):
         ForeignReferent = Referent
 
         self.assertFalse(hasattr(Referenced, related_name))
-        self.assertIs(
-            Referenced.model_inheritance_referent_references.field.model, LocalReferent
-        )
+        self.assertIs(Referenced.model_inheritance_referent_references.field.model, LocalReferent)
         self.assertIs(Referenced.tests_referent_references.field.model, ForeignReferent)
 
 

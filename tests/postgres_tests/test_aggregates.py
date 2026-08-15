@@ -105,7 +105,7 @@ class TestGeneralAggregate(PostgreSQLTestCase):
                         aggregation=aggregation,
                     )
                     self.assertEqual(values, {"aggregation": None})
-                # Empty result when query must be executed.
+                    # Empty result when query must be executed.
                 with self.assertNumQueries(1):
                     values = AggregateTestModel.objects.aggregate(
                         aggregation=aggregation,
@@ -142,7 +142,7 @@ class TestGeneralAggregate(PostgreSQLTestCase):
                         aggregation=aggregation,
                     )
                     self.assertEqual(values, {"aggregation": expected_result})
-                # Empty result when query must be executed.
+                    # Empty result when query must be executed.
                 with transaction.atomic(), self.assertNumQueries(1):
                     values = AggregateTestModel.objects.aggregate(
                         aggregation=aggregation,
@@ -211,9 +211,7 @@ class TestGeneralAggregate(PostgreSQLTestCase):
                 self.assertEqual(values, {"arrayagg": expected_output})
 
     def test_array_agg_integerfield(self):
-        values = AggregateTestModel.objects.aggregate(
-            arrayagg=ArrayAgg("integer_field")
-        )
+        values = AggregateTestModel.objects.aggregate(arrayagg=ArrayAgg("integer_field"))
         self.assertEqual(values, {"arrayagg": [0, 1, 2, 0]})
 
     def test_array_agg_integerfield_order_by(self):
@@ -223,9 +221,7 @@ class TestGeneralAggregate(PostgreSQLTestCase):
         self.assertEqual(values, {"arrayagg": [2, 1, 0, 0]})
 
     def test_array_agg_booleanfield(self):
-        values = AggregateTestModel.objects.aggregate(
-            arrayagg=ArrayAgg("boolean_field")
-        )
+        values = AggregateTestModel.objects.aggregate(arrayagg=ArrayAgg("boolean_field"))
         self.assertEqual(values, {"arrayagg": [True, False, False, True]})
 
     def test_array_agg_booleanfield_order_by(self):
@@ -304,9 +300,7 @@ class TestGeneralAggregate(PostgreSQLTestCase):
         )
         qs = (
             AggregateTestModel.objects.filter(pk__in=[aggr1.pk, aggr2.pk])
-            .annotate(
-                array=ArrayAgg("stattestmodel__int1", filter=Q(stattestmodel__int2=0))
-            )
+            .annotate(array=ArrayAgg("stattestmodel__int1", filter=Q(stattestmodel__int2=0)))
             .annotate(array_value=F("array__0"))
             .values_list("array_value", flat=True)
         )
@@ -326,9 +320,7 @@ class TestGeneralAggregate(PostgreSQLTestCase):
         )
         qs = (
             AggregateTestModel.objects.filter(pk__in=[aggr1.pk, aggr2.pk])
-            .annotate(
-                array=ArrayAgg("stattestmodel__int1", filter=Q(stattestmodel__int2=0))
-            )
+            .annotate(array=ArrayAgg("stattestmodel__int1", filter=Q(stattestmodel__int2=0)))
             .annotate(array_value=F("array__1_2"))
             .values_list("array_value", flat=True)
         )
@@ -812,7 +804,7 @@ class TestStatisticsAggregate(PostgreSQLTestCase):
             related_field=AggregateTestModel.objects.create(integer_field=2),
         )
 
-    # Tests for base class (StatAggregate)
+        # Tests for base class (StatAggregate)
 
     def test_missing_arguments_raises_exception(self):
         with self.assertRaisesMessage(ValueError, "Both y and x must be provided."):
@@ -830,7 +822,7 @@ class TestStatisticsAggregate(PostgreSQLTestCase):
         with self.assertRaisesMessage(TypeError, "Complex aggregates require an alias"):
             StatTestModel.objects.aggregate(SomeFunc(y="int2", x="int1"))
 
-    # Test aggregates
+            # Test aggregates
 
     def test_empty_result_set(self):
         StatTestModel.objects.all().delete()
@@ -856,7 +848,7 @@ class TestStatisticsAggregate(PostgreSQLTestCase):
                         aggregation=aggregation,
                     )
                     self.assertEqual(values, {"aggregation": expected_result})
-                # Empty result when query must be executed.
+                    # Empty result when query must be executed.
                 with self.assertNumQueries(1):
                     values = StatTestModel.objects.aggregate(
                         aggregation=aggregation,
@@ -887,7 +879,7 @@ class TestStatisticsAggregate(PostgreSQLTestCase):
                         aggregation=aggregation,
                     )
                     self.assertEqual(values, {"aggregation": expected_result})
-                # Empty result when query must be executed.
+                    # Empty result when query must be executed.
                 with self.assertNumQueries(1):
                     values = StatTestModel.objects.aggregate(
                         aggregation=aggregation,
@@ -903,9 +895,7 @@ class TestStatisticsAggregate(PostgreSQLTestCase):
         self.assertEqual(values, {"covarpop": Approximate(-0.66, places=1)})
 
     def test_covar_pop_sample(self):
-        values = StatTestModel.objects.aggregate(
-            covarpop=CovarPop(y="int2", x="int1", sample=True)
-        )
+        values = StatTestModel.objects.aggregate(covarpop=CovarPop(y="int2", x="int1", sample=True))
         self.assertEqual(values, {"covarpop": -1.0})
 
     def test_regr_avgx_general(self):
@@ -917,9 +907,7 @@ class TestStatisticsAggregate(PostgreSQLTestCase):
         self.assertEqual(values, {"regravgy": 2.0})
 
     def test_regr_count_general(self):
-        values = StatTestModel.objects.aggregate(
-            regrcount=RegrCount(y="int2", x="int1")
-        )
+        values = StatTestModel.objects.aggregate(regrcount=RegrCount(y="int2", x="int1"))
         self.assertEqual(values, {"regrcount": 3})
 
     def test_regr_count_default(self):
@@ -928,9 +916,7 @@ class TestStatisticsAggregate(PostgreSQLTestCase):
             RegrCount(y="int2", x="int1", default=0)
 
     def test_regr_intercept_general(self):
-        values = StatTestModel.objects.aggregate(
-            regrintercept=RegrIntercept(y="int2", x="int1")
-        )
+        values = StatTestModel.objects.aggregate(regrintercept=RegrIntercept(y="int2", x="int1"))
         self.assertEqual(values, {"regrintercept": 4})
 
     def test_regr_r2_general(self):
@@ -938,9 +924,7 @@ class TestStatisticsAggregate(PostgreSQLTestCase):
         self.assertEqual(values, {"regrr2": 1})
 
     def test_regr_slope_general(self):
-        values = StatTestModel.objects.aggregate(
-            regrslope=RegrSlope(y="int2", x="int1")
-        )
+        values = StatTestModel.objects.aggregate(regrslope=RegrSlope(y="int2", x="int1"))
         self.assertEqual(values, {"regrslope": -1})
 
     def test_regr_sxx_general(self):

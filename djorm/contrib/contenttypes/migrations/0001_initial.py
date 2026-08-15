@@ -22,9 +22,7 @@ class Migration(migrations.Migration):
                 ("app_label", models.CharField(max_length=100)),
                 (
                     "model",
-                    models.CharField(
-                        max_length=100, verbose_name="python model class name"
-                    ),
+                    models.CharField(max_length=100, verbose_name="python model class name"),
                 ),
             ],
             options={

@@ -63,17 +63,12 @@ class DatabaseCreationTests(SimpleTestCase):
 
     def test_sql_table_creation_raises_with_collation(self):
         settings = {"COLLATION": "test"}
-        msg = (
-            "PostgreSQL does not support collation setting at database "
-            "creation time."
-        )
+        msg = "PostgreSQL does not support collation setting at database creation time."
         with self.assertRaisesMessage(ImproperlyConfigured, msg):
             self.check_sql_table_creation_suffix(settings, None)
 
     def _execute_raise_database_already_exists(self, cursor, parameters, keepdb=False):
-        error = errors.DuplicateDatabase(
-            "database %s already exists" % parameters["dbname"]
-        )
+        error = errors.DuplicateDatabase("database %s already exists" % parameters["dbname"])
         raise DatabaseError() from error
 
     def _execute_raise_permission_denied(self, cursor, parameters, keepdb=False):
@@ -95,29 +90,19 @@ class DatabaseCreationTests(SimpleTestCase):
                 with self.assertRaises(SystemExit):
                     # SystemExit is raised if the user answers "no" to the
                     # prompt asking if it's okay to delete the test database.
-                    creation._create_test_db(
-                        verbosity=0, autoclobber=False, keepdb=False
-                    )
-            # "Database already exists" error is ignored when keepdb is on
+                    creation._create_test_db(verbosity=0, autoclobber=False, keepdb=False)
+                    # "Database already exists" error is ignored when keepdb is on
             creation._create_test_db(verbosity=0, autoclobber=False, keepdb=True)
-        # Simulate test database creation raising unexpected error
+            # Simulate test database creation raising unexpected error
         with self.patch_test_db_creation(self._execute_raise_permission_denied):
-            with mock.patch.object(
-                DatabaseCreation, "_database_exists", return_value=False
-            ):
+            with mock.patch.object(DatabaseCreation, "_database_exists", return_value=False):
                 with self.assertRaises(SystemExit):
-                    creation._create_test_db(
-                        verbosity=0, autoclobber=False, keepdb=False
-                    )
+                    creation._create_test_db(verbosity=0, autoclobber=False, keepdb=False)
                 with self.assertRaises(SystemExit):
-                    creation._create_test_db(
-                        verbosity=0, autoclobber=False, keepdb=True
-                    )
-        # Simulate test database creation raising "insufficient privileges".
-        # An error shouldn't appear when keepdb is on and the database already
-        # exists.
+                    creation._create_test_db(verbosity=0, autoclobber=False, keepdb=True)
+                    # Simulate test database creation raising "insufficient privileges".
+                    # An error shouldn't appear when keepdb is on and the database already
+                    # exists.
         with self.patch_test_db_creation(self._execute_raise_permission_denied):
-            with mock.patch.object(
-                DatabaseCreation, "_database_exists", return_value=True
-            ):
+            with mock.patch.object(DatabaseCreation, "_database_exists", return_value=True):
                 creation._create_test_db(verbosity=0, autoclobber=False, keepdb=True)

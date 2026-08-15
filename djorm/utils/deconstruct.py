@@ -29,7 +29,7 @@ def deconstructible(*args, path=None):
             else:
                 module_name = obj.__module__
                 name = obj.__class__.__name__
-            # Make sure it's actually there and not an inner class
+                # Make sure it's actually there and not an inner class
             module = import_module(module_name)
             if not hasattr(module, name):
                 raise ValueError(
@@ -42,11 +42,7 @@ def deconstructible(*args, path=None):
                     "#serializing-values" % (name, module_name, get_docs_version())
                 )
             return (
-                (
-                    path
-                    if path and type(obj) is klass
-                    else f"{obj.__class__.__module__}.{name}"
-                ),
+                (path if path and type(obj) is klass else f"{obj.__class__.__module__}.{name}"),
                 obj._constructor_args[0],
                 obj._constructor_args[1],
             )

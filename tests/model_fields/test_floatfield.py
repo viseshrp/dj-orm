@@ -12,7 +12,7 @@ class TestFloatField(TestCase):
         with transaction.atomic():
             with self.assertRaises(TypeError):
                 instance.save()
-        # Set value to valid and save
+                # Set value to valid and save
         instance.size = 2.5
         instance.save()
         self.assertTrue(instance.id)
@@ -25,7 +25,7 @@ class TestFloatField(TestCase):
         with transaction.atomic():
             with self.assertRaisesMessage(TypeError, msg):
                 instance.save()
-        # Try setting field to object on retrieved object
+                # Try setting field to object on retrieved object
         obj = FloatModel.objects.get(pk=instance.id)
         obj.size = obj
         with self.assertRaisesMessage(TypeError, msg):

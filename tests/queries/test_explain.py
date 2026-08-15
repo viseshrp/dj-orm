@@ -28,9 +28,7 @@ class ExplainTests(TestCase):
             querysets.append(Tag.objects.select_for_update().filter(name="test"))
         supported_formats = connection.features.supported_explain_formats
         all_formats = (
-            (None,)
-            + tuple(supported_formats)
-            + tuple(f.lower() for f in supported_formats)
+            (None,) + tuple(supported_formats) + tuple(f.lower() for f in supported_formats)
         )
         for idx, queryset in enumerate(querysets):
             for format in all_formats:
@@ -38,9 +36,7 @@ class ExplainTests(TestCase):
                     with self.assertNumQueries(1) as captured_queries:
                         result = queryset.explain(format=format)
                         self.assertTrue(
-                            captured_queries[0]["sql"].startswith(
-                                connection.ops.explain_prefix
-                            )
+                            captured_queries[0]["sql"].startswith(connection.ops.explain_prefix)
                         )
                         self.assertIsInstance(result, str)
                         self.assertTrue(result)
@@ -50,16 +46,12 @@ class ExplainTests(TestCase):
                             try:
                                 xml.etree.ElementTree.fromstring(result)
                             except xml.etree.ElementTree.ParseError as e:
-                                self.fail(
-                                    f"QuerySet.explain() result is not valid XML: {e}"
-                                )
+                                self.fail(f"QuerySet.explain() result is not valid XML: {e}")
                         elif format.lower() == "json":
                             try:
                                 json.loads(result)
                             except json.JSONDecodeError as e:
-                                self.fail(
-                                    f"QuerySet.explain() result is not valid JSON: {e}"
-                                )
+                                self.fail(f"QuerySet.explain() result is not valid JSON: {e}")
 
     def test_unknown_options(self):
         with self.assertRaisesMessage(ValueError, "Unknown options: TEST, TEST2"):
@@ -105,9 +97,7 @@ class ExplainTests(TestCase):
                     if isinstance(value, str):
                         option = "{} {}".format(name.upper(), value.upper())
                     else:
-                        option = "{} {}".format(
-                            name.upper(), "true" if value else "false"
-                        )
+                        option = "{} {}".format(name.upper(), "true" if value else "false")
                     self.assertIn(option, captured_queries[0]["sql"])
 
     @skipUnlessDBFeature("supports_select_union")
@@ -159,9 +149,7 @@ class ExplainTests(TestCase):
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("FORMAT=TRADITIONAL", captured_queries[0]["sql"])
 
-    @unittest.skipUnless(
-        connection.vendor == "mysql", "MariaDB and MySQL >= 8.0.18 specific."
-    )
+    @unittest.skipUnless(connection.vendor == "mysql", "MariaDB and MySQL >= 8.0.18 specific.")
     def test_mysql_analyze(self):
         qs = Tag.objects.filter(name="test")
         with CaptureQueriesContext(connection) as captured_queries:

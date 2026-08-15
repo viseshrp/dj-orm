@@ -148,15 +148,12 @@ class MigrationWriter:
         for dependency in self.migration.dependencies:
             if dependency[0] == "__setting__":
                 dependencies.append(
-                    "        migrations.swappable_dependency(settings.%s),"
-                    % dependency[1]
+                    "        migrations.swappable_dependency(settings.%s)," % dependency[1]
                 )
-                imports.add('from djorm.conf import settings')
+                imports.add("from djorm.conf import settings")
             else:
                 dependencies.append("        %s," % self.serialize(dependency)[0])
-        items["dependencies"] = (
-            "\n".join(sorted(dependencies)) + "\n" if dependencies else ""
-        )
+        items["dependencies"] = "\n".join(sorted(dependencies)) + "\n" if dependencies else ""
 
         # Format imports nicely, swapping imports of functions from migration files
         # for comments
@@ -167,20 +164,18 @@ class MigrationWriter:
                 imports.remove(line)
                 self.needs_manual_porting = True
 
-        # django.db.migrations is always used, but models import may not be.
-        # If models import exists, merge it with migrations import.
-        if 'from djorm.db import models' in imports:
-            imports.discard('from djorm.db import models')
-            imports.add('from djorm.db import migrations, models')
+                # django.db.migrations is always used, but models import may not be.
+                # If models import exists, merge it with migrations import.
+        if "from djorm.db import models" in imports:
+            imports.discard("from djorm.db import models")
+            imports.add("from djorm.db import migrations, models")
         else:
-            imports.add('from djorm.db import migrations')
+            imports.add("from djorm.db import migrations")
 
-        # Sort imports by the package / module to be imported (the part after
-        # "from" in "from ... import ..." or after "import" in "import ...").
-        # First group the "import" statements, then "from ... import ...".
-        sorted_imports = sorted(
-            imports, key=lambda i: (i.split()[0] == "from", i.split()[1])
-        )
+            # Sort imports by the package / module to be imported (the part after
+            # "from" in "from ... import ..." or after "import" in "import ...").
+            # First group the "import" statements, then "from ... import ...".
+        sorted_imports = sorted(imports, key=lambda i: (i.split()[0] == "from", i.split()[1]))
         items["imports"] = "\n".join(sorted_imports) + "\n" if imports else ""
         if migration_imports:
             items["imports"] += (
@@ -189,12 +184,12 @@ class MigrationWriter:
                 "then update the\n# RunPython operations to refer to the local "
                 "versions:\n# %s"
             ) % "\n# ".join(sorted(migration_imports))
-        # If there's a replaces, make a string for it
+            # If there's a replaces, make a string for it
         if self.migration.replaces:
             items["replaces_str"] = (
                 "\n    replaces = %s\n" % self.serialize(self.migration.replaces)[0]
             )
-        # Hinting that goes into comment
+            # Hinting that goes into comment
         if self.include_header:
             items["migration_header"] = MIGRATION_HEADER_TEMPLATE % {
                 "version": get_version(),
@@ -210,9 +205,7 @@ class MigrationWriter:
 
     @property
     def basedir(self):
-        migrations_package_name, _ = MigrationLoader.migrations_module(
-            self.migration.app_label
-        )
+        migrations_package_name, _ = MigrationLoader.migrations_module(self.migration.app_label)
 
         if migrations_package_name is None:
             raise ValueError(
@@ -221,7 +214,7 @@ class MigrationWriter:
                 "setting." % self.migration.app_label
             )
 
-        # See if we can import the migrations module directly
+            # See if we can import the migrations module directly
         try:
             migrations_module = import_module(migrations_package_name)
         except ImportError:
@@ -232,7 +225,7 @@ class MigrationWriter:
             except ValueError:
                 pass
 
-        # Alright, see if it's a direct submodule of the app
+                # Alright, see if it's a direct submodule of the app
         app_config = apps.get_app_config(self.migration.app_label)
         (
             maybe_app_name,
@@ -242,8 +235,8 @@ class MigrationWriter:
         if app_config.name == maybe_app_name:
             return os.path.join(app_config.path, migrations_package_basename)
 
-        # In case of using MIGRATION_MODULES setting and the custom package
-        # doesn't exist, create one, starting from an existing package
+            # In case of using MIGRATION_MODULES setting and the custom package
+            # doesn't exist, create one, starting from an existing package
         existing_dirs, missing_dirs = migrations_package_name.split("."), []
         while existing_dirs:
             missing_dirs.insert(0, existing_dirs.pop(-1))

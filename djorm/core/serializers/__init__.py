@@ -1,4 +1,20 @@
-'\nInterfaces for serializing Django objects.\n\nUsage::\n\n    from djorm.core import serializers\n    json = serializers.serialize("json", some_queryset)\n    objects = list(serializers.deserialize("json", json))\n\nTo add your own serializers, use the SERIALIZATION_MODULES setting::\n\n    SERIALIZATION_MODULES = {\n        "csv": "path.to.csv.serializer",\n        "txt": "path.to.txt.serializer",\n    }\n\n'
+"""
+Interfaces for serializing Django objects.
+
+Usage::
+
+    from djorm.core import serializers
+    json = serializers.serialize("json", some_queryset)
+    objects = list(serializers.deserialize("json", json))
+
+To add your own serializers, use the SERIALIZATION_MODULES setting::
+
+    SERIALIZATION_MODULES = {
+        "csv": "path.to.csv.serializer",
+        "txt": "path.to.txt.serializer",
+    }
+
+"""
 
 import importlib
 
@@ -8,11 +24,11 @@ from djorm.core.serializers.base import SerializerDoesNotExist
 
 # Built-in serializers
 BUILTIN_SERIALIZERS = {
-    "xml": 'djorm.core.serializers.xml_serializer',
-    "python": 'djorm.core.serializers.python',
-    "json": 'djorm.core.serializers.json',
-    "yaml": 'djorm.core.serializers.pyyaml',
-    "jsonl": 'djorm.core.serializers.jsonl',
+    "xml": "djorm.core.serializers.xml_serializer",
+    "python": "djorm.core.serializers.python",
+    "json": "djorm.core.serializers.json",
+    "yaml": "djorm.core.serializers.pyyaml",
+    "jsonl": "djorm.core.serializers.jsonl",
 }
 
 _serializers = {}
@@ -142,9 +158,7 @@ def _load_serializers():
         register_serializer(format, BUILTIN_SERIALIZERS[format], serializers)
     if hasattr(settings, "SERIALIZATION_MODULES"):
         for format in settings.SERIALIZATION_MODULES:
-            register_serializer(
-                format, settings.SERIALIZATION_MODULES[format], serializers
-            )
+            register_serializer(format, settings.SERIALIZATION_MODULES[format], serializers)
     _serializers = serializers
 
 
@@ -175,16 +189,16 @@ def sort_dependencies(app_list, allow_cycles=False):
             else:
                 deps = []
 
-            # Now add a dependency for any FK relation with a model that
-            # defines a natural key
+                # Now add a dependency for any FK relation with a model that
+                # defines a natural key
             for field in model._meta.fields:
                 if field.remote_field:
                     rel_model = field.remote_field.model
                     if hasattr(rel_model, "natural_key") and rel_model != model:
                         deps.append(rel_model)
-            # Also add a dependency for any simple M2M relation with a model
-            # that defines a natural key.  M2M relations with explicit through
-            # models don't count as dependencies.
+                        # Also add a dependency for any simple M2M relation with a model
+                        # that defines a natural key.  M2M relations with explicit through
+                        # models don't count as dependencies.
             for field in model._meta.many_to_many:
                 if field.remote_field.through._meta.auto_created:
                     rel_model = field.remote_field.model
@@ -228,9 +242,7 @@ def sort_dependencies(app_list, allow_cycles=False):
                     "Can't resolve dependencies for %s in serialized app list."
                     % ", ".join(
                         model._meta.label
-                        for model, deps in sorted(
-                            skipped, key=lambda obj: obj[0].__name__
-                        )
+                        for model, deps in sorted(skipped, key=lambda obj: obj[0].__name__)
                     ),
                 )
         model_dependencies = skipped

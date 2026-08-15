@@ -12,20 +12,16 @@ from djorm.utils.translation import ngettext_lazy
 
 class ArrayMaxLengthValidator(MaxLengthValidator):
     message = ngettext_lazy(
-        "List contains %(show_value)d item, it should contain no more than "
-        "%(limit_value)d.",
-        "List contains %(show_value)d items, it should contain no more than "
-        "%(limit_value)d.",
+        "List contains %(show_value)d item, it should contain no more than %(limit_value)d.",
+        "List contains %(show_value)d items, it should contain no more than %(limit_value)d.",
         "show_value",
     )
 
 
 class ArrayMinLengthValidator(MinLengthValidator):
     message = ngettext_lazy(
-        "List contains %(show_value)d item, it should contain no fewer than "
-        "%(limit_value)d.",
-        "List contains %(show_value)d items, it should contain no fewer than "
-        "%(limit_value)d.",
+        "List contains %(show_value)d item, it should contain no fewer than %(limit_value)d.",
+        "List contains %(show_value)d items, it should contain no fewer than %(limit_value)d.",
         "show_value",
     )
 
@@ -77,15 +73,11 @@ class RangeMaxValueValidator(MaxValueValidator):
     def compare(self, a, b):
         return a.upper is None or a.upper > b
 
-    message = _(
-        "Ensure that the upper bound of the range is not greater than %(limit_value)s."
-    )
+    message = _("Ensure that the upper bound of the range is not greater than %(limit_value)s.")
 
 
 class RangeMinValueValidator(MinValueValidator):
     def compare(self, a, b):
         return a.lower is None or a.lower < b
 
-    message = _(
-        "Ensure that the lower bound of the range is not less than %(limit_value)s."
-    )
+    message = _("Ensure that the lower bound of the range is not less than %(limit_value)s.")

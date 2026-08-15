@@ -36,9 +36,7 @@ class ReturningValuesTests(TestCase):
                 table_name,
                 connection.ops.quote_name(ReturningModel._meta.get_field("id").column),
                 table_name,
-                connection.ops.quote_name(
-                    ReturningModel._meta.get_field("created").column
-                ),
+                connection.ops.quote_name(ReturningModel._meta.get_field("created").column),
             ),
             captured_queries[-1]["sql"],
         )

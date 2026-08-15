@@ -20,9 +20,7 @@ def inspectdb_tables_only(table_name):
 
 
 def inspectdb_views_only(table_name):
-    return table_name.startswith("inspectdb_") and table_name.endswith(
-        ("_materialized", "_view")
-    )
+    return table_name.startswith("inspectdb_") and table_name.endswith(("_materialized", "_view"))
 
 
 def special_table_only(table_name):
@@ -46,9 +44,7 @@ class InspectDBTestCase(TestCase):
     def test_stealth_table_name_filter_option(self):
         out = StringIO()
         call_command("inspectdb", table_name_filter=inspectdb_tables_only, stdout=out)
-        error_message = (
-            "inspectdb has examined a table that should have been filtered out."
-        )
+        error_message = "inspectdb has examined a table that should have been filtered out."
         # contrib.contenttypes is one of the apps always installed when running
         # the Django test suite, check that one of its tables hasn't been
         # inspected
@@ -106,9 +102,7 @@ class InspectDBTestCase(TestCase):
             assertFieldType("url_field", "models.CharField(max_length=200)")
         if char_field_type == "TextField":
             assertFieldType("char_field", "models.TextField()")
-            assertFieldType(
-                "null_char_field", "models.TextField(blank=True, null=True)"
-            )
+            assertFieldType("null_char_field", "models.TextField(blank=True, null=True)")
             assertFieldType("email_field", "models.TextField()")
             assertFieldType("file_field", "models.TextField()")
             assertFieldType("file_path_field", "models.TextField()")
@@ -121,9 +115,7 @@ class InspectDBTestCase(TestCase):
             assertFieldType("gen_ip_address_field", "models.GenericIPAddressField()")
         elif not connection.features.interprets_empty_strings_as_nulls:
             assertFieldType("gen_ip_address_field", "models.CharField(max_length=39)")
-        assertFieldType(
-            "time_field", "models.%s()" % introspected_field_types["TimeField"]
-        )
+        assertFieldType("time_field", "models.%s()" % introspected_field_types["TimeField"])
         if connection.features.has_native_uuid_field:
             assertFieldType("uuid_field", "models.UUIDField()")
         elif not connection.features.interprets_empty_strings_as_nulls:
@@ -136,21 +128,16 @@ class InspectDBTestCase(TestCase):
         output = out.getvalue()
         if not connection.features.interprets_empty_strings_as_nulls:
             self.assertIn("json_field = models.JSONField()", output)
-        self.assertIn(
-            "null_json_field = models.JSONField(blank=True, null=True)", output
-        )
+        self.assertIn("null_json_field = models.JSONField(blank=True, null=True)", output)
 
     @skipUnlessDBFeature("supports_comments")
     def test_db_comments(self):
         out = StringIO()
         call_command("inspectdb", "inspectdb_dbcomment", stdout=out)
         output = out.getvalue()
-        integer_field_type = connection.features.introspected_field_types[
-            "IntegerField"
-        ]
+        integer_field_type = connection.features.introspected_field_types["IntegerField"]
         self.assertIn(
-            f"rank = models.{integer_field_type}("
-            f"db_comment=\"'Rank' column comment\")",
+            f"rank = models.{integer_field_type}(db_comment=\"'Rank' column comment\")",
             output,
         )
         self.assertIn(
@@ -166,8 +153,7 @@ class InspectDBTestCase(TestCase):
         output = out.getvalue()
         if not connection.features.interprets_empty_strings_as_nulls:
             self.assertIn(
-                "char_field = models.CharField(max_length=10, "
-                "db_collation='%s')" % test_collation,
+                "char_field = models.CharField(max_length=10, db_collation='%s')" % test_collation,
                 output,
             )
         else:
@@ -209,9 +195,7 @@ class InspectDBTestCase(TestCase):
 
         auto_field_type = connection.features.introspected_field_types["AutoField"]
         if auto_field_type != "AutoField":
-            assertFieldType(
-                "id", "models.%s(primary_key=True)  # AutoField?" % auto_field_type
-            )
+            assertFieldType("id", "models.%s(primary_key=True)  # AutoField?" % auto_field_type)
 
         assertFieldType(
             "big_int_field", "models.%s()" % introspected_field_types["BigIntegerField"]
@@ -225,9 +209,7 @@ class InspectDBTestCase(TestCase):
         )
 
         if connection.vendor != "sqlite":
-            assertFieldType(
-                "decimal_field", "models.DecimalField(max_digits=6, decimal_places=1)"
-            )
+            assertFieldType("decimal_field", "models.DecimalField(max_digits=6, decimal_places=1)")
         else:  # Guessed arguments on SQLite, see #5014
             assertFieldType(
                 "decimal_field",
@@ -237,9 +219,7 @@ class InspectDBTestCase(TestCase):
             )
 
         assertFieldType("float_field", "models.FloatField()")
-        assertFieldType(
-            "int_field", "models.%s()" % introspected_field_types["IntegerField"]
-        )
+        assertFieldType("int_field", "models.%s()" % introspected_field_types["IntegerField"])
         assertFieldType(
             "pos_int_field",
             "models.%s()" % introspected_field_types["PositiveIntegerField"],
@@ -262,9 +242,7 @@ class InspectDBTestCase(TestCase):
         out = StringIO()
         call_command("inspectdb", table_name_filter=inspectdb_tables_only, stdout=out)
         output = out.getvalue()
-        error_message = (
-            "inspectdb generated an attribute name which is a Python keyword"
-        )
+        error_message = "inspectdb generated an attribute name which is a Python keyword"
         # Recursive foreign keys should be set to 'self'
         self.assertIn("parent = models.ForeignKey('self', models.DO_NOTHING)", output)
         self.assertNotIn(
@@ -306,22 +284,14 @@ class InspectDBTestCase(TestCase):
         call_command("inspectdb", "inspectdb_digitsincolumnname", stdout=out)
         output = out.getvalue()
         error_message = "inspectdb generated a model field name which is a number"
-        self.assertNotIn(
-            "    123 = models.%s" % char_field_type, output, msg=error_message
-        )
+        self.assertNotIn("    123 = models.%s" % char_field_type, output, msg=error_message)
         self.assertIn("number_123 = models.%s" % char_field_type, output)
 
-        error_message = (
-            "inspectdb generated a model field name which starts with a digit"
-        )
-        self.assertNotIn(
-            "    4extra = models.%s" % char_field_type, output, msg=error_message
-        )
+        error_message = "inspectdb generated a model field name which starts with a digit"
+        self.assertNotIn("    4extra = models.%s" % char_field_type, output, msg=error_message)
         self.assertIn("number_4extra = models.%s" % char_field_type, output)
 
-        self.assertNotIn(
-            "    45extra = models.%s" % char_field_type, output, msg=error_message
-        )
+        self.assertNotIn("    45extra = models.%s" % char_field_type, output, msg=error_message)
         self.assertIn("number_45extra = models.%s" % char_field_type, output)
 
     def test_special_column_name_introspection(self):
@@ -333,27 +303,21 @@ class InspectDBTestCase(TestCase):
         call_command("inspectdb", table_name_filter=special_table_only, stdout=out)
         output = out.getvalue()
         base_name = connection.introspection.identifier_converter("Field")
-        integer_field_type = connection.features.introspected_field_types[
-            "IntegerField"
-        ]
+        integer_field_type = connection.features.introspected_field_types["IntegerField"]
         self.assertIn("field = models.%s()" % integer_field_type, output)
         self.assertIn(
-            "field_field = models.%s(db_column='%s_')"
-            % (integer_field_type, base_name),
+            "field_field = models.%s(db_column='%s_')" % (integer_field_type, base_name),
             output,
         )
         self.assertIn(
-            "field_field_0 = models.%s(db_column='%s__')"
-            % (integer_field_type, base_name),
+            "field_field_0 = models.%s(db_column='%s__')" % (integer_field_type, base_name),
             output,
         )
         self.assertIn(
             "field_field_1 = models.%s(db_column='__field')" % integer_field_type,
             output,
         )
-        self.assertIn(
-            "prc_x = models.{}(db_column='prc(%) x')".format(integer_field_type), output
-        )
+        self.assertIn("prc_x = models.{}(db_column='prc(%) x')".format(integer_field_type), output)
         self.assertIn("tamaño = models.%s()" % integer_field_type, output)
 
     def test_table_name_introspection(self):
@@ -428,8 +392,7 @@ class InspectDBTestCase(TestCase):
         """Unsupported index types (COALESCE here) are skipped."""
         cursor_execute(
             "CREATE UNIQUE INDEX Findex ON %s "
-            "(id, people_unique_id, COALESCE(message_id, -1))"
-            % PeopleMoreData._meta.db_table
+            "(id, people_unique_id, COALESCE(message_id, -1))" % PeopleMoreData._meta.db_table
         )
         self.addCleanup(cursor_execute, "DROP INDEX Findex")
         out = StringIO()
@@ -452,8 +415,7 @@ class InspectDBTestCase(TestCase):
         """
         out = StringIO()
         with mock.patch(
-            'djorm.db.connection.introspection.data_types_reverse.'
-            "base_data_types_reverse",
+            "djorm.db.connection.introspection.data_types_reverse.base_data_types_reverse",
             {
                 "text": "myfields.TextField",
                 "bigint": "BigIntegerField",
@@ -471,7 +433,7 @@ class InspectDBTestCase(TestCase):
         """
         out = StringIO()
         with mock.patch(
-            'djorm.db.connection.introspection.get_table_list',
+            "djorm.db.connection.introspection.get_table_list",
             return_value=[TableInfo(name="nonexistent", type="t")],
         ):
             call_command("inspectdb", stdout=out)
@@ -495,10 +457,7 @@ class InspectDBTransactionalTests(TransactionTestCase):
 
     def test_include_views(self):
         """inspectdb --include-views creates models for database views."""
-        cursor_execute(
-            "CREATE VIEW inspectdb_people_view AS "
-            "SELECT id, name FROM inspectdb_people"
-        )
+        cursor_execute("CREATE VIEW inspectdb_people_view AS SELECT id, name FROM inspectdb_people")
         self.addCleanup(cursor_execute, "DROP VIEW inspectdb_people_view")
         out = StringIO()
         view_model = "class InspectdbPeopleView(models.Model):"
@@ -528,9 +487,7 @@ class InspectDBTransactionalTests(TransactionTestCase):
             "CREATE MATERIALIZED VIEW inspectdb_people_materialized AS "
             "SELECT id, name FROM inspectdb_people"
         )
-        self.addCleanup(
-            cursor_execute, "DROP MATERIALIZED VIEW inspectdb_people_materialized"
-        )
+        self.addCleanup(cursor_execute, "DROP MATERIALIZED VIEW inspectdb_people_materialized")
         out = StringIO()
         view_model = "class InspectdbPeopleMaterialized(models.Model):"
         view_managed = "managed = False  # Created from a view."

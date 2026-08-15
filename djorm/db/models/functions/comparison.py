@@ -22,17 +22,13 @@ class Cast(Func):
         if db_type in {"datetime", "time"}:
             # Use strftime as datetime/time don't keep fractional seconds.
             template = "strftime(%%s, %(expressions)s)"
-            sql, params = super().as_sql(
-                compiler, connection, template=template, **extra_context
-            )
+            sql, params = super().as_sql(compiler, connection, template=template, **extra_context)
             format_string = "%H:%M:%f" if db_type == "time" else "%Y-%m-%d %H:%M:%f"
             params.insert(0, format_string)
             return sql, params
         elif db_type == "date":
             template = "date(%(expressions)s)"
-            return super().as_sql(
-                compiler, connection, template=template, **extra_context
-            )
+            return super().as_sql(compiler, connection, template=template, **extra_context)
         return self.as_sql(compiler, connection, **extra_context)
 
     def as_mysql(self, compiler, connection, **extra_context):
@@ -41,7 +37,7 @@ class Cast(Func):
         # MySQL doesn't support explicit cast to float.
         if output_type == "FloatField":
             template = "(%(expressions)s + 0.0)"
-        # MariaDB doesn't support explicit cast to JSON.
+            # MariaDB doesn't support explicit cast to JSON.
         elif output_type == "JSONField" and connection.mysql_is_mariadb:
             template = "JSON_EXTRACT(%(expressions)s, '$')"
         return self.as_sql(compiler, connection, template=template, **extra_context)
@@ -61,9 +57,7 @@ class Cast(Func):
         if self.output_field.get_internal_type() == "JSONField":
             # Oracle doesn't support explicit cast to JSON.
             template = "JSON_QUERY(%(expressions)s, '$')"
-            return super().as_sql(
-                compiler, connection, template=template, **extra_context
-            )
+            return super().as_sql(compiler, connection, template=template, **extra_context)
         return self.as_sql(compiler, connection, **extra_context)
 
 

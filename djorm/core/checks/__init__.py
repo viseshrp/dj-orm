@@ -12,21 +12,20 @@ from .messages import (
     Warning,
 )
 from .registry import Tags, register, run_checks, tag_exists
+from importlib import import_module
 
-# Import these to force registration of checks
-import djorm.core.checks.async_checks  # NOQA isort:skip
-import djorm.core.checks.caches  # NOQA isort:skip
-import djorm.core.checks.commands  # NOQA isort:skip
-import djorm.core.checks.compatibility.django_4_0  # NOQA isort:skip
-import djorm.core.checks.database  # NOQA isort:skip
-import djorm.core.checks.files  # NOQA isort:skip
-import djorm.core.checks.model_checks  # NOQA isort:skip
-import djorm.core.checks.security.base  # NOQA isort:skip
-import djorm.core.checks.security.csrf  # NOQA isort:skip
-import djorm.core.checks.security.sessions  # NOQA isort:skip
-import djorm.core.checks.templates  # NOQA isort:skip
-import djorm.core.checks.translation  # NOQA isort:skip
-import djorm.core.checks.urls  # NOQA isort:skip
+
+def _maybe_import(path):
+    try:
+        import_module(path)
+    except ImportError:
+        return
+
+
+# Import these to force registration of retained ORM/DB checks.
+_maybe_import("djorm.core.checks.commands")
+_maybe_import("djorm.core.checks.database")
+_maybe_import("djorm.core.checks.model_checks")
 
 __all__ = [
     "CheckMessage",

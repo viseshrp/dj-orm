@@ -44,9 +44,7 @@ class A(models.Model):
         R, models.CASCADE, null=True, related_name="auto_nullable_set"
     )
     setvalue = models.ForeignKey(R, models.SET(get_default_r), related_name="setvalue")
-    setnull = models.ForeignKey(
-        R, models.SET_NULL, null=True, related_name="setnull_set"
-    )
+    setnull = models.ForeignKey(R, models.SET_NULL, null=True, related_name="setnull_set")
     setdefault = models.ForeignKey(
         R, models.SET_DEFAULT, default=get_default_r, related_name="setdefault_set"
     )
@@ -61,29 +59,19 @@ class A(models.Model):
     cascade_nullable = models.ForeignKey(
         R, models.CASCADE, null=True, related_name="cascade_nullable_set"
     )
-    protect = models.ForeignKey(
-        R, models.PROTECT, null=True, related_name="protect_set"
-    )
-    restrict = models.ForeignKey(
-        R, models.RESTRICT, null=True, related_name="restrict_set"
-    )
-    donothing = models.ForeignKey(
-        R, models.DO_NOTHING, null=True, related_name="donothing_set"
-    )
+    protect = models.ForeignKey(R, models.PROTECT, null=True, related_name="protect_set")
+    restrict = models.ForeignKey(R, models.RESTRICT, null=True, related_name="restrict_set")
+    donothing = models.ForeignKey(R, models.DO_NOTHING, null=True, related_name="donothing_set")
     child = models.ForeignKey(RChild, models.CASCADE, related_name="child")
     child_setnull = models.ForeignKey(
         RChild, models.SET_NULL, null=True, related_name="child_setnull"
     )
-    cascade_p = models.ForeignKey(
-        P, models.CASCADE, related_name="cascade_p_set", null=True
-    )
+    cascade_p = models.ForeignKey(P, models.CASCADE, related_name="cascade_p_set", null=True)
 
     # A OneToOneField is just a ForeignKey unique=True, so we don't duplicate
     # all the tests; just one smoke test to ensure on_delete works for it as
     # well.
-    o2o_setnull = models.ForeignKey(
-        R, models.SET_NULL, null=True, related_name="o2o_nullable_set"
-    )
+    o2o_setnull = models.ForeignKey(R, models.SET_NULL, null=True, related_name="o2o_nullable_set")
 
 
 class B(models.Model):
@@ -135,8 +123,9 @@ class MRNull(models.Model):
 class Avatar(models.Model):
     desc = models.TextField(null=True)
 
+    # This model is used to test a duplicate query regression (#25685)
 
-# This model is used to test a duplicate query regression (#25685)
+
 class AvatarProxy(Avatar):
     class Meta:
         proxy = True
@@ -238,6 +227,4 @@ class GenericDeleteBottom(models.Model):
 
 
 class GenericDeleteBottomParent(models.Model):
-    generic_delete_bottom = models.ForeignKey(
-        GenericDeleteBottom, on_delete=models.CASCADE
-    )
+    generic_delete_bottom = models.ForeignKey(GenericDeleteBottom, on_delete=models.CASCADE)

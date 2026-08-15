@@ -7,9 +7,7 @@ from djorm.db.backends.postgresql.psycopg_any import is_psycopg3
 
 def get_type_oids(connection_alias, type_name):
     with connections[connection_alias].cursor() as cursor:
-        cursor.execute(
-            "SELECT oid, typarray FROM pg_type WHERE typname = %s", (type_name,)
-        )
+        cursor.execute("SELECT oid, typarray FROM pg_type WHERE typname = %s", (type_name,))
         oids = []
         array_oids = []
         for row in cursor:
@@ -65,9 +63,7 @@ else:
         # This is also needed in order to create the connection in order to install
         # the hstore extension.
         if oids:
-            register_hstore(
-                connection.connection, globally=True, oid=oids, array_oid=array_oids
-            )
+            register_hstore(connection.connection, globally=True, oid=oids, array_oid=array_oids)
 
         oids, citext_oids = get_citext_oids(connection.alias)
         # Don't register handlers when citext is not available on the database.

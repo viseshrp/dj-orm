@@ -76,18 +76,14 @@ class BloomIndex(PostgresIndex):
         if self.length is not None:
             with_params.append("length = %d" % self.length)
         if self.columns:
-            with_params.extend(
-                "col%d = %d" % (i, v) for i, v in enumerate(self.columns, start=1)
-            )
+            with_params.extend("col%d = %d" % (i, v) for i, v in enumerate(self.columns, start=1))
         return with_params
 
 
 class BrinIndex(PostgresIndex):
     suffix = "brin"
 
-    def __init__(
-        self, *expressions, autosummarize=None, pages_per_range=None, **kwargs
-    ):
+    def __init__(self, *expressions, autosummarize=None, pages_per_range=None, **kwargs):
         if pages_per_range is not None and pages_per_range <= 0:
             raise ValueError("pages_per_range must be None or a positive integer")
         self.autosummarize = autosummarize
@@ -105,9 +101,7 @@ class BrinIndex(PostgresIndex):
     def get_with_params(self):
         with_params = []
         if self.autosummarize is not None:
-            with_params.append(
-                "autosummarize = %s" % ("on" if self.autosummarize else "off")
-            )
+            with_params.append("autosummarize = %s" % ("on" if self.autosummarize else "off"))
         if self.pages_per_range is not None:
             with_params.append("pages_per_range = %d" % self.pages_per_range)
         return with_params
@@ -143,9 +137,7 @@ class BTreeIndex(PostgresIndex):
 class GinIndex(PostgresIndex):
     suffix = "gin"
 
-    def __init__(
-        self, *expressions, fastupdate=None, gin_pending_list_limit=None, **kwargs
-    ):
+    def __init__(self, *expressions, fastupdate=None, gin_pending_list_limit=None, **kwargs):
         self.fastupdate = fastupdate
         self.gin_pending_list_limit = gin_pending_list_limit
         super().__init__(*expressions, **kwargs)
@@ -161,9 +153,7 @@ class GinIndex(PostgresIndex):
     def get_with_params(self):
         with_params = []
         if self.gin_pending_list_limit is not None:
-            with_params.append(
-                "gin_pending_list_limit = %d" % self.gin_pending_list_limit
-            )
+            with_params.append("gin_pending_list_limit = %d" % self.gin_pending_list_limit)
         if self.fastupdate is not None:
             with_params.append("fastupdate = %s" % ("on" if self.fastupdate else "off"))
         return with_params

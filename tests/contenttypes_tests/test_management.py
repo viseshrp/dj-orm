@@ -17,7 +17,7 @@ class RemoveStaleContentTypesTests(TestCase):
         "contenttypes_tests",
         "empty_models",
         "no_models",
-        'djorm.contrib.contenttypes',
+        "djorm.contrib.contenttypes",
     ]
 
     @classmethod
@@ -30,9 +30,7 @@ class RemoveStaleContentTypesTests(TestCase):
                 verbosity=2,
             )
         cls.before_count = ContentType.objects.count()
-        cls.content_type = ContentType.objects.create(
-            app_label="contenttypes_tests", model="Fake"
-        )
+        cls.content_type = ContentType.objects.create(app_label="contenttypes_tests", model="Fake")
 
     def setUp(self):
         self.app_config = apps.get_app_config("contenttypes_tests")
@@ -111,9 +109,7 @@ class RemoveStaleContentTypesTests(TestCase):
             mock.patch("builtins.input", return_value="yes"),
             captured_stdout() as stdout,
         ):
-            call_command(
-                "remove_stale_contenttypes", include_stale_apps=True, verbosity=2
-            )
+            call_command("remove_stale_contenttypes", include_stale_apps=True, verbosity=2)
         self.assertIn(
             "Deleting stale content type 'empty_models | Fake 1'",
             stdout.getvalue(),

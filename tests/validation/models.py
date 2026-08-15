@@ -74,9 +74,7 @@ class UniqueTogetherModel(models.Model):
 class UniqueForDateModel(models.Model):
     start_date = models.DateField()
     end_date = models.DateTimeField()
-    count = models.IntegerField(
-        unique_for_date="start_date", unique_for_year="end_date"
-    )
+    count = models.IntegerField(unique_for_date="start_date", unique_for_year="end_date")
     order = models.IntegerField(unique_for_month="end_date")
     name = models.CharField(max_length=100)
 
@@ -142,9 +140,7 @@ class GenericIPAddressTestModel(models.Model):
     generic_ip = models.GenericIPAddressField(blank=True, null=True, unique=True)
     v4_ip = models.GenericIPAddressField(blank=True, null=True, protocol="ipv4")
     v6_ip = models.GenericIPAddressField(blank=True, null=True, protocol="ipv6")
-    ip_verbose_name = models.GenericIPAddressField(
-        "IP Address Verbose", blank=True, null=True
-    )
+    ip_verbose_name = models.GenericIPAddressField("IP Address Verbose", blank=True, null=True)
 
 
 class GenericIPAddrUnpackUniqueTest(models.Model):
@@ -193,9 +189,7 @@ class UniqueConstraintProduct(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["name", "color"], name="name_color_uniq_validation"
-            ),
+            models.UniqueConstraint(fields=["name", "color"], name="name_color_uniq_validation"),
             models.UniqueConstraint(fields=["rank"], name="rank_uniq_validation"),
         ]
 

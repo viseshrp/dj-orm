@@ -24,8 +24,8 @@ class ContentTypesTests(TestCase):
         with self.assertNumQueries(1):
             ContentType.objects.get_for_model(ContentType)
 
-        # A second hit, though, won't hit the DB, nor will a lookup by ID
-        # or natural key
+            # A second hit, though, won't hit the DB, nor will a lookup by ID
+            # or natural key
         with self.assertNumQueries(0):
             ct = ContentType.objects.get_for_model(ContentType)
         with self.assertNumQueries(0):
@@ -33,16 +33,16 @@ class ContentTypesTests(TestCase):
         with self.assertNumQueries(0):
             ContentType.objects.get_by_natural_key("contenttypes", "contenttype")
 
-        # Once we clear the cache, another lookup will again hit the DB
+            # Once we clear the cache, another lookup will again hit the DB
         ContentType.objects.clear_cache()
         with self.assertNumQueries(1):
             ContentType.objects.get_for_model(ContentType)
 
-        # The same should happen with a lookup by natural key
+            # The same should happen with a lookup by natural key
         ContentType.objects.clear_cache()
         with self.assertNumQueries(1):
             ContentType.objects.get_by_natural_key("contenttypes", "contenttype")
-        # And a second hit shouldn't hit the DB
+            # And a second hit shouldn't hit the DB
         with self.assertNumQueries(0):
             ContentType.objects.get_by_natural_key("contenttypes", "contenttype")
 
@@ -95,9 +95,7 @@ class ContentTypesTests(TestCase):
         state = ProjectState.from_apps(apps.get_app_config("contenttypes"))
         ContentType = state.apps.get_model("contenttypes", "ContentType")
         cts = ContentType.objects.get_for_models(ContentType)
-        self.assertEqual(
-            cts, {ContentType: ContentType.objects.get_for_model(ContentType)}
-        )
+        self.assertEqual(cts, {ContentType: ContentType.objects.get_for_model(ContentType)})
 
     @isolate_apps("contenttypes_tests")
     def test_get_for_models_migrations_create_model(self):
@@ -153,17 +151,13 @@ class ContentTypesTests(TestCase):
         with concrete, proxy and deferred models
         """
         concrete_model_ct = ContentType.objects.get_for_model(ConcreteModel)
-        self.assertEqual(
-            concrete_model_ct, ContentType.objects.get_for_model(ProxyModel)
-        )
+        self.assertEqual(concrete_model_ct, ContentType.objects.get_for_model(ProxyModel))
         self.assertEqual(
             concrete_model_ct,
             ContentType.objects.get_for_model(ConcreteModel, for_concrete_model=False),
         )
 
-        proxy_model_ct = ContentType.objects.get_for_model(
-            ProxyModel, for_concrete_model=False
-        )
+        proxy_model_ct = ContentType.objects.get_for_model(ProxyModel, for_concrete_model=False)
         self.assertNotEqual(concrete_model_ct, proxy_model_ct)
 
         # Make sure deferred model are correctly handled
@@ -176,18 +170,12 @@ class ContentTypesTests(TestCase):
         )
         self.assertEqual(
             concrete_model_ct,
-            ContentType.objects.get_for_model(
-                DeferredConcreteModel, for_concrete_model=False
-            ),
+            ContentType.objects.get_for_model(DeferredConcreteModel, for_concrete_model=False),
         )
-        self.assertEqual(
-            concrete_model_ct, ContentType.objects.get_for_model(DeferredProxyModel)
-        )
+        self.assertEqual(concrete_model_ct, ContentType.objects.get_for_model(DeferredProxyModel))
         self.assertEqual(
             proxy_model_ct,
-            ContentType.objects.get_for_model(
-                DeferredProxyModel, for_concrete_model=False
-            ),
+            ContentType.objects.get_for_model(DeferredProxyModel, for_concrete_model=False),
         )
 
     def test_get_for_concrete_models(self):
@@ -206,9 +194,7 @@ class ContentTypesTests(TestCase):
             },
         )
 
-        proxy_model_ct = ContentType.objects.get_for_model(
-            ProxyModel, for_concrete_model=False
-        )
+        proxy_model_ct = ContentType.objects.get_for_model(ProxyModel, for_concrete_model=False)
         cts = ContentType.objects.get_for_models(
             ConcreteModel, ProxyModel, for_concrete_models=False
         )
@@ -225,9 +211,7 @@ class ContentTypesTests(TestCase):
         DeferredConcreteModel = ConcreteModel.objects.only("pk").get().__class__
         DeferredProxyModel = ProxyModel.objects.only("pk").get().__class__
 
-        cts = ContentType.objects.get_for_models(
-            DeferredConcreteModel, DeferredProxyModel
-        )
+        cts = ContentType.objects.get_for_models(DeferredConcreteModel, DeferredProxyModel)
         self.assertEqual(
             cts,
             {
@@ -300,10 +284,6 @@ class ContentTypesTests(TestCase):
         ct = ContentType.objects.get(app_label="contenttypes_tests", model="site")
         self.assertEqual(str(ct), "Contenttypes_Tests | site")
 
-    def test_str_auth(self):
-        ct = ContentType.objects.get(app_label="auth", model="group")
-        self.assertEqual(str(ct), "Authentication and Authorization | group")
-
     def test_name(self):
         ct = ContentType.objects.get(app_label="contenttypes_tests", model="site")
         self.assertEqual(ct.name, "site")
@@ -351,10 +331,7 @@ class ContentTypesMultidbTests(TestCase):
 
 class GenericPrefetchTests(TestCase):
     def test_querysets_required(self):
-        msg = (
-            "GenericPrefetch.__init__() missing 1 required "
-            "positional argument: 'querysets'"
-        )
+        msg = "GenericPrefetch.__init__() missing 1 required positional argument: 'querysets'"
         with self.assertRaisesMessage(TypeError, msg):
             GenericPrefetch("question")
 

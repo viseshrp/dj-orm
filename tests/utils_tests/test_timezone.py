@@ -33,16 +33,12 @@ class TimezoneTests(SimpleTestCase):
             timezone.localdate(naive, timezone=EAT)
 
         aware = datetime.datetime(2015, 1, 1, 0, 0, 1, tzinfo=ICT)
-        self.assertEqual(
-            timezone.localdate(aware, timezone=EAT), datetime.date(2014, 12, 31)
-        )
+        self.assertEqual(timezone.localdate(aware, timezone=EAT), datetime.date(2014, 12, 31))
         with timezone.override(EAT):
             self.assertEqual(timezone.localdate(aware), datetime.date(2014, 12, 31))
 
-        with mock.patch('djorm.utils.timezone.now', return_value=aware):
-            self.assertEqual(
-                timezone.localdate(timezone=EAT), datetime.date(2014, 12, 31)
-            )
+        with mock.patch("djorm.utils.timezone.now", return_value=aware):
+            self.assertEqual(timezone.localdate(timezone=EAT), datetime.date(2014, 12, 31))
             with timezone.override(EAT):
                 self.assertEqual(timezone.localdate(), datetime.date(2014, 12, 31))
 
@@ -114,15 +110,11 @@ class TimezoneTests(SimpleTestCase):
             timezone.activate(None)
 
     def test_is_aware(self):
-        self.assertTrue(
-            timezone.is_aware(datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT))
-        )
+        self.assertTrue(timezone.is_aware(datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT)))
         self.assertFalse(timezone.is_aware(datetime.datetime(2011, 9, 1, 13, 20, 30)))
 
     def test_is_naive(self):
-        self.assertFalse(
-            timezone.is_naive(datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT))
-        )
+        self.assertFalse(timezone.is_naive(datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT)))
         self.assertTrue(timezone.is_naive(datetime.datetime(2011, 9, 1, 13, 20, 30)))
 
     def test_make_aware(self):
@@ -131,21 +123,15 @@ class TimezoneTests(SimpleTestCase):
             datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT),
         )
         with self.assertRaises(ValueError):
-            timezone.make_aware(
-                datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT), EAT
-            )
+            timezone.make_aware(datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT), EAT)
 
     def test_make_naive(self):
         self.assertEqual(
-            timezone.make_naive(
-                datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT), EAT
-            ),
+            timezone.make_naive(datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=EAT), EAT),
             datetime.datetime(2011, 9, 1, 13, 20, 30),
         )
         self.assertEqual(
-            timezone.make_naive(
-                datetime.datetime(2011, 9, 1, 17, 20, 30, tzinfo=ICT), EAT
-            ),
+            timezone.make_naive(datetime.datetime(2011, 9, 1, 17, 20, 30, tzinfo=ICT), EAT),
             datetime.datetime(2011, 9, 1, 13, 20, 30),
         )
 
@@ -163,9 +149,7 @@ class TimezoneTests(SimpleTestCase):
     def test_make_aware_no_tz(self):
         self.assertEqual(
             timezone.make_aware(datetime.datetime(2011, 9, 1, 13, 20, 30)),
-            datetime.datetime(
-                2011, 9, 1, 13, 20, 30, tzinfo=timezone.get_fixed_timezone(-300)
-            ),
+            datetime.datetime(2011, 9, 1, 13, 20, 30, tzinfo=timezone.get_fixed_timezone(-300)),
         )
 
     def test_make_aware2(self):
@@ -202,9 +186,7 @@ class TimezoneTests(SimpleTestCase):
         std = timezone.make_aware(ambiguous.replace(fold=1), timezone=PARIS_ZI)
         dst = timezone.make_aware(ambiguous, timezone=PARIS_ZI)
 
-        self.assertEqual(
-            std.astimezone(UTC) - dst.astimezone(UTC), datetime.timedelta(hours=1)
-        )
+        self.assertEqual(std.astimezone(UTC) - dst.astimezone(UTC), datetime.timedelta(hours=1))
         self.assertEqual(std.utcoffset(), datetime.timedelta(hours=1))
         self.assertEqual(dst.utcoffset(), datetime.timedelta(hours=2))
 
@@ -215,9 +197,7 @@ class TimezoneTests(SimpleTestCase):
         std = timezone.make_aware(non_existent, PARIS_ZI)
         dst = timezone.make_aware(non_existent.replace(fold=1), PARIS_ZI)
 
-        self.assertEqual(
-            std.astimezone(UTC) - dst.astimezone(UTC), datetime.timedelta(hours=1)
-        )
+        self.assertEqual(std.astimezone(UTC) - dst.astimezone(UTC), datetime.timedelta(hours=1))
         self.assertEqual(std.utcoffset(), datetime.timedelta(hours=1))
         self.assertEqual(dst.utcoffset(), datetime.timedelta(hours=2))
 

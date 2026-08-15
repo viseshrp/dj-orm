@@ -20,14 +20,11 @@ try:
 except ImportError:
     Image = None
 
-
-# Set up a temp directory for file storage.
+    # Set up a temp directory for file storage.
 temp_storage_dir = tempfile.mkdtemp()
 temp_storage = FileSystemStorage(temp_storage_dir)
 
-test_collation = SimpleLazyObject(
-    lambda: connection.features.test_collations["virtual"]
-)
+test_collation = SimpleLazyObject(lambda: connection.features.test_collations["virtual"])
 
 
 class Foo(models.Model):
@@ -63,8 +60,9 @@ class Whiz(models.Model):
 class WhizDelayed(models.Model):
     c = models.IntegerField(choices=(), null=True)
 
+    # Contrived way of adding choices later.
 
-# Contrived way of adding choices later.
+
 WhizDelayed._meta.get_field("c").choices = Whiz.CHOICES
 
 
@@ -90,9 +88,7 @@ class Choiceful(models.Model):
     empty_choices = models.IntegerField(choices=(), null=True)
     with_choices = models.IntegerField(choices=[(1, "A")], null=True)
     with_choices_dict = models.IntegerField(choices={1: "A"}, null=True)
-    with_choices_nested_dict = models.IntegerField(
-        choices={"Thing": {1: "A"}}, null=True
-    )
+    with_choices_nested_dict = models.IntegerField(choices={"Thing": {1: "A"}}, null=True)
     empty_choices_bool = models.BooleanField(choices=())
     empty_choices_text = models.TextField(choices=())
     choices_from_enum = models.IntegerField(choices=Suit)
@@ -210,9 +206,7 @@ class VerboseNameField(models.Model):
     field5 = models.DateTimeField("verbose field5")
     field6 = models.DecimalField("verbose field6", max_digits=6, decimal_places=1)
     field7 = models.EmailField("verbose field7")
-    field8 = models.FileField(
-        "verbose field8", storage=temp_storage, upload_to="unused"
-    )
+    field8 = models.FileField("verbose field8", storage=temp_storage, upload_to="unused")
     field9 = models.FilePathField("verbose field9")
     field10 = models.FloatField("verbose field10")
     # Don't want to depend on Pillow in this test
@@ -233,42 +227,42 @@ class VerboseNameField(models.Model):
 class GenericIPAddress(models.Model):
     ip = models.GenericIPAddressField(null=True, protocol="ipv4")
 
+    ###############################################################################
+    # These models aren't used in any test, just here to ensure they validate
+    # successfully.
 
-###############################################################################
-# These models aren't used in any test, just here to ensure they validate
-# successfully.
+    # See ticket #16570.
 
 
-# See ticket #16570.
 class DecimalLessThanOne(models.Model):
     d = models.DecimalField(max_digits=3, decimal_places=3)
 
+    # See ticket #18389.
 
-# See ticket #18389.
+
 class FieldClassAttributeModel(models.Model):
     field_class = models.CharField
 
-
-###############################################################################
+    ###############################################################################
 
 
 class DataModel(models.Model):
     short_data = models.BinaryField(max_length=10, default=b"\x08")
     data = models.BinaryField()
 
-
-###############################################################################
-# FileField
+    ###############################################################################
+    # FileField
 
 
 class Document(models.Model):
     myfile = models.FileField(storage=temp_storage, upload_to="unused", unique=True)
 
+    ###############################################################################
+    # ImageField
 
-###############################################################################
-# ImageField
+    # If Pillow available, do these tests.
 
-# If Pillow available, do these tests.
+
 if Image:
 
     class TestImageFieldFile(ImageFieldFile):
@@ -487,8 +481,7 @@ class AllFieldsModel(models.Model):
 class ManyToMany(models.Model):
     m2m = models.ManyToManyField("self")
 
-
-###############################################################################
+    ###############################################################################
 
 
 class UUIDModel(models.Model):
@@ -710,7 +703,5 @@ class GeneratedModelUniqueConstraintVirtual(GeneratedModelVirtualBase):
             "supports_expression_indexes",
         }
         constraints = [
-            models.UniqueConstraint(
-                F("a"), name="Generated model unique constraint virtual a"
-            ),
+            models.UniqueConstraint(F("a"), name="Generated model unique constraint virtual a"),
         ]

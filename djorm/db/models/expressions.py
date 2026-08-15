@@ -69,9 +69,9 @@ class Combinable:
             return CombinedExpression(other, connector, self)
         return CombinedExpression(self, connector, other)
 
-    #############
-    # OPERATORS #
-    #############
+        #############
+        # OPERATORS #
+        #############
 
     def __neg__(self):
         return self._combine(-1, self.MUL, False)
@@ -201,9 +201,7 @@ class BaseExpression:
 
     def get_db_converters(self, connection):
         return (
-            []
-            if self.convert_value is self._convert_value_noop
-            else [self.convert_value]
+            [] if self.convert_value is self._convert_value_noop else [self.convert_value]
         ) + self.output_field.get_db_converters(connection)
 
     def get_source_expressions(self):
@@ -252,21 +250,16 @@ class BaseExpression:
 
     @cached_property
     def contains_aggregate(self):
-        return any(
-            expr and expr.contains_aggregate for expr in self.get_source_expressions()
-        )
+        return any(expr and expr.contains_aggregate for expr in self.get_source_expressions())
 
     @cached_property
     def contains_over_clause(self):
-        return any(
-            expr and expr.contains_over_clause for expr in self.get_source_expressions()
-        )
+        return any(expr and expr.contains_over_clause for expr in self.get_source_expressions())
 
     @cached_property
     def contains_column_references(self):
         return any(
-            expr and expr.contains_column_references
-            for expr in self.get_source_expressions()
+            expr and expr.contains_column_references for expr in self.get_source_expressions()
         )
 
     @cached_property
@@ -307,8 +300,7 @@ class BaseExpression:
             isinstance(expr, ColPairs) for expr in source_expressions
         ):
             raise ValueError(
-                f"{self.__class__.__name__} expression does not support "
-                "composite primary keys."
+                f"{self.__class__.__name__} expression does not support composite primary keys."
             )
         c.set_source_expressions(source_expressions)
         return c
@@ -326,9 +318,7 @@ class BaseExpression:
         """Return the output type of this expressions."""
         output_field = self._resolve_output_field()
         if output_field is None:
-            raise OutputFieldIsNoneError(
-                "Cannot resolve expression type, unknown output_field"
-            )
+            raise OutputFieldIsNoneError("Cannot resolve expression type, unknown output_field")
         return output_field
 
     @property
@@ -356,9 +346,7 @@ class BaseExpression:
         # This guess is mostly a bad idea, but there is quite a lot of code
         # (especially 3rd party Func subclasses) that depend on it, we'd need a
         # deprecation path to fix it.
-        sources_iter = (
-            source for source in self.get_source_fields() if source is not None
-        )
+        sources_iter = (source for source in self.get_source_fields() if source is not None)
         for output_field in sources_iter:
             for source in sources_iter:
                 if not isinstance(output_field, source.__class__):
@@ -386,17 +374,11 @@ class BaseExpression:
         field = self.output_field
         internal_type = field.get_internal_type()
         if internal_type == "FloatField":
-            return lambda value, expression, connection: (
-                None if value is None else float(value)
-            )
+            return lambda value, expression, connection: None if value is None else float(value)
         elif internal_type.endswith("IntegerField"):
-            return lambda value, expression, connection: (
-                None if value is None else int(value)
-            )
+            return lambda value, expression, connection: None if value is None else int(value)
         elif internal_type == "DecimalField":
-            return lambda value, expression, connection: (
-                None if value is None else Decimal(value)
-            )
+            return lambda value, expression, connection: None if value is None else Decimal(value)
         return self._convert_value_noop
 
     def get_lookup(self, lookup):
@@ -559,13 +541,13 @@ class Expression(BaseExpression, Combinable):
     def __hash__(self):
         return hash(self.identity)
 
+        # Type inference for CombinedExpression.output_field.
+        # Missing items will result in FieldError, by design.
+        #
+        # The current approach for NULL is based on lowest common denominator behavior
+        # i.e. if one of the supported databases is raising an error (rather than
+        # return NULL) for `val <op> NULL`, then Django raises FieldError.
 
-# Type inference for CombinedExpression.output_field.
-# Missing items will result in FieldError, by design.
-#
-# The current approach for NULL is based on lowest common denominator behavior
-# i.e. if one of the supported databases is raising an error (rather than
-# return NULL) for `val <op> NULL`, then Django raises FieldError.
 
 _connector_combinations = [
     # Numeric operations - operands of same type.
@@ -713,9 +695,7 @@ for d in _connector_combinations:
 def _resolve_combined_type(connector, lhs_type, rhs_type):
     combinators = _connector_combinators.get(connector, ())
     for combinator_lhs_type, combinator_rhs_type, combined_type in combinators:
-        if issubclass(lhs_type, combinator_lhs_type) and issubclass(
-            rhs_type, combinator_rhs_type
-        ):
+        if issubclass(lhs_type, combinator_lhs_type) and issubclass(rhs_type, combinator_rhs_type):
             return combined_type
 
 
@@ -789,15 +769,9 @@ class CombinedExpression(SQLiteNumericMixin, Expression):
             except (AttributeError, FieldError):
                 rhs_type = None
             if "DurationField" in {lhs_type, rhs_type} and lhs_type != rhs_type:
-                return DurationExpression(
-                    resolved.lhs, resolved.connector, resolved.rhs
-                )
+                return DurationExpression(resolved.lhs, resolved.connector, resolved.rhs)
             datetime_fields = {"DateField", "DateTimeField", "TimeField"}
-            if (
-                self.connector == self.SUB
-                and lhs_type in datetime_fields
-                and lhs_type == rhs_type
-            ):
+            if self.connector == self.SUB and lhs_type in datetime_fields and lhs_type == rhs_type:
                 return TemporalSubtraction(resolved.lhs, resolved.rhs)
         return resolved
 
@@ -851,9 +825,7 @@ class DurationExpression(CombinedExpression):
                     "IntegerField",
                 }
                 if lhs_type not in allowed_fields or rhs_type not in allowed_fields:
-                    raise DatabaseError(
-                        f"Invalid arguments for operator {self.connector}."
-                    )
+                    raise DatabaseError(f"Invalid arguments for operator {self.connector}.")
         return sql, params
 
 
@@ -872,7 +844,7 @@ class TemporalSubtraction(CombinedExpression):
         )
 
 
-@deconstructible(path='djorm.db.models.F')
+@deconstructible(path="djorm.db.models.F")
 class F(Combinable):
     """An object capable of resolving references to existing query objects."""
 
@@ -958,12 +930,11 @@ class ResolvedOuterRef(F):
         col = super().resolve_expression(*args, **kwargs)
         if col.contains_over_clause:
             raise NotSupportedError(
-                f"Referencing outer query window expression is not supported: "
-                f"{self.name}."
+                f"Referencing outer query window expression is not supported: {self.name}."
             )
-        # FIXME: Rename possibly_multivalued to multivalued and fix detection
-        # for non-multivalued JOINs (e.g. foreign key fields). This should take
-        # into account only many-to-many and one-to-many relationships.
+            # FIXME: Rename possibly_multivalued to multivalued and fix detection
+            # for non-multivalued JOINs (e.g. foreign key fields). This should take
+            # into account only many-to-many and one-to-many relationships.
         col.possibly_multivalued = LOOKUP_SEP in self.name
         return col
 
@@ -1036,15 +1007,13 @@ class Sliced(F):
     ):
         resolved = query.resolve_ref(self.name, allow_joins, reuse, summarize)
         if isinstance(self.obj, (OuterRef, self.__class__)):
-            expr = self.obj.resolve_expression(
-                query, allow_joins, reuse, summarize, for_save
-            )
+            expr = self.obj.resolve_expression(query, allow_joins, reuse, summarize, for_save)
         else:
             expr = resolved
         return resolved.output_field.slice_expression(expr, self.start, self.length)
 
 
-@deconstructible(path='djorm.db.models.Func')
+@deconstructible(path="djorm.db.models.Func")
 class Func(SQLiteNumericMixin, Expression):
     """An SQL function call."""
 
@@ -1072,9 +1041,7 @@ class Func(SQLiteNumericMixin, Expression):
         args = self.arg_joiner.join(str(arg) for arg in self.source_expressions)
         extra = {**self.extra, **self._get_repr_options()}
         if extra:
-            extra = ", ".join(
-                str(key) + "=" + str(val) for key, val in sorted(extra.items())
-            )
+            extra = ", ".join(str(key) + "=" + str(val) for key, val in sorted(extra.items()))
             return "{}({}, {})".format(self.__class__.__name__, args, extra)
         return "{}({})".format(self.__class__.__name__, args)
 
@@ -1104,9 +1071,7 @@ class Func(SQLiteNumericMixin, Expression):
             try:
                 arg_sql, arg_params = compiler.compile(arg)
             except EmptyResultSet:
-                empty_result_set_value = getattr(
-                    arg, "empty_result_set_value", NotImplemented
-                )
+                empty_result_set_value = getattr(arg, "empty_result_set_value", NotImplemented)
                 if empty_result_set_value is NotImplemented:
                     raise
                 arg_sql, arg_params = compiler.compile(Value(empty_result_set_value))
@@ -1138,7 +1103,7 @@ class Func(SQLiteNumericMixin, Expression):
         return all(expression.allowed_default for expression in self.source_expressions)
 
 
-@deconstructible(path='djorm.db.models.Value')
+@deconstructible(path="djorm.db.models.Value")
 class Value(SQLiteNumericMixin, Expression):
     """Represent a wrapped value as a node within an expression."""
 
@@ -1245,13 +1210,9 @@ class RawSQL(Expression):
             for parent in query.model._meta.all_parents:
                 for parent_field in parent._meta.local_fields:
                     if parent_field.column.lower() in self.sql.lower():
-                        query.resolve_ref(
-                            parent_field.name, allow_joins, reuse, summarize
-                        )
+                        query.resolve_ref(parent_field.name, allow_joins, reuse, summarize)
                         break
-        return super().resolve_expression(
-            query, allow_joins, reuse, summarize, for_save
-        )
+        return super().resolve_expression(query, allow_joins, reuse, summarize, for_save)
 
 
 class Star(Expression):
@@ -1291,9 +1252,7 @@ class DatabaseDefault(Expression):
         # underlying expression.
         if not for_save:
             return resolved_expression
-        return DatabaseDefault(
-            resolved_expression, output_field=self._output_field_or_none
-        )
+        return DatabaseDefault(resolved_expression, output_field=self._output_field_or_none)
 
     def as_sql(self, compiler, connection):
         if not connection.features.supports_default_keyword_in_insert:
@@ -1325,9 +1284,7 @@ class Col(Expression):
     def relabeled_clone(self, relabels):
         if self.alias is None:
             return self
-        return self.__class__(
-            relabels.get(self.alias, self.alias), self.target, self.output_field
-        )
+        return self.__class__(relabels.get(self.alias, self.alias), self.target, self.output_field)
 
     def get_group_by_cols(self):
         return [self]
@@ -1335,9 +1292,9 @@ class Col(Expression):
     def get_db_converters(self, connection):
         if self.target == self.output_field:
             return self.output_field.get_db_converters(connection)
-        return self.output_field.get_db_converters(
+        return self.output_field.get_db_converters(connection) + self.target.get_db_converters(
             connection
-        ) + self.target.get_db_converters(connection)
+        )
 
 
 class ColPairs(Expression):
@@ -1361,8 +1318,7 @@ class ColPairs(Expression):
 
     def get_cols(self):
         return [
-            Col(self.alias, target, source)
-            for target, source in zip(self.targets, self.sources)
+            Col(self.alias, target, source) for target, source in zip(self.targets, self.sources)
         ]
 
     def get_source_expressions(self):
@@ -1482,7 +1438,7 @@ class OrderByList(ExpressionList):
         super().__init__(*expressions, **extra)
 
 
-@deconstructible(path='djorm.db.models.ExpressionWrapper')
+@deconstructible(path="djorm.db.models.ExpressionWrapper")
 class ExpressionWrapper(SQLiteNumericMixin, Expression):
     """
     An expression that can wrap another expression so that it can provide
@@ -1504,8 +1460,8 @@ class ExpressionWrapper(SQLiteNumericMixin, Expression):
             expression = self.expression.copy()
             expression.output_field = self.output_field
             return expression.get_group_by_cols()
-        # For non-expressions e.g. an SQL WHERE clause, the entire
-        # `expression` must be included in the GROUP BY clause.
+            # For non-expressions e.g. an SQL WHERE clause, the entire
+            # `expression` must be included in the GROUP BY clause.
         return super().get_group_by_cols()
 
     def as_sql(self, compiler, connection):
@@ -1547,9 +1503,7 @@ class NegatedExpression(ExpressionWrapper):
     def resolve_expression(
         self, query=None, allow_joins=True, reuse=None, summarize=False, for_save=False
     ):
-        resolved = super().resolve_expression(
-            query, allow_joins, reuse, summarize, for_save
-        )
+        resolved = super().resolve_expression(query, allow_joins, reuse, summarize, for_save)
         if not getattr(resolved.expression, "conditional", False):
             raise TypeError("Cannot negate non-conditional expressions.")
         return resolved
@@ -1570,7 +1524,7 @@ class NegatedExpression(ExpressionWrapper):
         return sql, params
 
 
-@deconstructible(path='djorm.db.models.When')
+@deconstructible(path="djorm.db.models.When")
 class When(Expression):
     template = "WHEN %(condition)s THEN %(result)s"
     # This isn't a complete conditional expression, must be used in Case().
@@ -1584,8 +1538,7 @@ class When(Expression):
                 condition, lookups = Q(condition, **lookups), None
         if condition is None or not getattr(condition, "conditional", False) or lookups:
             raise TypeError(
-                "When() supports a Q object, a boolean expression, or lookups "
-                "as a condition."
+                "When() supports a Q object, a boolean expression, or lookups as a condition."
             )
         if isinstance(condition, Q) and not condition:
             raise ValueError("An empty Q() can't be used as a When() condition.")
@@ -1647,7 +1600,7 @@ class When(Expression):
         return self.condition.allowed_default and self.result.allowed_default
 
 
-@deconstructible(path='djorm.db.models.Case')
+@deconstructible(path="djorm.db.models.Case")
 class Case(SQLiteNumericMixin, Expression):
     """
     An SQL searched CASE expression:
@@ -1692,9 +1645,7 @@ class Case(SQLiteNumericMixin, Expression):
         c.cases = c.cases[:]
         return c
 
-    def as_sql(
-        self, compiler, connection, template=None, case_joiner=None, **extra_context
-    ):
+    def as_sql(self, compiler, connection, template=None, case_joiner=None, **extra_context):
         connection.ops.check_expression_support(self)
         if not self.cases:
             return compiler.compile(self.default)
@@ -1732,9 +1683,7 @@ class Case(SQLiteNumericMixin, Expression):
 
     @cached_property
     def allowed_default(self):
-        return self.default.allowed_default and all(
-            case_.allowed_default for case_ in self.cases
-        )
+        return self.default.allowed_default and all(case_.allowed_default for case_ in self.cases)
 
 
 class Subquery(BaseExpression, Combinable):
@@ -1817,7 +1766,7 @@ class Exists(Subquery):
             return compiler.compile(Value(False))
 
 
-@deconstructible(path='djorm.db.models.OrderBy')
+@deconstructible(path="djorm.db.models.OrderBy")
 class OrderBy(Expression):
     template = "%(expression)s %(ordering)s"
     conditional = False
@@ -1888,9 +1837,7 @@ class OrderBy(Expression):
         # wrapped in a CASE WHEN.
         if (
             not connection.features.supports_boolean_expr_in_select_clause
-            and connection.ops.conditional_expression_supported_in_where_clause(
-                self.expression
-            )
+            and connection.ops.conditional_expression_supported_in_where_clause(self.expression)
         ):
             copy = self.copy()
             copy.expression = Case(
@@ -2065,8 +2012,7 @@ class WindowFrame(Expression):
         self.end = Value(end)
         if not isinstance(exclusion, (NoneType, WindowFrameExclusion)):
             raise TypeError(
-                f"{self.__class__.__qualname__}.exclusion must be a "
-                "WindowFrameExclusion instance."
+                f"{self.__class__.__qualname__}.exclusion must be a WindowFrameExclusion instance."
             )
         self.exclusion = exclusion
 
@@ -2083,13 +2029,9 @@ class WindowFrame(Expression):
 
     def as_sql(self, compiler, connection):
         connection.ops.check_expression_support(self)
-        start, end = self.window_frame_start_end(
-            connection, self.start.value, self.end.value
-        )
+        start, end = self.window_frame_start_end(connection, self.start.value, self.end.value)
         if self.exclusion and not connection.features.supports_frame_exclusion:
-            raise NotSupportedError(
-                "This backend does not support window frame exclusions."
-            )
+            raise NotSupportedError("This backend does not support window frame exclusions.")
         return (
             self.template
             % {

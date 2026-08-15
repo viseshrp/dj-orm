@@ -53,16 +53,14 @@ class VeryLongModelNameZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ(models.Model):
     charfield_is_quite_long_zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz = models.CharField(
         max_length=100
     )
-    m2m_also_quite_long_zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz = (
-        models.ManyToManyField(Person, blank=True)
+    m2m_also_quite_long_zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz = models.ManyToManyField(
+        Person, blank=True
     )
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
-    content_type = models.ForeignKey(
-        ContentType, models.CASCADE, related_name="backend_tags"
-    )
+    content_type = models.ForeignKey(ContentType, models.CASCADE, related_name="backend_tags")
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
@@ -115,9 +113,7 @@ class Item(models.Model):
 
 
 class Object(models.Model):
-    related_objects = models.ManyToManyField(
-        "self", db_constraint=False, symmetrical=False
-    )
+    related_objects = models.ManyToManyField("self", db_constraint=False, symmetrical=False)
     obj_ref = models.ForeignKey("ObjectReference", models.CASCADE, null=True)
 
     def __str__(self):

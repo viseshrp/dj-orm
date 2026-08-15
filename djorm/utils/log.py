@@ -1,14 +1,13 @@
 import logging
 import logging.config  # needed when logging_config doesn't start with logging.config
+import traceback
 from copy import copy
 
 from djorm.conf import settings
-from djorm.core import mail
-from djorm.core.mail import get_connection
 from djorm.core.management.color import color_style
 from djorm.utils.module_loading import import_string
 
-request_logger = logging.getLogger("django.request")
+request_logger = logging.getLogger("djorm.request")
 
 # Default logging for Django. This sends an email to the site admins on every
 # HTTP 500 error. Depending on DEBUG, all other log records are either sent to
@@ -20,15 +19,15 @@ DEFAULT_LOGGING = {
     "disable_existing_loggers": False,
     "filters": {
         "require_debug_false": {
-            "()": 'djorm.utils.log.RequireDebugFalse',
+            "()": "djorm.utils.log.RequireDebugFalse",
         },
         "require_debug_true": {
-            "()": 'djorm.utils.log.RequireDebugTrue',
+            "()": "djorm.utils.log.RequireDebugTrue",
         },
     },
     "formatters": {
-        "django.server": {
-            "()": 'djorm.utils.log.ServerFormatter',
+        "djorm.server": {
+            "()": "djorm.utils.log.ServerFormatter",
             "format": "[{server_time}] {message}",
             "style": "{",
         }
@@ -39,24 +38,24 @@ DEFAULT_LOGGING = {
             "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
         },
-        "django.server": {
+        "djorm.server": {
             "level": "INFO",
             "class": "logging.StreamHandler",
-            "formatter": "django.server",
+            "formatter": "djorm.server",
         },
         "mail_admins": {
             "level": "ERROR",
             "filters": ["require_debug_false"],
-            "class": 'djorm.utils.log.AdminEmailHandler',
+            "class": "djorm.utils.log.AdminEmailHandler",
         },
     },
     "loggers": {
-        "django": {
+        "djorm": {
             "handlers": ["console", "mail_admins"],
             "level": "INFO",
         },
-        "django.server": {
-            "handlers": ["django.server"],
+        "djorm.server": {
+            "handlers": ["djorm.server"],
             "level": "INFO",
             "propagate": False,
         },
@@ -87,9 +86,11 @@ class AdminEmailHandler(logging.Handler):
         super().__init__()
         self.include_html = include_html
         self.email_backend = email_backend
-        self.reporter_class = import_string(
-            reporter_class or settings.DEFAULT_EXCEPTION_REPORTER
-        )
+        reporter_path = reporter_class or settings.DEFAULT_EXCEPTION_REPORTER
+        try:
+            self.reporter_class = import_string(reporter_path)
+        except ImportError:
+            self.reporter_class = ExceptionReporterFallback
 
     def emit(self, record):
         # Early return when no email will be sent.
@@ -135,11 +136,17 @@ class AdminEmailHandler(logging.Handler):
         self.send_mail(subject, message, fail_silently=True, html_message=html_message)
 
     def send_mail(self, subject, message, *args, **kwargs):
-        mail.mail_admins(
-            subject, message, *args, connection=self.connection(), **kwargs
-        )
+        try:
+            from djorm.core import mail
+        except ImportError:
+            return
+        mail.mail_admins(subject, message, *args, connection=self.connection(), **kwargs)
 
     def connection(self):
+        try:
+            from djorm.core.mail import get_connection
+        except ImportError:
+            return None
         return get_connection(backend=self.email_backend, fail_silently=True)
 
     def format_subject(self, subject):
@@ -214,6 +221,19 @@ class ServerFormatter(logging.Formatter):
         return self._fmt.find("{server_time}") >= 0
 
 
+class ExceptionReporterFallback:
+    def __init__(self, request, is_email, exc_type, exc_value, tb):
+        self.exc_type = exc_type
+        self.exc_value = exc_value
+        self.tb = tb
+
+    def get_traceback_text(self):
+        return "".join(traceback.format_exception(self.exc_type, self.exc_value, self.tb))
+
+    def get_traceback_html(self):
+        return self.get_traceback_text()
+
+
 def log_response(
     message,
     *args,
@@ -246,8 +266,7 @@ def log_response(
             level = "info"
 
     escaped_args = tuple(
-        a.encode("unicode_escape").decode("ascii") if isinstance(a, str) else a
-        for a in args
+        a.encode("unicode_escape").decode("ascii") if isinstance(a, str) else a for a in args
     )
 
     getattr(logger, level)(

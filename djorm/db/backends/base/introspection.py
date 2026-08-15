@@ -6,8 +6,7 @@ TableInfo = namedtuple("TableInfo", ["name", "type"])
 # Structure returned by the DB-API cursor.description interface (PEP 249)
 FieldInfo = namedtuple(
     "FieldInfo",
-    "name type_code display_size internal_size precision scale null_ok "
-    "default collation",
+    "name type_code display_size internal_size precision scale null_ok default collation",
 )
 
 
@@ -47,9 +46,7 @@ class BaseDatabaseIntrospection:
 
         def get_names(cursor):
             return sorted(
-                ti.name
-                for ti in self.get_table_list(cursor)
-                if include_views or ti.type == "t"
+                ti.name for ti in self.get_table_list(cursor) if include_views or ti.type == "t"
             )
 
         if cursor is None:
@@ -63,8 +60,7 @@ class BaseDatabaseIntrospection:
         views that exist in the database.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseIntrospection may require a get_table_list() "
-            "method"
+            "subclasses of BaseDatabaseIntrospection may require a get_table_list() method"
         )
 
     def get_table_description(self, cursor, table_name):
@@ -73,8 +69,7 @@ class BaseDatabaseIntrospection:
         interface.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseIntrospection may require a "
-            "get_table_description() method."
+            "subclasses of BaseDatabaseIntrospection may require a get_table_description() method."
         )
 
     def get_migratable_models(self):
@@ -108,9 +103,7 @@ class BaseDatabaseIntrospection:
         tables = list(tables)
         if only_existing:
             existing_tables = set(self.table_names(include_views=include_views))
-            tables = [
-                t for t in tables if self.identifier_converter(t) in existing_tables
-            ]
+            tables = [t for t in tables if self.identifier_converter(t) in existing_tables]
         return tables
 
     def installed_models(self, tables):
@@ -138,9 +131,7 @@ class BaseDatabaseIntrospection:
                 if model._meta.swapped:
                     continue
                 sequence_list.extend(
-                    self.get_sequences(
-                        cursor, model._meta.db_table, model._meta.local_fields
-                    )
+                    self.get_sequences(cursor, model._meta.db_table, model._meta.local_fields)
                 )
                 for f in model._meta.local_many_to_many:
                     # If this is an m2m using an intermediate table,
@@ -159,8 +150,7 @@ class BaseDatabaseIntrospection:
         'name' key can be added if the backend supports named sequences.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseIntrospection may require a get_sequences() "
-            "method"
+            "subclasses of BaseDatabaseIntrospection may require a get_sequences() method"
         )
 
     def get_relations(self, cursor, table_name):
@@ -169,8 +159,7 @@ class BaseDatabaseIntrospection:
         representing all foreign keys in the given table.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseIntrospection may require a "
-            "get_relations() method."
+            "subclasses of BaseDatabaseIntrospection may require a get_relations() method."
         )
 
     def get_primary_key_column(self, cursor, table_name):
@@ -207,6 +196,5 @@ class BaseDatabaseIntrospection:
         if they don't name constraints of a certain type (e.g. SQLite)
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseIntrospection may require a get_constraints() "
-            "method"
+            "subclasses of BaseDatabaseIntrospection may require a get_constraints() method"
         )

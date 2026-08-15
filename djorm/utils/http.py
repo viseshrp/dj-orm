@@ -145,8 +145,7 @@ def parse_http_date_safe(date):
     except Exception:
         pass
 
-
-# Base 36 functions: useful for generating compact URLs
+        # Base 36 functions: useful for generating compact URLs
 
 
 def base36_to_int(s):
@@ -234,15 +233,22 @@ def is_same_domain(host, pattern):
         return False
 
     pattern = pattern.lower()
-    return (
-        pattern[0] == "."
-        and (host.endswith(pattern) or host == pattern[1:])
-        or pattern == host
-    )
+    return pattern[0] == "." and (host.endswith(pattern) or host == pattern[1:]) or pattern == host
 
 
 def url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
-    '\n    Return ``True`` if the url uses an allowed host and a safe scheme.\n\n    Always return ``False`` on an empty url.\n\n    If ``require_https`` is ``True``, only \'https\' will be considered a valid\n    scheme, as opposed to \'http\' and \'https\' with the default, ``False``.\n\n    Note: "True" doesn\'t entail that a URL is "safe". It may still be e.g.\n    quoted incorrectly. Ensure to also use djorm.utils.encoding.iri_to_uri()\n    on the path component of untrusted URLs.\n    '
+    """
+    Return ``True`` if the url uses an allowed host and a safe scheme.
+
+    Always return ``False`` on an empty url.
+
+    If ``require_https`` is ``True``, only 'https' will be considered a valid
+    scheme, as opposed to 'http' and 'https' with the default, ``False``.
+
+    Note: "True" doesn't entail that a URL is "safe". It may still be e.g.
+    quoted incorrectly. Ensure to also use djorm.utils.encoding.iri_to_uri()
+    on the path component of untrusted URLs.
+    """
     if url is not None:
         url = url.strip()
     if not url:
@@ -251,8 +257,8 @@ def url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
         allowed_hosts = set()
     elif isinstance(allowed_hosts, str):
         allowed_hosts = {allowed_hosts}
-    # Chrome treats \ completely as / in paths but it could be part of some
-    # basic auth credentials so we need to check both URLs.
+        # Chrome treats \ completely as / in paths but it could be part of some
+        # basic auth credentials so we need to check both URLs.
     return _url_has_allowed_host_and_scheme(
         url, allowed_hosts, require_https=require_https
     ) and _url_has_allowed_host_and_scheme(
@@ -272,15 +278,15 @@ def _url_has_allowed_host_and_scheme(url, allowed_hosts, require_https=False):
         url_info = urlsplit(url)
     except ValueError:  # e.g. invalid IPv6 addresses
         return False
-    # Forbid URLs like http:///example.com - with a scheme, but without a hostname.
-    # In that URL, example.com is not the hostname but, a path component. However,
-    # Chrome will still consider example.com to be the hostname, so we must not
-    # allow this syntax.
+        # Forbid URLs like http:///example.com - with a scheme, but without a hostname.
+        # In that URL, example.com is not the hostname but, a path component. However,
+        # Chrome will still consider example.com to be the hostname, so we must not
+        # allow this syntax.
     if not url_info.netloc and url_info.scheme:
         return False
-    # Forbid URLs that start with control characters. Some browsers (like
-    # Chrome) ignore quite a few control characters at the start of a
-    # URL and might consider the URL as scheme relative.
+        # Forbid URLs that start with control characters. Some browsers (like
+        # Chrome) ignore quite a few control characters at the start of a
+        # URL and might consider the URL as scheme relative.
     if unicodedata.category(url[0])[0] == "C":
         return False
     scheme = url_info.scheme
@@ -359,15 +365,13 @@ def content_disposition_header(as_attachment, filename):
             is_ascii = True
         except UnicodeEncodeError:
             is_ascii = False
-        # Quoted strings can contain horizontal tabs, space characters, and
-        # characters from 0x21 to 0x7e, except 0x22 (`"`) and 0x5C (`\`) which
-        # can still be expressed but must be escaped with their own `\`.
-        # https://datatracker.ietf.org/doc/html/rfc9110#name-quoted-strings
+            # Quoted strings can contain horizontal tabs, space characters, and
+            # characters from 0x21 to 0x7e, except 0x22 (`"`) and 0x5C (`\`) which
+            # can still be expressed but must be escaped with their own `\`.
+            # https://datatracker.ietf.org/doc/html/rfc9110#name-quoted-strings
         quotable_characters = r"^[\t \x21-\x7e]*$"
         if is_ascii and re.match(quotable_characters, filename):
-            file_expr = 'filename="{}"'.format(
-                filename.replace("\\", "\\\\").replace('"', r"\"")
-            )
+            file_expr = 'filename="{}"'.format(filename.replace("\\", "\\\\").replace('"', r"\""))
         else:
             file_expr = "filename*=utf-8''{}".format(quote(filename))
         return f"{disposition}; {file_expr}"

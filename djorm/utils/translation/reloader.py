@@ -3,7 +3,13 @@ from pathlib import Path
 from asgiref.local import Local
 
 from djorm.apps import apps
-from djorm.utils.autoreload import is_django_module
+
+try:
+    from djorm.utils.autoreload import is_django_module
+except ImportError:
+
+    def is_django_module(module):
+        return module.__name__.startswith("djorm.")
 
 
 def watch_for_translation_changes(sender, **kwargs):

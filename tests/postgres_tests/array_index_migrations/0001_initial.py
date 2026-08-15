@@ -27,9 +27,7 @@ class Migration(migrations.Migration):
                 ("char2", models.CharField(max_length=11, db_index=True)),
                 (
                     "text",
-                    djorm.contrib.postgres.fields.ArrayField(
-                        models.TextField(), db_index=True
-                    ),
+                    djorm.contrib.postgres.fields.ArrayField(models.TextField(), db_index=True),
                 ),
             ],
             options={},

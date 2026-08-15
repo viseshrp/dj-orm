@@ -105,15 +105,15 @@ class MigrationGraph:
         afterward.
         """
         if child not in self.nodes:
-            error_message = (
-                "Migration %s dependencies reference nonexistent"
-                " child node %r" % (migration, child)
+            error_message = "Migration %s dependencies reference nonexistent child node %r" % (
+                migration,
+                child,
             )
             self.add_dummy_node(child, migration, error_message)
         if parent not in self.nodes:
-            error_message = (
-                "Migration %s dependencies reference nonexistent"
-                " parent node %r" % (migration, parent)
+            error_message = "Migration %s dependencies reference nonexistent parent node %r" % (
+                migration,
+                parent,
             )
             self.add_dummy_node(parent, migration, error_message)
         self.node_map[child].add_parent(self.node_map[parent])
@@ -169,8 +169,7 @@ class MigrationGraph:
         except KeyError as err:
             raise NodeNotFoundError(
                 "Unable to remove replacement node %r. It was either never added"
-                " to the migration graph, or has been removed already."
-                % (replacement,),
+                " to the migration graph, or has been removed already." % (replacement,),
                 replacement,
             ) from err
         replaced_nodes = set()
@@ -180,8 +179,8 @@ class MigrationGraph:
             if replaced_node:
                 replaced_nodes.add(replaced_node)
                 replaced_nodes_parents |= replaced_node.parents
-        # We're only interested in the latest replaced node, so filter out
-        # replaced nodes that are parents of other replaced nodes.
+                # We're only interested in the latest replaced node, so filter out
+                # replaced nodes that are parents of other replaced nodes.
         replaced_nodes -= replaced_nodes_parents
         for child in replacement_node.children:
             child.parents.remove(replacement_node)
@@ -231,10 +230,7 @@ class MigrationGraph:
                 visited.append(node.key)
             else:
                 stack.append((node, True))
-                stack += [
-                    (n, False)
-                    for n in sorted(node.parents if forwards else node.children)
-                ]
+                stack += [(n, False) for n in sorted(node.parents if forwards else node.children)]
         return visited
 
     def root_nodes(self, app=None):
@@ -281,9 +277,7 @@ class MigrationGraph:
                     node = child.key
                     if node in stack:
                         cycle = stack[stack.index(node) :]
-                        raise CircularDependencyError(
-                            ", ".join("%s.%s" % n for n in cycle)
-                        )
+                        raise CircularDependencyError(", ".join("%s.%s" % n for n in cycle))
                     if node in todo:
                         stack.append(node)
                         todo.remove(node)
@@ -299,9 +293,7 @@ class MigrationGraph:
         return "<%s: nodes=%s, edges=%s>" % (self.__class__.__name__, nodes, edges)
 
     def _nodes_and_edges(self):
-        return len(self.nodes), sum(
-            len(node.parents) for node in self.node_map.values()
-        )
+        return len(self.nodes), sum(len(node.parents) for node in self.node_map.values())
 
     def _generate_plan(self, nodes, at_end):
         plan = []

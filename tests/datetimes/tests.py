@@ -78,9 +78,7 @@ class DateTimesTests(TestCase):
                 datetime.datetime(2010, 7, 28),
             ],
         )
-        self.assertSequenceEqual(
-            Article.objects.datetimes("comments__approval_date", "day"), []
-        )
+        self.assertSequenceEqual(Article.objects.datetimes("comments__approval_date", "day"), [])
         self.assertSequenceEqual(
             Category.objects.datetimes("articles__pub_date", "day"),
             [
@@ -154,8 +152,8 @@ class DateTimesTests(TestCase):
         ]
         for i, pub_date in enumerate(pub_dates):
             Article(pub_date=pub_date, title="title #{}".format(i)).save()
-        # Use iterator() with datetimes() to return a generator that lazily
-        # requests each result one at a time, to save memory.
+            # Use iterator() with datetimes() to return a generator that lazily
+            # requests each result one at a time, to save memory.
         dates = []
         with self.assertNumQueries(0):
             article_datetimes_iterator = Article.objects.datetimes(
@@ -188,10 +186,7 @@ class DateTimesTests(TestCase):
             list(Article.objects.datetimes("published_on", "second"))
 
     def test_datetimes_fails_when_given_invalid_kind_argument(self):
-        msg = (
-            "'kind' must be one of 'year', 'month', 'week', 'day', 'hour', "
-            "'minute', or 'second'."
-        )
+        msg = "'kind' must be one of 'year', 'month', 'week', 'day', 'hour', 'minute', or 'second'."
         with self.assertRaisesMessage(ValueError, msg):
             Article.objects.datetimes("pub_date", "bad_kind")
 

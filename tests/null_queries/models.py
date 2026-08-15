@@ -9,8 +9,7 @@ class Choice(models.Model):
     poll = models.ForeignKey(Poll, models.CASCADE)
     choice = models.CharField(max_length=200)
 
-
-# A set of models with an inner one pointing to two outer ones.
+    # A set of models with an inner one pointing to two outer ones.
 
 
 class OuterA(models.Model):

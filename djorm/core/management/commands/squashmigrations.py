@@ -15,8 +15,7 @@ from djorm.utils.version import get_docs_version
 
 class Command(BaseCommand):
     help = (
-        "Squashes an existing set of migrations (from first until specified) into a "
-        "single new one."
+        "Squashes an existing set of migrations (from first until specified) into a single new one."
     )
 
     def add_arguments(self, parser):
@@ -27,10 +26,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "start_migration_name",
             nargs="?",
-            help=(
-                "Migrations will be squashed starting from and including this "
-                "migration."
-            ),
+            help=("Migrations will be squashed starting from and including this migration."),
         )
         parser.add_argument(
             "migration_name",
@@ -73,8 +69,8 @@ class Command(BaseCommand):
             apps.get_app_config(app_label)
         except LookupError as err:
             raise CommandError(str(err))
-        # Load the current graph state, check the app and migration they asked
-        # for exists.
+            # Load the current graph state, check the app and migration they asked
+            # for exists.
         loader = MigrationLoader(connections[DEFAULT_DB_ALIAS])
         if app_label not in loader.migrated_apps:
             raise CommandError(
@@ -87,19 +83,13 @@ class Command(BaseCommand):
         # Work out the list of predecessor migrations
         migrations_to_squash = [
             loader.get_migration(al, mn)
-            for al, mn in loader.graph.forwards_plan(
-                (migration.app_label, migration.name)
-            )
+            for al, mn in loader.graph.forwards_plan((migration.app_label, migration.name))
             if al == migration.app_label
         ]
 
         if start_migration_name:
-            start_migration = self.find_migration(
-                loader, app_label, start_migration_name
-            )
-            start = loader.get_migration(
-                start_migration.app_label, start_migration.name
-            )
+            start_migration = self.find_migration(loader, app_label, start_migration_name)
+            start = loader.get_migration(start_migration.app_label, start_migration.name)
             try:
                 start_index = migrations_to_squash.index(start)
                 migrations_to_squash = migrations_to_squash[start_index:]
@@ -112,11 +102,9 @@ class Command(BaseCommand):
                     "to debug this issue." % (start_migration, migration, app_label)
                 )
 
-        # Tell them what we're doing and optionally ask if we should proceed
+                # Tell them what we're doing and optionally ask if we should proceed
         if self.verbosity > 0 or self.interactive:
-            self.stdout.write(
-                self.style.MIGRATE_HEADING("Will squash the following migrations:")
-            )
+            self.stdout.write(self.style.MIGRATE_HEADING("Will squash the following migrations:"))
             for migration in migrations_to_squash:
                 self.stdout.write(" - %s" % migration.name)
 
@@ -132,9 +120,9 @@ class Command(BaseCommand):
                 if answer != "y":
                     return
 
-        # Load the operations from all those migrations and concat together,
-        # along with collecting external dependencies and detecting
-        # double-squashing
+                    # Load the operations from all those migrations and concat together,
+                    # along with collecting external dependencies and detecting
+                    # double-squashing
         operations = []
         dependencies = set()
         # We need to take all dependencies from the first migration in the list
@@ -160,9 +148,7 @@ class Command(BaseCommand):
 
         if no_optimize:
             if self.verbosity > 0:
-                self.stdout.write(
-                    self.style.MIGRATE_HEADING("(Skipping optimization.)")
-                )
+                self.stdout.write(self.style.MIGRATE_HEADING("(Skipping optimization.)"))
             new_operations = operations
         else:
             if self.verbosity > 0:
@@ -180,8 +166,8 @@ class Command(BaseCommand):
                         % (len(operations), len(new_operations))
                     )
 
-        # Work out the value of replaces (any squashed ones we're re-squashing)
-        # need to feed their replaces into ours
+                    # Work out the value of replaces (any squashed ones we're re-squashing)
+                    # need to feed their replaces into ours
         replaces = []
         for migration in migrations_to_squash:
             if migration.replaces:
@@ -189,7 +175,7 @@ class Command(BaseCommand):
             else:
                 replaces.append((migration.app_label, migration.name))
 
-        # Make a new migration with those operations
+                # Make a new migration with those operations
         subclass = type(
             "Migration",
             (migrations.Migration,),
@@ -213,7 +199,7 @@ class Command(BaseCommand):
             new_migration = subclass(name, app_label)
             new_migration.initial = True
 
-        # Write out the new migration file
+            # Write out the new migration file
         writer = MigrationWriter(new_migration, include_header)
         if os.path.exists(writer.path):
             raise CommandError(
@@ -225,10 +211,7 @@ class Command(BaseCommand):
 
         if self.verbosity > 0:
             self.stdout.write(
-                self.style.MIGRATE_HEADING(
-                    "Created new squashed migration %s" % writer.path
-                )
-                + "\n"
+                self.style.MIGRATE_HEADING("Created new squashed migration %s" % writer.path) + "\n"
                 "  You should commit this migration but leave the old ones in place;\n"
                 "  the new migration will be used for new installs. Once you are sure\n"
                 "  all instances of the codebase have applied the migrations you "
@@ -262,6 +245,5 @@ class Command(BaseCommand):
             )
         except KeyError:
             raise CommandError(
-                "Cannot find a migration matching '%s' from app '%s'."
-                % (name, app_label)
+                "Cannot find a migration matching '%s' from app '%s'." % (name, app_label)
             )

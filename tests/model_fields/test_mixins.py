@@ -23,15 +23,17 @@ class FieldCacheMixinTests(SimpleTestCase):
         self.instance = Foo()
         self.field = Example()
 
-    # RemovedInDjango60Warning: when the deprecation ends, replace with:
-    # def test_cache_name_not_implemented(self):
-    #   with self.assertRaises(NotImplementedError):
-    #       FieldCacheMixin().cache_name
+        # RemovedInDjango60Warning: when the deprecation ends, replace with:
+        # def test_cache_name_not_implemented(self):
+        #   with self.assertRaises(NotImplementedError):
+        #       FieldCacheMixin().cache_name
+
     def test_get_cache_name_not_implemented(self):
         with self.assertRaises(NotImplementedError):
             FieldCacheMixin().get_cache_name()
 
-    # RemovedInDjango60Warning.
+            # RemovedInDjango60Warning.
+
     def test_get_cache_name_deprecated(self):
         msg = "Override ExampleOld.cache_name instead of get_cache_name()."
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:

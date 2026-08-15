@@ -19,15 +19,13 @@ class QuerySetIteratorTests(TestCase):
     def test_iterator_invalid_chunk_size(self):
         for size in (0, -1):
             with self.subTest(size=size):
-                with self.assertRaisesMessage(
-                    ValueError, "Chunk size must be strictly positive."
-                ):
+                with self.assertRaisesMessage(ValueError, "Chunk size must be strictly positive."):
                     Article.objects.iterator(chunk_size=size)
 
     def test_default_iterator_chunk_size(self):
         qs = Article.objects.iterator()
         with mock.patch(
-            'djorm.db.models.sql.compiler.cursor_iter', side_effect=cursor_iter
+            "djorm.db.models.sql.compiler.cursor_iter", side_effect=cursor_iter
         ) as cursor_iter_mock:
             next(qs)
         self.assertEqual(cursor_iter_mock.call_count, 1)
@@ -38,7 +36,7 @@ class QuerySetIteratorTests(TestCase):
         batch_size = 3
         qs = Article.objects.iterator(chunk_size=batch_size)
         with mock.patch(
-            'djorm.db.models.sql.compiler.cursor_iter', side_effect=cursor_iter
+            "djorm.db.models.sql.compiler.cursor_iter", side_effect=cursor_iter
         ) as cursor_iter_mock:
             next(qs)
         self.assertEqual(cursor_iter_mock.call_count, 1)

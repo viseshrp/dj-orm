@@ -42,9 +42,7 @@ class CustomManyToManyField(RelatedField):
             related_query_name=related_query_name,
             limit_choices_to=limit_choices_to,
             symmetrical=(
-                symmetrical
-                if symmetrical is not None
-                else (to == RECURSIVE_RELATIONSHIP_CONSTANT)
+                symmetrical if symmetrical is not None else (to == RECURSIVE_RELATIONSHIP_CONSTANT)
             ),
             through=through,
             through_fields=through_fields,
@@ -53,9 +51,7 @@ class CustomManyToManyField(RelatedField):
         self.swappable = swappable
         self.db_table = db_table
         if kwargs["rel"].through is not None and self.db_table is not None:
-            raise ValueError(
-                "Cannot specify a db_table if an intermediary model is used."
-            )
+            raise ValueError("Cannot specify a db_table if an intermediary model is used.")
         super().__init__(
             related_name=related_name,
             related_query_name=related_query_name,
@@ -65,29 +61,21 @@ class CustomManyToManyField(RelatedField):
 
     def contribute_to_class(self, cls, name, **kwargs):
         if self.remote_field.symmetrical and (
-            self.remote_field.model == "self"
-            or self.remote_field.model == cls._meta.object_name
+            self.remote_field.model == "self" or self.remote_field.model == cls._meta.object_name
         ):
             self.remote_field.related_name = "%s_rel_+" % name
         super().contribute_to_class(cls, name, **kwargs)
-        if (
-            not self.remote_field.through
-            and not cls._meta.abstract
-            and not cls._meta.swapped
-        ):
-            self.remote_field.through = create_many_to_many_intermediary_model(
-                self, cls
-            )
+        if not self.remote_field.through and not cls._meta.abstract and not cls._meta.swapped:
+            self.remote_field.through = create_many_to_many_intermediary_model(self, cls)
         setattr(cls, self.name, ManyToManyDescriptor(self.remote_field))
         self.m2m_db_table = partial(self._get_m2m_db_table, cls._meta)
 
     def get_internal_type(self):
         return "ManyToManyField"
 
-    # Copy those methods from ManyToManyField because they don't call super() internally
-    contribute_to_related_class = models.ManyToManyField.__dict__[
-        "contribute_to_related_class"
-    ]
+        # Copy those methods from ManyToManyField because they don't call super() internally
+
+    contribute_to_related_class = models.ManyToManyField.__dict__["contribute_to_related_class"]
     _get_m2m_attr = models.ManyToManyField.__dict__["_get_m2m_attr"]
     _get_m2m_reverse_attr = models.ManyToManyField.__dict__["_get_m2m_reverse_attr"]
     _get_m2m_db_table = models.ManyToManyField.__dict__["_get_m2m_db_table"]

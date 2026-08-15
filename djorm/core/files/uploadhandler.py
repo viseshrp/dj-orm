@@ -81,9 +81,7 @@ class FileUploadHandler:
         self.content_type_extra = None
         self.request = request
 
-    def handle_raw_input(
-        self, input_data, META, content_length, boundary, encoding=None
-    ):
+    def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
         """
         Handle the raw input from the client.
 
@@ -195,9 +193,7 @@ class MemoryFileUploadHandler(FileUploadHandler):
     File upload handler to stream uploads into memory (used for small files).
     """
 
-    def handle_raw_input(
-        self, input_data, META, content_length, boundary, encoding=None
-    ):
+    def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
         """
         Use the content_length to signal whether or not this handler should be
         used.
@@ -252,5 +248,16 @@ class MemoryFileUploadHandler(FileUploadHandler):
 
 
 def load_handler(path, *args, **kwargs):
-    "\n    Given a path to a handler, return an instance of that handler.\n\n    E.g.::\n        >>> from djorm.http import HttpRequest\n        >>> request = HttpRequest()\n        >>> load_handler(\n        ...     'djorm.core.files.uploadhandler.TemporaryFileUploadHandler',\n        ...     request,\n        ... )\n        <TemporaryFileUploadHandler object at 0x...>\n    "
+    """
+    Given a path to a handler, return an instance of that handler.
+
+    E.g.::
+        >>> from djorm.http import HttpRequest
+        >>> request = HttpRequest()
+        >>> load_handler(
+        ...     'djorm.core.files.uploadhandler.TemporaryFileUploadHandler',
+        ...     request,
+        ... )
+        <TemporaryFileUploadHandler object at 0x...>
+    """
     return import_string(path)(*args, **kwargs)

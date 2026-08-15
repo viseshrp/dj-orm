@@ -351,10 +351,10 @@ class DeletionTests(TestCase):
         s = S.objects.create(r=R.objects.create())
         for i in range(2 * GET_ITERATOR_CHUNK_SIZE):
             T.objects.create(s=s)
-        #   1 (select related `T` instances)
-        # + 1 (select related `U` instances)
-        # + 2 (delete `T` instances in batches)
-        # + 1 (delete `s`)
+            #   1 (select related `T` instances)
+            # + 1 (select related `U` instances)
+            # + 2 (delete `T` instances in batches)
+            # + 1 (delete `s`)
         self.assertNumQueries(5, s.delete)
         self.assertFalse(S.objects.exists())
 
@@ -576,9 +576,7 @@ class DeletionTests(TestCase):
         QuerySet.delete() should return the number of deleted rows and a
         dictionary with the number of deletions for each object type.
         """
-        Avatar.objects.bulk_create(
-            [Avatar(desc="a"), Avatar(desc="b"), Avatar(desc="c")]
-        )
+        Avatar.objects.bulk_create([Avatar(desc="a"), Avatar(desc="b"), Avatar(desc="c")])
         avatars_count = Avatar.objects.count()
         deleted, rows_count = Avatar.objects.all().delete()
         self.assertEqual(deleted, avatars_count)
@@ -661,7 +659,8 @@ class DeletionTests(TestCase):
         def receiver(instance, **kwargs):
             pass
 
-        # All fields are selected if deletion signals are connected.
+            # All fields are selected if deletion signals are connected.
+
         for signal_name in ("pre_delete", "post_delete"):
             with self.subTest(signal=signal_name):
                 origin = Origin.objects.create()

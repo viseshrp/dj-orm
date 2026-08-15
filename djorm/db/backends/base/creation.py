@@ -29,9 +29,7 @@ class BaseDatabaseCreation:
     def log(self, msg):
         sys.stderr.write(msg + os.linesep)
 
-    def create_test_db(
-        self, verbosity=1, autoclobber=False, serialize=True, keepdb=False
-    ):
+    def create_test_db(self, verbosity=1, autoclobber=False, serialize=True, keepdb=False):
         """
         Create a test database, prompting the user for confirmation if the
         database already exists. Return the name of the test database created.
@@ -54,11 +52,11 @@ class BaseDatabaseCreation:
                 )
             )
 
-        # We could skip this call if keepdb is True, but we instead
-        # give it the keepdb param. This is to handle the case
-        # where the test DB doesn't exist, in which case we need to
-        # create it, then just not destroy it. If we instead skip
-        # this, we will get an exception.
+            # We could skip this call if keepdb is True, but we instead
+            # give it the keepdb param. This is to handle the case
+            # where the test DB doesn't exist, in which case we need to
+            # create it, then just not destroy it. If we instead skip
+            # this, we will get an exception.
         self._create_test_db(verbosity, autoclobber, keepdb)
 
         self.connection.close()
@@ -69,12 +67,10 @@ class BaseDatabaseCreation:
             if self.connection.settings_dict["TEST"]["MIGRATE"] is False:
                 # Disable migrations for all apps.
                 old_migration_modules = settings.MIGRATION_MODULES
-                settings.MIGRATION_MODULES = {
-                    app.label: None for app in apps.get_app_configs()
-                }
-            # We report migrate messages at one level lower than that
-            # requested. This ensures we don't get flooded with messages during
-            # testing (unless you really ask to be flooded).
+                settings.MIGRATION_MODULES = {app.label: None for app in apps.get_app_configs()}
+                # We report migrate messages at one level lower than that
+                # requested. This ensures we don't get flooded with messages during
+                # testing (unless you really ask to be flooded).
             call_command(
                 "migrate",
                 verbosity=max(verbosity - 1, 0),
@@ -86,14 +82,12 @@ class BaseDatabaseCreation:
             if self.connection.settings_dict["TEST"]["MIGRATE"] is False:
                 settings.MIGRATION_MODULES = old_migration_modules
 
-        # We then serialize the current state of the database into a string
-        # and store it on the connection. This slightly horrific process is so people
-        # who are testing on databases without transactions or who are using
-        # a TransactionTestCase still get a clean database on every test run.
+                # We then serialize the current state of the database into a string
+                # and store it on the connection. This slightly horrific process is so people
+                # who are testing on databases without transactions or who are using
+                # a TransactionTestCase still get a clean database on every test run.
         if serialize:
             self.connection._test_serialized_contents = self.serialize_db_to_string()
-
-        call_command("createcachetable", database=self.connection.alias)
 
         # Ensure a connection for the side effect of initializing the test database.
         self.connection.ensure_connection()
@@ -129,18 +123,17 @@ class BaseDatabaseCreation:
                     and app_config.name not in settings.TEST_NON_SERIALIZED_APPS
                 ):
                     for model in app_config.get_models():
-                        if model._meta.can_migrate(
-                            self.connection
-                        ) and router.allow_migrate_model(self.connection.alias, model):
+                        if model._meta.can_migrate(self.connection) and router.allow_migrate_model(
+                            self.connection.alias, model
+                        ):
                             queryset = model._base_manager.using(
                                 self.connection.alias,
                             ).order_by(model._meta.pk.name)
-                            chunk_size = (
-                                2000 if queryset._prefetch_related_lookups else None
-                            )
+                            chunk_size = 2000 if queryset._prefetch_related_lookups else None
                             yield from queryset.iterator(chunk_size=chunk_size)
 
-        # Serialize to a string
+                            # Serialize to a string
+
         out = StringIO()
         serializers.serialize("json", get_objects(), indent=None, stream=out)
         return out.getvalue()
@@ -157,13 +150,11 @@ class BaseDatabaseCreation:
             # Disable constraint checks, because some databases (MySQL) doesn't
             # support deferred checks.
             with self.connection.constraint_checks_disabled():
-                for obj in serializers.deserialize(
-                    "json", data, using=self.connection.alias
-                ):
+                for obj in serializers.deserialize("json", data, using=self.connection.alias):
                     obj.save()
                     table_names.add(obj.object.__class__._meta.db_table)
-            # Manually check for any invalid keys that might have been added,
-            # because constraint checks were disabled.
+                    # Manually check for any invalid keys that might have been added,
+                    # because constraint checks were disabled.
             self.connection.check_constraints(table_names=table_names)
 
     def _get_database_display_str(self, verbosity, database_name):
@@ -219,11 +210,7 @@ class BaseDatabaseCreation:
                         if verbosity >= 1:
                             self.log(
                                 "Destroying old test database for alias %s..."
-                                % (
-                                    self._get_database_display_str(
-                                        verbosity, test_database_name
-                                    ),
-                                )
+                                % (self._get_database_display_str(verbosity, test_database_name),)
                             )
                         cursor.execute("DROP DATABASE %(dbname)s" % test_db_params)
                         self._execute_create_test_db(cursor, test_db_params, keepdb)
@@ -254,8 +241,8 @@ class BaseDatabaseCreation:
                 )
             )
 
-        # We could skip this call if keepdb is True, but we instead
-        # give it the keepdb param. See create_test_db for details.
+            # We could skip this call if keepdb is True, but we instead
+            # give it the keepdb param. See create_test_db for details.
         self._clone_test_db(suffix, verbosity, keepdb)
 
     def get_test_db_clone_settings(self, suffix):
@@ -280,9 +267,7 @@ class BaseDatabaseCreation:
             "Disable the option to run tests in parallel processes."
         )
 
-    def destroy_test_db(
-        self, old_database_name=None, verbosity=1, keepdb=False, suffix=None
-    ):
+    def destroy_test_db(self, old_database_name=None, verbosity=1, keepdb=False, suffix=None):
         """
         Destroy a test database, prompting the user for confirmation if the
         database already exists.
@@ -305,12 +290,12 @@ class BaseDatabaseCreation:
                 )
             )
 
-        # if we want to preserve the database
-        # skip the actual destroying piece.
+            # if we want to preserve the database
+            # skip the actual destroying piece.
         if not keepdb:
             self._destroy_test_db(test_database_name, verbosity)
 
-        # Restore the original database name
+            # Restore the original database name
         if old_database_name is not None:
             settings.DATABASES[self.connection.alias]["NAME"] = old_database_name
             self.connection.settings_dict["NAME"] = old_database_name
@@ -324,9 +309,7 @@ class BaseDatabaseCreation:
         # to do so, because it's not allowed to delete a database while being
         # connected to it.
         with self._nodb_cursor() as cursor:
-            cursor.execute(
-                "DROP DATABASE %s" % self.connection.ops.quote_name(test_database_name)
-            )
+            cursor.execute("DROP DATABASE %s" % self.connection.ops.quote_name(test_database_name))
 
     def mark_expected_failures_and_skips(self):
         """

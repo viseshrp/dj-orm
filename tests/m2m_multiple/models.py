@@ -23,12 +23,8 @@ class Category(models.Model):
 class Article(models.Model):
     headline = models.CharField(max_length=50)
     pub_date = models.DateTimeField()
-    primary_categories = models.ManyToManyField(
-        Category, related_name="primary_article_set"
-    )
-    secondary_categories = models.ManyToManyField(
-        Category, related_name="secondary_article_set"
-    )
+    primary_categories = models.ManyToManyField(Category, related_name="primary_article_set")
+    secondary_categories = models.ManyToManyField(Category, related_name="secondary_article_set")
 
     class Meta:
         ordering = ("pub_date",)

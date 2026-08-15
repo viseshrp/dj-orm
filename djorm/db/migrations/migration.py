@@ -7,7 +7,22 @@ from .exceptions import IrreversibleError
 
 
 class Migration:
-    '\n    The base class for all migrations.\n\n    Migration files will import this from djorm.db.migrations.Migration\n    and subclass it as a class called Migration. It will have one or more\n    of the following attributes:\n\n     - operations: A list of Operation instances, probably from\n       djorm.db.migrations.operations\n     - dependencies: A list of tuples of (app_path, migration_name)\n     - run_before: A list of tuples of (app_path, migration_name)\n     - replaces: A list of migration_names\n\n    Note that all migrations come out of migrations and into the Loader or\n    Graph as instances, having been initialized with their app label and name.\n    '
+    """
+    The base class for all migrations.
+
+    Migration files will import this from djorm.db.migrations.Migration
+    and subclass it as a class called Migration. It will have one or more
+    of the following attributes:
+
+     - operations: A list of Operation instances, probably from
+       djorm.db.migrations.operations
+     - dependencies: A list of tuples of (app_path, migration_name)
+     - run_before: A list of tuples of (app_path, migration_name)
+     - replaces: A list of migration_names
+
+    Note that all migrations come out of migrations and into the Loader or
+    Graph as instances, having been initialized with their app label and name.
+    """
 
     # Operations to apply during this migration, in order.
     operations = []
@@ -93,18 +108,14 @@ class Migration:
                 schema_editor.collected_sql.append("-- %s" % operation.describe())
                 schema_editor.collected_sql.append("--")
                 if not operation.reduces_to_sql:
-                    schema_editor.collected_sql.append(
-                        "-- THIS OPERATION CANNOT BE WRITTEN AS SQL"
-                    )
+                    schema_editor.collected_sql.append("-- THIS OPERATION CANNOT BE WRITTEN AS SQL")
                     continue
                 collected_sql_before = len(schema_editor.collected_sql)
-            # Save the state before the operation has run
+                # Save the state before the operation has run
             old_state = project_state.clone()
             operation.state_forwards(self.app_label, project_state)
             # Run the operation
-            atomic_operation = operation.atomic or (
-                self.atomic and operation.atomic is not False
-            )
+            atomic_operation = operation.atomic or (self.atomic and operation.atomic is not False)
             if not schema_editor.atomic_migration and atomic_operation:
                 # Force a transaction on a non-transactional-DDL backend or an
                 # atomic operation inside a non-atomic migration.
@@ -114,9 +125,7 @@ class Migration:
                     )
             else:
                 # Normal behaviour
-                operation.database_forwards(
-                    self.app_label, schema_editor, old_state, project_state
-                )
+                operation.database_forwards(self.app_label, schema_editor, old_state, project_state)
             if collect_sql and collected_sql_before == len(schema_editor.collected_sql):
                 schema_editor.collected_sql.append("-- (no-op)")
         return project_state
@@ -141,31 +150,25 @@ class Migration:
         for operation in self.operations:
             # If it's irreversible, error out
             if not operation.reversible:
-                raise IrreversibleError(
-                    "Operation %s in %s is not reversible" % (operation, self)
-                )
-            # Preserve new state from previous run to not tamper the same state
-            # over all operations
+                raise IrreversibleError("Operation %s in %s is not reversible" % (operation, self))
+                # Preserve new state from previous run to not tamper the same state
+                # over all operations
             new_state = new_state.clone()
             old_state = new_state.clone()
             operation.state_forwards(self.app_label, new_state)
             to_run.insert(0, (operation, old_state, new_state))
 
-        # Phase 2
+            # Phase 2
         for operation, to_state, from_state in to_run:
             if collect_sql:
                 schema_editor.collected_sql.append("--")
                 schema_editor.collected_sql.append("-- %s" % operation.describe())
                 schema_editor.collected_sql.append("--")
                 if not operation.reduces_to_sql:
-                    schema_editor.collected_sql.append(
-                        "-- THIS OPERATION CANNOT BE WRITTEN AS SQL"
-                    )
+                    schema_editor.collected_sql.append("-- THIS OPERATION CANNOT BE WRITTEN AS SQL")
                     continue
                 collected_sql_before = len(schema_editor.collected_sql)
-            atomic_operation = operation.atomic or (
-                self.atomic and operation.atomic is not False
-            )
+            atomic_operation = operation.atomic or (self.atomic and operation.atomic is not False)
             if not schema_editor.atomic_migration and atomic_operation:
                 # Force a transaction on a non-transactional-DDL backend or an
                 # atomic operation inside a non-atomic migration.
@@ -175,9 +178,7 @@ class Migration:
                     )
             else:
                 # Normal behaviour
-                operation.database_backwards(
-                    self.app_label, schema_editor, from_state, to_state
-                )
+                operation.database_backwards(self.app_label, schema_editor, from_state, to_state)
             if collect_sql and collected_sql_before == len(schema_editor.collected_sql):
                 schema_editor.collected_sql.append("-- (no-op)")
         return project_state

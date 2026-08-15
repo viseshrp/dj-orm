@@ -48,13 +48,9 @@ class BinaryFieldTests(TestCase):
     def test_filter_bytearray(self):
         dm = DataModel.objects.create(data=self.binary_data)
         DataModel.objects.create(data=b"\xef\xbb\xbf")
-        self.assertSequenceEqual(
-            DataModel.objects.filter(data=bytearray(self.binary_data)), [dm]
-        )
+        self.assertSequenceEqual(DataModel.objects.filter(data=bytearray(self.binary_data)), [dm])
 
     def test_filter_memoryview(self):
         dm = DataModel.objects.create(data=self.binary_data)
         DataModel.objects.create(data=b"\xef\xbb\xbf")
-        self.assertSequenceEqual(
-            DataModel.objects.filter(data=memoryview(self.binary_data)), [dm]
-        )
+        self.assertSequenceEqual(DataModel.objects.filter(data=memoryview(self.binary_data)), [dm])

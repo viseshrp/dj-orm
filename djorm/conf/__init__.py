@@ -1,4 +1,10 @@
-'\nSettings and configuration for Django.\n\nRead values from the module specified by the DJANGO_SETTINGS_MODULE environment\nvariable, and then from djorm.conf.global_settings; see the global_settings.py\nfor a list of all possible variables.\n'
+"""
+Settings and configuration for Django.
+
+Read values from the module specified by the DJANGO_SETTINGS_MODULE environment
+variable, and then from djorm.conf.global_settings; see the global_settings.py
+for a list of all possible variables.
+"""
 
 import importlib
 import os
@@ -125,12 +131,9 @@ class LazySettings(LazyObject):
         Useful when the app is being served at a subpath and manually prefixing
         subpath to STATIC_URL and MEDIA_URL in settings is inconvenient.
         """
-        # Don't apply prefix to absolute paths and URLs.
-        if value.startswith(("http://", "https://", "/")):
-            return value
-        from djorm.urls import get_script_prefix
+        from djorm._ext.setup_helpers import add_script_prefix_if_available
 
-        return "%s%s" % (get_script_prefix(), value)
+        return add_script_prefix_if_available(value)
 
     @property
     def configured(self):
@@ -154,7 +157,7 @@ class Settings:
             if setting.isupper():
                 setattr(self, setting, getattr(global_settings, setting))
 
-        # store the settings module in case someone later cares
+                # store the settings module in case someone later cares
         self.SETTINGS_MODULE = settings_module
 
         mod = importlib.import_module(self.SETTINGS_MODULE)
@@ -171,9 +174,7 @@ class Settings:
             if setting.isupper():
                 setting_value = getattr(mod, setting)
 
-                if setting in tuple_settings and not isinstance(
-                    setting_value, (list, tuple)
-                ):
+                if setting in tuple_settings and not isinstance(setting_value, (list, tuple)):
                     raise ImproperlyConfigured(
                         "The %s setting must be a list or a tuple." % setting
                     )
@@ -193,8 +194,8 @@ class Settings:
             zone_info_file = zoneinfo_root.joinpath(*self.TIME_ZONE.split("/"))
             if zoneinfo_root.exists() and not zone_info_file.exists():
                 raise ValueError("Incorrect timezone setting: %s" % self.TIME_ZONE)
-            # Move the time zone info into os.environ. See ticket #2315 for why
-            # we don't do this unconditionally (breaks Windows).
+                # Move the time zone info into os.environ. See ticket #2315 for why
+                # we don't do this unconditionally (breaks Windows).
             os.environ["TZ"] = self.TIME_ZONE
             time.tzset()
 
@@ -244,17 +245,13 @@ class UserSettingsHolder:
 
     def __dir__(self):
         return sorted(
-            s
-            for s in [*self.__dict__, *dir(self.default_settings)]
-            if s not in self._deleted
+            s for s in [*self.__dict__, *dir(self.default_settings)] if s not in self._deleted
         )
 
     def is_overridden(self, setting):
         deleted = setting in self._deleted
         set_locally = setting in self.__dict__
-        set_on_default = getattr(
-            self.default_settings, "is_overridden", lambda s: False
-        )(setting)
+        set_on_default = getattr(self.default_settings, "is_overridden", lambda s: False)(setting)
         return deleted or set_locally or set_on_default
 
     def __repr__(self):

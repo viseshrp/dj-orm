@@ -39,9 +39,7 @@ class DeleteQuery(Query):
                 f"{field.attname}__in",
                 pk_list[offset : offset + GET_ITERATOR_CHUNK_SIZE],
             )
-            num_deleted += self.do_query(
-                self.get_meta().db_table, self.where, using=using
-            )
+            num_deleted += self.do_query(self.get_meta().db_table, self.where, using=using)
         return num_deleted
 
 
@@ -72,9 +70,7 @@ class UpdateQuery(Query):
         self.add_update_values(values)
         for offset in range(0, len(pk_list), GET_ITERATOR_CHUNK_SIZE):
             self.clear_where()
-            self.add_filter(
-                "pk__in", pk_list[offset : offset + GET_ITERATOR_CHUNK_SIZE]
-            )
+            self.add_filter("pk__in", pk_list[offset : offset + GET_ITERATOR_CHUNK_SIZE])
             self.get_compiler(using).execute_sql(NO_RESULTS)
 
     def add_update_values(self, values):
@@ -86,14 +82,10 @@ class UpdateQuery(Query):
         values_seq = []
         for name, val in values.items():
             field = self.get_meta().get_field(name)
-            direct = (
-                not (field.auto_created and not field.concrete) or not field.concrete
-            )
+            direct = not (field.auto_created and not field.concrete) or not field.concrete
             model = field.model._meta.concrete_model
             if field.name == "pk" and model._meta.is_composite_pk:
-                raise FieldError(
-                    "Composite primary key fields must be updated individually."
-                )
+                raise FieldError("Composite primary key fields must be updated individually.")
             if not direct or (field.is_relation and field.many_to_many):
                 raise FieldError(
                     "Cannot update model field %r (only non-relations and "
@@ -149,9 +141,7 @@ class UpdateQuery(Query):
 class InsertQuery(Query):
     compiler = "SQLInsertCompiler"
 
-    def __init__(
-        self, *args, on_conflict=None, update_fields=None, unique_fields=None, **kwargs
-    ):
+    def __init__(self, *args, on_conflict=None, update_fields=None, unique_fields=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields = []
         self.objs = []

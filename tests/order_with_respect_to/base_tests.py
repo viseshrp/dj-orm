@@ -1,4 +1,7 @@
-"\nThe tests are shared with contenttypes_tests and so shouldn't import or\nreference any models directly. Subclasses should inherit djorm.test.TestCase.\n"
+"""
+The tests are shared with contenttypes_tests and so shouldn't import or
+reference any models directly. Subclasses should inherit djorm.test.TestCase.
+"""
 
 from operator import attrgetter
 
@@ -13,9 +16,7 @@ class BaseOrderWithRespectToTests:
 
     @classmethod
     def setUpTestData(cls):
-        cls.q1 = cls.Question.objects.create(
-            text="Which Beatle starts with the letter 'R'?"
-        )
+        cls.q1 = cls.Question.objects.create(text="Which Beatle starts with the letter 'R'?")
         cls.Answer.objects.create(text="John", question=cls.q1)
         cls.Answer.objects.create(text="Paul", question=cls.q1)
         cls.Answer.objects.create(text="George", question=cls.q1)
@@ -54,9 +55,7 @@ class BaseOrderWithRespectToTests:
         # It doesn't matter which answer we use to check the order, it will
         # always be the same.
         a2 = self.Answer.objects.create(text="Number five", question=self.q1)
-        self.assertEqual(
-            list(a1.question.get_answer_order()), list(a2.question.get_answer_order())
-        )
+        self.assertEqual(list(a1.question.get_answer_order()), list(a2.question.get_answer_order()))
 
     def test_set_order_unrelated_object(self):
         """An answer that's not related isn't updated."""

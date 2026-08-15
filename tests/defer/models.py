@@ -22,9 +22,7 @@ class Primary(models.Model):
 class PrimaryOneToOne(models.Model):
     name = models.CharField(max_length=50)
     value = models.CharField(max_length=50)
-    related = models.OneToOneField(
-        Secondary, models.CASCADE, related_name="primary_o2o"
-    )
+    related = models.OneToOneField(Secondary, models.CASCADE, related_name="primary_o2o")
 
 
 class Child(Primary):

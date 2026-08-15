@@ -32,7 +32,18 @@ def popen_wrapper(args, stdout_encoding="utf-8"):
 
 
 def handle_extensions(extensions):
-    "\n    Organize multiple extensions that are separated with commas or passed by\n    using --extension/-e multiple times.\n\n    For example: running 'djorm makemessages -e js,txt -e xhtml -a'\n    would result in an extension list: ['.js', '.txt', '.xhtml']\n\n    >>> handle_extensions(['.html', 'html,js,py,py,py,.py', 'py,.py'])\n    {'.html', '.js', '.py'}\n    >>> handle_extensions(['.html, txt,.tpl'])\n    {'.html', '.tpl', '.txt'}\n    "
+    """
+    Organize multiple extensions that are separated with commas or passed by
+    using --extension/-e multiple times.
+
+    For example: running 'djorm makemessages -e js,txt -e xhtml -a'
+    would result in an extension list: ['.js', '.txt', '.xhtml']
+
+    >>> handle_extensions(['.html', 'html,js,py,py,py,.py', 'py,.py'])
+    {'.html', '.js', '.py'}
+    >>> handle_extensions(['.html, txt,.tpl'])
+    {'.html', '.tpl', '.txt'}
+    """
     ext_list = []
     for ext in extensions:
         ext_list.extend(ext.replace(" ", "").split(","))
@@ -47,15 +58,15 @@ def find_command(cmd, path=None, pathext=None):
         path = os.environ.get("PATH", "").split(os.pathsep)
     if isinstance(path, str):
         path = [path]
-    # check if there are funny path extensions for executables, e.g. Windows
+        # check if there are funny path extensions for executables, e.g. Windows
     if pathext is None:
         pathext = os.environ.get("PATHEXT", ".COM;.EXE;.BAT;.CMD").split(os.pathsep)
-    # don't use extensions if the command ends with one of them
+        # don't use extensions if the command ends with one of them
     for ext in pathext:
         if cmd.endswith(ext):
             pathext = [""]
             break
-    # check if we find the command on PATH
+            # check if we find the command on PATH
     for p in path:
         f = os.path.join(p, cmd)
         if os.path.isfile(f):
@@ -141,9 +152,7 @@ def is_ignored_path(path, ignore_patterns):
     path = Path(path)
 
     def ignore(pattern):
-        return fnmatch.fnmatchcase(path.name, pattern) or fnmatch.fnmatchcase(
-            str(path), pattern
-        )
+        return fnmatch.fnmatchcase(path.name, pattern) or fnmatch.fnmatchcase(str(path), pattern)
 
     return any(ignore(pattern) for pattern in normalize_path_patterns(ignore_patterns))
 

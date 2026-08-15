@@ -62,7 +62,7 @@ def SET(value):
 
         set_on_delete.lazy_sub_objs = True
 
-    set_on_delete.deconstruct = lambda: ('djorm.db.models.SET', (value,), {})
+    set_on_delete.deconstruct = lambda: ("djorm.db.models.SET", (value,), {})
     return set_on_delete
 
 
@@ -140,9 +140,7 @@ class Collector:
     def add_dependency(self, model, dependency, reverse_dependency=False):
         if reverse_dependency:
             model, dependency = dependency, model
-        self.dependencies[model._meta.concrete_model].add(
-            dependency._meta.concrete_model
-        )
+        self.dependencies[model._meta.concrete_model].add(dependency._meta.concrete_model)
         self.data.setdefault(dependency, self.data.default_factory())
 
     def add_field_update(self, field, value, objs):
@@ -160,8 +158,7 @@ class Collector:
     def clear_restricted_objects_from_set(self, model, objs):
         if model in self.restricted_objects:
             self.restricted_objects[model] = {
-                field: items - objs
-                for field, items in self.restricted_objects[model].items()
+                field: items - objs for field, items in self.restricted_objects[model].items()
             }
 
     def clear_restricted_objects_from_queryset(self, model, qs):
@@ -169,18 +166,14 @@ class Collector:
             objs = set(
                 qs.filter(
                     pk__in=[
-                        obj.pk
-                        for objs in self.restricted_objects[model].values()
-                        for obj in objs
+                        obj.pk for objs in self.restricted_objects[model].values() for obj in objs
                     ]
                 )
             )
             self.clear_restricted_objects_from_set(model, objs)
 
     def _has_signal_listeners(self, model):
-        return signals.pre_delete.has_listeners(
-            model
-        ) or signals.post_delete.has_listeners(model)
+        return signals.pre_delete.has_listeners(model) or signals.post_delete.has_listeners(model)
 
     def can_fast_delete(self, objs, from_field=None):
         """
@@ -203,14 +196,11 @@ class Collector:
             return False
         if self._has_signal_listeners(model):
             return False
-        # The use of from_field comes from the need to avoid cascade back to
-        # parent when parent delete is cascading to child.
+            # The use of from_field comes from the need to avoid cascade back to
+            # parent when parent delete is cascading to child.
         opts = model._meta
         return (
-            all(
-                link == from_field
-                for link in opts.concrete_model._meta.parents.values()
-            )
+            all(link == from_field for link in opts.concrete_model._meta.parents.values())
             and
             # Foreign keys pointing to this model.
             all(
@@ -219,10 +209,7 @@ class Collector:
             )
             and (
                 # Something like generic foreign key.
-                not any(
-                    hasattr(field, "bulk_related_objects")
-                    for field in opts.private_fields
-                )
+                not any(hasattr(field, "bulk_related_objects") for field in opts.private_fields)
             )
         )
 
@@ -230,14 +217,9 @@ class Collector:
         """
         Return the objs in suitably sized batches for the used connection.
         """
-        conn_batch_size = max(
-            connections[self.using].ops.bulk_batch_size(fields, objs), 1
-        )
+        conn_batch_size = max(connections[self.using].ops.bulk_batch_size(fields, objs), 1)
         if len(objs) > conn_batch_size:
-            return [
-                objs[i : i + conn_batch_size]
-                for i in range(0, len(objs), conn_batch_size)
-            ]
+            return [objs[i : i + conn_batch_size] for i in range(0, len(objs), conn_batch_size)]
         else:
             return [objs]
 
@@ -278,9 +260,7 @@ class Collector:
         if self.can_fast_delete(objs):
             self.fast_deletes.append(objs)
             return
-        new_objs = self.add(
-            objs, source, nullable, reverse_dependency=reverse_dependency
-        )
+        new_objs = self.add(objs, source, nullable, reverse_dependency=reverse_dependency)
         if not new_objs:
             return
 
@@ -327,16 +307,11 @@ class Collector:
                 # relationships are select_related as interactions between both
                 # features are hard to get right. This should only happen in
                 # the rare cases where .related_objects is overridden anyway.
-                if not (
-                    sub_objs.query.select_related
-                    or self._has_signal_listeners(related_model)
-                ):
+                if not (sub_objs.query.select_related or self._has_signal_listeners(related_model)):
                     referenced_fields = set(
                         chain.from_iterable(
                             (rf.attname for rf in rel.field.foreign_related_fields)
-                            for rel in get_candidate_relations_to_delete(
-                                related_model._meta
-                            )
+                            for rel in get_candidate_relations_to_delete(related_model._meta)
                         )
                     )
                     sub_objs = sub_objs.only(*tuple(referenced_fields))
@@ -365,9 +340,7 @@ class Collector:
             if hasattr(field, "bulk_related_objects"):
                 # It's something like generic foreign key.
                 sub_objs = field.bulk_related_objects(new_objs, self.using)
-                self.collect(
-                    sub_objs, source=model, nullable=True, fail_on_restricted=False
-                )
+                self.collect(sub_objs, source=model, nullable=True, fail_on_restricted=False)
 
         if fail_on_restricted:
             # Raise an error if collected restricted objects (RESTRICT) aren't
@@ -433,9 +406,9 @@ class Collector:
         for model, instances in self.data.items():
             self.data[model] = sorted(instances, key=attrgetter("pk"))
 
-        # if possible, bring the models in an order suitable for databases that
-        # don't support transactions or cannot defer constraint checks until the
-        # end of a transaction.
+            # if possible, bring the models in an order suitable for databases that
+            # don't support transactions or cannot defer constraint checks until the
+            # end of a transaction.
         self.sort()
         # number of objects deleted for each model label
         deleted_counter = Counter()
@@ -445,9 +418,7 @@ class Collector:
             instance = list(instances)[0]
             if self.can_fast_delete(instance):
                 with transaction.mark_for_rollback_on_error(self.using):
-                    count = sql.DeleteQuery(model).delete_batch(
-                        [instance.pk], self.using
-                    )
+                    count = sql.DeleteQuery(model).delete_batch([instance.pk], self.using)
                 setattr(instance, model._meta.pk.attname, None)
                 return count, {model._meta.label: count}
 
@@ -462,21 +433,18 @@ class Collector:
                         origin=self.origin,
                     )
 
-            # fast deletes
+                    # fast deletes
             for qs in self.fast_deletes:
                 count = qs._raw_delete(using=self.using)
                 if count:
                     deleted_counter[qs.model._meta.label] += count
 
-            # update fields
+                    # update fields
             for (field, value), instances_list in self.field_updates.items():
                 updates = []
                 objs = []
                 for instances in instances_list:
-                    if (
-                        isinstance(instances, models.QuerySet)
-                        and instances._result_cache is None
-                    ):
+                    if isinstance(instances, models.QuerySet) and instances._result_cache is None:
                         updates.append(instances)
                     else:
                         objs.extend(instances)
@@ -490,11 +458,11 @@ class Collector:
                         list({obj.pk for obj in objs}), {field.name: value}, self.using
                     )
 
-            # reverse instance collections
+                    # reverse instance collections
             for instances in self.data.values():
                 instances.reverse()
 
-            # delete instances
+                # delete instances
             for model, instances in self.data.items():
                 query = sql.DeleteQuery(model)
                 pk_list = [obj.pk for obj in instances]

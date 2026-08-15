@@ -51,9 +51,7 @@ class ModelPackageTests(TestCase):
             Article.publications.through._meta.fields[1].get_attname_column(),
             ("article_id", "article_id"),
         )
-        self.assertEqual(
-            Article.publications.through._meta.fields[2].name, "publication"
-        )
+        self.assertEqual(Article.publications.through._meta.fields[2].name, "publication")
         self.assertEqual(
             Article.publications.through._meta.fields[2].get_attname_column(),
             ("publication_id", "publication_id"),
@@ -61,14 +59,10 @@ class ModelPackageTests(TestCase):
 
         self.assertEqual(
             Article._meta.get_field("publications").m2m_db_table(),
-            truncate_name(
-                "model_package_article_publications", connection.ops.max_name_length()
-            ),
+            truncate_name("model_package_article_publications", connection.ops.max_name_length()),
         )
 
-        self.assertEqual(
-            Article._meta.get_field("publications").m2m_column_name(), "article_id"
-        )
+        self.assertEqual(Article._meta.get_field("publications").m2m_column_name(), "article_id")
         self.assertEqual(
             Article._meta.get_field("publications").m2m_reverse_name(), "publication_id"
         )

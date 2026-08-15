@@ -34,9 +34,7 @@ class DBArticle(models.Model):
 
     headline = models.CharField(max_length=100, db_default="Default headline")
     pub_date = models.DateTimeField(db_default=Now())
-    cost = models.DecimalField(
-        max_digits=3, decimal_places=2, db_default=Decimal("3.33")
-    )
+    cost = models.DecimalField(max_digits=3, decimal_places=2, db_default=Decimal("3.33"))
 
     class Meta:
         required_db_features = {"supports_expression_defaults"}
@@ -65,6 +63,4 @@ class DBDefaultsPK(models.Model):
 
 
 class DBDefaultsFK(models.Model):
-    language_code = models.ForeignKey(
-        DBDefaultsPK, db_default="fr", on_delete=models.CASCADE
-    )
+    language_code = models.ForeignKey(DBDefaultsPK, db_default="fr", on_delete=models.CASCADE)

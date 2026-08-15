@@ -35,9 +35,7 @@ class ManyToOneTests(TestCase):
         # Create a few Reporters.
         cls.r = Reporter(first_name="John", last_name="Smith", email="john@example.com")
         cls.r.save()
-        cls.r2 = Reporter(
-            first_name="Paul", last_name="Jones", email="paul@example.com"
-        )
+        cls.r2 = Reporter(first_name="Paul", last_name="Jones", email="paul@example.com")
         cls.r2.save()
         # Create an Article.
         cls.a = Article(
@@ -82,12 +80,9 @@ class ManyToOneTests(TestCase):
         self.assertEqual(new_article.reporter.id, self.r.id)
 
         # Create a new article, and add it to the article set.
-        new_article2 = Article(
-            headline="Paul's story", pub_date=datetime.date(2006, 1, 17)
-        )
+        new_article2 = Article(headline="Paul's story", pub_date=datetime.date(2006, 1, 17))
         msg = (
-            "<Article: Paul's story> instance isn't saved. Use bulk=False or save the "
-            "object first."
+            "<Article: Paul's story> instance isn't saved. Use bulk=False or save the object first."
         )
         with self.assertRaisesMessage(ValueError, msg):
             self.r.article_set.add(new_article2)
@@ -106,9 +101,7 @@ class ManyToOneTests(TestCase):
 
         # Adding an object of the wrong type raises TypeError.
         with transaction.atomic():
-            with self.assertRaisesMessage(
-                TypeError, "'Article' instance expected, got <Reporter:"
-            ):
+            with self.assertRaisesMessage(TypeError, "'Article' instance expected, got <Reporter:"):
                 self.r.article_set.add(self.r2)
         self.assertSequenceEqual(
             self.r.article_set.all(),
@@ -240,18 +233,14 @@ class ManyToOneTests(TestCase):
             self.r.article_set.all(),
             [new_article1, self.a],
         )
-        self.assertSequenceEqual(
-            self.r.article_set.filter(headline__startswith="This"), [self.a]
-        )
+        self.assertSequenceEqual(self.r.article_set.filter(headline__startswith="This"), [self.a])
         self.assertEqual(self.r.article_set.count(), 2)
         self.assertEqual(self.r2.article_set.count(), 1)
         # Get articles by id
         self.assertSequenceEqual(Article.objects.filter(id__exact=self.a.id), [self.a])
         self.assertSequenceEqual(Article.objects.filter(pk=self.a.id), [self.a])
         # Query on an article property
-        self.assertSequenceEqual(
-            Article.objects.filter(headline__startswith="This"), [self.a]
-        )
+        self.assertSequenceEqual(Article.objects.filter(headline__startswith="This"), [self.a])
         # The API automatically follows relationships as far as you need.
         # Use double underscores to separate relationships.
         # This works as many levels deep as you want. There's no limit.
@@ -330,9 +319,7 @@ class ManyToOneTests(TestCase):
         # then converted into a query
         self.assertSequenceEqual(
             Article.objects.filter(
-                reporter__in=Reporter.objects.filter(first_name="John")
-                .values("pk")
-                .query
+                reporter__in=Reporter.objects.filter(first_name="John").values("pk").query
             ).distinct(),
             [new_article1, self.a],
         )
@@ -350,20 +337,12 @@ class ManyToOneTests(TestCase):
         )
         john_smith = [self.r]
         # Reporters can be queried
-        self.assertSequenceEqual(
-            Reporter.objects.filter(id__exact=self.r.id), john_smith
-        )
+        self.assertSequenceEqual(Reporter.objects.filter(id__exact=self.r.id), john_smith)
         self.assertSequenceEqual(Reporter.objects.filter(pk=self.r.id), john_smith)
-        self.assertSequenceEqual(
-            Reporter.objects.filter(first_name__startswith="John"), john_smith
-        )
+        self.assertSequenceEqual(Reporter.objects.filter(first_name__startswith="John"), john_smith)
         # Reporters can query in opposite direction of ForeignKey definition
-        self.assertSequenceEqual(
-            Reporter.objects.filter(article__id__exact=self.a.id), john_smith
-        )
-        self.assertSequenceEqual(
-            Reporter.objects.filter(article__pk=self.a.id), john_smith
-        )
+        self.assertSequenceEqual(Reporter.objects.filter(article__id__exact=self.a.id), john_smith)
+        self.assertSequenceEqual(Reporter.objects.filter(article__pk=self.a.id), john_smith)
         self.assertSequenceEqual(Reporter.objects.filter(article=self.a.id), john_smith)
         self.assertSequenceEqual(Reporter.objects.filter(article=self.a), john_smith)
         self.assertSequenceEqual(
@@ -386,13 +365,9 @@ class ManyToOneTests(TestCase):
         )
 
         # Counting in the opposite direction works in conjunction with distinct()
+        self.assertEqual(Reporter.objects.filter(article__headline__startswith="T").count(), 2)
         self.assertEqual(
-            Reporter.objects.filter(article__headline__startswith="T").count(), 2
-        )
-        self.assertEqual(
-            Reporter.objects.filter(article__headline__startswith="T")
-            .distinct()
-            .count(),
+            Reporter.objects.filter(article__headline__startswith="T").distinct().count(),
             1,
         )
 
@@ -402,9 +377,7 @@ class ManyToOneTests(TestCase):
             [self.r, self.r, self.r],
         )
         self.assertSequenceEqual(
-            Reporter.objects.filter(
-                article__reporter__first_name__startswith="John"
-            ).distinct(),
+            Reporter.objects.filter(article__reporter__first_name__startswith="John").distinct(),
             john_smith,
         )
         self.assertSequenceEqual(
@@ -438,15 +411,9 @@ class ManyToOneTests(TestCase):
         r1 = Reporter.objects.create(
             first_name="Mike", last_name="Royko", email="royko@suntimes.com"
         )
-        r2 = Reporter.objects.create(
-            first_name="John", last_name="Kass", email="jkass@tribune.com"
-        )
-        Article.objects.create(
-            headline="First", pub_date=datetime.date(1980, 4, 23), reporter=r1
-        )
-        Article.objects.create(
-            headline="Second", pub_date=datetime.date(1980, 4, 23), reporter=r2
-        )
+        r2 = Reporter.objects.create(first_name="John", last_name="Kass", email="jkass@tribune.com")
+        Article.objects.create(headline="First", pub_date=datetime.date(1980, 4, 23), reporter=r1)
+        Article.objects.create(headline="Second", pub_date=datetime.date(1980, 4, 23), reporter=r2)
         self.assertEqual(
             list(Article.objects.select_related().dates("pub_date", "day")),
             [datetime.date(1980, 4, 23), datetime.date(2005, 7, 27)],
@@ -530,11 +497,7 @@ class ManyToOneTests(TestCase):
             Article.objects.get(reporter_id=self.r.id)
         self.assertEqual(
             repr(a3),
-            repr(
-                Article.objects.get(
-                    reporter_id=self.r2.id, pub_date=datetime.date(2011, 5, 7)
-                )
-            ),
+            repr(Article.objects.get(reporter_id=self.r2.id, pub_date=datetime.date(2011, 5, 7))),
         )
 
     def test_deepcopy_and_circular_references(self):
@@ -564,19 +527,13 @@ class ManyToOneTests(TestCase):
         self.assertEqual(article.headline, notlazy)
 
     def test_values_list_exception(self):
-        expected_message = (
-            "Cannot resolve keyword 'notafield' into field. Choices are: %s"
-        )
+        expected_message = "Cannot resolve keyword 'notafield' into field. Choices are: %s"
         reporter_fields = ", ".join(sorted(f.name for f in Reporter._meta.get_fields()))
         with self.assertRaisesMessage(FieldError, expected_message % reporter_fields):
             Article.objects.values_list("reporter__notafield")
-        article_fields = ", ".join(
-            ["EXTRA"] + sorted(f.name for f in Article._meta.get_fields())
-        )
+        article_fields = ", ".join(["EXTRA"] + sorted(f.name for f in Article._meta.get_fields()))
         with self.assertRaisesMessage(FieldError, expected_message % article_fields):
-            Article.objects.extra(select={"EXTRA": "EXTRA_SELECT"}).values_list(
-                "notafield"
-            )
+            Article.objects.extra(select={"EXTRA": "EXTRA_SELECT"}).values_list("notafield")
 
     def test_fk_assignment_and_related_object_cache(self):
         # Tests of ForeignKey assignment and the related-object cache (see #6886).
@@ -617,13 +574,12 @@ class ManyToOneTests(TestCase):
 
         # You also can't assign an object of the wrong type here
         msg = (
-            'Cannot assign "<First: First object (1)>": "Child.parent" must '
-            'be a "Parent" instance.'
+            'Cannot assign "<First: First object (1)>": "Child.parent" must be a "Parent" instance.'
         )
         with self.assertRaisesMessage(ValueError, msg):
             setattr(c, "parent", First(id=1, second=1))
 
-        # You can assign None to Child.parent during object creation.
+            # You can assign None to Child.parent during object creation.
         Child(name="xyzzy", parent=None)
 
         # But when trying to save a Child with parent=None, the database will
@@ -631,25 +587,22 @@ class ManyToOneTests(TestCase):
         with self.assertRaises(IntegrityError), transaction.atomic():
             Child.objects.create(name="xyzzy", parent=None)
 
-        # Creation using keyword argument should cache the related object.
+            # Creation using keyword argument should cache the related object.
         p = Parent.objects.get(name="Parent")
         c = Child(parent=p)
         self.assertIs(c.parent, p)
 
         # Creation using keyword argument and unsaved related instance (#8070).
         p = Parent()
-        msg = (
-            "save() prohibited to prevent data loss due to unsaved related object "
-            "'parent'."
-        )
+        msg = "save() prohibited to prevent data loss due to unsaved related object 'parent'."
         with self.assertRaisesMessage(ValueError, msg):
             Child.objects.create(parent=p)
 
         with self.assertRaisesMessage(ValueError, msg):
             ToFieldChild.objects.create(parent=p)
 
-        # Creation using attname keyword argument and an id will cause the
-        # related object to be fetched.
+            # Creation using attname keyword argument and an id will cause the
+            # related object to be fetched.
         p = Parent.objects.get(name="Parent")
         c = Child(parent_id=p.id)
         self.assertIsNot(c.parent, p)
@@ -731,9 +684,9 @@ class ManyToOneTests(TestCase):
         )
         self.assertSequenceEqual(q1, [rel])
 
-        q2 = Category.objects.filter(
-            record__left_set__right__category__name="Second"
-        ).order_by("name")
+        q2 = Category.objects.filter(record__left_set__right__category__name="Second").order_by(
+            "name"
+        )
         self.assertSequenceEqual(q2, [c1, c2])
 
         p = Parent.objects.create(name="Parent")
@@ -759,7 +712,7 @@ class ManyToOneTests(TestCase):
         )
         with self.assertRaisesMessage(ValueError, msg):
             th.child_set.count()
-        # The reverse foreign key manager can be created.
+            # The reverse foreign key manager can be created.
         self.assertEqual(th.child_set.model, Third)
 
         th.save()
@@ -890,10 +843,7 @@ class ManyToOneTests(TestCase):
     def test_get_prefetch_queryset_warning(self):
         City.objects.create(name="Chicago")
         cities = City.objects.all()
-        msg = (
-            "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() "
-            "instead."
-        )
+        msg = "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() instead."
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:
             City.country.get_prefetch_queryset(cities)
         self.assertEqual(ctx.filename, __file__)
@@ -902,10 +852,7 @@ class ManyToOneTests(TestCase):
         usa = Country.objects.create(name="United States")
         City.objects.create(name="Chicago")
         countries = Country.objects.all()
-        msg = (
-            "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() "
-            "instead."
-        )
+        msg = "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() instead."
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:
             usa.cities.get_prefetch_queryset(countries)
         self.assertEqual(ctx.filename, __file__)
@@ -913,9 +860,7 @@ class ManyToOneTests(TestCase):
     def test_get_prefetch_querysets_invalid_querysets_length(self):
         City.objects.create(name="Chicago")
         cities = City.objects.all()
-        msg = (
-            "querysets argument of get_prefetch_querysets() should have a length of 1."
-        )
+        msg = "querysets argument of get_prefetch_querysets() should have a length of 1."
         with self.assertRaisesMessage(ValueError, msg):
             City.country.get_prefetch_querysets(
                 instances=cities,
@@ -926,9 +871,7 @@ class ManyToOneTests(TestCase):
         usa = Country.objects.create(name="United States")
         City.objects.create(name="Chicago")
         countries = Country.objects.all()
-        msg = (
-            "querysets argument of get_prefetch_querysets() should have a length of 1."
-        )
+        msg = "querysets argument of get_prefetch_querysets() should have a length of 1."
         with self.assertRaisesMessage(ValueError, msg):
             usa.cities.get_prefetch_querysets(
                 instances=countries,

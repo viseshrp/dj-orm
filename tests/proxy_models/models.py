@@ -88,8 +88,7 @@ class StatusPerson(MyPerson):
 
     objects = models.Manager()
 
-
-# We can even have proxies of proxies (and subclass of those).
+    # We can even have proxies of proxies (and subclass of those).
 
 
 class MyPersonProxy(MyPerson):
@@ -129,8 +128,7 @@ class MultiUserProxy(UserProxy, AnotherUserProxy):
     class Meta:
         proxy = True
 
-
-# We can still use `select_related()` to include related models in our querysets.
+        # We can still use `select_related()` to include related models in our querysets.
 
 
 class Country(models.Model):
@@ -149,9 +147,8 @@ class StateProxy(State):
     class Meta:
         proxy = True
 
-
-# Proxy models still works with filters (on related fields)
-# and select_related, even when mixed with model inheritance
+        # Proxy models still works with filters (on related fields)
+        # and select_related, even when mixed with model inheritance
 
 
 class BaseUser(models.Model):
@@ -177,9 +174,7 @@ class ProxyTrackerUser(TrackerUser):
 
 class Issue(models.Model):
     summary = models.CharField(max_length=255)
-    assignee = models.ForeignKey(
-        ProxyTrackerUser, models.CASCADE, related_name="issues"
-    )
+    assignee = models.ForeignKey(ProxyTrackerUser, models.CASCADE, related_name="issues")
 
     def __str__(self):
         return ":".join(

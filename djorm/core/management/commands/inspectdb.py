@@ -8,12 +8,11 @@ from djorm.db.models.constants import LOOKUP_SEP
 
 class Command(BaseCommand):
     help = (
-        "Introspects the database tables in the given database and outputs a Django "
-        "model module."
+        "Introspects the database tables in the given database and outputs a Django model module."
     )
     requires_system_checks = []
     stealth_options = ("table_name_filter",)
-    db_module = 'djorm.db'
+    db_module = "djorm.db"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -26,10 +25,7 @@ class Command(BaseCommand):
             "--database",
             default=DEFAULT_DB_ALIAS,
             choices=tuple(connections),
-            help=(
-                'Nominates a database to introspect. Defaults to using the "default" '
-                "database."
-            ),
+            help=('Nominates a database to introspect. Defaults to using the "default" database.'),
         )
         parser.add_argument(
             "--include-partitions",
@@ -48,8 +44,7 @@ class Command(BaseCommand):
                 self.stdout.write(line)
         except NotImplementedError:
             raise CommandError(
-                "Database inspection isn't supported for the currently selected "
-                "database backend."
+                "Database inspection isn't supported for the currently selected database backend."
             )
 
     def handle_inspection(self, options):
@@ -71,8 +66,7 @@ class Command(BaseCommand):
                 "Django to create, modify, and delete the table"
             )
             yield (
-                "# Feel free to rename the models, but don't rename db_table values or "
-                "field names."
+                "# Feel free to rename the models, but don't rename db_table values or field names."
             )
             yield "from %s import models" % self.db_module
             known_models = []
@@ -91,27 +85,18 @@ class Command(BaseCommand):
                         continue
                 try:
                     try:
-                        relations = connection.introspection.get_relations(
-                            cursor, table_name
-                        )
+                        relations = connection.introspection.get_relations(cursor, table_name)
                     except NotImplementedError:
                         relations = {}
                     try:
-                        constraints = connection.introspection.get_constraints(
-                            cursor, table_name
-                        )
+                        constraints = connection.introspection.get_constraints(cursor, table_name)
                     except NotImplementedError:
                         constraints = {}
                     primary_key_columns = (
-                        connection.introspection.get_primary_key_columns(
-                            cursor, table_name
-                        )
-                        or []
+                        connection.introspection.get_primary_key_columns(cursor, table_name) or []
                     )
                     primary_key_column = (
-                        primary_key_columns[0]
-                        if len(primary_key_columns) == 1
-                        else None
+                        primary_key_columns[0] if len(primary_key_columns) == 1 else None
                     )
                     unique_columns = [
                         c["columns"][0]
@@ -140,9 +125,7 @@ class Command(BaseCommand):
                 column_to_field_name = {}  # Maps column names to names of model fields
                 used_relations = set()  # Holds foreign relations used in the table.
                 for row in table_description:
-                    comment_notes = (
-                        []
-                    )  # Holds Field notes, to be displayed in a Python comment.
+                    comment_notes = []  # Holds Field notes, to be displayed in a Python comment.
                     extra_params = {}  # Holds Field parameters such as 'db_column'.
                     column_name = row.name
                     is_relation = column_name in relations
@@ -164,16 +147,12 @@ class Command(BaseCommand):
 
                     if is_relation:
                         ref_db_column, ref_db_table = relations[column_name]
-                        if extra_params.pop("unique", False) or extra_params.get(
-                            "primary_key"
-                        ):
+                        if extra_params.pop("unique", False) or extra_params.get("primary_key"):
                             rel_type = "OneToOneField"
                         else:
                             rel_type = "ForeignKey"
-                            ref_pk_column = (
-                                connection.introspection.get_primary_key_column(
-                                    cursor, ref_db_table
-                                )
+                            ref_pk_column = connection.introspection.get_primary_key_column(
+                                cursor, ref_db_table
                             )
                             if ref_pk_column and ref_pk_column != ref_db_column:
                                 extra_params["to_field"] = ref_db_column
@@ -203,20 +182,19 @@ class Command(BaseCommand):
 
                         field_type += "("
 
-                    # Don't output 'id = meta.AutoField(primary_key=True)', because
-                    # that's assumed if it doesn't exist.
+                        # Don't output 'id = meta.AutoField(primary_key=True)', because
+                        # that's assumed if it doesn't exist.
                     if att_name == "id" and extra_params == {"primary_key": True}:
                         if field_type == "AutoField(":
                             continue
                         elif (
                             field_type
-                            == connection.features.introspected_field_types["AutoField"]
-                            + "("
+                            == connection.features.introspected_field_types["AutoField"] + "("
                         ):
                             comment_notes.append("AutoField?")
 
-                    # Add 'null' and 'blank', if the 'null_ok' flag was present in the
-                    # table description.
+                            # Add 'null' and 'blank', if the 'null_ok' flag was present in the
+                            # table description.
                     if row.null_ok:  # If it's NULL...
                         extra_params["blank"] = True
                         extra_params["null"] = True
@@ -230,16 +208,14 @@ class Command(BaseCommand):
                     if field_type.startswith(("ForeignKey(", "OneToOneField(")):
                         field_desc += ", models.DO_NOTHING"
 
-                    # Add comment.
+                        # Add comment.
                     if connection.features.supports_comments and row.comment:
                         extra_params["db_comment"] = row.comment
 
                     if extra_params:
                         if not field_desc.endswith("("):
                             field_desc += ", "
-                        field_desc += ", ".join(
-                            "%s=%r" % (k, v) for k, v in extra_params.items()
-                        )
+                        field_desc += ", ".join("%s=%r" % (k, v) for k, v in extra_params.items())
                     field_desc += ")"
                     if comment_notes:
                         field_desc += "  # " + " ".join(comment_notes)
@@ -288,9 +264,7 @@ class Command(BaseCommand):
                 new_name = new_name.replace(LOOKUP_SEP, "_")
             if col_name.lower().find(LOOKUP_SEP) >= 0:
                 # Only add the comment if the double underscore was in the original name
-                field_notes.append(
-                    "Field renamed because it contained more than one '_' in a row."
-                )
+                field_notes.append("Field renamed because it contained more than one '_' in a row.")
 
         if new_name.startswith("_"):
             new_name = "field%s" % new_name
@@ -306,9 +280,7 @@ class Command(BaseCommand):
 
         if new_name[0].isdigit():
             new_name = "number_%s" % new_name
-            field_notes.append(
-                "Field renamed because it wasn't a valid Python identifier."
-            )
+            field_notes.append("Field renamed because it wasn't a valid Python identifier.")
 
         if new_name in used_column_names:
             num = 0
@@ -341,7 +313,7 @@ class Command(BaseCommand):
             field_type = "TextField"
             field_notes.append("This field type is a guess.")
 
-        # Add max_length for all CharFields.
+            # Add max_length for all CharFields.
         if field_type == "CharField" and row.display_size:
             if (size := int(row.display_size)) and size > 0:
                 field_params["max_length"] = size
@@ -355,12 +327,8 @@ class Command(BaseCommand):
                     "max_digits and decimal_places have been guessed, as this "
                     "database handles decimal fields as float"
                 )
-                field_params["max_digits"] = (
-                    row.precision if row.precision is not None else 10
-                )
-                field_params["decimal_places"] = (
-                    row.scale if row.scale is not None else 5
-                )
+                field_params["max_digits"] = row.precision if row.precision is not None else 10
+                field_params["decimal_places"] = row.scale if row.scale is not None else 5
             else:
                 field_params["max_digits"] = row.precision
                 field_params["decimal_places"] = row.scale
@@ -388,13 +356,9 @@ class Command(BaseCommand):
                 columns = params["columns"]
                 if None in columns:
                     has_unsupported_constraint = True
-                columns = [
-                    x for x in columns if x is not None and x in column_to_field_name
-                ]
+                columns = [x for x in columns if x is not None and x in column_to_field_name]
                 if len(columns) > 1 and not params["primary_key"]:
-                    unique_together.append(
-                        str(tuple(column_to_field_name[c] for c in columns))
-                    )
+                    unique_together.append(str(tuple(column_to_field_name[c] for c in columns)))
         if is_view:
             managed_comment = "  # Created from a view. Don't remove."
         elif is_partition:

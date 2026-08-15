@@ -48,8 +48,9 @@ class Worker(models.Model):
 class NonAutoPK(models.Model):
     name = models.CharField(max_length=10, primary_key=True)
 
+    # Chained foreign keys with to_field produce incorrect query #18432
 
-# Chained foreign keys with to_field produce incorrect query #18432
+
 class Model1(models.Model):
     pkey = models.IntegerField(unique=True, db_index=True)
 

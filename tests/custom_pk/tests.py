@@ -33,9 +33,7 @@ class BasicCustomPKTests(TestCase):
         )
         self.assertSequenceEqual(Employee.objects.all(), [self.fran, self.dan])
 
-        self.assertQuerySetEqual(
-            Business.objects.filter(name="Sears"), ["Sears"], lambda b: b.name
-        )
+        self.assertQuerySetEqual(Business.objects.filter(name="Sears"), ["Sears"], lambda b: b.name)
         self.assertQuerySetEqual(
             Business.objects.filter(pk="Sears"),
             [
@@ -106,7 +104,7 @@ class BasicCustomPKTests(TestCase):
         with self.assertRaises(Employee.DoesNotExist):
             Employee.objects.get(pk=42)
 
-        # Use the name of the primary key, rather than pk.
+            # Use the name of the primary key, rather than pk.
         self.assertEqual(Employee.objects.get(employee_code=123), self.dan)
 
     def test_pk_attributes(self):
@@ -121,9 +119,7 @@ class BasicCustomPKTests(TestCase):
         # Or we can use the real attribute name for the primary key:
         self.assertEqual(e.employee_code, 123)
 
-        with self.assertRaisesMessage(
-            AttributeError, "'Employee' object has no attribute 'id'"
-        ):
+        with self.assertRaisesMessage(AttributeError, "'Employee' object has no attribute 'id'"):
             e.id
 
     def test_in_bulk(self):
@@ -171,14 +167,10 @@ class CustomPKTests(TestCase):
     def test_unique_pk(self):
         # The primary key must also be unique, so trying to create a new object
         # with the same primary key will fail.
-        Employee.objects.create(
-            employee_code=123, first_name="Frank", last_name="Jones"
-        )
+        Employee.objects.create(employee_code=123, first_name="Frank", last_name="Jones")
         with self.assertRaises(IntegrityError):
             with transaction.atomic():
-                Employee.objects.create(
-                    employee_code=123, first_name="Fred", last_name="Jones"
-                )
+                Employee.objects.create(employee_code=123, first_name="Fred", last_name="Jones")
 
     def test_zero_non_autoincrement_pk(self):
         Employee.objects.create(employee_code=0, first_name="Frank", last_name="Jones")
@@ -198,9 +190,10 @@ class CustomPKTests(TestCase):
         self.assertEqual(f, new_foo)
         self.assertEqual(f.bar, new_bar)
 
-    # SQLite lets objects be saved with an empty primary key, even though an
-    # integer is expected. So we can't check for an error being raised in that
-    # case for SQLite. Remove it from the suite for this next bit.
+        # SQLite lets objects be saved with an empty primary key, even though an
+        # integer is expected. So we can't check for an error being raised in that
+        # case for SQLite. Remove it from the suite for this next bit.
+
     @skipIfDBFeature("supports_unspecified_pk")
     def test_required_pk(self):
         # The primary key must be specified, so an error is raised if you

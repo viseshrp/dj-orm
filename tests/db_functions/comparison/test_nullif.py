@@ -15,27 +15,17 @@ class NullIfTests(TestCase):
         Author.objects.create(name="Rhonda", alias="Rhonda")
 
     def test_basic(self):
-        authors = Author.objects.annotate(nullif=NullIf("alias", "name")).values_list(
-            "nullif"
-        )
+        authors = Author.objects.annotate(nullif=NullIf("alias", "name")).values_list("nullif")
         self.assertCountEqual(
             authors,
             [
                 ("smithj",),
-                (
-                    (
-                        ""
-                        if connection.features.interprets_empty_strings_as_nulls
-                        else None
-                    ),
-                ),
+                (("" if connection.features.interprets_empty_strings_as_nulls else None),),
             ],
         )
 
     def test_null_argument(self):
-        authors = Author.objects.annotate(
-            nullif=NullIf("name", Value(None))
-        ).values_list("nullif")
+        authors = Author.objects.annotate(nullif=NullIf("name", Value(None))).values_list("nullif")
         self.assertCountEqual(authors, [("John Smith",), ("Rhonda",)])
 
     def test_too_few_args(self):
@@ -47,8 +37,4 @@ class NullIfTests(TestCase):
     def test_null_literal(self):
         msg = "Oracle does not allow Value(None) for expression1."
         with self.assertRaisesMessage(ValueError, msg):
-            list(
-                Author.objects.annotate(nullif=NullIf(Value(None), "name")).values_list(
-                    "nullif"
-                )
-            )
+            list(Author.objects.annotate(nullif=NullIf(Value(None), "name")).values_list("nullif"))

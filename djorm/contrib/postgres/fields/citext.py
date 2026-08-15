@@ -6,7 +6,7 @@ __all__ = ["CICharField", "CIEmailField", "CITextField"]
 class CICharField(CharField):
     system_check_removed_details = {
         "msg": (
-            'djorm.contrib.postgres.fields.CICharField is removed except for support '
+            "djorm.contrib.postgres.fields.CICharField is removed except for support "
             "in historical migrations."
         ),
         "hint": (
@@ -20,7 +20,7 @@ class CICharField(CharField):
 class CIEmailField(EmailField):
     system_check_removed_details = {
         "msg": (
-            'djorm.contrib.postgres.fields.CIEmailField is removed except for support '
+            "djorm.contrib.postgres.fields.CIEmailField is removed except for support "
             "in historical migrations."
         ),
         "hint": (
@@ -34,7 +34,7 @@ class CIEmailField(EmailField):
 class CITextField(TextField):
     system_check_removed_details = {
         "msg": (
-            'djorm.contrib.postgres.fields.CITextField is removed except for support '
+            "djorm.contrib.postgres.fields.CITextField is removed except for support "
             "in historical migrations."
         ),
         "hint": (

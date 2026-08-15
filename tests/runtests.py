@@ -13,6 +13,8 @@ import tempfile
 import warnings
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 try:
     import djorm
 except ImportError as e:
@@ -26,7 +28,6 @@ else:
     from djorm.db import connection, connections
     from djorm.test import TestCase, TransactionTestCase
     from djorm.test.runner import get_max_test_processes, parallel_type
-    from djorm.test.selenium import SeleniumTestCase, SeleniumTestCaseBase
     from djorm.test.utils import NullTimeKeeper, TimeKeeper, get_runner
     from djorm.utils.deprecation import (
         RemovedInDjango60Warning,
@@ -35,6 +36,23 @@ else:
     from djorm.utils.functional import classproperty
     from djorm.utils.log import DEFAULT_LOGGING
     from djorm.utils.version import PY312, PYPY
+
+try:
+    from djorm.test.selenium import SeleniumTestCase, SeleniumTestCaseBase
+except ImportError:
+
+    class SeleniumTestCase:
+        screenshots = False
+
+    class SeleniumTestCaseBase:
+        selenium_hub = None
+        external_host = None
+        headless = False
+        browsers = []
+
+        @staticmethod
+        def import_webdriver(browser):
+            raise ImproperlyConfigured("Selenium support is not available in this fork.")
 
 
 try:
@@ -45,7 +63,7 @@ else:
     # Ignore informational warnings from QuerySet.explain().
     warnings.filterwarnings("ignore", r"\(1003, *", category=MySQLdb.Warning)
 
-# Make deprecation warnings errors to ensure no usage of deprecated features.
+    # Make deprecation warnings errors to ensure no usage of deprecated features.
 warnings.simplefilter("error", RemovedInDjango60Warning)
 warnings.simplefilter("error", RemovedInDjango61Warning)
 # Make resource and runtime warning errors to ensure no usage of error prone
@@ -63,8 +81,6 @@ if not PYPY:
 
 RUNTESTS_DIR = os.path.abspath(os.path.dirname(__file__))
 
-TEMPLATE_DIR = os.path.join(RUNTESTS_DIR, "templates")
-
 # Add variables enabling coverage to trace code in subprocesses.
 os.environ["RUNTESTS_DIR"] = RUNTESTS_DIR
 os.environ["COVERAGE_PROCESS_START"] = os.path.join(RUNTESTS_DIR, ".coveragerc")
@@ -78,31 +94,15 @@ SUBDIRS_TO_SKIP = {
 }
 
 ALWAYS_INSTALLED_APPS = [
-    'djorm.contrib.contenttypes',
-    'djorm.contrib.auth',
-    'djorm.contrib.sites',
-    'djorm.contrib.sessions',
-    'djorm.contrib.messages',
-    'djorm.contrib.admin.apps.SimpleAdminConfig',
-    'djorm.contrib.staticfiles',
+    "djorm.contrib.contenttypes",
 ]
 
-ALWAYS_MIDDLEWARE = [
-    'djorm.contrib.sessions.middleware.SessionMiddleware',
-    'djorm.middleware.common.CommonMiddleware',
-    'djorm.middleware.csrf.CsrfViewMiddleware',
-    'djorm.contrib.auth.middleware.AuthenticationMiddleware',
-    'djorm.contrib.messages.middleware.MessageMiddleware',
-]
+ALWAYS_MIDDLEWARE = []
 
 # Need to add the associated contrib app to INSTALLED_APPS in some cases to
 # avoid "RuntimeError: Model class X doesn't declare an explicit app_label
 # and isn't in an application in INSTALLED_APPS."
-CONTRIB_TESTS_TO_APPS = {
-    "deprecation": ['djorm.contrib.flatpages', 'djorm.contrib.redirects'],
-    "flatpages_tests": ['djorm.contrib.flatpages'],
-    "redirects_tests": ['djorm.contrib.redirects'],
-}
+CONTRIB_TESTS_TO_APPS = {}
 
 
 def get_test_modules(gis_enabled):
@@ -132,6 +132,8 @@ def get_test_modules(gis_enabled):
                 ):
                     continue
                 test_module = f.name
+                if test_module == "postgres_tests" and connection.vendor != "postgresql":
+                    continue
                 if dirname:
                     test_module = dirname + "." + test_module
                 yield test_module
@@ -144,8 +146,8 @@ def get_label_module(label):
         # Interpret the label as a dotted module name.
         return label.split(".")[0]
 
-    # Otherwise, interpret the label as a path. Check existence first to
-    # provide a better error message than relative_to() if it doesn't exist.
+        # Otherwise, interpret the label as a path. Check existence first to
+        # provide a better error message than relative_to() if it doesn't exist.
     if not path.exists():
         raise RuntimeError(f"Test label path {label} does not exist")
     path = path.resolve()
@@ -156,14 +158,14 @@ def get_label_module(label):
 def get_filtered_test_modules(start_at, start_after, gis_enabled, test_labels=None):
     if test_labels is None:
         test_labels = []
-    # Reduce each test label to just the top-level module part.
+        # Reduce each test label to just the top-level module part.
     label_modules = set()
     for label in test_labels:
         test_module = get_label_module(label)
         label_modules.add(test_module)
 
-    # It would be nice to put this validation earlier but it must come after
-    # django.setup() so that connection.features.gis_enabled can be accessed.
+        # It would be nice to put this validation earlier but it must come after
+        # django.setup() so that connection.features.gis_enabled can be accessed.
     if "gis_tests" in label_modules and not gis_enabled:
         print("Aborting: A GIS database backend is required to run gis_tests.")
         sys.exit(1)
@@ -182,11 +184,10 @@ def get_filtered_test_modules(start_at, start_after, gis_enabled, test_labels=No
                 assert start_after
                 # Skip the current one before starting.
                 continue
-        # If the module (or an ancestor) was named on the command line, or
-        # no modules were named (i.e., run all), include the test module.
+                # If the module (or an ancestor) was named on the command line, or
+                # no modules were named (i.e., run all), include the test module.
         if not test_labels or any(
-            _module_match_label(test_module, label_module)
-            for label_module in label_modules
+            _module_match_label(test_module, label_module) for label_module in label_modules
         ):
             yield test_module
 
@@ -195,47 +196,23 @@ def setup_collect_tests(start_at, start_after, test_labels=None):
     TMPDIR = os.environ["TMPDIR"]
     state = {
         "INSTALLED_APPS": settings.INSTALLED_APPS,
-        "ROOT_URLCONF": getattr(settings, "ROOT_URLCONF", ""),
-        "TEMPLATES": settings.TEMPLATES,
         "LANGUAGE_CODE": settings.LANGUAGE_CODE,
-        "STATIC_URL": settings.STATIC_URL,
-        "STATIC_ROOT": settings.STATIC_ROOT,
         "MIDDLEWARE": settings.MIDDLEWARE,
     }
 
     # Redirect some settings for the duration of these tests.
     settings.INSTALLED_APPS = ALWAYS_INSTALLED_APPS
-    settings.ROOT_URLCONF = "urls"
-    settings.STATIC_URL = "static/"
-    settings.STATIC_ROOT = os.path.join(TMPDIR, "static")
-    settings.TEMPLATES = [
-        {
-            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
-            "DIRS": [TEMPLATE_DIR],
-            "APP_DIRS": True,
-            "OPTIONS": {
-                "context_processors": [
-                    'djorm.template.context_processors.request',
-                    'djorm.contrib.auth.context_processors.auth',
-                    'djorm.contrib.messages.context_processors.messages',
-                ],
-            },
-        }
-    ]
     settings.LANGUAGE_CODE = "en"
-    settings.SITE_ID = 1
     settings.MIDDLEWARE = ALWAYS_MIDDLEWARE
     settings.MIGRATION_MODULES = {
         # This lets us skip creating migrations for the test models as many of
         # them depend on one of the following contrib applications.
-        "auth": None,
         "contenttypes": None,
-        "sessions": None,
     }
     log_config = copy.deepcopy(DEFAULT_LOGGING)
     # Filter out non-error logging so we don't have to capture it in lots of
     # tests.
-    log_config["loggers"]["django"]["level"] = "ERROR"
+    log_config["loggers"]["djorm"]["level"] = "ERROR"
     settings.LOGGING = log_config
     settings.SILENCED_SYSTEM_CHECKS = [
         "fields.W342",  # ForeignKey(unique=True) -> OneToOneField
@@ -269,25 +246,24 @@ def teardown_collect_tests(state):
 def get_installed():
     return [app_config.name for app_config in apps.get_app_configs()]
 
+    # This function should be called only after calling django.setup(),
+    # since it calls connection.features.gis_enabled.
 
-# This function should be called only after calling django.setup(),
-# since it calls connection.features.gis_enabled.
+
 def get_apps_to_install(test_modules):
     for test_module in test_modules:
         if test_module in CONTRIB_TESTS_TO_APPS:
             yield from CONTRIB_TESTS_TO_APPS[test_module]
         yield test_module
 
-    # Add contrib.gis to INSTALLED_APPS if needed (rather than requiring
-    # @override_settings(INSTALLED_APPS=...) on all test cases.
+        # Add contrib.gis to INSTALLED_APPS if needed (rather than requiring
+        # @override_settings(INSTALLED_APPS=...) on all test cases.
     if connection.features.gis_enabled:
-        yield 'djorm.contrib.gis'
+        yield "djorm.contrib.gis"
 
 
 def setup_run_tests(verbosity, start_at, start_after, test_labels=None):
-    test_modules, state = setup_collect_tests(
-        start_at, start_after, test_labels=test_labels
-    )
+    test_modules, state = setup_collect_tests(start_at, start_after, test_labels=test_labels)
 
     installed_apps = set(get_installed())
     for app in get_apps_to_install(test_modules):
@@ -302,9 +278,7 @@ def setup_run_tests(verbosity, start_at, start_after, test_labels=None):
 
     # Force declaring available_apps in TransactionTestCase for faster tests.
     def no_available_apps(cls):
-        raise Exception(
-            "Please define available_apps in TransactionTestCase and its subclasses."
-        )
+        raise Exception("Please define available_apps in TransactionTestCase and its subclasses.")
 
     TransactionTestCase.available_apps = classproperty(no_available_apps)
     TestCase.available_apps = None
@@ -369,9 +343,7 @@ def django_tests(
         max_parallel = parallel
 
     if verbosity >= 1:
-        msg = "Testing against Django installed in '%s'" % os.path.dirname(
-            djorm.__file__
-        )
+        msg = "Testing against Django installed in '%s'" % os.path.dirname(djorm.__file__)
         if max_parallel > 1:
             msg += " with up to %d processes" % max_parallel
         print(msg)
@@ -380,7 +352,7 @@ def django_tests(
     test_labels, state = setup_run_tests(*process_setup_args)
     # Run the test suite, including the extra validation tests.
     if not hasattr(settings, "TEST_RUNNER"):
-        settings.TEST_RUNNER = 'djorm.test.runner.DiscoverRunner'
+        settings.TEST_RUNNER = "djorm.test.runner.DiscoverRunner"
 
     if parallel in {0, "auto"}:
         # This doesn't work before django.setup() on some databases.
@@ -506,10 +478,7 @@ def paired_tests(paired_test, options, test_labels, start_at, start_after):
     subprocess_args = get_subprocess_args(options)
 
     for i, label in enumerate(test_labels):
-        print(
-            "***** %d of %d: Check test pairing with %s"
-            % (i + 1, len(test_labels), label)
-        )
+        print("***** %d of %d: Check test pairing with %s" % (i + 1, len(test_labels), label))
         failures = subprocess.call(subprocess_args + [label, paired_test])
         if failures:
             print("***** Found problem pair with %s" % label)
@@ -580,10 +549,7 @@ if __name__ == "__main__":
         default=False,
         type=int,
         metavar="SEED",
-        help=(
-            "Shuffle the order of test cases to help check that tests are "
-            "properly isolated."
-        ),
+        help=("Shuffle the order of test cases to help check that tests are properly isolated."),
     )
     parser.add_argument(
         "--reverse",
@@ -698,9 +664,7 @@ if __name__ == "__main__":
 
     using_selenium_hub = options.selenium and options.selenium_hub
     if options.selenium_hub and not options.selenium:
-        parser.error(
-            "--selenium-hub and --external-host require --selenium to be used."
-        )
+        parser.error("--selenium-hub and --external-host require --selenium to be used.")
     if using_selenium_hub and not options.external_host:
         parser.error("--selenium-hub and --external-host must be used together.")
     if options.screenshots and not options.selenium:
@@ -708,7 +672,7 @@ if __name__ == "__main__":
     if options.screenshots and options.tags:
         parser.error("--screenshots and --tag are mutually exclusive.")
 
-    # Allow including a trailing slash on app_labels for tab completion convenience
+        # Allow including a trailing slash on app_labels for tab completion convenience
     options.modules = [os.path.normpath(labels) for labels in options.modules]
 
     mutually_exclusive_options = [
@@ -716,23 +680,15 @@ if __name__ == "__main__":
         options.start_after,
         options.modules,
     ]
-    enabled_module_options = [
-        bool(option) for option in mutually_exclusive_options
-    ].count(True)
+    enabled_module_options = [bool(option) for option in mutually_exclusive_options].count(True)
     if enabled_module_options > 1:
-        print(
-            "Aborting: --start-at, --start-after, and test labels are mutually "
-            "exclusive."
-        )
+        print("Aborting: --start-at, --start-after, and test labels are mutually exclusive.")
         sys.exit(1)
     for opt_name in ["start_at", "start_after"]:
         opt_val = getattr(options, opt_name)
         if opt_val:
             if "." in opt_val:
-                print(
-                    "Aborting: --%s must be a top-level module."
-                    % opt_name.replace("_", "-")
-                )
+                print("Aborting: --%s must be a top-level module." % opt_name.replace("_", "-"))
                 sys.exit(1)
             setattr(options, opt_name, os.path.normpath(opt_val))
     if options.settings:

@@ -37,9 +37,7 @@ class Index:
         if not isinstance(opclasses, (list, tuple)):
             raise ValueError("Index.opclasses must be a list or tuple.")
         if not expressions and not fields:
-            raise ValueError(
-                "At least one field or expression is required to define an index."
-            )
+            raise ValueError("At least one field or expression is required to define an index.")
         if expressions and fields:
             raise ValueError(
                 "Index.fields and expressions are mutually exclusive.",
@@ -49,12 +47,11 @@ class Index:
         if expressions and opclasses:
             raise ValueError(
                 "Index.opclasses cannot be used with expressions. Use "
-                'djorm.contrib.postgres.indexes.OpClass() instead.'
+                "djorm.contrib.postgres.indexes.OpClass() instead."
             )
         if opclasses and len(fields) != len(opclasses):
             raise ValueError(
-                "Index.fields and Index.opclasses must have the same number of "
-                "elements."
+                "Index.fields and Index.opclasses must have the same number of elements."
             )
         if fields and not all(isinstance(field, str) for field in fields):
             raise ValueError("Index.fields must contain only strings with field names.")
@@ -92,9 +89,7 @@ class Index:
         return sql % tuple(schema_editor.quote_value(p) for p in params)
 
     def create_sql(self, model, schema_editor, using="", **kwargs):
-        include = [
-            model._meta.get_field(field_name).column for field_name in self.include
-        ]
+        include = [model._meta.get_field(field_name).column for field_name in self.include]
         condition = self._get_condition_sql(model, schema_editor)
         if self.expressions:
             index_expressions = []
@@ -108,10 +103,7 @@ class Index:
             fields = None
             col_suffixes = None
         else:
-            fields = [
-                model._meta.get_field(field_name)
-                for field_name, _ in self.fields_orders
-            ]
+            fields = [model._meta.get_field(field_name) for field_name, _ in self.fields_orders]
             if schema_editor.connection.features.supports_index_column_ordering:
                 col_suffixes = [order[1] for order in self.fields_orders]
             else:
@@ -136,7 +128,7 @@ class Index:
 
     def deconstruct(self):
         path = "%s.%s" % (self.__class__.__module__, self.__class__.__name__)
-        path = path.replace('djorm.db.models.indexes', 'djorm.db.models')
+        path = path.replace("djorm.db.models.indexes", "djorm.db.models")
         kwargs = {"name": self.name}
         if self.fields:
             kwargs["fields"] = self.fields
@@ -165,14 +157,11 @@ class Index:
         """
         _, table_name = split_identifier(model._meta.db_table)
         column_names = [
-            model._meta.get_field(field_name).column
-            for field_name, order in self.fields_orders
+            model._meta.get_field(field_name).column for field_name, order in self.fields_orders
         ]
         column_names_with_order = [
             (("-%s" if order else "%s") % column_name)
-            for column_name, (field_name, order) in zip(
-                column_names, self.fields_orders
-            )
+            for column_name, (field_name, order) in zip(column_names, self.fields_orders)
         ]
         # The length of the parts of the name is based on the default max
         # length of 30 characters.
@@ -196,11 +185,7 @@ class Index:
             "" if not self.fields else " fields=%s" % repr(self.fields),
             "" if not self.expressions else " expressions=%s" % repr(self.expressions),
             "" if not self.name else " name=%s" % repr(self.name),
-            (
-                ""
-                if self.db_tablespace is None
-                else " db_tablespace=%s" % repr(self.db_tablespace)
-            ),
+            ("" if self.db_tablespace is None else " db_tablespace=%s" % repr(self.db_tablespace)),
             "" if self.condition is None else " condition=%s" % self.condition,
             "" if not self.include else " include=%s" % repr(self.include),
             "" if not self.opclasses else " opclasses=%s" % repr(self.opclasses),
@@ -222,11 +207,7 @@ class IndexExpression(Func):
         # Some databases (e.g. MySQL) treats COLLATE as an indexed expression.
         if connection and connection.features.collate_as_index_expression:
             self.wrapper_classes = tuple(
-                [
-                    wrapper_cls
-                    for wrapper_cls in self.wrapper_classes
-                    if wrapper_cls is not Collate
-                ]
+                [wrapper_cls for wrapper_cls in self.wrapper_classes if wrapper_cls is not Collate]
             )
 
     @classmethod
@@ -252,18 +233,14 @@ class IndexExpression(Func):
             raise ValueError(
                 "Multiple references to %s can't be used in an indexed "
                 "expression."
-                % ", ".join(
-                    [wrapper_cls.__qualname__ for wrapper_cls in self.wrapper_classes]
-                )
+                % ", ".join([wrapper_cls.__qualname__ for wrapper_cls in self.wrapper_classes])
             )
         if expressions[1 : len(wrappers) + 1] != wrappers:
             raise ValueError(
                 "%s must be topmost expressions in an indexed expression."
-                % ", ".join(
-                    [wrapper_cls.__qualname__ for wrapper_cls in self.wrapper_classes]
-                )
+                % ", ".join([wrapper_cls.__qualname__ for wrapper_cls in self.wrapper_classes])
             )
-        # Wrap expressions in parentheses if they are not column references.
+            # Wrap expressions in parentheses if they are not column references.
         root_expression = index_expressions[1]
         resolve_root_expression = root_expression.resolve_expression(
             query,
@@ -284,15 +261,13 @@ class IndexExpression(Func):
             wrappers = [wrapper.copy() for wrapper in wrappers]
             for i, wrapper in enumerate(wrappers[:-1]):
                 wrapper.set_source_expressions([wrappers[i + 1]])
-            # Set the root expression on the deepest wrapper.
+                # Set the root expression on the deepest wrapper.
             wrappers[-1].set_source_expressions([root_expression])
             self.set_source_expressions([wrappers[0]])
         else:
             # Use the root expression, if there are no wrappers.
             self.set_source_expressions([root_expression])
-        return super().resolve_expression(
-            query, allow_joins, reuse, summarize, for_save
-        )
+        return super().resolve_expression(query, allow_joins, reuse, summarize, for_save)
 
     def as_sqlite(self, compiler, connection, **extra_context):
         # Casting to numeric is unnecessary.

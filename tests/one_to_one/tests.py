@@ -26,26 +26,20 @@ class OneToOneTests(TestCase):
     def setUpTestData(cls):
         cls.p1 = Place.objects.create(name="Demon Dogs", address="944 W. Fullerton")
         cls.p2 = Place.objects.create(name="Ace Hardware", address="1013 N. Ashland")
-        cls.r1 = Restaurant.objects.create(
-            place=cls.p1, serves_hot_dogs=True, serves_pizza=False
-        )
+        cls.r1 = Restaurant.objects.create(place=cls.p1, serves_hot_dogs=True, serves_pizza=False)
         cls.b1 = Bar.objects.create(place=cls.p1, serves_cocktails=False)
 
     def test_getter(self):
         # A Restaurant can access its place.
         self.assertEqual(repr(self.r1.place), "<Place: Demon Dogs the place>")
         # A Place can access its restaurant, if available.
-        self.assertEqual(
-            repr(self.p1.restaurant), "<Restaurant: Demon Dogs the restaurant>"
-        )
+        self.assertEqual(repr(self.p1.restaurant), "<Restaurant: Demon Dogs the restaurant>")
         # p2 doesn't have an associated restaurant.
-        with self.assertRaisesMessage(
-            Restaurant.DoesNotExist, "Place has no restaurant"
-        ):
+        with self.assertRaisesMessage(Restaurant.DoesNotExist, "Place has no restaurant"):
             self.p2.restaurant
-        # The exception raised on attribute access when a related object
-        # doesn't exist should be an instance of a subclass of `AttributeError`
-        # refs #21563
+            # The exception raised on attribute access when a related object
+            # doesn't exist should be an instance of a subclass of `AttributeError`
+            # refs #21563
         self.assertFalse(hasattr(self.p2, "restaurant"))
 
     def test_setter(self):
@@ -53,16 +47,12 @@ class OneToOneTests(TestCase):
         # key on Restaurant, the save will create a new restaurant
         self.r1.place = self.p2
         self.r1.save()
-        self.assertEqual(
-            repr(self.p2.restaurant), "<Restaurant: Ace Hardware the restaurant>"
-        )
+        self.assertEqual(repr(self.p2.restaurant), "<Restaurant: Ace Hardware the restaurant>")
         self.assertEqual(repr(self.r1.place), "<Place: Ace Hardware the place>")
         self.assertEqual(self.p2.pk, self.r1.pk)
         # Set the place back again, using assignment in the reverse direction.
         self.p1.restaurant = self.r1
-        self.assertEqual(
-            repr(self.p1.restaurant), "<Restaurant: Demon Dogs the restaurant>"
-        )
+        self.assertEqual(repr(self.p1.restaurant), "<Restaurant: Demon Dogs the restaurant>")
         r = Restaurant.objects.get(pk=self.p1.id)
         self.assertEqual(repr(r.place), "<Place: Demon Dogs the place>")
 
@@ -92,9 +82,7 @@ class OneToOneTests(TestCase):
         assert_get_restaurant(place__name__startswith="Demon")
 
         def assert_get_place(**params):
-            self.assertEqual(
-                repr(Place.objects.get(**params)), "<Place: Demon Dogs the place>"
-            )
+            self.assertEqual(repr(Place.objects.get(**params)), "<Place: Demon Dogs the place>")
 
         assert_get_place(restaurant__place__exact=self.p1.pk)
         assert_get_place(restaurant__place__exact=self.p1)
@@ -110,9 +98,7 @@ class OneToOneTests(TestCase):
     def test_foreign_key(self):
         # Add a Waiter to the Restaurant.
         w = self.r1.waiter_set.create(name="Joe")
-        self.assertEqual(
-            repr(w), "<Waiter: Joe the waiter at Demon Dogs the restaurant>"
-        )
+        self.assertEqual(repr(w), "<Waiter: Joe the waiter at Demon Dogs the restaurant>")
 
         # Query the waiters
         def assert_filter_waiters(**params):
@@ -159,15 +145,10 @@ class OneToOneTests(TestCase):
         place = Place(name="User", address="London")
         with self.assertRaises(Restaurant.DoesNotExist):
             place.restaurant
-        msg = (
-            "save() prohibited to prevent data loss due to unsaved related object "
-            "'place'."
-        )
+        msg = "save() prohibited to prevent data loss due to unsaved related object 'place'."
         with self.assertRaisesMessage(ValueError, msg):
-            Restaurant.objects.create(
-                place=place, serves_hot_dogs=True, serves_pizza=False
-            )
-        # place should not cache restaurant
+            Restaurant.objects.create(place=place, serves_hot_dogs=True, serves_pizza=False)
+            # place should not cache restaurant
         with self.assertRaises(Restaurant.DoesNotExist):
             place.restaurant
 
@@ -227,8 +208,8 @@ class OneToOneTests(TestCase):
         # Prime the relation's cache with a value of None.
         with self.assertRaises(Place.undergroundbar.RelatedObjectDoesNotExist):
             getattr(p, "undergroundbar")
-        # Assigning None works if there isn't a related UndergroundBar and the
-        # reverse cache has a value of None.
+            # Assigning None works if there isn't a related UndergroundBar and the
+            # reverse cache has a value of None.
         p.undergroundbar = None
 
     def test_assign_o2o_id_value(self):
@@ -289,7 +270,7 @@ class OneToOneTests(TestCase):
         with self.assertRaisesMessage(ValueError, msg):
             setattr(p, "restaurant", p)
 
-        # Creation using keyword argument should cache the related object.
+            # Creation using keyword argument should cache the related object.
         p = Place.objects.get(name="Demon Dogs")
         r = Restaurant(place=p)
         self.assertIs(r.place, p)
@@ -427,8 +408,8 @@ class OneToOneTests(TestCase):
             with self.assertRaises(UndergroundBar.DoesNotExist):
                 p.undergroundbar
 
-        # Several instances of the origin are only possible if database allows
-        # inserting multiple NULL rows for a unique constraint
+                # Several instances of the origin are only possible if database allows
+                # inserting multiple NULL rows for a unique constraint
         if connection.features.supports_nullable_unique_constraints:
             UndergroundBar.objects.create()
 
@@ -449,10 +430,7 @@ class OneToOneTests(TestCase):
         p.undergroundbar = b
 
         # However saving the object is not allowed.
-        msg = (
-            "save() prohibited to prevent data loss due to unsaved related object "
-            "'place'."
-        )
+        msg = "save() prohibited to prevent data loss due to unsaved related object 'place'."
         with self.assertNumQueries(0):
             with self.assertRaisesMessage(ValueError, msg):
                 b.save()
@@ -530,21 +508,15 @@ class OneToOneTests(TestCase):
 
     def test_get_or_create_reverse_o2o_error(self):
         msg = "The following fields do not exist in this model: restaurant"
-        r2 = Restaurant.objects.create(
-            place=self.p2, serves_hot_dogs=True, serves_pizza=False
-        )
+        r2 = Restaurant.objects.create(place=self.p2, serves_hot_dogs=True, serves_pizza=False)
         with self.assertRaisesMessage(ValueError, msg):
             Place.objects.get_or_create(name="nonexistent", defaults={"restaurant": r2})
 
     def test_update_or_create_reverse_o2o_error(self):
         msg = "The following fields do not exist in this model: restaurant"
-        r2 = Restaurant.objects.create(
-            place=self.p2, serves_hot_dogs=True, serves_pizza=False
-        )
+        r2 = Restaurant.objects.create(place=self.p2, serves_hot_dogs=True, serves_pizza=False)
         with self.assertRaisesMessage(ValueError, msg):
-            Place.objects.update_or_create(
-                name="nonexistent", defaults={"restaurant": r2}
-            )
+            Place.objects.update_or_create(name="nonexistent", defaults={"restaurant": r2})
 
     def test_hasattr_related_object(self):
         # The exception raised on attribute access when a related object
@@ -572,9 +544,7 @@ class OneToOneTests(TestCase):
         q2 = Restaurant.objects.filter(place_id__in=q1)
         self.assertSequenceEqual(q2, [r])
         # Subquery using 'pk__in' instead of 'place_id__in' work, too.
-        q2 = Restaurant.objects.filter(
-            pk__in=Restaurant.objects.filter(place__id=r.place.pk)
-        )
+        q2 = Restaurant.objects.filter(pk__in=Restaurant.objects.filter(place__id=r.place.pk))
         self.assertSequenceEqual(q2, [r])
         q3 = Restaurant.objects.filter(place__in=Place.objects.all())
         self.assertSequenceEqual(q3, [r])
@@ -589,12 +559,8 @@ class OneToOneTests(TestCase):
     def test_primary_key_to_field_filter(self):
         target = Target.objects.create(name="foo")
         pointer = ToFieldPointer.objects.create(target=target)
-        self.assertSequenceEqual(
-            ToFieldPointer.objects.filter(target=target), [pointer]
-        )
-        self.assertSequenceEqual(
-            ToFieldPointer.objects.filter(pk__exact=pointer), [pointer]
-        )
+        self.assertSequenceEqual(ToFieldPointer.objects.filter(target=target), [pointer])
+        self.assertSequenceEqual(ToFieldPointer.objects.filter(pk__exact=pointer), [pointer])
 
     def test_cached_relation_invalidated_on_save(self):
         """
@@ -608,19 +574,14 @@ class OneToOneTests(TestCase):
 
     def test_get_prefetch_queryset_warning(self):
         places = Place.objects.all()
-        msg = (
-            "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() "
-            "instead."
-        )
+        msg = "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() instead."
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:
             Place.bar.get_prefetch_queryset(places)
         self.assertEqual(ctx.filename, __file__)
 
     def test_get_prefetch_querysets_invalid_querysets_length(self):
         places = Place.objects.all()
-        msg = (
-            "querysets argument of get_prefetch_querysets() should have a length of 1."
-        )
+        msg = "querysets argument of get_prefetch_querysets() should have a length of 1."
         with self.assertRaisesMessage(ValueError, msg):
             Place.bar.get_prefetch_querysets(
                 instances=places,

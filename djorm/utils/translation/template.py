@@ -172,9 +172,7 @@ def templatize(src, origin=None):
                             warnings.warn(warn_msg, TranslatorCommentWarning)
                         lineno_comment_map[comment_lineno_cache] = []
                 else:
-                    out.write(
-                        "# %s" % " | ".join(lineno_comment_map[comment_lineno_cache])
-                    )
+                    out.write("# %s" % " | ".join(lineno_comment_map[comment_lineno_cache]))
                 comment_lineno_cache = None
 
             if t.token_type == TokenType.BLOCK:
@@ -197,9 +195,7 @@ def templatize(src, origin=None):
                         elif message_context[0] == "'":
                             message_context = message_context.strip("'")
                         out.write(
-                            " pgettext({p}{!r}, {p}{!r}) ".format(
-                                message_context, g, p=raw_prefix
-                            )
+                            " pgettext({p}{!r}, {p}{!r}) ".format(message_context, g, p=raw_prefix)
                         )
                         message_context = None
                     else:

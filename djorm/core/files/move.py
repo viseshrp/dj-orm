@@ -1,4 +1,9 @@
-'\nMove a file in the safest way possible::\n\n    >>> from djorm.core.files.move import file_move_safe\n    >>> file_move_safe("/tmp/old_file", "/tmp/new_file")\n'
+"""
+Move a file in the safest way possible::
+
+    >>> from djorm.core.files.move import file_move_safe
+    >>> file_move_safe("/tmp/old_file", "/tmp/new_file")
+"""
 
 import os
 from shutil import copymode, copystat
@@ -8,9 +13,7 @@ from djorm.core.files import locks
 __all__ = ["file_move_safe"]
 
 
-def file_move_safe(
-    old_file_name, new_file_name, chunk_size=1024 * 64, allow_overwrite=False
-):
+def file_move_safe(old_file_name, new_file_name, chunk_size=1024 * 64, allow_overwrite=False):
     """
     Move a file from one location to another in the safest way possible.
 
@@ -40,7 +43,7 @@ def file_move_safe(
         # when moving opened files on certain operating systems.
         pass
 
-    # first open the old file, so that it won't go away
+        # first open the old file, so that it won't go away
     with open(old_file_name, "rb") as old_file:
         # now open the new file, not forgetting allow_overwrite
         fd = os.open(

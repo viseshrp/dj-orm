@@ -149,10 +149,8 @@ VALID_URLS = [
     "http://10.20.30.40/",
     "http://1.2.3.4/",
     "http://127.0.01.09.home.lan",
-    "http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ex"
-    "ample.com",
-    "http://example.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    "aaaaa.com",
+    "http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.example.com",
+    "http://example.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com",
     "http://example.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaa"
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaa"
@@ -235,12 +233,9 @@ INVALID_URLS = [
     "http://[]",
     "http://[]:8080",
     "http://example..com/",
-    "http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.e"
-    "xample.com",
-    "http://example.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    "aaaaaa.com",
-    "http://example.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    "aaaaaa",
+    "http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.example.com",
+    "http://example.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com",
+    "http://example.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "http://example." + ("a" * 63 + ".") * 1000 + "com",
     "http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaa."
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaa"
@@ -708,17 +703,10 @@ class TestValidators(SimpleTestCase):
                 if isinstance(validator, types.FunctionType)
                 else validator.__class__.__name__
             )
-            exception_expected = expected is not None and issubclass(
-                expected, Exception
-            )
+            exception_expected = expected is not None and issubclass(expected, Exception)
             with self.subTest(name, value=value):
-                if (
-                    validator is validate_image_file_extension
-                    and not PILLOW_IS_INSTALLED
-                ):
-                    self.skipTest(
-                        "Pillow is required to test validate_image_file_extension."
-                    )
+                if validator is validate_image_file_extension and not PILLOW_IS_INSTALLED:
+                    self.skipTest("Pillow is required to test validate_image_file_extension.")
                 if exception_expected:
                     with self.assertRaises(expected):
                         validator(value)
@@ -733,9 +721,7 @@ class TestValidators(SimpleTestCase):
     def test_message_list(self):
         v = ValidationError(["First Problem", "Second Problem"])
         self.assertEqual(str(v), "['First Problem', 'Second Problem']")
-        self.assertEqual(
-            repr(v), "ValidationError(['First Problem', 'Second Problem'])"
-        )
+        self.assertEqual(repr(v), "ValidationError(['First Problem', 'Second Problem'])")
 
     def test_message_dict(self):
         v = ValidationError({"first": ["First Problem"]})
@@ -748,9 +734,7 @@ class TestValidators(SimpleTestCase):
             RegexValidator(re.compile("a"), flags=re.IGNORECASE)
 
     def test_max_length_validator_message(self):
-        v = MaxLengthValidator(
-            16, message='"%(value)s" has more than %(limit_value)d characters.'
-        )
+        v = MaxLengthValidator(16, message='"%(value)s" has more than %(limit_value)d characters.')
         with self.assertRaisesMessage(
             ValidationError, '"djangoproject.com" has more than 16 characters.'
         ):
@@ -872,12 +856,8 @@ class TestValidatorEquality(TestCase):
 
     def test_file_extension_equality(self):
         self.assertEqual(FileExtensionValidator(), FileExtensionValidator())
-        self.assertEqual(
-            FileExtensionValidator(["txt"]), FileExtensionValidator(["txt"])
-        )
-        self.assertEqual(
-            FileExtensionValidator(["TXT"]), FileExtensionValidator(["txt"])
-        )
+        self.assertEqual(FileExtensionValidator(["txt"]), FileExtensionValidator(["txt"]))
+        self.assertEqual(FileExtensionValidator(["TXT"]), FileExtensionValidator(["txt"]))
         self.assertEqual(
             FileExtensionValidator(["TXT", "png"]),
             FileExtensionValidator(["txt", "png"]),
@@ -890,12 +870,8 @@ class TestValidatorEquality(TestCase):
             FileExtensionValidator(["txt"]),
             FileExtensionValidator(["txt"], code="invalid_extension"),
         )
-        self.assertNotEqual(
-            FileExtensionValidator(["txt"]), FileExtensionValidator(["png"])
-        )
-        self.assertNotEqual(
-            FileExtensionValidator(["txt"]), FileExtensionValidator(["png", "jpg"])
-        )
+        self.assertNotEqual(FileExtensionValidator(["txt"]), FileExtensionValidator(["png"]))
+        self.assertNotEqual(FileExtensionValidator(["txt"]), FileExtensionValidator(["png", "jpg"]))
         self.assertNotEqual(
             FileExtensionValidator(["txt"]),
             FileExtensionValidator(["txt"], code="custom_code"),
@@ -910,9 +886,7 @@ class TestValidatorEquality(TestCase):
             ProhibitNullCharactersValidator(message="message", code="code"),
             ProhibitNullCharactersValidator(message="message", code="code"),
         )
-        self.assertEqual(
-            ProhibitNullCharactersValidator(), ProhibitNullCharactersValidator()
-        )
+        self.assertEqual(ProhibitNullCharactersValidator(), ProhibitNullCharactersValidator())
         self.assertNotEqual(
             ProhibitNullCharactersValidator(message="message1", code="code"),
             ProhibitNullCharactersValidator(message="message2", code="code"),

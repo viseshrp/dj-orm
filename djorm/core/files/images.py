@@ -11,7 +11,10 @@ from djorm.core.files import File
 
 
 class ImageFile(File):
-    '\n    A mixin for use alongside djorm.core.files.base.File, which provides\n    additional features for dealing with images.\n    '
+    """
+    A mixin for use alongside djorm.core.files.base.File, which provides
+    additional features for dealing with images.
+    """
 
     @property
     def width(self):

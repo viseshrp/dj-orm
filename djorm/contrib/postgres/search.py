@@ -102,9 +102,7 @@ class SearchVector(SearchVectorCombinable, Func):
     def resolve_expression(
         self, query=None, allow_joins=True, reuse=None, summarize=False, for_save=False
     ):
-        resolved = super().resolve_expression(
-            query, allow_joins, reuse, summarize, for_save
-        )
+        resolved = super().resolve_expression(query, allow_joins, reuse, summarize, for_save)
         if self.config:
             resolved.config = self.config.resolve_expression(
                 query, allow_joins, reuse, summarize, for_save
@@ -169,9 +167,10 @@ class SearchQueryCombinable:
             return CombinedSearchQuery(other, connector, self, self.config)
         return CombinedSearchQuery(self, connector, other, self.config)
 
-    # On Combinable, these are not implemented to reduce confusion with Q. In
-    # this case we are actually (ab)using them to do logical combination so
-    # it's consistent with other usage in Django.
+        # On Combinable, these are not implemented to reduce confusion with Q. In
+        # this case we are actually (ab)using them to do logical combination so
+        # it's consistent with other usage in Django.
+
     def __or__(self, other):
         return self._combine(other, self.BITOR, False)
 
@@ -305,9 +304,7 @@ class SearchHeadline(Func):
             "MaxFragments": max_fragments,
             "FragmentDelimiter": fragment_delimiter,
         }
-        self.options = {
-            option: value for option, value in options.items() if value is not None
-        }
+        self.options = {option: value for option, value in options.items() if value is not None}
         expressions = (expression, query)
         if config is not None:
             config = SearchConfig.from_parameter(config)

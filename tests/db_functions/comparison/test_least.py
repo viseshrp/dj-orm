@@ -15,9 +15,7 @@ class LeastTests(TestCase):
     def test_basic(self):
         now = timezone.now()
         before = now - timedelta(hours=1)
-        Article.objects.create(
-            title="Testing with Django", written=before, published=now
-        )
+        Article.objects.create(title="Testing with Django", written=before, published=now)
         articles = Article.objects.annotate(first_updated=Least("written", "published"))
         self.assertEqual(articles.first().first_updated, before)
 
@@ -68,9 +66,7 @@ class LeastTests(TestCase):
         self.assertIsNone(articles.first().first_updated)
 
     def test_one_expressions(self):
-        with self.assertRaisesMessage(
-            ValueError, "Least must take at least two expressions"
-        ):
+        with self.assertRaisesMessage(ValueError, "Least must take at least two expressions"):
             Least("written")
 
     def test_related_field(self):

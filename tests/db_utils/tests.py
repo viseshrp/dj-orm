@@ -1,4 +1,4 @@
-'Tests for djorm.db.utils.'
+"Tests for djorm.db.utils."
 
 import unittest
 
@@ -24,9 +24,7 @@ class ConnectionHandlerTests(SimpleTestCase):
 
     def assertImproperlyConfigured(self, DATABASES):
         conns = ConnectionHandler(DATABASES)
-        self.assertEqual(
-            conns[DEFAULT_DB_ALIAS].settings_dict["ENGINE"], 'djorm.db.backends.dummy'
-        )
+        self.assertEqual(conns[DEFAULT_DB_ALIAS].settings_dict["ENGINE"], "djorm.db.backends.dummy")
         msg = (
             "settings.DATABASES is improperly configured. Please supply the "
             "ENGINE value. Check settings documentation for more details."
@@ -53,7 +51,7 @@ class ConnectionHandlerTests(SimpleTestCase):
         msg = "The connection 'nonexistent' doesn't exist."
         conns = ConnectionHandler(
             {
-                DEFAULT_DB_ALIAS: {"ENGINE": 'djorm.db.backends.dummy'},
+                DEFAULT_DB_ALIAS: {"ENGINE": "djorm.db.backends.dummy"},
             }
         )
         with self.assertRaisesMessage(ConnectionDoesNotExist, msg):

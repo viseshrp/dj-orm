@@ -43,9 +43,7 @@ class Reference:
         return "<%s %r>" % (self.__class__.__name__, str(self))
 
     def __str__(self):
-        raise NotImplementedError(
-            "Subclasses must define how they should be converted to string."
-        )
+        raise NotImplementedError("Subclasses must define how they should be converted to string.")
 
 
 class Table(Reference):
@@ -105,9 +103,7 @@ class Columns(TableColumns):
                 pass
             return col
 
-        return ", ".join(
-            col_str(column, idx) for idx, column in enumerate(self.columns)
-        )
+        return ", ".join(col_str(column, idx) for idx, column in enumerate(self.columns))
 
 
 class IndexName(TableColumns):
@@ -140,9 +136,7 @@ class IndexColumns(Columns):
                 pass
             return col
 
-        return ", ".join(
-            col_str(column, idx) for idx, column in enumerate(self.columns)
-        )
+        return ", ".join(col_str(column, idx) for idx, column in enumerate(self.columns))
 
 
 class ForeignKeyName(TableColumns):
@@ -166,14 +160,12 @@ class ForeignKeyName(TableColumns):
         )
 
     def references_table(self, table):
-        return super().references_table(table) or self.to_reference.references_table(
-            table
-        )
+        return super().references_table(table) or self.to_reference.references_table(table)
 
     def references_column(self, table, column):
-        return super().references_column(
+        return super().references_column(table, column) or self.to_reference.references_column(
             table, column
-        ) or self.to_reference.references_column(table, column)
+        )
 
     def rename_table_references(self, old_table, new_table):
         super().rename_table_references(old_table, new_table)
@@ -241,10 +233,7 @@ class Expressions(TableColumns):
         self.compiler = compiler
         self.expressions = expressions
         self.quote_value = quote_value
-        columns = [
-            col.target.column
-            for col in self.compiler.query._gen_cols([self.expressions])
-        ]
+        columns = [col.target.column for col in self.compiler.query._gen_cols([self.expressions])]
         super().__init__(table, columns)
 
     def rename_table_references(self, old_table, new_table):

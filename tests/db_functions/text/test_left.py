@@ -18,9 +18,7 @@ class LeftTests(TestCase):
         )
         # If alias is null, set it to the first 2 lower characters of the name.
         Author.objects.filter(alias__isnull=True).update(alias=Lower(Left("name", 2)))
-        self.assertQuerySetEqual(
-            authors.order_by("name"), ["smithj", "rh"], lambda a: a.alias
-        )
+        self.assertQuerySetEqual(authors.order_by("name"), ["smithj", "rh"], lambda a: a.alias)
 
     def test_invalid_length(self):
         with self.assertRaisesMessage(ValueError, "'length' must be greater than 0"):
@@ -30,6 +28,4 @@ class LeftTests(TestCase):
         authors = Author.objects.annotate(
             name_part=Left("name", Value(3, output_field=IntegerField()))
         )
-        self.assertQuerySetEqual(
-            authors.order_by("name"), ["Joh", "Rho"], lambda a: a.name_part
-        )
+        self.assertQuerySetEqual(authors.order_by("name"), ["Joh", "Rho"], lambda a: a.name_part)

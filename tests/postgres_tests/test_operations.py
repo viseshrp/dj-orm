@@ -47,9 +47,7 @@ class AddIndexConcurrentlyTests(OptimizerTestBase, OperationTestBase):
         )
         with self.assertRaisesMessage(NotSupportedError, msg):
             with connection.schema_editor(atomic=True) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
 
     def test_add(self):
         project_state = self.set_up_test_model(self.app_label, index=False)
@@ -66,21 +64,15 @@ class AddIndexConcurrentlyTests(OptimizerTestBase, OperationTestBase):
             "+ Concurrently create index pony_pink_idx on field(s) pink of model Pony",
         )
         operation.state_forwards(self.app_label, new_state)
-        self.assertEqual(
-            len(new_state.models[self.app_label, "pony"].options["indexes"]), 1
-        )
+        self.assertEqual(len(new_state.models[self.app_label, "pony"].options["indexes"]), 1)
         self.assertIndexNotExists(table_name, ["pink"])
         # Add index.
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_forwards(
-                self.app_label, editor, project_state, new_state
-            )
+            operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertIndexExists(table_name, ["pink"])
         # Reversal.
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_backwards(
-                self.app_label, editor, new_state, project_state
-            )
+            operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertIndexNotExists(table_name, ["pink"])
         # Deconstruction.
         name, args, kwargs = operation.deconstruct()
@@ -99,15 +91,11 @@ class AddIndexConcurrentlyTests(OptimizerTestBase, OperationTestBase):
         self.assertIndexNotExists(table_name, ["pink"])
         # Add index.
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_forwards(
-                self.app_label, editor, project_state, new_state
-            )
+            operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertIndexExists(table_name, ["pink"], index_type="brin")
         # Reversal.
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_backwards(
-                self.app_label, editor, new_state, project_state
-            )
+            operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertIndexNotExists(table_name, ["pink"])
 
     def test_add_with_options(self):
@@ -119,15 +107,11 @@ class AddIndexConcurrentlyTests(OptimizerTestBase, OperationTestBase):
         self.assertIndexNotExists(table_name, ["pink"])
         # Add index.
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_forwards(
-                self.app_label, editor, project_state, new_state
-            )
+            operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertIndexExists(table_name, ["pink"], index_type="btree")
         # Reversal.
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_backwards(
-                self.app_label, editor, new_state, project_state
-            )
+            operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertIndexNotExists(table_name, ["pink"])
 
     def test_reduce_add_remove_concurrently(self):
@@ -191,9 +175,7 @@ class RemoveIndexConcurrentlyTests(OperationTestBase):
         )
         with self.assertRaisesMessage(NotSupportedError, msg):
             with connection.schema_editor(atomic=True) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
 
     def test_remove(self):
         project_state = self.set_up_test_model(self.app_label, index=True)
@@ -210,21 +192,15 @@ class RemoveIndexConcurrentlyTests(OperationTestBase):
             "- Concurrently remove index pony_pink_idx from Pony",
         )
         operation.state_forwards(self.app_label, new_state)
-        self.assertEqual(
-            len(new_state.models[self.app_label, "pony"].options["indexes"]), 0
-        )
+        self.assertEqual(len(new_state.models[self.app_label, "pony"].options["indexes"]), 0)
         self.assertIndexExists(table_name, ["pink"])
         # Remove index.
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_forwards(
-                self.app_label, editor, project_state, new_state
-            )
+            operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertIndexNotExists(table_name, ["pink"])
         # Reversal.
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_backwards(
-                self.app_label, editor, new_state, project_state
-            )
+            operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertIndexExists(table_name, ["pink"])
         # Deconstruction.
         name, args, kwargs = operation.deconstruct()
@@ -245,47 +221,35 @@ class CreateExtensionTests(PostgreSQLTestCase):
     @override_settings(DATABASE_ROUTERS=[NoMigrationRouter()])
     def test_no_allow_migrate(self):
         operation = CreateExtension("tablefunc")
-        self.assertEqual(
-            operation.formatted_description(), "+ Creates extension tablefunc"
-        )
+        self.assertEqual(operation.formatted_description(), "+ Creates extension tablefunc")
         project_state = ProjectState()
         new_state = project_state.clone()
         # Don't create an extension.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 0)
         # Reversal.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertEqual(len(captured_queries), 0)
 
     def test_allow_migrate(self):
         operation = CreateExtension("tablefunc")
-        self.assertEqual(
-            operation.migration_name_fragment, "create_extension_tablefunc"
-        )
+        self.assertEqual(operation.migration_name_fragment, "create_extension_tablefunc")
         project_state = ProjectState()
         new_state = project_state.clone()
         # Create an extension.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 4)
         self.assertIn("CREATE EXTENSION IF NOT EXISTS", captured_queries[1]["sql"])
         # Reversal.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertEqual(len(captured_queries), 2)
         self.assertIn("DROP EXTENSION IF EXISTS", captured_queries[1]["sql"])
 
@@ -297,9 +261,7 @@ class CreateExtensionTests(PostgreSQLTestCase):
         # Don't create an existing extension.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 3)
         self.assertIn("SELECT", captured_queries[0]["sql"])
 
@@ -310,9 +272,7 @@ class CreateExtensionTests(PostgreSQLTestCase):
         # Don't drop a nonexistent extension.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_backwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("SELECT", captured_queries[0]["sql"])
 
@@ -329,16 +289,12 @@ class CreateCollationTests(OptimizerTestBase, PostgreSQLTestCase):
         # Don't create a collation.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 0)
         # Reversal.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertEqual(len(captured_queries), 0)
 
     def test_create(self):
@@ -351,23 +307,17 @@ class CreateCollationTests(OptimizerTestBase, PostgreSQLTestCase):
         # Create a collation.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("CREATE COLLATION", captured_queries[0]["sql"])
         # Creating the same collation raises an exception.
         with self.assertRaisesMessage(ProgrammingError, "already exists"):
             with connection.schema_editor(atomic=True) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
-        # Reversal.
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
+                # Reversal.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("DROP COLLATION", captured_queries[0]["sql"])
         # Deconstruction.
@@ -388,17 +338,13 @@ class CreateCollationTests(OptimizerTestBase, PostgreSQLTestCase):
         # Create a collation.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("CREATE COLLATION", captured_queries[0]["sql"])
         # Reversal.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("DROP COLLATION", captured_queries[0]["sql"])
         # Deconstruction.
@@ -426,17 +372,13 @@ class CreateCollationTests(OptimizerTestBase, PostgreSQLTestCase):
         # Create an collation.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("CREATE COLLATION", captured_queries[0]["sql"])
         # Reversal.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("DROP COLLATION", captured_queries[0]["sql"])
 
@@ -448,10 +390,10 @@ class CreateCollationTests(OptimizerTestBase, PostgreSQLTestCase):
             deterministic=False,
         )
         buff, imports = OperationWriter(operation, indentation=0).serialize()
-        self.assertEqual(imports, {'import djorm.contrib.postgres.operations'})
+        self.assertEqual(imports, {"import djorm.contrib.postgres.operations"})
         self.assertEqual(
             buff,
-            'djorm.contrib.postgres.operations.CreateCollation(\n'
+            "djorm.contrib.postgres.operations.CreateCollation(\n"
             "    name='sample_collation',\n"
             "    locale='und-u-ks-level2',\n"
             "    provider='icu',\n"
@@ -490,16 +432,12 @@ class RemoveCollationTests(PostgreSQLTestCase):
         # Don't create a collation.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 0)
         # Reversal.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertEqual(len(captured_queries), 0)
 
     def test_remove(self):
@@ -507,9 +445,7 @@ class RemoveCollationTests(PostgreSQLTestCase):
         project_state = ProjectState()
         new_state = project_state.clone()
         with connection.schema_editor(atomic=False) as editor:
-            operation.database_forwards(
-                self.app_label, editor, project_state, new_state
-            )
+            operation.database_forwards(self.app_label, editor, project_state, new_state)
 
         operation = RemoveCollation("C_test", locale="C")
         self.assertEqual(operation.migration_name_fragment, "remove_collation_c_test")
@@ -520,23 +456,17 @@ class RemoveCollationTests(PostgreSQLTestCase):
         # Remove a collation.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("DROP COLLATION", captured_queries[0]["sql"])
         # Removing a nonexistent collation raises an exception.
         with self.assertRaisesMessage(ProgrammingError, "does not exist"):
             with connection.schema_editor(atomic=True) as editor:
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
-        # Reversal.
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
+                # Reversal.
         with CaptureQueriesContext(connection) as captured_queries:
             with connection.schema_editor(atomic=False) as editor:
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
         self.assertEqual(len(captured_queries), 1)
         self.assertIn("CREATE COLLATION", captured_queries[0]["sql"])
         # Deconstruction.
@@ -585,18 +515,14 @@ class AddConstraintNotValidTests(OperationTestBase):
         Pony.objects.create(pink=2, weight=1.0)
         # Add constraint.
         with connection.schema_editor(atomic=True) as editor:
-            operation.database_forwards(
-                self.app_label, editor, project_state, new_state
-            )
+            operation.database_forwards(self.app_label, editor, project_state, new_state)
         msg = f'check constraint "{constraint_name}"'
         with self.assertRaisesMessage(IntegrityError, msg), transaction.atomic():
             Pony.objects.create(pink=3, weight=1.0)
         self.assertConstraintExists(table_name, constraint_name)
         # Reversal.
         with connection.schema_editor(atomic=True) as editor:
-            operation.database_backwards(
-                self.app_label, editor, project_state, new_state
-            )
+            operation.database_backwards(self.app_label, editor, project_state, new_state)
         self.assertConstraintNotExists(table_name, constraint_name)
         Pony.objects.create(pink=3, weight=1.0)
         # Deconstruction.
@@ -620,9 +546,7 @@ class ValidateConstraintTests(OperationTestBase):
         obj = Pony.objects.create(pink=2, weight=1.0)
         # Add constraint.
         with connection.schema_editor(atomic=True) as editor:
-            operation.database_forwards(
-                self.app_label, editor, project_state, new_state
-            )
+            operation.database_forwards(self.app_label, editor, project_state, new_state)
         project_state = new_state
         new_state = new_state.clone()
         operation = ValidateConstraint("Pony", name=constraint_name)
@@ -643,22 +567,16 @@ class ValidateConstraintTests(OperationTestBase):
         with connection.schema_editor(atomic=True) as editor:
             msg = f'check constraint "{constraint_name}"'
             with self.assertRaisesMessage(IntegrityError, msg):
-                operation.database_forwards(
-                    self.app_label, editor, project_state, new_state
-                )
+                operation.database_forwards(self.app_label, editor, project_state, new_state)
         obj.pink = 5
         obj.save()
         with connection.schema_editor(atomic=True) as editor:
-            operation.database_forwards(
-                self.app_label, editor, project_state, new_state
-            )
-        # Reversal is a noop.
+            operation.database_forwards(self.app_label, editor, project_state, new_state)
+            # Reversal is a noop.
         with connection.schema_editor() as editor:
             with self.assertNumQueries(0):
-                operation.database_backwards(
-                    self.app_label, editor, new_state, project_state
-                )
-        # Deconstruction.
+                operation.database_backwards(self.app_label, editor, new_state, project_state)
+                # Deconstruction.
         name, args, kwargs = operation.deconstruct()
         self.assertEqual(name, "ValidateConstraint")
         self.assertEqual(args, [])

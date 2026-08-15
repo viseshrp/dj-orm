@@ -37,26 +37,21 @@ class MigrationExecutor:
                             if migration in applied:
                                 plan.append((self.loader.graph.nodes[migration], True))
                                 applied.pop(migration)
-            # If the migration is already applied, do backwards mode,
-            # otherwise do forwards mode.
+                                # If the migration is already applied, do backwards mode,
+                                # otherwise do forwards mode.
             elif target in applied:
                 # If the target is missing, it's likely a replaced migration.
                 # Reload the graph without replacements.
-                if (
-                    self.loader.replace_migrations
-                    and target not in self.loader.graph.node_map
-                ):
+                if self.loader.replace_migrations and target not in self.loader.graph.node_map:
                     self.loader.replace_migrations = False
                     self.loader.build_graph()
                     return self.migration_plan(targets, clean_start=clean_start)
-                # Don't migrate backwards all the way to the target node (that
-                # may roll back dependencies in other apps that don't need to
-                # be rolled back); instead roll back through target's immediate
-                # child(ren) in the same app, and no further.
+                    # Don't migrate backwards all the way to the target node (that
+                    # may roll back dependencies in other apps that don't need to
+                    # be rolled back); instead roll back through target's immediate
+                    # child(ren) in the same app, and no further.
                 next_in_app = sorted(
-                    n
-                    for n in self.loader.graph.node_map[target].children
-                    if n[0] == target[0]
+                    n for n in self.loader.graph.node_map[target].children if n[0] == target[0]
                 )
                 for node in next_in_app:
                     for migration in self.loader.graph.backwards_plan(node):
@@ -78,9 +73,7 @@ class MigrationExecutor:
         state = ProjectState(real_apps=self.loader.unmigrated_apps)
         if with_applied_migrations:
             # Create the forwards plan Django would follow on an empty database
-            full_plan = self.migration_plan(
-                self.loader.graph.leaf_nodes(), clean_start=True
-            )
+            full_plan = self.migration_plan(self.loader.graph.leaf_nodes(), clean_start=True)
             applied_migrations = {
                 self.loader.graph.nodes[key]
                 for key in self.loader.applied_migrations
@@ -108,10 +101,8 @@ class MigrationExecutor:
 
         if plan is None:
             plan = self.migration_plan(targets)
-        # Create the forwards plan Django would follow on an empty database
-        full_plan = self.migration_plan(
-            self.loader.graph.leaf_nodes(), clean_start=True
-        )
+            # Create the forwards plan Django would follow on an empty database
+        full_plan = self.migration_plan(self.loader.graph.leaf_nodes(), clean_start=True)
 
         all_forwards = all(not backwards for mig, backwards in plan)
         all_backwards = all(backwards for mig, backwards in plan)
@@ -164,9 +155,7 @@ class MigrationExecutor:
                     state.apps  # Render all -- performance critical
                     if self.progress_callback:
                         self.progress_callback("render_success")
-                state = self.apply_migration(
-                    state, migration, fake=fake, fake_initial=fake_initial
-                )
+                state = self.apply_migration(state, migration, fake=fake, fake_initial=fake_initial)
                 migrations_to_run.remove(migration)
 
         return state
@@ -202,7 +191,7 @@ class MigrationExecutor:
             if migration in migrations_to_run:
                 if "apps" not in state.__dict__:
                     state.apps  # Render all -- performance critical
-                # The state before this migration
+                    # The state before this migration
                 states[migration] = state
                 # The old state keeps as-is, we continue with the new state
                 state = migration.mutate_state(state, preserve=True)
@@ -219,9 +208,9 @@ class MigrationExecutor:
             self.unapply_migration(states[migration], migration, fake=fake)
             applied_migrations.remove(migration)
 
-        # Generate the post migration state by starting from the state before
-        # the last migration is unapplied and mutating it to include all the
-        # remaining applied migrations.
+            # Generate the post migration state by starting from the state before
+            # the last migration is unapplied and mutating it to include all the
+            # remaining applied migrations.
         last_unapplied_migration = plan[-1][0]
         state = states[last_unapplied_migration]
         # Avoid mutating state with apps rendered as it's an expensive
@@ -249,16 +238,14 @@ class MigrationExecutor:
                     fake = True
             if not fake:
                 # Alright, do it normally
-                with self.connection.schema_editor(
-                    atomic=migration.atomic
-                ) as schema_editor:
+                with self.connection.schema_editor(atomic=migration.atomic) as schema_editor:
                     state = migration.apply(state, schema_editor)
                     if not schema_editor.deferred_sql:
                         self.record_migration(migration)
                         migration_recorded = True
         if not migration_recorded:
             self.record_migration(migration)
-        # Report progress
+            # Report progress
         if self.progress_callback:
             self.progress_callback("apply_success", migration, fake)
         return state
@@ -276,11 +263,9 @@ class MigrationExecutor:
         if self.progress_callback:
             self.progress_callback("unapply_start", migration, fake)
         if not fake:
-            with self.connection.schema_editor(
-                atomic=migration.atomic
-            ) as schema_editor:
+            with self.connection.schema_editor(atomic=migration.atomic) as schema_editor:
                 state = migration.unapply(state, schema_editor)
-        # For replacement migrations, also record individual statuses.
+                # For replacement migrations, also record individual statuses.
         if migration.replaces:
             for app_label, name in migration.replaces:
                 self.recorder.record_unapplied(app_label, name)
@@ -348,14 +333,10 @@ class MigrationExecutor:
         found_add_field_migration = False
         fold_identifier_case = self.connection.features.ignores_table_name_case
         with self.connection.cursor() as cursor:
-            existing_table_names = set(
-                self.connection.introspection.table_names(cursor)
-            )
+            existing_table_names = set(self.connection.introspection.table_names(cursor))
             if fold_identifier_case:
-                existing_table_names = {
-                    name.casefold() for name in existing_table_names
-                }
-        # Make sure all create model and add field operations are done
+                existing_table_names = {name.casefold() for name in existing_table_names}
+                # Make sure all create model and add field operations are done
         for operation in migration.operations:
             if isinstance(operation, migrations.CreateModel):
                 model = apps.get_model(migration.app_label, operation.name)
@@ -394,9 +375,7 @@ class MigrationExecutor:
                         found_add_field_migration = True
                         continue
                 with self.connection.cursor() as cursor:
-                    columns = self.connection.introspection.get_table_description(
-                        cursor, table
-                    )
+                    columns = self.connection.introspection.get_table_description(cursor, table)
                 for column in columns:
                     field_column = field.column
                     column_name = column.name
@@ -408,6 +387,6 @@ class MigrationExecutor:
                         break
                 else:
                     return False, project_state
-        # If we get this far and we found at least one CreateModel or AddField
-        # migration, the migration is considered implicitly applied.
+                    # If we get this far and we found at least one CreateModel or AddField
+                    # migration, the migration is considered implicitly applied.
         return (found_create_model_migration or found_add_field_migration), after_state

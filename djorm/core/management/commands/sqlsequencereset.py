@@ -3,9 +3,7 @@ from djorm.db import DEFAULT_DB_ALIAS, connections
 
 
 class Command(AppCommand):
-    help = (
-        "Prints the SQL statements for resetting sequences for the given app name(s)."
-    )
+    help = "Prints the SQL statements for resetting sequences for the given app name(s)."
 
     output_transaction = True
 
@@ -15,10 +13,7 @@ class Command(AppCommand):
             "--database",
             default=DEFAULT_DB_ALIAS,
             choices=tuple(connections),
-            help=(
-                'Nominates a database to print the SQL for. Defaults to the "default" '
-                "database."
-            ),
+            help=('Nominates a database to print the SQL for. Defaults to the "default" database.'),
         )
 
     def handle_app_config(self, app_config, **options):

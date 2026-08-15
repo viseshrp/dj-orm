@@ -35,17 +35,14 @@ def resolve_relation(model, app_label=None, model_name=None):
         if model == RECURSIVE_RELATIONSHIP_CONSTANT:
             if app_label is None or model_name is None:
                 raise TypeError(
-                    "app_label and model_name must be provided to resolve "
-                    "recursive relationships."
+                    "app_label and model_name must be provided to resolve recursive relationships."
                 )
             return app_label, model_name
         if "." in model:
             app_label, model_name = model.split(".", 1)
             return app_label, model_name.lower()
         if app_label is None:
-            raise TypeError(
-                "app_label must be provided to resolve unscoped model relationships."
-            )
+            raise TypeError("app_label must be provided to resolve unscoped model relationships.")
         return app_label, model.lower()
     return model._meta.app_label, model._meta.model_name
 
@@ -80,10 +77,7 @@ def field_references(
             to_fields is None
             or
             # Reference to primary key.
-            (
-                None in to_fields
-                and (reference_field is None or reference_field.primary_key)
-            )
+            (None in to_fields and (reference_field is None or reference_field.primary_key))
             or
             # Reference to field.
             reference_field_name in to_fields
@@ -117,9 +111,7 @@ def get_references(state, model_tuple, field_tuple=()):
     """
     for state_model_tuple, model_state in state.models.items():
         for name, field in model_state.fields.items():
-            reference = field_references(
-                state_model_tuple, field, model_tuple, *field_tuple
-            )
+            reference = field_references(state_model_tuple, field, model_tuple, *field_tuple)
             if reference:
                 yield model_state, name, field, reference
 

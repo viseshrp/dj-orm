@@ -97,10 +97,7 @@ class FieldFlagsTests(test.SimpleTestCase):
 
     def test_each_object_should_have_auto_created(self):
         self.assertTrue(
-            all(
-                f.auto_created.__class__ == bool
-                for f in self.fields_and_reverse_objects
-            )
+            all(f.auto_created.__class__ == bool for f in self.fields_and_reverse_objects)
         )
 
     def test_non_concrete_fields(self):
@@ -137,17 +134,14 @@ class FieldFlagsTests(test.SimpleTestCase):
                 )
             if field.is_relation:
                 true_cardinality_flags = sum(
-                    getattr(field, flag) is True
-                    for flag in FLAG_PROPERTIES_FOR_RELATIONS
+                    getattr(field, flag) is True for flag in FLAG_PROPERTIES_FOR_RELATIONS
                 )
                 # If the field has a relation, there should be only one of the
                 # 4 cardinality flags available.
                 self.assertEqual(1, true_cardinality_flags)
 
     def test_cardinality_m2m(self):
-        m2m_type_fields = [
-            f for f in self.all_fields if f.is_relation and f.many_to_many
-        ]
+        m2m_type_fields = [f for f in self.all_fields if f.is_relation and f.many_to_many]
         # Test classes are what we expect
         self.assertEqual(MANY_TO_MANY_CLASSES, {f.__class__ for f in m2m_type_fields})
 
@@ -160,9 +154,7 @@ class FieldFlagsTests(test.SimpleTestCase):
 
     def test_cardinality_o2m(self):
         o2m_type_fields = [
-            f
-            for f in self.fields_and_reverse_objects
-            if f.is_relation and f.one_to_many
+            f for f in self.fields_and_reverse_objects if f.is_relation and f.one_to_many
         ]
         # Test classes are what we expect
         self.assertEqual(ONE_TO_MANY_CLASSES, {f.__class__ for f in o2m_type_fields})
@@ -175,9 +167,7 @@ class FieldFlagsTests(test.SimpleTestCase):
 
     def test_cardinality_m2o(self):
         m2o_type_fields = [
-            f
-            for f in self.fields_and_reverse_objects
-            if f.is_relation and f.many_to_one
+            f for f in self.fields_and_reverse_objects if f.is_relation and f.many_to_one
         ]
         # Test classes are what we expect
         self.assertEqual(MANY_TO_ONE_CLASSES, {f.__class__ for f in m2o_type_fields})

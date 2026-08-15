@@ -11,8 +11,8 @@ from .management import create_contenttypes, inject_rename_contenttypes_operatio
 
 
 class ContentTypesConfig(AppConfig):
-    default_auto_field = 'djorm.db.models.AutoField'
-    name = 'djorm.contrib.contenttypes'
+    default_auto_field = "djorm.db.models.AutoField"
+    name = "djorm.contrib.contenttypes"
     verbose_name = _("Content Types")
 
     def ready(self):

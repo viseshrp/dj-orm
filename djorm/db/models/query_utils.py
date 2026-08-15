@@ -1,4 +1,10 @@
-'\nVarious data structures used in query construction.\n\nFactored out from djorm.db.models.query to avoid making the main module very\nlarge and/or so that they can be used by other modules without getting into\ncircular import difficulties.\n'
+"""
+Various data structures used in query construction.
+
+Factored out from djorm.db.models.query to avoid making the main module very
+large and/or so that they can be used by other modules without getting into
+circular import difficulties.
+"""
 
 import functools
 import inspect
@@ -13,7 +19,7 @@ from djorm.utils import tree
 from djorm.utils.functional import cached_property
 from djorm.utils.hashable import make_hashable
 
-logger = logging.getLogger('djorm.db.models')
+logger = logging.getLogger("djorm.db.models")
 
 # PathInfo is used when converting lookups (fk__somecol). The contents
 # describe the relation in Model terms (model Options and Fields for both
@@ -111,18 +117,14 @@ class Q(tree.Node):
                     path = lhs
                     lookup = None
                 field = models.F(path)
-                if (
-                    field_replacement := field.replace_expressions(replacements)
-                ) is not field:
+                if (field_replacement := field.replace_expressions(replacements)) is not field:
                     # Handle the implicit __exact case by falling back to an
                     # extra transform when get_lookup returns no match for the
                     # last component of the path.
                     if lookup is None:
                         lookup = "exact"
                     if (lookup_class := field_replacement.get_lookup(lookup)) is None:
-                        if (
-                            transform_class := field_replacement.get_transform(lookup)
-                        ) is not None:
+                        if (transform_class := field_replacement.get_transform(lookup)) is not None:
                             field_replacement = transform_class(field_replacement)
                             lookup = "exact"
                             lookup_class = field_replacement.get_lookup(lookup)
@@ -176,9 +178,7 @@ class Q(tree.Node):
             query.add_q(self)
         compiler = query.get_compiler(using=using)
         context_manager = (
-            transaction.atomic(using=using)
-            if connection.in_atomic_block
-            else nullcontext()
+            transaction.atomic(using=using) if connection.in_atomic_block else nullcontext()
         )
         try:
             with context_manager:
@@ -189,8 +189,8 @@ class Q(tree.Node):
 
     def deconstruct(self):
         path = "%s.%s" % (self.__class__.__module__, self.__class__.__name__)
-        if path.startswith('djorm.db.models.query_utils'):
-            path = path.replace('djorm.db.models.query_utils', 'djorm.db.models')
+        if path.startswith("djorm.db.models.query_utils"):
+            path = path.replace("djorm.db.models.query_utils", "djorm.db.models")
         args = tuple(self.children)
         kwargs = {}
         if self.connector != self.default:
@@ -229,9 +229,7 @@ class Q(tree.Node):
         # Avoid circular imports.
         from djorm.db.models.sql import query
 
-        return {
-            child.split(LOOKUP_SEP, 1)[0] for child in query.get_children_from_q(self)
-        }
+        return {child.split(LOOKUP_SEP, 1)[0] for child in query.get_children_from_q(self)}
 
 
 class DeferredAttribute:
@@ -258,9 +256,7 @@ class DeferredAttribute:
             val = self._check_parent_chain(instance)
             if val is None:
                 if not instance._is_pk_set() and self.field.generated:
-                    raise AttributeError(
-                        "Cannot read a generated field from an unsaved model."
-                    )
+                    raise AttributeError("Cannot read a generated field from an unsaved model.")
                 instance.refresh_from_db(fields=[field_name])
             else:
                 data[field_name] = val
@@ -301,9 +297,7 @@ class RegisterLookupMixin:
 
     @functools.cache
     def get_class_lookups(cls):
-        class_lookups = [
-            parent.__dict__.get("class_lookups", {}) for parent in inspect.getmro(cls)
-        ]
+        class_lookups = [parent.__dict__.get("class_lookups", {}) for parent in inspect.getmro(cls)]
         return cls.merge_dicts(class_lookups)
 
     def get_instance_lookups(self):
@@ -368,9 +362,7 @@ class RegisterLookupMixin:
         self.instance_lookups[lookup_name] = lookup
         return lookup
 
-    register_lookup = class_or_instance_method(
-        register_class_lookup, register_instance_lookup
-    )
+    register_lookup = class_or_instance_method(register_class_lookup, register_instance_lookup)
     register_class_lookup = classmethod(register_class_lookup)
 
     def _unregister_class_lookup(cls, lookup, lookup_name=None):
@@ -414,20 +406,20 @@ def select_related_descend(field, restricted, requested, select_mask):
     # Only relationships can be descended.
     if not field.remote_field:
         return False
-    # Forward MTI parent links should not be explicitly descended as they are
-    # always JOIN'ed against (unless excluded by `select_mask`).
+        # Forward MTI parent links should not be explicitly descended as they are
+        # always JOIN'ed against (unless excluded by `select_mask`).
     if getattr(field.remote_field, "parent_link", False):
         return False
-    # When `select_related()` is used without a `*requested` mask all
-    # relationships are descended unless they are nullable.
+        # When `select_related()` is used without a `*requested` mask all
+        # relationships are descended unless they are nullable.
     if not restricted:
         return not field.null
-    # When `select_related(*requested)` is used only fields that are part of
-    # `requested` should be descended.
+        # When `select_related(*requested)` is used only fields that are part of
+        # `requested` should be descended.
     if field.name not in requested:
         return False
-    # Prevent invalid usages of `select_related()` and `only()`/`defer()` such
-    # as `select_related("a").only("b")` and `select_related("a").defer("a")`.
+        # Prevent invalid usages of `select_related()` and `only()`/`defer()` such
+        # as `select_related("a").only("b")` and `select_related("a").defer("a")`.
     if select_mask and field not in select_mask:
         raise FieldError(
             f"Field {field.model._meta.object_name}.{field.name} cannot be both "
@@ -464,18 +456,17 @@ def check_rel_lookup_compatibility(model, target_opts, field):
             or model in opts.all_parents
         )
 
-    # If the field is a primary key, then doing a query against the field's
-    # model is ok, too. Consider the case:
-    # class Restaurant(models.Model):
-    #     place = OneToOneField(Place, primary_key=True):
-    # Restaurant.objects.filter(pk__in=Restaurant.objects.all()).
-    # If we didn't have the primary key check, then pk__in (== place__in) would
-    # give Place's opts as the target opts, but Restaurant isn't compatible
-    # with that. This logic applies only to primary keys, as when doing __in=qs,
-    # we are going to turn this into __in=qs.values('pk') later on.
-    return check(target_opts) or (
-        getattr(field, "primary_key", False) and check(field.model._meta)
-    )
+        # If the field is a primary key, then doing a query against the field's
+        # model is ok, too. Consider the case:
+        # class Restaurant(models.Model):
+        #     place = OneToOneField(Place, primary_key=True):
+        # Restaurant.objects.filter(pk__in=Restaurant.objects.all()).
+        # If we didn't have the primary key check, then pk__in (== place__in) would
+        # give Place's opts as the target opts, but Restaurant isn't compatible
+        # with that. This logic applies only to primary keys, as when doing __in=qs,
+        # we are going to turn this into __in=qs.values('pk') later on.
+
+    return check(target_opts) or (getattr(field, "primary_key", False) and check(field.model._meta))
 
 
 class FilteredRelation:
@@ -488,9 +479,9 @@ class FilteredRelation:
         self.alias = None
         if not isinstance(condition, Q):
             raise ValueError("condition argument must be a Q() instance.")
-        # .condition and .resolved_condition have to be stored independently
-        # as the former must remain unchanged for Join.__eq__ to remain stable
-        # and reusable even once their .filtered_relation are resolved.
+            # .condition and .resolved_condition have to be stored independently
+            # as the former must remain unchanged for Join.__eq__ to remain stable
+            # and reusable even once their .filtered_relation are resolved.
         self.condition = condition
         self.resolved_condition = None
 

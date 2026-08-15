@@ -31,9 +31,7 @@ class BaseChoiceIterator:
             raise IndexError("index out of range") from None
 
     def __iter__(self):
-        raise NotImplementedError(
-            "BaseChoiceIterator subclasses must implement __iter__()."
-        )
+        raise NotImplementedError("BaseChoiceIterator subclasses must implement __iter__().")
 
 
 class BlankChoiceIterator(BaseChoiceIterator):

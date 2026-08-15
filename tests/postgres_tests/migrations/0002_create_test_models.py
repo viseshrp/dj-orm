@@ -136,9 +136,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "field",
-                    ArrayField(
-                        models.IntegerField(), blank=True, default=list, size=None
-                    ),
+                    ArrayField(models.IntegerField(), blank=True, default=list, size=None),
                 ),
             ],
             options={
@@ -328,9 +326,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "character",
-                    models.ForeignKey(
-                        "postgres_tests.Character", on_delete=models.CASCADE
-                    ),
+                    models.ForeignKey("postgres_tests.Character", on_delete=models.CASCADE),
                 ),
                 ("dialogue", models.TextField(blank=True, null=True)),
                 ("dialogue_search_vector", SearchVectorField(blank=True, null=True)),
@@ -501,9 +497,7 @@ class Migration(migrations.Migration):
                 ("small_integer", models.SmallIntegerField(blank=True, null=True)),
                 (
                     "decimal_field",
-                    models.DecimalField(
-                        max_digits=5, decimal_places=2, blank=True, null=True
-                    ),
+                    models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True),
                 ),
             ],
             options={

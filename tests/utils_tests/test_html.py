@@ -50,12 +50,10 @@ class TestUtilsHtml(SimpleTestCase):
                 for pattern in patterns:
                     with self.subTest(value=value, output=output, pattern=pattern):
                         self.check_output(escape, pattern % value, pattern % output)
-                        self.check_output(
-                            escape, lazystr(pattern % value), pattern % output
-                        )
-                # Check repeated values.
+                        self.check_output(escape, lazystr(pattern % value), pattern % output)
+                        # Check repeated values.
                 self.check_output(escape, value * 2, output * 2)
-        # Verify it doesn't double replace &.
+                # Verify it doesn't double replace &.
         self.check_output(escape, "<&", "&lt;&amp;")
 
     def test_format_html(self):
@@ -133,9 +131,7 @@ class TestUtilsHtml(SimpleTestCase):
             (3, 10): (3, 10, 19),
             (3, 9): (3, 9, 24),
         }
-        htmlparser_fixed_security = (
-            sys.version_info >= min_fixed_security[sys.version_info[:2]]
-        )
+        htmlparser_fixed_security = sys.version_info >= min_fixed_security[sys.version_info[:2]]
         # Similarly, there was a fix for terminating incomplete entities. See:
         # https://github.com/python/cpython/commit/95296a9d
         min_fixed_incomplete_entities = {
@@ -152,8 +148,7 @@ class TestUtilsHtml(SimpleTestCase):
             major_version, major_version
         )
         htmlparser_fixed_incomplete_entities = (
-            sys.version_info
-            >= min_fixed_incomplete_entities.get(major_version, major_version)
+            sys.version_info >= min_fixed_incomplete_entities.get(major_version, major_version)
         )
         items = (
             (
@@ -240,7 +235,7 @@ class TestUtilsHtml(SimpleTestCase):
                 self.check_output(strip_spaces_between_tags, value)
                 self.check_output(strip_spaces_between_tags, lazystr(value))
 
-        # Strings that have spaces to strip.
+                # Strings that have spaces to strip.
         items = (
             ("<d> </d>", "<d></d>"),
             ("<p>hello </p>\n<p> world</p>", "<p>hello </p><p> world</p>"),
@@ -283,8 +278,7 @@ class TestUtilsHtml(SimpleTestCase):
             (
                 (
                     "&<>",
-                    '<script id="test_id" type="application/json">'
-                    '"\\u0026\\u003C\\u003E"</script>',
+                    '<script id="test_id" type="application/json">"\\u0026\\u003C\\u003E"</script>',
                 )
             ),
             # "<", ">" and "&" are quoted inside JSON objects
@@ -297,8 +291,7 @@ class TestUtilsHtml(SimpleTestCase):
             # Lazy strings are quoted
             (
                 lazystr("&<>"),
-                '<script id="test_id" type="application/json">"\\u0026\\u003C\\u003E"'
-                "</script>",
+                '<script id="test_id" type="application/json">"\\u0026\\u003C\\u003E"</script>',
             ),
             (
                 {"a": lazystr("<script>test&ing</script>")},
@@ -316,13 +309,13 @@ class TestUtilsHtml(SimpleTestCase):
             def encode(self, o):
                 return '{"hello": "world"}'
 
-        self.assertHTMLEqual(
+        self.assertEqual(
             json_script({}, encoder=CustomDjangoJSONEncoder),
             '<script type="application/json">{"hello": "world"}</script>',
         )
 
     def test_json_script_without_id(self):
-        self.assertHTMLEqual(
+        self.assertEqual(
             json_script({"key": "value"}),
             '<script type="application/json">{"key": "value"}</script>',
         )
@@ -360,14 +353,11 @@ class TestUtilsHtml(SimpleTestCase):
             ("http://example.com/?x=<>\"'", "http://example.com/?x=%3C%3E%22%27"),
             (
                 "http://example.com/?q=http://example.com/?x=1%26q=django",
-                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
-                "django",
+                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3Ddjango",
             ),
             (
-                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
-                "django",
-                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3D"
-                "django",
+                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3Ddjorm",
+                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3Ddjorm",
             ),
             ("http://.www.f oo.bar/", "http://.www.f%20oo.bar/"),
             ('http://example.com">', "http://example.com%22%3E"),
@@ -434,13 +424,11 @@ class TestUtilsHtml(SimpleTestCase):
         tests = (
             (
                 "Search for google.com/?q=! and see.",
-                'Search for <a href="http://google.com/?q=">google.com/?q=</a>! and '
-                "see.",
+                'Search for <a href="http://google.com/?q=">google.com/?q=</a>! and see.',
             ),
             (
                 "Search for google.com/?q=1&lt! and see.",
-                'Search for <a href="http://google.com/?q=1%3C">google.com/?q=1&lt'
-                "</a>! and see.",
+                'Search for <a href="http://google.com/?q=1%3C">google.com/?q=1&lt</a>! and see.',
             ),
             (
                 lazystr("Search for google.com/?q=!"),

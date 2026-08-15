@@ -37,9 +37,7 @@ class ValuableTaggedItem(TaggedItem):
 class AbstractComparison(models.Model):
     comparative = models.CharField(max_length=50)
 
-    content_type1 = models.ForeignKey(
-        ContentType, models.CASCADE, related_name="comparative1_set"
-    )
+    content_type1 = models.ForeignKey(ContentType, models.CASCADE, related_name="comparative1_set")
     object_id1 = models.PositiveIntegerField()
 
     first_obj = GenericForeignKey(ct_field="content_type1", fk_field="object_id1")
@@ -51,9 +49,7 @@ class Comparison(AbstractComparison):
     through an inherited abstract model and one defined directly on this class.
     """
 
-    content_type2 = models.ForeignKey(
-        ContentType, models.CASCADE, related_name="comparative2_set"
-    )
+    content_type2 = models.ForeignKey(ContentType, models.CASCADE, related_name="comparative2_set")
     object_id2 = models.PositiveIntegerField()
 
     other_obj = GenericForeignKey(ct_field="content_type2", fk_field="object_id2")
@@ -108,8 +104,9 @@ class Gecko(models.Model):
     has_tail = models.BooleanField(default=False)
     objects = GeckoManager()
 
+    # To test fix for #11263
 
-# To test fix for #11263
+
 class Rock(Mineral):
     tags = GenericRelation(TaggedItem)
 
@@ -144,8 +141,9 @@ class ProxyRelatedModel(ConcreteRelatedModel):
     class Meta:
         proxy = True
 
+        # To test fix for #7551
 
-# To test fix for #7551
+
 class AllowsNullGFK(models.Model):
     content_type = models.ForeignKey(ContentType, models.SET_NULL, null=True)
     object_id = models.PositiveIntegerField(null=True)

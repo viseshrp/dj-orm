@@ -16,9 +16,7 @@ class ArticleRef(models.Model):
     title = models.CharField(max_length=50, unique=True)
     code = models.CharField(max_length=50, unique=True)
     authors = models.ManyToManyField(ScientistRef, related_name="articles_written_set")
-    reviewers = models.ManyToManyField(
-        ScientistRef, related_name="articles_reviewed_set"
-    )
+    reviewers = models.ManyToManyField(ScientistRef, related_name="articles_reviewed_set")
 
 
 class Scientist(models.Model):
@@ -43,8 +41,8 @@ class Article(models.Model):
         db_tablespace = "tbl_tbsp"
         managed = False
 
+        # Also set the tables for automatically created models
 
-# Also set the tables for automatically created models
 
 Authors = Article._meta.get_field("authors").remote_field.through
 Authors._meta.db_table = "model_options_articleref_authors"

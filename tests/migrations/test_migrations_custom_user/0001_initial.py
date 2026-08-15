@@ -21,9 +21,7 @@ class Migration(migrations.Migration):
                 ("id", models.AutoField(primary_key=True)),
                 (
                     "author",
-                    models.ForeignKey(
-                        settings.AUTH_USER_MODEL, models.CASCADE, to_field="id"
-                    ),
+                    models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE, to_field="id"),
                 ),
             ],
         ),

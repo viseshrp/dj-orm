@@ -67,9 +67,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                 **orig_settings_dict,
                 "NAME": f"{self.connection.alias}_{suffix}.sqlite3",
             }
-        raise NotSupportedError(
-            f"Cloning with start method {start_method!r} is not supported."
-        )
+        raise NotSupportedError(f"Cloning with start method {start_method!r} is not supported.")
 
     def _clone_test_db(self, suffix, verbosity, keepdb=False):
         source_database_name = self.connection.settings_dict["NAME"]
@@ -82,11 +80,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                 if verbosity >= 1:
                     self.log(
                         "Destroying old test database for alias %s..."
-                        % (
-                            self._get_database_display_str(
-                                verbosity, target_database_name
-                            ),
-                        )
+                        % (self._get_database_display_str(verbosity, target_database_name),)
                     )
                 try:
                     os.remove(target_database_name)
@@ -98,9 +92,9 @@ class DatabaseCreation(BaseDatabaseCreation):
             except Exception as e:
                 self.log("Got an error cloning the test database: %s" % e)
                 sys.exit(2)
-        # Forking automatically makes a copy of an in-memory database.
-        # Spawn requires migrating to disk which will be re-opened in
-        # setup_worker_connection.
+                # Forking automatically makes a copy of an in-memory database.
+                # Spawn requires migrating to disk which will be re-opened in
+                # setup_worker_connection.
         elif multiprocessing.get_start_method() == "spawn":
             ondisk_db = sqlite3.connect(target_database_name, uri=True)
             self.connection.connection.backup(ondisk_db)
@@ -139,11 +133,10 @@ class DatabaseCreation(BaseDatabaseCreation):
             self.connection.close()
         elif start_method == "spawn":
             alias = self.connection.alias
-            connection_str = (
-                f"file:memorydb_{alias}_{_worker_id}?mode=memory&cache=shared"
-            )
+            connection_str = f"file:memorydb_{alias}_{_worker_id}?mode=memory&cache=shared"
             source_db = self.connection.Database.connect(
-                f"file:{alias}_{_worker_id}.sqlite3?mode=ro", uri=True
+                settings_dict["NAME"],
+                uri=str(settings_dict["NAME"]).startswith("file:"),
             )
             target_db = sqlite3.connect(connection_str, uri=True)
             source_db.backup(target_db)

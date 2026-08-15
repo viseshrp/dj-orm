@@ -121,10 +121,7 @@ class OperationWriterTests(SimpleTestCase):
         self.assertEqual(imports, {"import custom_migration_operations.operations"})
         self.assertEqual(
             buff,
-            "custom_migration_operations.operations.ArgsOperation(\n"
-            "    arg1=1,\n"
-            "    arg2=2,\n"
-            "),",
+            "custom_migration_operations.operations.ArgsOperation(\n    arg1=1,\n    arg2=2,\n),",
         )
 
     def test_kwargs_signature(self):
@@ -133,15 +130,11 @@ class OperationWriterTests(SimpleTestCase):
         self.assertEqual(imports, {"import custom_migration_operations.operations"})
         self.assertEqual(
             buff,
-            "custom_migration_operations.operations.KwargsOperation(\n"
-            "    kwarg1=1,\n"
-            "),",
+            "custom_migration_operations.operations.KwargsOperation(\n    kwarg1=1,\n),",
         )
 
     def test_args_kwargs_signature(self):
-        operation = custom_migration_operations.operations.ArgsKwargsOperation(
-            1, 2, kwarg2=4
-        )
+        operation = custom_migration_operations.operations.ArgsKwargsOperation(1, 2, kwarg2=4)
         buff, imports = OperationWriter(operation, indentation=0).serialize()
         self.assertEqual(imports, {"import custom_migration_operations.operations"})
         self.assertEqual(
@@ -154,10 +147,8 @@ class OperationWriterTests(SimpleTestCase):
         )
 
     def test_keyword_only_args_signature(self):
-        operation = (
-            custom_migration_operations.operations.ArgsAndKeywordOnlyArgsOperation(
-                1, 2, kwarg1=3, kwarg2=4
-            )
+        operation = custom_migration_operations.operations.ArgsAndKeywordOnlyArgsOperation(
+            1, 2, kwarg1=3, kwarg2=4
         )
         buff, imports = OperationWriter(operation, indentation=0).serialize()
         self.assertEqual(imports, {"import custom_migration_operations.operations"})
@@ -267,18 +258,16 @@ class WriterTests(SimpleTestCase):
             exec(string, globals(), d)
         except Exception as e:
             if value:
-                self.fail(
-                    "Could not exec %r (from value %r): %s" % (string.strip(), value, e)
-                )
+                self.fail("Could not exec %r (from value %r): %s" % (string.strip(), value, e))
             else:
                 self.fail("Could not exec %r: %s" % (string.strip(), e))
         return d
 
     def serialize_round_trip(self, value):
         string, imports = MigrationWriter.serialize(value)
-        return self.safe_exec(
-            "%s\ntest_value_result = %s" % ("\n".join(imports), string), value
-        )["test_value_result"]
+        return self.safe_exec("%s\ntest_value_result = %s" % ("\n".join(imports), string), value)[
+            "test_value_result"
+        ]
 
     def assertSerializedEqual(self, value):
         self.assertEqual(self.serialize_round_trip(value), value)
@@ -383,9 +372,7 @@ class WriterTests(SimpleTestCase):
         )
         self.assertSerializedEqual(self.NestedEnum.A)
 
-        field = models.CharField(
-            default=TextEnum.B, choices=[(m.value, m) for m in TextEnum]
-        )
+        field = models.CharField(default=TextEnum.B, choices=[(m.value, m) for m in TextEnum])
         string = MigrationWriter.serialize(field)[0]
         self.assertEqual(
             string,
@@ -406,9 +393,7 @@ class WriterTests(SimpleTestCase):
             "('value-b', migrations.test_writer.TextTranslatedEnum['B'])], "
             "default=migrations.test_writer.TextTranslatedEnum['A'])",
         )
-        field = models.CharField(
-            default=BinaryEnum.B, choices=[(m.value, m) for m in BinaryEnum]
-        )
+        field = models.CharField(default=BinaryEnum.B, choices=[(m.value, m) for m in BinaryEnum])
         string = MigrationWriter.serialize(field)[0]
         self.assertEqual(
             string,
@@ -417,9 +402,7 @@ class WriterTests(SimpleTestCase):
             "(b'value-b', migrations.test_writer.BinaryEnum['B'])], "
             "default=migrations.test_writer.BinaryEnum['B'])",
         )
-        field = models.IntegerField(
-            default=IntEnum.A, choices=[(m.value, m) for m in IntEnum]
-        )
+        field = models.IntegerField(default=IntEnum.A, choices=[(m.value, m) for m in IntEnum])
         string = MigrationWriter.serialize(field)[0]
         self.assertEqual(
             string,
@@ -458,8 +441,7 @@ class WriterTests(SimpleTestCase):
         self.assertSerializedResultEqual(
             IntFlagEnum.A | IntFlagEnum.B,
             (
-                "migrations.test_writer.IntFlagEnum['A'] | "
-                "migrations.test_writer.IntFlagEnum['B']",
+                "migrations.test_writer.IntFlagEnum['A'] | migrations.test_writer.IntFlagEnum['B']",
                 {"import migrations.test_writer"},
             ),
         )
@@ -487,8 +469,7 @@ class WriterTests(SimpleTestCase):
         string = MigrationWriter.serialize(field)[0]
         self.assertEqual(
             string,
-            "models.CharField(choices=[('A', 'A value'), ('B', 'B value')], "
-            "default='B')",
+            "models.CharField(choices=[('A', 'A value'), ('B', 'B value')], default='B')",
         )
         field = models.IntegerField(default=IntegerChoices.B, choices=IntegerChoices)
         string = MigrationWriter.serialize(field)[0]
@@ -560,9 +541,7 @@ class WriterTests(SimpleTestCase):
             ("uuid.UUID('c7853ec1-2ea3-4359-b02d-b54e8f1bcee2')", {"import uuid"}),
         )
 
-        field = models.UUIDField(
-            choices=((uuid_a, "UUID A"), (uuid_b, "UUID B")), default=uuid_a
-        )
+        field = models.UUIDField(choices=((uuid_a, "UUID A"), (uuid_b, "UUID B")), default=uuid_a)
         string = MigrationWriter.serialize(field)[0]
         self.assertEqual(
             string,
@@ -651,9 +630,7 @@ class WriterTests(SimpleTestCase):
             ),
         )
         self.assertSerializedResultEqual(
-            datetime.datetime(
-                2012, 1, 1, 2, 1, tzinfo=zoneinfo.ZoneInfo("Europe/Paris")
-            ),
+            datetime.datetime(2012, 1, 1, 2, 1, tzinfo=zoneinfo.ZoneInfo("Europe/Paris")),
             (
                 "datetime.datetime(2012, 1, 1, 1, 1, tzinfo=datetime.timezone.utc)",
                 {"import datetime"},
@@ -664,24 +641,22 @@ class WriterTests(SimpleTestCase):
         self.assertSerializedFieldEqual(models.CharField(max_length=255))
         self.assertSerializedResultEqual(
             models.CharField(max_length=255),
-            ("models.CharField(max_length=255)", {'from djorm.db import models'}),
+            ("models.CharField(max_length=255)", {"from djorm.db import models"}),
         )
         self.assertSerializedFieldEqual(models.TextField(null=True, blank=True))
         self.assertSerializedResultEqual(
             models.TextField(null=True, blank=True),
             (
                 "models.TextField(blank=True, null=True)",
-                {'from djorm.db import models'},
+                {"from djorm.db import models"},
             ),
         )
 
     def test_serialize_settings(self):
-        self.assertSerializedEqual(
-            SettingsReference(settings.AUTH_USER_MODEL, "AUTH_USER_MODEL")
-        )
+        self.assertSerializedEqual(SettingsReference(settings.AUTH_USER_MODEL, "AUTH_USER_MODEL"))
         self.assertSerializedResultEqual(
             SettingsReference("someapp.model", "AUTH_USER_MODEL"),
-            ("settings.AUTH_USER_MODEL", {'from djorm.conf import settings'}),
+            ("settings.AUTH_USER_MODEL", {"from djorm.conf import settings"}),
         )
 
     def test_serialize_iterators(self):
@@ -703,9 +678,7 @@ class WriterTests(SimpleTestCase):
         """
         validator = RegexValidator(message="hello")
         string = MigrationWriter.serialize(validator)[0]
-        self.assertEqual(
-            string, "djorm.core.validators.RegexValidator(message='hello')"
-        )
+        self.assertEqual(string, "djorm.core.validators.RegexValidator(message='hello')")
         self.serialize_round_trip(validator)
 
         # Test with a compiled regex.
@@ -722,8 +695,7 @@ class WriterTests(SimpleTestCase):
         string = MigrationWriter.serialize(validator)[0]
         self.assertEqual(
             string,
-            "djorm.core.validators.RegexValidator('^[0-9]+$', "
-            "flags=re.RegexFlag['DOTALL'])",
+            "djorm.core.validators.RegexValidator('^[0-9]+$', flags=re.RegexFlag['DOTALL'])",
         )
         self.serialize_round_trip(validator)
 
@@ -732,39 +704,32 @@ class WriterTests(SimpleTestCase):
         string = MigrationWriter.serialize(validator)[0]
         self.assertEqual(
             string,
-            "djorm.core.validators.RegexValidator('^[-a-zA-Z0-9_]+$', 'Invalid', "
-            "'invalid')",
+            "djorm.core.validators.RegexValidator('^[-a-zA-Z0-9_]+$', 'Invalid', 'invalid')",
         )
         self.serialize_round_trip(validator)
 
         # Test with a subclass.
         validator = EmailValidator(message="hello")
         string = MigrationWriter.serialize(validator)[0]
-        self.assertEqual(
-            string, "djorm.core.validators.EmailValidator(message='hello')"
-        )
+        self.assertEqual(string, "djorm.core.validators.EmailValidator(message='hello')")
         self.serialize_round_trip(validator)
 
-        validator = deconstructible(path="migrations.test_writer.EmailValidator")(
-            EmailValidator
-        )(message="hello")
-        string = MigrationWriter.serialize(validator)[0]
-        self.assertEqual(
-            string, "migrations.test_writer.EmailValidator(message='hello')"
-        )
-
-        validator = deconstructible(path="custom.EmailValidator")(EmailValidator)(
+        validator = deconstructible(path="migrations.test_writer.EmailValidator")(EmailValidator)(
             message="hello"
         )
+        string = MigrationWriter.serialize(validator)[0]
+        self.assertEqual(string, "migrations.test_writer.EmailValidator(message='hello')")
+
+        validator = deconstructible(path="custom.EmailValidator")(EmailValidator)(message="hello")
         with self.assertRaisesMessage(ImportError, "No module named 'custom'"):
             MigrationWriter.serialize(validator)
 
-        validator = deconstructible(path='djorm.core.validators.EmailValidator2')(
-            EmailValidator
-        )(message="hello")
+        validator = deconstructible(path="djorm.core.validators.EmailValidator2")(EmailValidator)(
+            message="hello"
+        )
         with self.assertRaisesMessage(
             ValueError,
-            'Could not find object EmailValidator2 in djorm.core.validators.',
+            "Could not find object EmailValidator2 in djorm.core.validators.",
         ):
             MigrationWriter.serialize(validator)
 
@@ -793,7 +758,7 @@ class WriterTests(SimpleTestCase):
             "models.OrderBy(models.OrderBy(models.F('name'), descending=True)), "
             "name='complex_func_index')",
         )
-        self.assertEqual(imports, {'from djorm.db import models'})
+        self.assertEqual(imports, {"from djorm.db import models"})
 
     def test_serialize_empty_nonempty_tuple(self):
         """
@@ -850,9 +815,7 @@ class WriterTests(SimpleTestCase):
     def test_serialize_frozensets(self):
         self.assertSerializedEqual(frozenset())
         self.assertSerializedEqual(frozenset("let it go"))
-        self.assertSerializedResultEqual(
-            frozenset("cba"), ("frozenset(['a', 'b', 'c'])", set())
-        )
+        self.assertSerializedResultEqual(frozenset("cba"), ("frozenset(['a', 'b', 'c'])", set()))
 
     def test_serialize_set(self):
         self.assertSerializedEqual(set())
@@ -923,9 +886,7 @@ class WriterTests(SimpleTestCase):
                         bases=(models.Model,),
                     ),
                     migrations.DeleteModel("MyModel"),
-                    migrations.AddField(
-                        "OtherModel", "datetimefield", fields["datetimefield"]
-                    ),
+                    migrations.AddField("OtherModel", "datetimefield", fields["datetimefield"]),
                 ],
                 "dependencies": [("testapp", "some_other_one")],
             },
@@ -957,9 +918,7 @@ class WriterTests(SimpleTestCase):
 
     @override_settings(
         MIGRATION_MODULES={"namespace_app": "namespace_app.migrations"},
-        INSTALLED_APPS=[
-            "migrations.migrations_test_apps.distributed_app_location_2.namespace_app"
-        ],
+        INSTALLED_APPS=["migrations.migrations_test_apps.distributed_app_location_2.namespace_app"],
     )
     def test_migration_path_distributed_namespace(self):
         base_dir = os.path.dirname(os.path.dirname(__file__))
@@ -1057,7 +1016,7 @@ class WriterTests(SimpleTestCase):
         writer = MigrationWriter(migration)
         output = writer.as_string()
         self.assertIn(
-            'import datetime\nimport time\nfrom djorm.db import migrations, models\n',
+            "import datetime\nimport time\nfrom djorm.db import migrations, models\n",
             output,
         )
 
@@ -1067,7 +1026,7 @@ class WriterTests(SimpleTestCase):
         """
         migration = type("Migration", (migrations.Migration,), {"operations": []})
         dt = datetime.datetime(2015, 7, 31, 4, 40, 0, 0, tzinfo=datetime.timezone.utc)
-        with mock.patch('djorm.db.migrations.writer.now', lambda: dt):
+        with mock.patch("djorm.db.migrations.writer.now", lambda: dt):
             for include_header in (True, False):
                 with self.subTest(include_header=include_header):
                     writer = MigrationWriter(migration, include_header)
@@ -1076,19 +1035,16 @@ class WriterTests(SimpleTestCase):
                     self.assertEqual(
                         include_header,
                         output.startswith(
-                            "# Generated by Django %s on 2015-07-31 04:40\n\n"
-                            % get_version()
+                            "# Generated by Django %s on 2015-07-31 04:40\n\n" % get_version()
                         ),
                     )
                     if not include_header:
                         # Make sure the output starts with something that's not
                         # a comment or indentation or blank line
-                        self.assertRegex(
-                            output.splitlines(keepends=True)[0], r"^[^#\s]+"
-                        )
+                        self.assertRegex(output.splitlines(keepends=True)[0], r"^[^#\s]+")
 
     def test_models_import_omitted(self):
-        "\n        djorm.db.models shouldn't be imported if unused.\n        "
+        "\n        djorm.db.models shouldn't be imported if unused.\n"
         migration = type(
             "Migration",
             (migrations.Migration,),
@@ -1106,15 +1062,13 @@ class WriterTests(SimpleTestCase):
         )
         writer = MigrationWriter(migration)
         output = writer.as_string()
-        self.assertIn('from djorm.db import migrations\n', output)
+        self.assertIn("from djorm.db import migrations\n", output)
 
     def test_deconstruct_class_arguments(self):
         # Yes, it doesn't make sense to use a class as a default for a
         # CharField. It does make sense for custom fields though, for example
         # an enumfield that takes the enum class as an argument.
-        string = MigrationWriter.serialize(
-            models.CharField(default=DeconstructibleInstances)
-        )[0]
+        string = MigrationWriter.serialize(models.CharField(default=DeconstructibleInstances))[0]
         self.assertEqual(
             string,
             "models.CharField(default=migrations.test_writer.DeconstructibleInstances)",
@@ -1154,4 +1108,4 @@ class WriterTests(SimpleTestCase):
         writer = MigrationWriter(migration)
         output = writer.as_string()
         self.assertEqual(output.count("import"), 1)
-        self.assertIn('from djorm.db import migrations, models', output)
+        self.assertIn("from djorm.db import migrations, models", output)

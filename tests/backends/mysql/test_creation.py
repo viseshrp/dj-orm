@@ -34,10 +34,8 @@ class DatabaseCreationTests(SimpleTestCase):
                 with self.assertRaises(SystemExit):
                     # SystemExit is raised if the user answers "no" to the
                     # prompt asking if it's okay to delete the test database.
-                    creation._create_test_db(
-                        verbosity=0, autoclobber=False, keepdb=False
-                    )
-            # "Database exists" shouldn't appear when keepdb is on
+                    creation._create_test_db(verbosity=0, autoclobber=False, keepdb=False)
+                    # "Database exists" shouldn't appear when keepdb is on
             creation._create_test_db(verbosity=0, autoclobber=False, keepdb=True)
 
     @mock.patch("sys.stdout", new_callable=StringIO)
@@ -66,7 +64,7 @@ class DatabaseCreationTests(SimpleTestCase):
                 "PASSWORD": "",
                 "PORT": "",
                 "HOST": "",
-                "ENGINE": 'djorm.db.backends.mysql',
+                "ENGINE": "djorm.db.backends.mysql",
                 "OPTIONS": {
                     "read_default_file": "my.cnf",
                 },

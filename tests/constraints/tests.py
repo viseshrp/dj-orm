@@ -62,14 +62,10 @@ class BaseConstraintTests(SimpleTestCase):
 
     def test_default_violation_error_message(self):
         c = BaseConstraint(name="name")
-        self.assertEqual(
-            c.get_violation_error_message(), "Constraint “name” is violated."
-        )
+        self.assertEqual(c.get_violation_error_message(), "Constraint “name” is violated.")
 
     def test_custom_violation_error_message(self):
-        c = BaseConstraint(
-            name="base_name", violation_error_message="custom %(name)s message"
-        )
+        c = BaseConstraint(name="base_name", violation_error_message="custom %(name)s message")
         self.assertEqual(c.get_violation_error_message(), "custom base_name message")
 
     def test_custom_violation_error_message_clone(self):
@@ -93,7 +89,7 @@ class BaseConstraintTests(SimpleTestCase):
             violation_error_code="custom_code",
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.BaseConstraint')
+        self.assertEqual(path, "djorm.db.models.BaseConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -110,9 +106,7 @@ class BaseConstraintTests(SimpleTestCase):
             BaseConstraint("name", "violation error message")
 
     def test_name_required(self):
-        msg = (
-            "BaseConstraint.__init__() missing 1 required keyword-only argument: 'name'"
-        )
+        msg = "BaseConstraint.__init__() missing 1 required keyword-only argument: 'name'"
         with self.assertRaisesMessage(TypeError, msg):
             BaseConstraint()
 
@@ -130,9 +124,7 @@ class CheckConstraintTests(TestCase):
             models.CheckConstraint(condition=check1, name="price"),
             models.CheckConstraint(condition=check1, name="price"),
         )
-        self.assertEqual(
-            models.CheckConstraint(condition=check1, name="price"), mock.ANY
-        )
+        self.assertEqual(models.CheckConstraint(condition=check1, name="price"), mock.ANY)
         self.assertNotEqual(
             models.CheckConstraint(condition=check1, name="price"),
             models.CheckConstraint(condition=check1, name="price2"),
@@ -226,7 +218,7 @@ class CheckConstraintTests(TestCase):
         name = "price_gt_discounted_price"
         constraint = models.CheckConstraint(condition=check, name=name)
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.CheckConstraint')
+        self.assertEqual(path, "djorm.db.models.CheckConstraint")
         self.assertEqual(args, ())
         self.assertEqual(kwargs, {"condition": check, "name": name})
 
@@ -242,9 +234,7 @@ class CheckConstraintTests(TestCase):
         with self.assertRaises(IntegrityError):
             Product.objects.create(price=10, discounted_price=7, unit="l")
 
-    @skipUnlessDBFeature(
-        "supports_table_check_constraints", "can_introspect_check_constraints"
-    )
+    @skipUnlessDBFeature("supports_table_check_constraints", "can_introspect_check_constraints")
     def test_name(self):
         constraints = get_constraints(Product._meta.db_table)
         for expected_name in (
@@ -254,9 +244,7 @@ class CheckConstraintTests(TestCase):
             with self.subTest(expected_name):
                 self.assertIn(expected_name, constraints)
 
-    @skipUnlessDBFeature(
-        "supports_table_check_constraints", "can_introspect_check_constraints"
-    )
+    @skipUnlessDBFeature("supports_table_check_constraints", "can_introspect_check_constraints")
     def test_abstract_name(self):
         constraints = get_constraints(ChildModel._meta.db_table)
         self.assertIn("constraints_childmodel_adult", constraints)
@@ -270,7 +258,7 @@ class CheckConstraintTests(TestCase):
             constraint.validate(Product, invalid_product)
         with self.assertRaises(ValidationError):
             constraint.validate(Product, invalid_product, exclude={"unit"})
-        # Fields used by the check constraint are excluded.
+            # Fields used by the check constraint are excluded.
         constraint.validate(Product, invalid_product, exclude={"price"})
         constraint.validate(Product, invalid_product, exclude={"discounted_price"})
         constraint.validate(
@@ -406,7 +394,7 @@ class CheckConstraintTests(TestCase):
         with self.assertRaisesMessage(ValidationError, msg):
             constraint.validate(model, invalid_product)
 
-        # Excluding referenced or generated fields should skip validation.
+            # Excluding referenced or generated fields should skip validation.
         constraint.validate(model, invalid_product, exclude={"price"})
         constraint.validate(model, invalid_product, exclude={"rebate"})
 
@@ -437,13 +425,9 @@ class CheckConstraintTests(TestCase):
         # FieldError or DatabaseError when checking with a db_default.
         with self.assertRaises(ValidationError):
             models.CheckConstraint(
-                condition=models.Q(
-                    field_with_db_default="field_with_db_default", field="field"
-                ),
+                condition=models.Q(field_with_db_default="field_with_db_default", field="field"),
                 name="check_field_with_db_default_2",
-            ).validate(
-                ModelWithDatabaseDefault, ModelWithDatabaseDefault(field="not-field")
-            )
+            ).validate(ModelWithDatabaseDefault, ModelWithDatabaseDefault(field="not-field"))
 
         with self.assertRaises(ValidationError):
             models.CheckConstraint(
@@ -478,9 +462,7 @@ class UniqueConstraintTests(TestCase):
             models.UniqueConstraint(fields=["foo", "bar"], name="unique"),
             models.UniqueConstraint(fields=["foo", "baz"], name="unique"),
         )
-        self.assertNotEqual(
-            models.UniqueConstraint(fields=["foo", "bar"], name="unique"), 1
-        )
+        self.assertNotEqual(models.UniqueConstraint(fields=["foo", "bar"], name="unique"), 1)
         self.assertNotEqual(
             models.UniqueConstraint(fields=["foo", "bar"], name="unique"),
             models.UniqueConstraint(
@@ -723,8 +705,7 @@ class UniqueConstraintTests(TestCase):
         )
         self.assertEqual(
             repr(constraint),
-            "<UniqueConstraint: expressions=(Lower(F(title)), F(author)) "
-            "name='book_func_uq'>",
+            "<UniqueConstraint: expressions=(Lower(F(title)), F(author)) name='book_func_uq'>",
         )
 
     def test_repr_with_violation_error_message(self):
@@ -760,7 +741,7 @@ class UniqueConstraintTests(TestCase):
         name = "unique_fields"
         constraint = models.UniqueConstraint(fields=fields, name=name)
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.UniqueConstraint')
+        self.assertEqual(path, "djorm.db.models.UniqueConstraint")
         self.assertEqual(args, ())
         self.assertEqual(kwargs, {"fields": tuple(fields), "name": name})
 
@@ -768,15 +749,11 @@ class UniqueConstraintTests(TestCase):
         fields = ["foo", "bar"]
         name = "unique_fields"
         condition = models.Q(foo=models.F("bar"))
-        constraint = models.UniqueConstraint(
-            fields=fields, name=name, condition=condition
-        )
+        constraint = models.UniqueConstraint(fields=fields, name=name, condition=condition)
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.UniqueConstraint')
+        self.assertEqual(path, "djorm.db.models.UniqueConstraint")
         self.assertEqual(args, ())
-        self.assertEqual(
-            kwargs, {"fields": tuple(fields), "name": name, "condition": condition}
-        )
+        self.assertEqual(kwargs, {"fields": tuple(fields), "name": name, "condition": condition})
 
     def test_deconstruction_with_deferrable(self):
         fields = ["foo"]
@@ -787,7 +764,7 @@ class UniqueConstraintTests(TestCase):
             deferrable=models.Deferrable.DEFERRED,
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.UniqueConstraint')
+        self.assertEqual(path, "djorm.db.models.UniqueConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -804,7 +781,7 @@ class UniqueConstraintTests(TestCase):
         include = ["baz_1", "baz_2"]
         constraint = models.UniqueConstraint(fields=fields, name=name, include=include)
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.UniqueConstraint')
+        self.assertEqual(path, "djorm.db.models.UniqueConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -819,11 +796,9 @@ class UniqueConstraintTests(TestCase):
         fields = ["foo", "bar"]
         name = "unique_fields"
         opclasses = ["varchar_pattern_ops", "text_pattern_ops"]
-        constraint = models.UniqueConstraint(
-            fields=fields, name=name, opclasses=opclasses
-        )
+        constraint = models.UniqueConstraint(fields=fields, name=name, opclasses=opclasses)
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.UniqueConstraint')
+        self.assertEqual(path, "djorm.db.models.UniqueConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -837,11 +812,9 @@ class UniqueConstraintTests(TestCase):
     def test_deconstruction_with_nulls_distinct(self):
         fields = ["foo", "bar"]
         name = "unique_fields"
-        constraint = models.UniqueConstraint(
-            fields=fields, name=name, nulls_distinct=True
-        )
+        constraint = models.UniqueConstraint(fields=fields, name=name, nulls_distinct=True)
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.UniqueConstraint')
+        self.assertEqual(path, "djorm.db.models.UniqueConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -856,15 +829,13 @@ class UniqueConstraintTests(TestCase):
         name = "unique_fields"
         constraint = models.UniqueConstraint(Lower("title"), name=name)
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.UniqueConstraint')
+        self.assertEqual(path, "djorm.db.models.UniqueConstraint")
         self.assertEqual(args, (Lower("title"),))
         self.assertEqual(kwargs, {"name": name})
 
     def test_database_constraint(self):
         with self.assertRaises(IntegrityError):
-            UniqueConstraintProduct.objects.create(
-                name=self.p1.name, color=self.p1.color
-            )
+            UniqueConstraintProduct.objects.create(name=self.p1.name, color=self.p1.color)
 
     @skipUnlessDBFeature("supports_partial_indexes")
     def test_database_constraint_with_condition(self):
@@ -876,9 +847,7 @@ class UniqueConstraintTests(TestCase):
     def test_model_validation(self):
         msg = "Unique constraint product with this Name and Color already exists."
         with self.assertRaisesMessage(ValidationError, msg):
-            UniqueConstraintProduct(
-                name=self.p1.name, color=self.p1.color
-            ).validate_constraints()
+            UniqueConstraintProduct(name=self.p1.name, color=self.p1.color).validate_constraints()
 
     @skipUnlessDBFeature("supports_partial_indexes")
     def test_model_validation_with_condition(self):
@@ -888,9 +857,7 @@ class UniqueConstraintTests(TestCase):
         """
         obj1 = UniqueConstraintConditionProduct.objects.create(name="p1", color="red")
         obj2 = UniqueConstraintConditionProduct.objects.create(name="p2")
-        UniqueConstraintConditionProduct(
-            name=obj1.name, color="blue"
-        ).validate_constraints()
+        UniqueConstraintConditionProduct(name=obj1.name, color="blue").validate_constraints()
         msg = "Constraint “name_without_color_uniq” is violated."
         with self.assertRaisesMessage(ValidationError, msg):
             UniqueConstraintConditionProduct(name=obj2.name).validate_constraints()
@@ -918,9 +885,7 @@ class UniqueConstraintTests(TestCase):
     def test_validate(self):
         constraint = UniqueConstraintProduct._meta.constraints[0]
         msg = "Unique constraint product with this Name and Color already exists."
-        non_unique_product = UniqueConstraintProduct(
-            name=self.p1.name, color=self.p1.color
-        )
+        non_unique_product = UniqueConstraintProduct(name=self.p1.name, color=self.p1.color)
         with self.assertRaisesMessage(ValidationError, msg) as cm:
             constraint.validate(UniqueConstraintProduct, non_unique_product)
         self.assertEqual(cm.exception.code, "unique_together")
@@ -955,9 +920,7 @@ class UniqueConstraintTests(TestCase):
             )
 
     def test_validate_unique_custom_code_and_message(self):
-        product = UniqueConstraintProduct.objects.create(
-            name="test", color="red", age=42
-        )
+        product = UniqueConstraintProduct.objects.create(name="test", color="red", age=42)
         code = "custom_code"
         message = "Custom message"
         multiple_fields_constraint = models.UniqueConstraint(
@@ -976,9 +939,7 @@ class UniqueConstraintTests(TestCase):
         with self.assertRaisesMessage(ValidationError, message) as cm:
             multiple_fields_constraint.validate(
                 UniqueConstraintProduct,
-                UniqueConstraintProduct(
-                    name="new-test", color=product.color, age=product.age
-                ),
+                UniqueConstraintProduct(name="new-test", color=product.color, age=product.age),
             )
         self.assertEqual(cm.exception.code, code)
 
@@ -1007,7 +968,7 @@ class UniqueConstraintTests(TestCase):
                 UniqueConstraintConditionProduct,
                 UniqueConstraintConditionProduct(name=p1.name, color=None),
             )
-        # Values not matching condition are ignored.
+            # Values not matching condition are ignored.
         constraint.validate(
             UniqueConstraintConditionProduct,
             UniqueConstraintConditionProduct(name=p1.name, color="anything-but-none"),
@@ -1063,9 +1024,7 @@ class UniqueConstraintTests(TestCase):
     def test_validate_field_transform(self):
         updated_date = datetime(2005, 7, 26)
         UniqueConstraintProduct.objects.create(name="p1", updated=updated_date)
-        constraint = models.UniqueConstraint(
-            models.F("updated__date"), name="date_created_unique"
-        )
+        constraint = models.UniqueConstraint(models.F("updated__date"), name="date_created_unique")
         msg = "Constraint “date_created_unique” is violated."
         with self.assertRaisesMessage(ValidationError, msg):
             constraint.validate(
@@ -1095,9 +1054,7 @@ class UniqueConstraintTests(TestCase):
         )
 
     def test_validate_ordered_expression(self):
-        constraint = models.UniqueConstraint(
-            Lower("name").desc(), name="name_lower_uniq_desc"
-        )
+        constraint = models.UniqueConstraint(Lower("name").desc(), name="name_lower_uniq_desc")
         msg = "Constraint “name_lower_uniq_desc” is violated."
         with self.assertRaisesMessage(ValidationError, msg):
             constraint.validate(
@@ -1127,7 +1084,7 @@ class UniqueConstraintTests(TestCase):
         msg = "Constraint “name_lower_without_color_uniq” is violated."
         with self.assertRaisesMessage(ValidationError, msg):
             constraint.validate(UniqueConstraintProduct, non_unique_product)
-        # Values not matching condition are ignored.
+            # Values not matching condition are ignored.
         constraint.validate(
             UniqueConstraintProduct,
             UniqueConstraintProduct(name=self.p1.name, color=self.p1.color),
@@ -1163,15 +1120,11 @@ class UniqueConstraintTests(TestCase):
 
     @skipUnlessDBFeature("supports_stored_generated_columns")
     def test_validate_expression_generated_field_stored(self):
-        self.assertGeneratedFieldWithExpressionIsValidated(
-            model=GeneratedFieldStoredProduct
-        )
+        self.assertGeneratedFieldWithExpressionIsValidated(model=GeneratedFieldStoredProduct)
 
     @skipUnlessDBFeature("supports_virtual_generated_columns")
     def test_validate_expression_generated_field_virtual(self):
-        self.assertGeneratedFieldWithExpressionIsValidated(
-            model=GeneratedFieldVirtualProduct
-        )
+        self.assertGeneratedFieldWithExpressionIsValidated(model=GeneratedFieldVirtualProduct)
 
     def assertGeneratedFieldWithExpressionIsValidated(self, model):
         constraint = UniqueConstraint(Sqrt("rebate"), name="unique_rebate_sqrt")
@@ -1186,26 +1139,20 @@ class UniqueConstraintTests(TestCase):
         ):
             constraint.validate(model, invalid_product)
 
-        # Excluding referenced or generated fields should skip validation.
+            # Excluding referenced or generated fields should skip validation.
         constraint.validate(model, invalid_product, exclude={"rebate"})
         constraint.validate(model, invalid_product, exclude={"price"})
 
     @skipUnlessDBFeature("supports_stored_generated_columns")
     def test_validate_fields_generated_field_stored(self):
-        self.assertGeneratedFieldWithFieldsIsValidated(
-            model=GeneratedFieldStoredProduct
-        )
+        self.assertGeneratedFieldWithFieldsIsValidated(model=GeneratedFieldStoredProduct)
 
     @skipUnlessDBFeature("supports_virtual_generated_columns")
     def test_validate_fields_generated_field_virtual(self):
-        self.assertGeneratedFieldWithFieldsIsValidated(
-            model=GeneratedFieldVirtualProduct
-        )
+        self.assertGeneratedFieldWithFieldsIsValidated(model=GeneratedFieldVirtualProduct)
 
     def assertGeneratedFieldWithFieldsIsValidated(self, model):
-        constraint = models.UniqueConstraint(
-            fields=["lower_name"], name="lower_name_unique"
-        )
+        constraint = models.UniqueConstraint(fields=["lower_name"], name="lower_name_unique")
         model.objects.create(name="Box")
         constraint.validate(model, model(name="Case"))
 
@@ -1214,21 +1161,17 @@ class UniqueConstraintTests(TestCase):
         with self.assertRaisesMessage(ValidationError, msg):
             constraint.validate(model, invalid_product)
 
-        # Excluding referenced or generated fields should skip validation.
+            # Excluding referenced or generated fields should skip validation.
         constraint.validate(model, invalid_product, exclude={"lower_name"})
         constraint.validate(model, invalid_product, exclude={"name"})
 
     @skipUnlessDBFeature("supports_stored_generated_columns")
     def test_validate_fields_generated_field_stored_nulls_distinct(self):
-        self.assertGeneratedFieldNullsDistinctIsValidated(
-            model=GeneratedFieldStoredProduct
-        )
+        self.assertGeneratedFieldNullsDistinctIsValidated(model=GeneratedFieldStoredProduct)
 
     @skipUnlessDBFeature("supports_virtual_generated_columns")
     def test_validate_fields_generated_field_virtual_nulls_distinct(self):
-        self.assertGeneratedFieldNullsDistinctIsValidated(
-            model=GeneratedFieldVirtualProduct
-        )
+        self.assertGeneratedFieldNullsDistinctIsValidated(model=GeneratedFieldVirtualProduct)
 
     def assertGeneratedFieldNullsDistinctIsValidated(self, model):
         constraint = models.UniqueConstraint(
@@ -1265,12 +1208,8 @@ class UniqueConstraintTests(TestCase):
 
         msg = "Constraint “uniq_prices_no_unit” is violated."
         with self.assertRaisesMessage(ValidationError, msg):
-            is_null_constraint.validate(
-                Product, Product(price=2, discounted_price=1, unit=None)
-            )
-        is_null_constraint.validate(
-            Product, Product(price=2, discounted_price=1, unit="ng/mL")
-        )
+            is_null_constraint.validate(Product, Product(price=2, discounted_price=1, unit=None))
+        is_null_constraint.validate(Product, Product(price=2, discounted_price=1, unit="ng/mL"))
         is_null_constraint.validate(Product, Product(price=4, discounted_price=3))
 
         msg = "Constraint “uniq_prices_unit” is violated."
@@ -1346,7 +1285,7 @@ class UniqueConstraintTests(TestCase):
         obj_1.shelf, obj_2.shelf = obj_2.shelf, obj_1.shelf
         with self.assertRaises(IntegrityError), atomic():
             obj_1.save()
-        # Behavior can be changed with SET CONSTRAINTS.
+            # Behavior can be changed with SET CONSTRAINTS.
         with connection.cursor() as cursor:
             constraint_name = connection.ops.quote_name("sheld_init_immediate_uniq")
             cursor.execute("SET CONSTRAINTS %s DEFERRED" % constraint_name)
@@ -1448,10 +1387,7 @@ class UniqueConstraintTests(TestCase):
             )
 
     def test_requires_field_or_expression(self):
-        msg = (
-            "At least one field or expression is required to define a unique "
-            "constraint."
-        )
+        msg = "At least one field or expression is required to define a unique constraint."
         with self.assertRaisesMessage(ValueError, msg):
             models.UniqueConstraint(name="name")
 
@@ -1463,7 +1399,7 @@ class UniqueConstraintTests(TestCase):
     def test_expressions_with_opclasses(self):
         msg = (
             "UniqueConstraint.opclasses cannot be used with expressions. Use "
-            'djorm.contrib.postgres.indexes.OpClass() instead.'
+            "djorm.contrib.postgres.indexes.OpClass() instead."
         )
         with self.assertRaisesMessage(ValueError, msg):
             models.UniqueConstraint(
@@ -1488,10 +1424,7 @@ class UniqueConstraintTests(TestCase):
 
         ModelWithDatabaseDefault.objects.create()
 
-        msg = (
-            "Model with database default with this Field with db default already "
-            "exists."
-        )
+        msg = "Model with database default with this Field with db default already exists."
         with self.assertRaisesMessage(ValidationError, msg):
             models.UniqueConstraint(
                 fields=["field_with_db_default"], name="unique_field_with_db_default"

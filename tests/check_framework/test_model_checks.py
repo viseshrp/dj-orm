@@ -40,9 +40,7 @@ class DuplicateDBTableTests(SimpleTestCase):
             ],
         )
 
-    @override_settings(
-        DATABASE_ROUTERS=["check_framework.test_model_checks.EmptyRouter"]
-    )
+    @override_settings(DATABASE_ROUTERS=["check_framework.test_model_checks.EmptyRouter"])
     def test_collision_in_same_app_database_routers_installed(self):
         class Model1(models.Model):
             class Meta:
@@ -95,9 +93,7 @@ class DuplicateDBTableTests(SimpleTestCase):
         )
 
     @modify_settings(INSTALLED_APPS={"append": "basic"})
-    @override_settings(
-        DATABASE_ROUTERS=["check_framework.test_model_checks.EmptyRouter"]
-    )
+    @override_settings(DATABASE_ROUTERS=["check_framework.test_model_checks.EmptyRouter"])
     @isolate_apps("basic", "check_framework", kwarg_name="apps")
     def test_collision_across_apps_database_routers_installed(self, apps):
         class Model1(models.Model):
@@ -222,9 +218,7 @@ class IndexNameTests(SimpleTestCase):
             name = models.CharField(max_length=20)
 
             class Meta:
-                indexes = [
-                    models.Index(fields=["name"], name="%(app_label)s_%(class)s_foo")
-                ]
+                indexes = [models.Index(fields=["name"], name="%(app_label)s_%(class)s_foo")]
                 abstract = True
 
         class Model1(AbstractModel):
@@ -295,8 +289,7 @@ class ConstraintNameTests(TestCase):
             checks.run_checks(app_configs=self.apps.get_app_configs()),
             [
                 Error(
-                    "constraint name 'foo' is not unique for model "
-                    "check_framework.Model.",
+                    "constraint name 'foo' is not unique for model check_framework.Model.",
                     id="models.E031",
                 ),
             ],
@@ -327,9 +320,7 @@ class ConstraintNameTests(TestCase):
     def test_collision_abstract_model(self):
         class AbstractModel(models.Model):
             class Meta:
-                constraints = [
-                    models.CheckConstraint(condition=models.Q(id__gt=0), name="foo")
-                ]
+                constraints = [models.CheckConstraint(condition=models.Q(id__gt=0), name="foo")]
                 abstract = True
 
         class Model1(AbstractModel):
@@ -416,14 +407,11 @@ class ConstraintNameTests(TestCase):
 def mocked_is_overridden(self, setting):
     # Force treating DEFAULT_AUTO_FIELD = 'django.db.models.AutoField' as a not
     # overridden setting.
-    return (
-        setting != "DEFAULT_AUTO_FIELD"
-        or self.DEFAULT_AUTO_FIELD != 'djorm.db.models.AutoField'
-    )
+    return setting != "DEFAULT_AUTO_FIELD" or self.DEFAULT_AUTO_FIELD != "djorm.db.models.AutoField"
 
 
-@mock.patch('djorm.conf.UserSettingsHolder.is_overridden', mocked_is_overridden)
-@override_settings(DEFAULT_AUTO_FIELD='djorm.db.models.AutoField')
+@mock.patch("djorm.conf.UserSettingsHolder.is_overridden", mocked_is_overridden)
+@override_settings(DEFAULT_AUTO_FIELD="djorm.db.models.AutoField")
 @isolate_apps("check_framework.apps.CheckDefaultPKConfig", attr_name="apps")
 @override_system_checks([checks.model_checks.check_all_models])
 class ModelDefaultAutoFieldTests(SimpleTestCase):
@@ -469,7 +457,8 @@ class ModelDefaultAutoFieldTests(SimpleTestCase):
             class Meta:
                 abstract = True
 
-        # Call .check() because abstract models are not registered.
+                # Call .check() because abstract models are not registered.
+
         self.assertEqual(Abstract.check(), [])
 
     def test_explicit_inherited_parent_link(self):
@@ -524,7 +513,7 @@ class ModelDefaultAutoFieldTests(SimpleTestCase):
             ],
         )
 
-    @override_settings(DEFAULT_AUTO_FIELD='djorm.db.models.BigAutoField')
+    @override_settings(DEFAULT_AUTO_FIELD="djorm.db.models.BigAutoField")
     def test_default_auto_field_setting(self):
         class Model(models.Model):
             pass

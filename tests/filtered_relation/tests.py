@@ -195,8 +195,7 @@ class FilteredRelationTests(TestCase):
                 book_alice=FilteredRelation(
                     "book",
                     condition=Q(
-                        Q(book__title__iexact="poem by alice")
-                        | Q(book__state=Book.RENTED)
+                        Q(book__title__iexact="poem by alice") | Q(book__state=Book.RENTED)
                     ),
                 ),
             ).filter(book_alice__isnull=False),
@@ -205,9 +204,7 @@ class FilteredRelationTests(TestCase):
 
     def test_internal_queryset_alias_mapping(self):
         queryset = Author.objects.annotate(
-            book_alice=FilteredRelation(
-                "book", condition=Q(book__title__iexact="poem by alice")
-            ),
+            book_alice=FilteredRelation("book", condition=Q(book__title__iexact="poem by alice")),
         ).filter(book_alice__isnull=False)
         self.assertIn(
             "INNER JOIN {} book_alice ON".format(
@@ -217,9 +214,7 @@ class FilteredRelationTests(TestCase):
         )
 
     def test_period_forbidden(self):
-        msg = (
-            "FilteredRelation doesn't support aliases with periods (got 'book.alice')."
-        )
+        msg = "FilteredRelation doesn't support aliases with periods (got 'book.alice')."
         with self.assertRaisesMessage(ValueError, msg):
             Author.objects.annotate(
                 **{
@@ -262,9 +257,7 @@ class FilteredRelationTests(TestCase):
             Author.objects.annotate(
                 book_editor_a=FilteredRelation(
                     "book",
-                    condition=Q(
-                        book__title__icontains="book", book__editor_id=self.editor_a.pk
-                    ),
+                    condition=Q(book__title__icontains="book", book__editor_id=self.editor_a.pk),
                 ),
             ).filter(book_editor_a__isnull=False),
             [self.author1],
@@ -286,9 +279,7 @@ class FilteredRelationTests(TestCase):
     def test_exclude_relation_with_join(self):
         self.assertSequenceEqual(
             Author.objects.annotate(
-                book_alice=FilteredRelation(
-                    "book", condition=~Q(book__title__icontains="alice")
-                ),
+                book_alice=FilteredRelation("book", condition=~Q(book__title__icontains="alice")),
             )
             .filter(book_alice__isnull=False)
             .distinct(),
@@ -372,9 +363,7 @@ class FilteredRelationTests(TestCase):
     @skipUnlessDBFeature("supports_select_union")
     def test_union(self):
         qs1 = Author.objects.annotate(
-            book_alice=FilteredRelation(
-                "book", condition=Q(book__title__iexact="poem by alice")
-            ),
+            book_alice=FilteredRelation("book", condition=Q(book__title__iexact="poem by alice")),
         ).filter(book_alice__isnull=False)
         qs2 = Author.objects.annotate(
             book_jane=FilteredRelation(
@@ -386,9 +375,7 @@ class FilteredRelationTests(TestCase):
     @skipUnlessDBFeature("supports_select_intersection")
     def test_intersection(self):
         qs1 = Author.objects.annotate(
-            book_alice=FilteredRelation(
-                "book", condition=Q(book__title__iexact="poem by alice")
-            ),
+            book_alice=FilteredRelation("book", condition=Q(book__title__iexact="poem by alice")),
         ).filter(book_alice__isnull=False)
         qs2 = Author.objects.annotate(
             book_jane=FilteredRelation(
@@ -400,9 +387,7 @@ class FilteredRelationTests(TestCase):
     @skipUnlessDBFeature("supports_select_difference")
     def test_difference(self):
         qs1 = Author.objects.annotate(
-            book_alice=FilteredRelation(
-                "book", condition=Q(book__title__iexact="poem by alice")
-            ),
+            book_alice=FilteredRelation("book", condition=Q(book__title__iexact="poem by alice")),
         ).filter(book_alice__isnull=False)
         qs2 = Author.objects.annotate(
             book_jane=FilteredRelation(
@@ -452,9 +437,7 @@ class FilteredRelationTests(TestCase):
 
     def test_as_subquery(self):
         inner_qs = Author.objects.annotate(
-            book_alice=FilteredRelation(
-                "book", condition=Q(book__title__iexact="poem by alice")
-            ),
+            book_alice=FilteredRelation("book", condition=Q(book__title__iexact="poem by alice")),
         ).filter(book_alice__isnull=False)
         qs = Author.objects.filter(id__in=inner_qs)
         self.assertSequenceEqual(qs, [self.author1])
@@ -682,9 +665,7 @@ class FilteredRelationTests(TestCase):
         qs = Author.objects.annotate(
             book_editor=FilteredRelation(
                 "book__editor",
-                condition=Q(
-                    book__title=Concat(Value("The book by "), F("book__author__name"))
-                ),
+                condition=Q(book__title=Concat(Value("The book by "), F("book__author__name"))),
             ),
         ).filter(book_editor__isnull=False)
         self.assertEqual(qs.count(), 1)
@@ -732,9 +713,7 @@ class FilteredRelationTests(TestCase):
     def test_with_prefetch_related(self):
         msg = "prefetch_related() is not supported with FilteredRelation."
         qs = Author.objects.annotate(
-            book_title_contains_b=FilteredRelation(
-                "book", condition=Q(book__title__icontains="b")
-            ),
+            book_title_contains_b=FilteredRelation("book", condition=Q(book__title__icontains="b")),
         ).filter(
             book_title_contains_b__isnull=False,
         )
@@ -754,9 +733,7 @@ class FilteredRelationTests(TestCase):
         )
 
     def test_eq(self):
-        self.assertEqual(
-            FilteredRelation("book", condition=Q(book__title="b")), mock.ANY
-        )
+        self.assertEqual(FilteredRelation("book", condition=Q(book__title="b")), mock.ANY)
 
     def test_conditional_expression(self):
         qs = Author.objects.annotate(
@@ -949,17 +926,13 @@ class FilteredRelationAggregationTests(TestCase):
                     default=None,
                 )
             )
-            .filter(
-                Q(is_reserved_or_rented_by=self.borrower1.pk) | Q(state=Book.AVAILABLE)
-            )
+            .filter(Q(is_reserved_or_rented_by=self.borrower1.pk) | Q(state=Book.AVAILABLE))
             .distinct()
         )
         self.assertEqual(qs.count(), 1)
         # If count is equal to 1, the same aggregation should return in the
         # same result but it returns 4.
-        self.assertSequenceEqual(
-            qs.annotate(total=Count("pk")).values("total"), [{"total": 4}]
-        )
+        self.assertSequenceEqual(qs.annotate(total=Count("pk")).values("total"), [{"total": 4}])
         # With FilteredRelation, the result is as expected (1).
         qs = (
             Book.objects.annotate(
@@ -981,18 +954,13 @@ class FilteredRelationAggregationTests(TestCase):
                 ),
             )
             .filter(
-                (
-                    Q(active_reservations__isnull=False)
-                    | Q(active_rental_sessions__isnull=False)
-                )
+                (Q(active_reservations__isnull=False) | Q(active_rental_sessions__isnull=False))
                 | Q(state=Book.AVAILABLE)
             )
             .distinct()
         )
         self.assertEqual(qs.count(), 1)
-        self.assertSequenceEqual(
-            qs.annotate(total=Count("pk")).values("total"), [{"total": 1}]
-        )
+        self.assertSequenceEqual(qs.annotate(total=Count("pk")).values("total"), [{"total": 1}])
 
     def test_condition_spans_join(self):
         self.assertSequenceEqual(
@@ -1138,18 +1106,14 @@ class FilteredRelationAnalyticalAggregationTests(TestCase):
             with self.subTest(condition=condition):
                 qs = (
                     Book.objects.annotate(
-                        recent_sales=FilteredRelation(
-                            "daily_sales", condition=condition
-                        ),
+                        recent_sales=FilteredRelation("daily_sales", condition=condition),
                         recent_sales_rates=FilteredRelation(
                             "recent_sales__currency__rates_from",
                             condition=Q(
                                 recent_sales__currency__rates_from__rate_date=F(
                                     "recent_sales__sale_date"
                                 ),
-                                recent_sales__currency__rates_from__to_currency=(
-                                    self.usd
-                                ),
+                                recent_sales__currency__rates_from__to_currency=(self.usd),
                             ),
                         ),
                     )

@@ -164,9 +164,7 @@ class RelativeFieldTests(SimpleTestCase):
         class AmbiguousRelationship(models.Model):
             person = models.ForeignKey(Person, models.CASCADE)
             first_group = models.ForeignKey(Group, models.CASCADE, related_name="first")
-            second_group = models.ForeignKey(
-                Group, models.CASCADE, related_name="second"
-            )
+            second_group = models.ForeignKey(Group, models.CASCADE, related_name="second")
 
         field = Group._meta.get_field("field")
         self.assertEqual(
@@ -199,12 +197,8 @@ class RelativeFieldTests(SimpleTestCase):
 
         class AmbiguousRelationship(models.Model):
             # Too much foreign keys to Person.
-            first_person = models.ForeignKey(
-                Person, models.CASCADE, related_name="first"
-            )
-            second_person = models.ForeignKey(
-                Person, models.CASCADE, related_name="second"
-            )
+            first_person = models.ForeignKey(Person, models.CASCADE, related_name="first")
+            second_person = models.ForeignKey(Person, models.CASCADE, related_name="second")
             second_model = models.ForeignKey(Group, models.CASCADE)
 
         field = Group._meta.get_field("field")
@@ -347,15 +341,9 @@ class RelativeFieldTests(SimpleTestCase):
             )
 
         class InvalidRelationship(models.Model):
-            first = models.ForeignKey(
-                Person, models.CASCADE, related_name="rel_from_set_2"
-            )
-            second = models.ForeignKey(
-                Person, models.CASCADE, related_name="rel_to_set_2"
-            )
-            third = models.ForeignKey(
-                Person, models.CASCADE, related_name="too_many_by_far"
-            )
+            first = models.ForeignKey(Person, models.CASCADE, related_name="rel_from_set_2")
+            second = models.ForeignKey(Person, models.CASCADE, related_name="rel_to_set_2")
+            third = models.ForeignKey(Person, models.CASCADE, related_name="too_many_by_far")
 
         field = Person._meta.get_field("friends")
         self.assertEqual(
@@ -368,8 +356,7 @@ class RelativeFieldTests(SimpleTestCase):
                     "which two foreign keys Django should use via the through_fields "
                     "keyword argument.",
                     hint=(
-                        "Use through_fields to specify which two foreign keys Django "
-                        "should use."
+                        "Use through_fields to specify which two foreign keys Django should use."
                     ),
                     obj=InvalidRelationship,
                     id="fields.E333",
@@ -476,12 +463,8 @@ class RelativeFieldTests(SimpleTestCase):
             name = models.CharField(max_length=20)
 
         class Child(models.Model):
-            rel_class_parent = models.ManyToManyField(
-                Parent, related_name="child_class_set"
-            )
-            rel_string_parent = models.ManyToManyField(
-                "Parent", related_name="child_string_set"
-            )
+            rel_class_parent = models.ManyToManyField(Parent, related_name="child_class_set")
+            rel_string_parent = models.ManyToManyField("Parent", related_name="child_string_set")
 
         error = (
             "Field defines a relation involving model 'Parent' which has a "
@@ -536,8 +519,7 @@ class RelativeFieldTests(SimpleTestCase):
             field.check(),
             [
                 Error(
-                    "'Target.bad' must be unique because it is referenced by a foreign "
-                    "key.",
+                    "'Target.bad' must be unique because it is referenced by a foreign key.",
                     hint=(
                         "Add unique=True to this field or add a UniqueConstraint "
                         "(without condition) in the model Meta.constraints."
@@ -560,8 +542,7 @@ class RelativeFieldTests(SimpleTestCase):
             field.check(),
             [
                 Error(
-                    "'Target.bad' must be unique because it is referenced by a foreign "
-                    "key.",
+                    "'Target.bad' must be unique because it is referenced by a foreign key.",
                     hint=(
                         "Add unique=True to this field or add a UniqueConstraint "
                         "(without condition) in the model Meta.constraints."
@@ -593,8 +574,7 @@ class RelativeFieldTests(SimpleTestCase):
             field.check(),
             [
                 Error(
-                    "'Target.source' must be unique because it is referenced by a "
-                    "foreign key.",
+                    "'Target.source' must be unique because it is referenced by a foreign key.",
                     hint=(
                         "Add unique=True to this field or add a UniqueConstraint "
                         "(without condition) in the model Meta.constraints."
@@ -645,8 +625,7 @@ class RelativeFieldTests(SimpleTestCase):
             field.check(),
             [
                 Error(
-                    "No subset of the fields 'country_id', 'city_id' on model 'Person' "
-                    "is unique.",
+                    "No subset of the fields 'country_id', 'city_id' on model 'Person' is unique.",
                     hint=(
                         "Mark a single field as unique=True or add a set of "
                         "fields to a unique constraint (via unique_together or a "
@@ -688,8 +667,7 @@ class RelativeFieldTests(SimpleTestCase):
             field.check(),
             [
                 Error(
-                    "No subset of the fields 'country_id', 'city_id' on model "
-                    "'Person' is unique.",
+                    "No subset of the fields 'country_id', 'city_id' on model 'Person' is unique.",
                     hint=(
                         "Mark a single field as unique=True or add a set of "
                         "fields to a unique constraint (via unique_together or a "
@@ -741,10 +719,7 @@ class RelativeFieldTests(SimpleTestCase):
             [
                 Error(
                     "Field specifies on_delete=SET_NULL, but cannot be null.",
-                    hint=(
-                        "Set null=True argument on the field, or change the on_delete "
-                        "rule."
-                    ),
+                    hint=("Set null=True argument on the field, or change the on_delete rule."),
                     obj=field,
                     id="fields.E320",
                 ),
@@ -776,19 +751,14 @@ class RelativeFieldTests(SimpleTestCase):
             field = models.IntegerField(primary_key=True, null=True)
 
         field = Model._meta.get_field("field")
-        with mock.patch.object(
-            connection.features, "interprets_empty_strings_as_nulls", False
-        ):
+        with mock.patch.object(connection.features, "interprets_empty_strings_as_nulls", False):
             results = field.check()
         self.assertEqual(
             results,
             [
                 Error(
                     "Primary keys must not have null=True.",
-                    hint=(
-                        "Set null=False on the field, or remove primary_key=True "
-                        "argument."
-                    ),
+                    hint=("Set null=False on the field, or remove primary_key=True argument."),
                     obj=field,
                     id="fields.E007",
                 ),
@@ -813,9 +783,7 @@ class RelativeFieldTests(SimpleTestCase):
                 models.CASCADE,
                 related_name="implicit_fk",
             )
-            explicit_m2m = models.ManyToManyField(
-                SwappableModel, related_name="explicit_m2m"
-            )
+            explicit_m2m = models.ManyToManyField(SwappableModel, related_name="explicit_m2m")
             implicit_m2m = models.ManyToManyField(
                 "invalid_models_tests.SwappableModel",
                 related_name="implicit_m2m",
@@ -853,9 +821,7 @@ class RelativeFieldTests(SimpleTestCase):
                 models.CASCADE,
                 related_name="implicit_fk",
             )
-            explicit_m2m = models.ManyToManyField(
-                SwappedModel, related_name="explicit_m2m"
-            )
+            explicit_m2m = models.ManyToManyField(SwappedModel, related_name="explicit_m2m")
             implicit_m2m = models.ManyToManyField(
                 "invalid_models_tests.SwappedModel",
                 related_name="implicit_m2m",
@@ -922,10 +888,7 @@ class RelativeFieldTests(SimpleTestCase):
                     Error(
                         "The name '%s' is invalid related_name for field Child%s.parent"
                         % (invalid_related_name, invalid_related_name),
-                        hint=(
-                            "Related name must be a valid Python identifier or end "
-                            "with a '+'"
-                        ),
+                        hint=("Related name must be a valid Python identifier or end with a '+'"),
                         obj=field,
                         id="fields.E306",
                     ),
@@ -1079,9 +1042,7 @@ class RelativeFieldTests(SimpleTestCase):
             pass
 
         class Model(models.Model):
-            first = models.ForeignKey(
-                Target, models.CASCADE, related_name="contains__double"
-            )
+            first = models.ForeignKey(Target, models.CASCADE, related_name="contains__double")
             second = models.ForeignKey(
                 Target, models.CASCADE, related_query_name="ends_underscore_"
             )
@@ -1099,8 +1060,7 @@ class RelativeFieldTests(SimpleTestCase):
                     id="fields.E309",
                 ),
                 Error(
-                    "Reverse query name 'ends_underscore_' must not end with an "
-                    "underscore.",
+                    "Reverse query name 'ends_underscore_' must not end with an underscore.",
                     hint=(
                         "Add or change a related_name or related_query_name "
                         "argument for this field."
@@ -1625,9 +1585,7 @@ class SelfReferentialM2MClashTests(SimpleTestCase):
     def test_clash_under_explicit_related_name(self):
         class Model(models.Model):
             clash = models.IntegerField()
-            m2m = models.ManyToManyField(
-                "self", symmetrical=False, related_name="clash"
-            )
+            m2m = models.ManyToManyField("self", symmetrical=False, related_name="clash")
 
         self.assertEqual(
             Model.check(),
@@ -1660,9 +1618,7 @@ class SelfReferentialM2MClashTests(SimpleTestCase):
 
     def test_valid_model(self):
         class Model(models.Model):
-            first = models.ManyToManyField(
-                "self", symmetrical=False, related_name="first_accessor"
-            )
+            first = models.ManyToManyField("self", symmetrical=False, related_name="first_accessor")
             second = models.ManyToManyField(
                 "self", symmetrical=False, related_name="second_accessor"
             )
@@ -1766,9 +1722,7 @@ class ComplexClashTests(SimpleTestCase):
             src_safe = models.CharField(max_length=10)
 
             foreign_1 = models.ForeignKey(Target, models.CASCADE, related_name="id")
-            foreign_2 = models.ForeignKey(
-                Target, models.CASCADE, related_name="src_safe"
-            )
+            foreign_2 = models.ForeignKey(Target, models.CASCADE, related_name="src_safe")
 
             m2m_1 = models.ManyToManyField(Target, related_name="id")
             m2m_2 = models.ManyToManyField(Target, related_name="src_safe")
@@ -2007,18 +1961,14 @@ class M2mThroughFieldsTests(SimpleTestCase):
             [
                 Error(
                     "'Invitation.invitee' is not a foreign key to 'Event'.",
-                    hint=(
-                        "Did you mean one of the following foreign keys to 'Event': "
-                        "event?"
-                    ),
+                    hint=("Did you mean one of the following foreign keys to 'Event': event?"),
                     obj=field,
                     id="fields.E339",
                 ),
                 Error(
                     "'Invitation.event' is not a foreign key to 'Fan'.",
                     hint=(
-                        "Did you mean one of the following foreign keys to 'Fan': "
-                        "invitee, inviter?"
+                        "Did you mean one of the following foreign keys to 'Fan': invitee, inviter?"
                     ),
                     obj=field,
                     id="fields.E339",
@@ -2054,10 +2004,7 @@ class M2mThroughFieldsTests(SimpleTestCase):
                 Error(
                     "The intermediary model 'invalid_models_tests.Invitation' has no "
                     "field 'invalid_field_1'.",
-                    hint=(
-                        "Did you mean one of the following foreign keys to 'Event': "
-                        "event?"
-                    ),
+                    hint=("Did you mean one of the following foreign keys to 'Event': event?"),
                     obj=field,
                     id="fields.E338",
                 ),
@@ -2065,8 +2012,7 @@ class M2mThroughFieldsTests(SimpleTestCase):
                     "The intermediary model 'invalid_models_tests.Invitation' has no "
                     "field 'invalid_field_2'.",
                     hint=(
-                        "Did you mean one of the following foreign keys to 'Fan': "
-                        "invitee, inviter?"
+                        "Did you mean one of the following foreign keys to 'Fan': invitee, inviter?"
                     ),
                     obj=field,
                     id="fields.E338",
@@ -2178,8 +2124,7 @@ class M2mThroughFieldsTests(SimpleTestCase):
             field.check(from_model=Child),
             [
                 Error(
-                    "No subset of the fields 'a', 'b', 'd' on model 'Parent' is "
-                    "unique.",
+                    "No subset of the fields 'a', 'b', 'd' on model 'Parent' is unique.",
                     hint=(
                         "Mark a single field as unique=True or add a set of "
                         "fields to a unique constraint (via unique_together or a "

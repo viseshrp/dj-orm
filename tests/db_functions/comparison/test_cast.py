@@ -31,33 +31,26 @@ class CastTests(TestCase):
         numbers = Author.objects.annotate(cast_string=Cast("age", models.CharField()))
         self.assertEqual(numbers.get().cast_string, "1")
 
-    # Silence "Truncated incorrect CHAR(1) value: 'Bob'".
-    @ignore_warnings(module='djorm.db.backends.mysql.base')
+        # Silence "Truncated incorrect CHAR(1) value: 'Bob'".
+
+    @ignore_warnings(module="djorm.db.backends.mysql.base")
     @skipUnlessDBFeature("supports_cast_with_precision")
     def test_cast_to_char_field_with_max_length(self):
-        names = Author.objects.annotate(
-            cast_string=Cast("name", models.CharField(max_length=1))
-        )
+        names = Author.objects.annotate(cast_string=Cast("name", models.CharField(max_length=1)))
         self.assertEqual(names.get().cast_string, "B")
 
     @skipUnlessDBFeature("supports_cast_with_precision")
     def test_cast_to_decimal_field(self):
         FloatModel.objects.create(f1=-1.934, f2=3.467)
         float_obj = FloatModel.objects.annotate(
-            cast_f1_decimal=Cast(
-                "f1", models.DecimalField(max_digits=8, decimal_places=2)
-            ),
-            cast_f2_decimal=Cast(
-                "f2", models.DecimalField(max_digits=8, decimal_places=1)
-            ),
+            cast_f1_decimal=Cast("f1", models.DecimalField(max_digits=8, decimal_places=2)),
+            cast_f2_decimal=Cast("f2", models.DecimalField(max_digits=8, decimal_places=1)),
         ).get()
         self.assertEqual(float_obj.cast_f1_decimal, decimal.Decimal("-1.93"))
         expected = "3.4" if connection.features.rounds_to_even else "3.5"
         self.assertEqual(float_obj.cast_f2_decimal, decimal.Decimal(expected))
         author_obj = Author.objects.annotate(
-            cast_alias_decimal=Cast(
-                "alias", models.DecimalField(max_digits=8, decimal_places=2)
-            ),
+            cast_alias_decimal=Cast("alias", models.DecimalField(max_digits=8, decimal_places=2)),
         ).get()
         self.assertEqual(author_obj.cast_alias_decimal, decimal.Decimal("1"))
 
@@ -110,12 +103,8 @@ class CastTests(TestCase):
         dtm = DTModel.objects.annotate(
             start_datetime_as_time=Cast("start_datetime", models.TimeField())
         ).first()
-        rounded_ms = int(
-            round(0.234567, connection.features.time_cast_precision) * 10**6
-        )
-        self.assertEqual(
-            dtm.start_datetime_as_time, datetime.time(12, 42, 10, rounded_ms)
-        )
+        rounded_ms = int(round(0.234567, connection.features.time_cast_precision) * 10**6)
+        self.assertEqual(dtm.start_datetime_as_time, datetime.time(12, 42, 10, rounded_ms))
 
     def test_cast_from_db_date_to_datetime(self):
         dt_value = datetime.date(2018, 9, 28)
@@ -123,9 +112,7 @@ class CastTests(TestCase):
         dtm = DTModel.objects.annotate(
             start_as_datetime=Cast("start_date", models.DateTimeField())
         ).first()
-        self.assertEqual(
-            dtm.start_as_datetime, datetime.datetime(2018, 9, 28, 0, 0, 0, 0)
-        )
+        self.assertEqual(dtm.start_as_datetime, datetime.datetime(2018, 9, 28, 0, 0, 0, 0))
 
     def test_cast_from_db_datetime_to_date_group_by(self):
         author = Author.objects.create(name="John Smith", age=45)
@@ -182,8 +169,6 @@ class CastTests(TestCase):
 
     def test_cast_to_text_field(self):
         self.assertEqual(
-            Author.objects.values_list(
-                Cast("age", models.TextField()), flat=True
-            ).get(),
+            Author.objects.values_list(Cast("age", models.TextField()), flat=True).get(),
             "1",
         )

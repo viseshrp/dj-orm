@@ -13,8 +13,7 @@ def migrate_and_makemigrations_autodetector(**kwargs):
     if make_migrations.autodetector is not migrate.autodetector:
         return [
             Error(
-                "The migrate and makemigrations commands must have the same "
-                "autodetector.",
+                "The migrate and makemigrations commands must have the same autodetector.",
                 hint=(
                     f"makemigrations.Command.autodetector is "
                     f"{make_migrations.autodetector.__name__}, but "

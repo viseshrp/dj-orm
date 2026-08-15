@@ -20,8 +20,7 @@ class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     likes_count = models.PositiveIntegerField()
 
-
-# Ticket #23555 - model with an intentionally broken QuerySet.__iter__ method.
+    # Ticket #23555 - model with an intentionally broken QuerySet.__iter__ method.
 
 
 class IndexErrorQuerySet(models.QuerySet):

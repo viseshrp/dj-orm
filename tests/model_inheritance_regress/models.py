@@ -22,9 +22,7 @@ class ItalianRestaurant(Restaurant):
 
 class ParkingLot(Place):
     # An explicit link to the parent (we can control the attribute name).
-    parent = models.OneToOneField(
-        Place, models.CASCADE, primary_key=True, parent_link=True
-    )
+    parent = models.OneToOneField(Place, models.CASCADE, primary_key=True, parent_link=True)
     capacity = models.IntegerField()
 
 
@@ -56,9 +54,7 @@ class Supplier(models.Model):
 
 
 class Wholesaler(Supplier):
-    retailer = models.ForeignKey(
-        Supplier, models.CASCADE, related_name="wholesale_supplier"
-    )
+    retailer = models.ForeignKey(Supplier, models.CASCADE, related_name="wholesale_supplier")
 
 
 class Parent(models.Model):
@@ -134,8 +130,9 @@ class CertificationAudit(AuditBase):
 class InternalCertificationAudit(CertificationAudit):
     auditing_dept = models.CharField(max_length=20)
 
+    # Abstract classes don't get m2m tables autocreated.
 
-# Abstract classes don't get m2m tables autocreated.
+
 class Person(models.Model):
     name = models.CharField(max_length=100)
 
@@ -163,8 +160,9 @@ class BachelorParty(AbstractEvent):
 class MessyBachelorParty(BachelorParty):
     pass
 
+    # Check concrete -> abstract -> concrete inheritance
 
-# Check concrete -> abstract -> concrete inheritance
+
 class SearchableLocation(models.Model):
     keywords = models.CharField(max_length=255)
 
@@ -192,8 +190,9 @@ class Profile(User):
     profile_id = models.AutoField(primary_key=True)
     extra = models.CharField(max_length=30, blank=True)
 
+    # Check concrete + concrete -> concrete -> concrete
 
-# Check concrete + concrete -> concrete -> concrete
+
 class Politician(models.Model):
     politician_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=50)

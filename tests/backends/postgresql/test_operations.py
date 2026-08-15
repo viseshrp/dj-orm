@@ -75,6 +75,4 @@ class PostgreSQLOperationsTests(SimpleTestCase):
             book_fk_field,
         )
         self.assertEqual(lhs_expr, Col(author_table, author_id_field))
-        self.assertEqual(
-            rhs_expr, Cast(Col(book_table, book_fk_field), author_id_field)
-        )
+        self.assertEqual(rhs_expr, Cast(Col(book_table, book_fk_field), author_id_field))

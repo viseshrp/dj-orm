@@ -80,8 +80,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     def django_test_skips(self):
         skips = {
             "opclasses are PostgreSQL only.": {
-                "indexes.tests.SchemaIndexesNotPostgreSQLTests."
-                "test_create_index_ignores_opclasses",
+                "indexes.tests.SchemaIndexesNotPostgreSQLTests.test_create_index_ignores_opclasses",
             },
             "PostgreSQL requires casting to text.": {
                 "lookup.tests.LookupTests.test_textfield_exact_null",
@@ -102,8 +101,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             skips.update(
                 {
                     "The actual query cannot be determined for server side bindings": {
-                        "backends.base.test_base.ExecuteWrapperTests."
-                        "test_wrapper_debug",
+                        "backends.base.test_base.ExecuteWrapperTests.test_wrapper_debug",
                     }
                 },
             )
@@ -158,6 +156,4 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         return self.connection.pg_version >= 170000
 
     supports_unlimited_charfield = True
-    supports_nulls_distinct_unique_constraints = property(
-        operator.attrgetter("is_postgresql_15")
-    )
+    supports_nulls_distinct_unique_constraints = property(operator.attrgetter("is_postgresql_15"))

@@ -109,12 +109,8 @@ class InMemoryDirNode(TimingMixin):
             # segments, raise an error.
             if isinstance(current_node, InMemoryFileNode):
                 path_segments = os.path.split(path)
-                current_path = "/".join(
-                    path_segments[: path_segments.index(path_segment)]
-                )
-                raise NotADirectoryError(
-                    errno.ENOTDIR, os.strerror(errno.ENOTDIR), current_path
-                )
+                current_path = "/".join(path_segments[: path_segments.index(path_segment)])
+                raise NotADirectoryError(errno.ENOTDIR, os.strerror(errno.ENOTDIR), current_path)
             current_node = current_node._resolve_child(
                 path_segment,
                 create_if_missing,
@@ -126,7 +122,7 @@ class InMemoryDirNode(TimingMixin):
         if current_node is None and check_exists:
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
 
-        # If a leaf_cls is not None, check if leaf node is of right type.
+            # If a leaf_cls is not None, check if leaf node is of right type.
         if leaf_cls and not isinstance(current_node, leaf_cls):
             error_cls, error_code = (
                 (NotADirectoryError, errno.ENOTDIR)
@@ -164,7 +160,7 @@ class InMemoryDirNode(TimingMixin):
             del self._children[name]
 
 
-@deconstructible(path='djorm.core.files.storage.InMemoryStorage')
+@deconstructible(path="djorm.core.files.storage.InMemoryStorage")
 class InMemoryStorage(Storage, StorageSettingsMixin):
     """A storage saving files in memory."""
 
@@ -180,9 +176,7 @@ class InMemoryStorage(Storage, StorageSettingsMixin):
         self._file_permissions_mode = file_permissions_mode
         self._directory_permissions_mode = directory_permissions_mode
         self._root = InMemoryDirNode()
-        self._resolve(
-            self.base_location, create_if_missing=True, leaf_cls=InMemoryDirNode
-        )
+        self._resolve(self.base_location, create_if_missing=True, leaf_cls=InMemoryDirNode)
         setting_changed.connect(self._clear_cached_properties)
 
     @cached_property
@@ -201,9 +195,7 @@ class InMemoryStorage(Storage, StorageSettingsMixin):
 
     @cached_property
     def file_permissions_mode(self):
-        return self._value_or_setting(
-            self._file_permissions_mode, settings.FILE_UPLOAD_PERMISSIONS
-        )
+        return self._value_or_setting(self._file_permissions_mode, settings.FILE_UPLOAD_PERMISSIONS)
 
     @cached_property
     def directory_permissions_mode(self):
@@ -236,9 +228,7 @@ class InMemoryStorage(Storage, StorageSettingsMixin):
         return file_node.open(mode)
 
     def _save(self, name, content):
-        file_node = self._resolve(
-            name, create_if_missing=True, leaf_cls=InMemoryFileNode
-        )
+        file_node = self._resolve(name, create_if_missing=True, leaf_cls=InMemoryFileNode)
         fd = None
         for chunk in content.chunks():
             if fd is None:

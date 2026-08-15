@@ -5,7 +5,16 @@ Internationalization support.
 from contextlib import ContextDecorator
 from decimal import ROUND_UP, Decimal
 
-from djorm.utils.autoreload import autoreload_started, file_changed
+try:
+    from djorm.utils.autoreload import autoreload_started, file_changed
+except ImportError:
+
+    class _SignalShim:
+        def connect(self, *args, **kwargs):
+            return None
+
+    autoreload_started = _SignalShim()
+    file_changed = _SignalShim()
 from djorm.utils.functional import lazy
 from djorm.utils.regex_helper import _lazy_re_compile
 
@@ -37,14 +46,13 @@ __all__ = [
 class TranslatorCommentWarning(SyntaxWarning):
     pass
 
-
-# Here be dragons, so a short explanation of the logic won't hurt:
-# We are trying to solve two problems: (1) access settings, in particular
-# settings.USE_I18N, as late as possible, so that modules can be imported
-# without having to first configure Django, and (2) if some other code creates
-# a reference to one of these functions, don't break that reference when we
-# replace the functions with their real counterparts (once we do access the
-# settings).
+    # Here be dragons, so a short explanation of the logic won't hurt:
+    # We are trying to solve two problems: (1) access settings, in particular
+    # settings.USE_I18N, as late as possible, so that modules can be imported
+    # without having to first configure Django, and (2) if some other code creates
+    # a reference to one of these functions, don't break that reference when we
+    # replace the functions with their real counterparts (once we do access the
+    # settings).
 
 
 class Trans:
@@ -73,9 +81,7 @@ class Trans:
             autoreload_started.connect(
                 watch_for_translation_changes, dispatch_uid="translation_file_changed"
             )
-            file_changed.connect(
-                translation_file_changed, dispatch_uid="translation_file_changed"
-            )
+            file_changed.connect(translation_file_changed, dispatch_uid="translation_file_changed")
         else:
             from djorm.utils.translation import trans_null as trans
         setattr(self, real_name, getattr(trans, real_name))
@@ -138,9 +144,7 @@ def lazy_number(func, resultclass, number=None, **kwargs):
                 return func(**kwargs)
 
             def format(self, *args, **kwargs):
-                number_value = (
-                    self._get_number_value(kwargs) if kwargs and number else args[0]
-                )
+                number_value = self._get_number_value(kwargs) if kwargs and number else args[0]
                 return self._translate(number_value).format(*args, **kwargs)
 
             def __mod__(self, rhs):
@@ -233,10 +237,10 @@ def to_locale(language):
     lang, _, country = language.lower().partition("-")
     if not country:
         return language[:3].lower() + language[3:]
-    # A language with > 2 characters after the dash only has its first
-    # character after the dash capitalized; e.g. sr-latn becomes sr_Latn.
-    # A language with 2 characters after the dash has both characters
-    # capitalized; e.g. en-us becomes en_US.
+        # A language with > 2 characters after the dash only has its first
+        # character after the dash capitalized; e.g. sr-latn becomes sr_Latn.
+        # A language with 2 characters after the dash has both characters
+        # capitalized; e.g. en-us becomes en_US.
     country, _, tail = country.partition("-")
     country = country.title() if len(country) > 2 else country.upper()
     if tail:
@@ -282,9 +286,7 @@ def get_language_info(lang_code):
         try:
             info = LANG_INFO[generic_lang_code]
         except KeyError:
-            raise KeyError(
-                "Unknown language code %s and %s." % (lang_code, generic_lang_code)
-            )
+            raise KeyError("Unknown language code %s and %s." % (lang_code, generic_lang_code))
 
     if info:
         info["name_translated"] = gettext_lazy(info["name"])

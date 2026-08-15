@@ -2,13 +2,13 @@ import functools
 import os
 import pkgutil
 import sys
+from collections import defaultdict
 from argparse import (
     _AppendConstAction,
     _CountAction,
     _StoreConstAction,
     _SubParsersAction,
 )
-from collections import defaultdict
 from difflib import get_close_matches
 from importlib import import_module
 
@@ -23,7 +23,6 @@ from djorm.core.management.base import (
     handle_default_options,
 )
 from djorm.core.management.color import color_style
-from djorm.utils import autoreload
 
 
 def find_commands(management_dir):
@@ -51,8 +50,24 @@ def load_command_class(app_name, name):
 
 @functools.cache
 def get_commands():
-    '\n    Return a dictionary mapping command names to their callback applications.\n\n    Look for a management.commands package in djorm.core, and in each\n    installed application -- if a commands package exists, register all\n    commands in that package.\n\n    Core commands are always included. If a settings module has been\n    specified, also include user-defined commands.\n\n    The dictionary is in the format {command_name: app_name}. Key-value\n    pairs from this dictionary can then be used in calls to\n    load_command_class(app_name, command_name)\n\n    The dictionary is cached on the first call and reused on subsequent\n    calls.\n    '
-    commands = {name: 'djorm.core' for name in find_commands(__path__[0])}
+    """
+    Return a dictionary mapping command names to their callback applications.
+
+    Look for a management.commands package in djorm.core, and in each
+    installed application -- if a commands package exists, register all
+    commands in that package.
+
+    Core commands are always included. If a settings module has been
+    specified, also include user-defined commands.
+
+    The dictionary is in the format {command_name: app_name}. Key-value
+    pairs from this dictionary can then be used in calls to
+    load_command_class(app_name, command_name)
+
+    The dictionary is cached on the first call and reused on subsequent
+    calls.
+    """
+    commands = {name: "djorm.core" for name in find_commands(__path__[0])}
 
     if not settings.configured:
         return commands
@@ -65,7 +80,25 @@ def get_commands():
 
 
 def call_command(command_name, *args, **options):
-    "\n    Call the given command, with the given options and args/kwargs.\n\n    This is the primary API you should use for calling specific commands.\n\n    `command_name` may be a string or a command object. Using a string is\n    preferred unless the command object is required for further processing or\n    testing.\n\n    Some examples:\n        call_command('migrate')\n        call_command('shell', plain=True)\n        call_command('sqlmigrate', 'myapp')\n\n        from djorm.core.management.commands import flush\n        cmd = flush.Command()\n        call_command(cmd, verbosity=0, interactive=False)\n        # Do something with cmd ...\n    "
+    """
+    Call the given command, with the given options and args/kwargs.
+
+    This is the primary API you should use for calling specific commands.
+
+    `command_name` may be a string or a command object. Using a string is
+    preferred unless the command object is required for further processing or
+    testing.
+
+    Some examples:
+        call_command('migrate')
+        call_command('dbshell')
+        call_command('sqlmigrate', 'myapp')
+
+        from djorm.core.management.commands import flush
+        cmd = flush.Command()
+        call_command(cmd, verbosity=0, interactive=False)
+        # Do something with cmd ...
+    """
     if isinstance(command_name, BaseCommand):
         # Command object passed in.
         command = command_name
@@ -83,7 +116,7 @@ def call_command(command_name, *args, **options):
         else:
             command = load_command_class(app_name, command_name)
 
-    # Simulate argument parsing to get the option defaults (see #10080 for details).
+            # Simulate argument parsing to get the option defaults (see #10080 for details).
     parser = command.create_parser("", command_name)
     # Use the `dest` option name from the parser option
     opt_mapping = {
@@ -118,9 +151,7 @@ def call_command(command_name, *args, **options):
     # Any required arguments which are passed in via **options must be passed
     # to parse_args().
     for opt in parser_actions:
-        if opt.dest in options and (
-            opt.required or opt in mutually_exclusive_required_options
-        ):
+        if opt.dest in options and (opt.required or opt in mutually_exclusive_required_options):
             opt_dest_count = sum(v == opt.dest for v in opt_mapping.values())
             if opt_dest_count > 1:
                 raise TypeError(
@@ -152,7 +183,7 @@ def call_command(command_name, *args, **options):
                 ", ".join(sorted(valid_options)),
             )
         )
-    # Move positional args out of options to mimic legacy optparse
+        # Move positional args out of options to mimic legacy optparse
     args = defaults.pop("args", ())
     if "skip_checks" not in options:
         defaults["skip_checks"] = True
@@ -161,13 +192,15 @@ def call_command(command_name, *args, **options):
 
 
 class ManagementUtility:
-    '\n    Encapsulate the logic of the djorm and manage.py utilities.\n    '
+    """
+    Encapsulate the logic of the djorm and manage.py utilities.
+    """
 
     def __init__(self, argv=None):
         self.argv = argv or sys.argv[:]
         self.prog_name = os.path.basename(self.argv[0])
         if self.prog_name == "__main__.py":
-            self.prog_name = "python -m django"
+            self.prog_name = "python -m djorm"
         self.settings_exception = None
 
     def main_help_text(self, commands_only=False):
@@ -177,15 +210,14 @@ class ManagementUtility:
         else:
             usage = [
                 "",
-                "Type '%s help <subcommand>' for help on a specific subcommand."
-                % self.prog_name,
+                "Type '%s help <subcommand>' for help on a specific subcommand." % self.prog_name,
                 "",
                 "Available subcommands:",
             ]
             commands_dict = defaultdict(lambda: [])
             for name, app in get_commands().items():
-                if app == 'djorm.core':
-                    app = "django"
+                if app == "djorm.core":
+                    app = "djorm"
                 else:
                     app = app.rpartition(".")[-1]
                 commands_dict[app].append(name)
@@ -195,7 +227,7 @@ class ManagementUtility:
                 usage.append(style.NOTICE("[%s]" % app))
                 for name in sorted(commands_dict[app]):
                     usage.append("    %s" % name)
-            # Output an extra note if settings are not properly configured
+                    # Output an extra note if settings are not properly configured
             if self.settings_exception is not None:
                 usage.append(
                     style.NOTICE(
@@ -208,7 +240,11 @@ class ManagementUtility:
         return "\n".join(usage)
 
     def fetch_command(self, subcommand):
-        '\n        Try to fetch the given subcommand, printing a message with the\n        appropriate command called from the command line (usually\n        "djorm" or "manage.py") if it can\'t be found.\n        '
+        """
+        Try to fetch the given subcommand, printing a message with the
+        appropriate command called from the command line (usually
+        "djorm" or "manage.py") if it can't be found.
+        """
         # Get commands outside of try block to prevent swallowing exceptions
         commands = get_commands()
         try:
@@ -274,8 +310,8 @@ class ManagementUtility:
         # subcommand
         if cword == 1:
             print(" ".join(sorted(filter(lambda x: x.startswith(curr), subcommands))))
-        # subcommand options
-        # special case: the 'help' subcommand has no options
+            # subcommand options
+            # special case: the 'help' subcommand has no options
         elif cwords[0] in subcommands and cwords[0] != "help":
             subcommand_cls = self.fetch_command(cwords[0])
             # special case: add the names of installed apps to options
@@ -305,9 +341,9 @@ class ManagementUtility:
                 if require_arg:
                     opt_label += "="
                 print(opt_label)
-        # Exit code of the bash completion function is never passed back to
-        # the user, so it's safe to always exit with 0.
-        # For more details see #25420.
+                # Exit code of the bash completion function is never passed back to
+                # the user, so it's safe to always exit with 0.
+                # For more details see #25420.
         sys.exit(0)
 
     def execute(self):
@@ -320,9 +356,9 @@ class ManagementUtility:
         except IndexError:
             subcommand = "help"  # Display help if no arguments were given.
 
-        # Preprocess options to extract --settings and --pythonpath.
-        # These options could affect the commands that are available, so they
-        # must be processed early.
+            # Preprocess options to extract --settings and --pythonpath.
+            # These options could affect the commands that are available, so they
+            # must be processed early.
         parser = CommandParser(
             prog=self.prog_name,
             usage="%(prog)s subcommand [options] [args]",
@@ -346,34 +382,7 @@ class ManagementUtility:
             self.settings_exception = exc
 
         if settings.configured:
-            # Start the auto-reloading dev server even if the code is broken.
-            # The hardcoded condition is a code smell but we can't rely on a
-            # flag on the command class because we haven't located it yet.
-            if subcommand == "runserver" and "--noreload" not in self.argv:
-                try:
-                    autoreload.check_errors(djorm.setup)()
-                except Exception:
-                    # The exception will be raised later in the child process
-                    # started by the autoreloader. Pretend it didn't happen by
-                    # loading an empty list of applications.
-                    apps.all_models = defaultdict(dict)
-                    apps.app_configs = {}
-                    apps.apps_ready = apps.models_ready = apps.ready = True
-
-                    # Remove options not compatible with the built-in runserver
-                    # (e.g. options for the contrib.staticfiles' runserver).
-                    # Changes here require manually testing as described in
-                    # #27522.
-                    _parser = self.fetch_command("runserver").create_parser(
-                        "django", "runserver"
-                    )
-                    _options, _args = _parser.parse_known_args(self.argv[2:])
-                    for _arg in _args:
-                        self.argv.remove(_arg)
-
-            # In all other cases, django.setup() is required to succeed.
-            else:
-                djorm.setup()
+            djorm.setup()
 
         self.autocomplete()
 
@@ -383,11 +392,9 @@ class ManagementUtility:
             elif not options.args:
                 sys.stdout.write(self.main_help_text() + "\n")
             else:
-                self.fetch_command(options.args[0]).print_help(
-                    self.prog_name, options.args[0]
-                )
-        # Special-cases: We want 'django-admin --version' and
-        # 'django-admin --help' to work, for backwards compatibility.
+                self.fetch_command(options.args[0]).print_help(self.prog_name, options.args[0])
+                # Special-cases: We want 'django-admin --version' and
+                # 'django-admin --help' to work, for backwards compatibility.
         elif subcommand == "version" or self.argv[1:] == ["--version"]:
             sys.stdout.write(djorm.get_version() + "\n")
         elif self.argv[1:] in (["--help"], ["-h"]):

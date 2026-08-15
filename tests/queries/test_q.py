@@ -101,7 +101,7 @@ class QTests(SimpleTestCase):
     def test_deconstruct(self):
         q = Q(price__gt=F("discounted_price"))
         path, args, kwargs = q.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.Q')
+        self.assertEqual(path, "djorm.db.models.Q")
         self.assertEqual(args, (("price__gt", F("discounted_price")),))
         self.assertEqual(kwargs, {})
 
@@ -330,9 +330,9 @@ class QTests(SimpleTestCase):
             ),
         )
         self.assertEqual(
-            (
-                Q(Q(timestamp__date__day__lte=25), timestamp__date__day=13)
-            ).replace_expressions(replacements),
+            (Q(Q(timestamp__date__day__lte=25), timestamp__date__day=13)).replace_expressions(
+                replacements
+            ),
             (
                 Q(
                     Q(
@@ -387,7 +387,7 @@ class QCheckTests(TestCase):
         return True.
         """
         q = Q(RawSQL("price > %s", params=(20,), output_field=BooleanField()))
-        with self.assertLogs('djorm.db.models', "WARNING") as cm:
+        with self.assertLogs("djorm.db.models", "WARNING") as cm:
             self.assertIs(q.check({"price": 10}), True)
         self.assertIn(
             f"Got a database error calling check() on {q!r}: ",

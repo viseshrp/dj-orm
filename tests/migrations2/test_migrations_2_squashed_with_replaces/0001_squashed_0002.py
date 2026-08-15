@@ -21,9 +21,7 @@ class Migration(migrations.Migration):
                 ("id", models.AutoField(primary_key=True)),
                 (
                     "author",
-                    models.ForeignKey(
-                        "migrations2.OtherAuthor", models.SET_NULL, null=True
-                    ),
+                    models.ForeignKey("migrations2.OtherAuthor", models.SET_NULL, null=True),
                 ),
             ],
         ),

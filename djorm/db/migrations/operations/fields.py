@@ -23,10 +23,7 @@ class FieldOperation(Operation):
         return self.model_name_lower == operation.model_name_lower
 
     def is_same_field_operation(self, operation):
-        return (
-            self.is_same_model_operation(operation)
-            and self.name_lower == operation.name_lower
-        )
+        return self.is_same_model_operation(operation) and self.name_lower == operation.name_lower
 
     def references_model(self, name, app_label):
         name_lower = name.lower()
@@ -49,12 +46,10 @@ class FieldOperation(Operation):
             if name == self.name:
                 return True
             elif (
-                self.field
-                and hasattr(self.field, "from_fields")
-                and name in self.field.from_fields
+                self.field and hasattr(self.field, "from_fields") and name in self.field.from_fields
             ):
                 return True
-        # Check if this operation remotely references the field.
+                # Check if this operation remotely references the field.
         if self.field is None:
             return False
         return bool(
@@ -117,9 +112,7 @@ class AddField(FieldOperation):
     def database_backwards(self, app_label, schema_editor, from_state, to_state):
         from_model = from_state.apps.get_model(app_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, from_model):
-            schema_editor.remove_field(
-                from_model, from_model._meta.get_field(self.name)
-            )
+            schema_editor.remove_field(from_model, from_model._meta.get_field(self.name))
 
     def describe(self):
         return "Add field %s to %s" % (self.name, self.model_name)
@@ -129,9 +122,7 @@ class AddField(FieldOperation):
         return "%s_%s" % (self.model_name_lower, self.name_lower)
 
     def reduce(self, operation, app_label):
-        if isinstance(operation, FieldOperation) and self.is_same_field_operation(
-            operation
-        ):
+        if isinstance(operation, FieldOperation) and self.is_same_field_operation(operation):
             if isinstance(operation, AlterField):
                 return [
                     AddField(
@@ -171,9 +162,7 @@ class RemoveField(FieldOperation):
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
         from_model = from_state.apps.get_model(app_label, self.model_name)
         if self.allow_migrate_model(schema_editor.connection.alias, from_model):
-            schema_editor.remove_field(
-                from_model, from_model._meta.get_field(self.name)
-            )
+            schema_editor.remove_field(from_model, from_model._meta.get_field(self.name))
 
     def database_backwards(self, app_label, schema_editor, from_state, to_state):
         to_model = to_state.apps.get_model(app_label, self.model_name)
@@ -191,10 +180,7 @@ class RemoveField(FieldOperation):
     def reduce(self, operation, app_label):
         from .models import DeleteModel
 
-        if (
-            isinstance(operation, DeleteModel)
-            and operation.name_lower == self.model_name_lower
-        ):
+        if isinstance(operation, DeleteModel) and operation.name_lower == self.model_name_lower:
             return [operation]
         return super().reduce(operation, app_label)
 
@@ -253,9 +239,9 @@ class AlterField(FieldOperation):
         return "alter_%s_%s" % (self.model_name_lower, self.name_lower)
 
     def reduce(self, operation, app_label):
-        if isinstance(
-            operation, (AlterField, RemoveField)
-        ) and self.is_same_field_operation(operation):
+        if isinstance(operation, (AlterField, RemoveField)) and self.is_same_field_operation(
+            operation
+        ):
             return [operation]
         elif (
             isinstance(operation, RenameField)
@@ -300,9 +286,7 @@ class RenameField(FieldOperation):
         return (self.__class__.__name__, [], kwargs)
 
     def state_forwards(self, app_label, state):
-        state.rename_field(
-            app_label, self.model_name_lower, self.old_name, self.new_name
-        )
+        state.rename_field(app_label, self.model_name_lower, self.old_name, self.new_name)
 
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
         to_model = to_state.apps.get_model(app_label, self.model_name)
@@ -357,8 +341,8 @@ class RenameField(FieldOperation):
                     operation.new_name,
                 ),
             ]
-        # Skip `FieldOperation.reduce` as we want to run `references_field`
-        # against self.old_name and self.new_name.
+            # Skip `FieldOperation.reduce` as we want to run `references_field`
+            # against self.old_name and self.new_name.
         return super(FieldOperation, self).reduce(operation, app_label) or not (
             operation.references_field(self.model_name, self.old_name, app_label)
             or operation.references_field(self.model_name, self.new_name, app_label)

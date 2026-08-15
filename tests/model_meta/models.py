@@ -18,9 +18,7 @@ class InstanceOnlyDescriptor:
 class AbstractPerson(models.Model):
     # DATA fields
     data_abstract = models.CharField(max_length=10)
-    fk_abstract = models.ForeignKey(
-        Relation, models.CASCADE, related_name="fk_abstract_rel"
-    )
+    fk_abstract = models.ForeignKey(Relation, models.CASCADE, related_name="fk_abstract_rel")
 
     # M2M fields
     m2m_abstract = models.ManyToManyField(Relation, related_name="m2m_abstract_rel")
@@ -39,13 +37,9 @@ class AbstractPerson(models.Model):
     )
 
     # GFK fields
-    content_type_abstract = models.ForeignKey(
-        ContentType, models.CASCADE, related_name="+"
-    )
+    content_type_abstract = models.ForeignKey(ContentType, models.CASCADE, related_name="+")
     object_id_abstract = models.PositiveIntegerField()
-    content_object_abstract = GenericForeignKey(
-        "content_type_abstract", "object_id_abstract"
-    )
+    content_object_abstract = GenericForeignKey("content_type_abstract", "object_id_abstract")
 
     # GR fields
     generic_relation_abstract = GenericRelation(Relation)
@@ -93,9 +87,7 @@ class BasePerson(AbstractPerson):
 class Person(BasePerson):
     # DATA fields
     data_inherited = models.CharField(max_length=10)
-    fk_inherited = models.ForeignKey(
-        Relation, models.CASCADE, related_name="fk_concrete_rel"
-    )
+    fk_inherited = models.ForeignKey(Relation, models.CASCADE, related_name="fk_concrete_rel")
 
     # M2M Fields
     m2m_inherited = models.ManyToManyField(Relation, related_name="m2m_concrete_rel")
@@ -114,13 +106,9 @@ class Person(BasePerson):
     )
 
     # GFK fields
-    content_type_concrete = models.ForeignKey(
-        ContentType, models.CASCADE, related_name="+"
-    )
+    content_type_concrete = models.ForeignKey(ContentType, models.CASCADE, related_name="+")
     object_id_concrete = models.PositiveIntegerField()
-    content_object_concrete = GenericForeignKey(
-        "content_type_concrete", "object_id_concrete"
-    )
+    content_object_concrete = GenericForeignKey("content_type_concrete", "object_id_concrete")
 
     # GR fields
     generic_relation_concrete = GenericRelation(Relation)
@@ -140,9 +128,7 @@ class PersonThroughProxySubclass(ProxyPerson):
 
 class Relating(models.Model):
     # ForeignKey to BasePerson
-    baseperson = models.ForeignKey(
-        BasePerson, models.CASCADE, related_name="relating_baseperson"
-    )
+    baseperson = models.ForeignKey(BasePerson, models.CASCADE, related_name="relating_baseperson")
     baseperson_hidden = models.ForeignKey(BasePerson, models.CASCADE, related_name="+")
 
     # ForeignKey to Person
@@ -170,8 +156,9 @@ class Swappable(models.Model):
     class Meta:
         swappable = "MODEL_META_TESTS_SWAPPED"
 
+        # ParentListTests models
 
-# ParentListTests models
+
 class CommonAncestor(models.Model):
     pass
 

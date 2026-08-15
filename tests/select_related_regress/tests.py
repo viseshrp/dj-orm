@@ -59,9 +59,7 @@ class SelectRelatedRegressTests(TestCase):
         )
 
         connections = (
-            Connection.objects.filter(
-                start__device__building=b, end__device__building=b
-            )
+            Connection.objects.filter(start__device__building=b, end__device__building=b)
             .select_related()
             .order_by("id")
         )
@@ -113,12 +111,8 @@ class SelectRelatedRegressTests(TestCase):
         self.assertEqual(client.status, active)
         self.assertEqual(Client.objects.select_related()[0].status, active)
         self.assertEqual(Client.objects.select_related("state")[0].status, active)
-        self.assertEqual(
-            Client.objects.select_related("state", "status")[0].status, active
-        )
-        self.assertEqual(
-            Client.objects.select_related("state__country")[0].status, active
-        )
+        self.assertEqual(Client.objects.select_related("state", "status")[0].status, active)
+        self.assertEqual(Client.objects.select_related("state__country")[0].status, active)
         self.assertEqual(
             Client.objects.select_related("state__country", "status")[0].status, active
         )
@@ -147,19 +141,13 @@ class SelectRelatedRegressTests(TestCase):
 
         wa = State.objects.create(name="Western Australia", country=australia)
         Client.objects.create(name="Brian Burke", state=wa, status=active)
-        burke = (
-            Client.objects.select_related("state")
-            .defer("state__name")
-            .get(name="Brian Burke")
-        )
+        burke = Client.objects.select_related("state").defer("state__name").get(name="Brian Burke")
 
         self.assertEqual(burke.name, "Brian Burke")
         self.assertEqual(burke.state.name, "Western Australia")
 
         # Still works if we're dealing with an inherited class
-        SpecialClient.objects.create(
-            name="Troy Buswell", state=wa, status=active, value=42
-        )
+        SpecialClient.objects.create(name="Troy Buswell", state=wa, status=active, value=42)
         troy = (
             SpecialClient.objects.select_related("state")
             .defer("state__name")

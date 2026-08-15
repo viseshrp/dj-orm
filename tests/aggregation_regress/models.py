@@ -52,9 +52,7 @@ class Entries(models.Model):
 
 class Clues(models.Model):
     ID = models.AutoField(primary_key=True)
-    EntryID = models.ForeignKey(
-        Entries, models.CASCADE, verbose_name="Entry", db_column="Entry ID"
-    )
+    EntryID = models.ForeignKey(Entries, models.CASCADE, verbose_name="Entry", db_column="Entry ID")
     Clue = models.CharField(max_length=150)
 
 
@@ -69,8 +67,9 @@ class WithManualPK(models.Model):
 class HardbackBook(Book):
     weight = models.FloatField()
 
+    # Models for ticket #21150
 
-# Models for ticket #21150
+
 class Alfa(models.Model):
     name = models.CharField(max_length=10, null=True)
 
@@ -117,9 +116,7 @@ class AuthorUnmanaged(models.Model):
 
 class RecipeTasterUnmanaged(models.Model):
     recipe = models.ForeignKey("RecipeUnmanaged", models.CASCADE)
-    author = models.ForeignKey(
-        AuthorUnmanaged, models.CASCADE, db_column="authorproxy_id"
-    )
+    author = models.ForeignKey(AuthorUnmanaged, models.CASCADE, db_column="authorproxy_id")
 
     class Meta:
         managed = False

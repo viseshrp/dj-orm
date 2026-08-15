@@ -46,22 +46,22 @@ msgid "Input must be a JSON dictionary."
 msgstr "A bemenetnek JSON szótárnak kell lennie."
 
 msgid "Enter two valid values."
-msgstr "Adjon meg két érvényes értéket."
+msgstr "Adjormn meg két érvényes értéket."
 
 msgid "The start of the range must not exceed the end of the range."
 msgstr "A tartomány eleje nem lehet nagyobb a tartomány végénél."
 
 msgid "Enter two whole numbers."
-msgstr "Adjon meg két egész számot."
+msgstr "Adjormn meg két egész számot."
 
 msgid "Enter two numbers."
-msgstr "Adjon meg két számot."
+msgstr "Adjormn meg két számot."
 
 msgid "Enter two valid date/times."
-msgstr "Adjon meg két érvényes dátumot/időt."
+msgstr "Adjormn meg két érvényes dátumot/időt."
 
 msgid "Enter two valid dates."
-msgstr "Adjon meg két érvényes dátumot."
+msgstr "Adjormn meg két érvényes dátumot."
 
 #, python-format
 msgid ""
@@ -99,12 +99,12 @@ msgstr "Néhány ismeretlen kulcs érkezett: %(keys)s"
 msgid ""
 "Ensure that the upper bound of the range is not greater than %(limit_value)s."
 msgstr ""
-"Bizonyosodjon meg arról, hogy a tartomány felső határa nem nagyobb, mint "
+"Bizonyosodjormn meg arról, hogy a tartomány felső határa nem nagyobb, mint "
 "%(limit_value)s."
 
 #, python-format
 msgid ""
 "Ensure that the lower bound of the range is not less than %(limit_value)s."
 msgstr ""
-"Bizonyosodjon meg arról, hogy a tartomány alsó határa nem kisebb, mint "
+"Bizonyosodjormn meg arról, hogy a tartomány alsó határa nem kisebb, mint "
 "%(limit_value)s."

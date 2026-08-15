@@ -74,9 +74,7 @@ class TermColorTests(unittest.TestCase):
         )
 
     def test_reverse_override(self):
-        self.assertEqual(
-            parse_color_setting("error=green;light"), PALETTES[LIGHT_PALETTE]
-        )
+        self.assertEqual(parse_color_setting("error=green;light"), PALETTES[LIGHT_PALETTE])
 
     def test_multiple_roles(self):
         self.assertEqual(
@@ -91,9 +89,7 @@ class TermColorTests(unittest.TestCase):
     def test_override_with_multiple_roles(self):
         self.assertEqual(
             parse_color_setting("light;error=green;sql_field=blue"),
-            dict(
-                PALETTES[LIGHT_PALETTE], ERROR={"fg": "green"}, SQL_FIELD={"fg": "blue"}
-            ),
+            dict(PALETTES[LIGHT_PALETTE], ERROR={"fg": "green"}, SQL_FIELD={"fg": "blue"}),
         )
 
     def test_empty_definition(self):

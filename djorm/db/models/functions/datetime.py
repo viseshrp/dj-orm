@@ -61,21 +61,13 @@ class Extract(TimezoneMixin, Transform):
         elif self.tzinfo is not None:
             raise ValueError("tzinfo can only be used with DateTimeField.")
         elif isinstance(lhs_output_field, DateField):
-            sql, params = connection.ops.date_extract_sql(
-                self.lookup_name, sql, tuple(params)
-            )
+            sql, params = connection.ops.date_extract_sql(self.lookup_name, sql, tuple(params))
         elif isinstance(lhs_output_field, TimeField):
-            sql, params = connection.ops.time_extract_sql(
-                self.lookup_name, sql, tuple(params)
-            )
+            sql, params = connection.ops.time_extract_sql(self.lookup_name, sql, tuple(params))
         elif isinstance(lhs_output_field, DurationField):
             if not connection.features.has_native_duration_field:
-                raise ValueError(
-                    "Extract requires native DurationField database support."
-                )
-            sql, params = connection.ops.time_extract_sql(
-                self.lookup_name, sql, tuple(params)
-            )
+                raise ValueError("Extract requires native DurationField database support.")
+            sql, params = connection.ops.time_extract_sql(self.lookup_name, sql, tuple(params))
         else:
             # resolve_expression has already validated the output_field so this
             # assert should never be hit.
@@ -85,9 +77,7 @@ class Extract(TimezoneMixin, Transform):
     def resolve_expression(
         self, query=None, allow_joins=True, reuse=None, summarize=False, for_save=False
     ):
-        copy = super().resolve_expression(
-            query, allow_joins, reuse, summarize, for_save
-        )
+        copy = super().resolve_expression(query, allow_joins, reuse, summarize, for_save)
         field = getattr(copy.lhs, "output_field", None)
         if field is None:
             return copy
@@ -96,7 +86,7 @@ class Extract(TimezoneMixin, Transform):
                 "Extract input expression must be DateField, DateTimeField, "
                 "TimeField, or DurationField."
             )
-        # Passing dates to functions expecting datetimes is most likely a mistake.
+            # Passing dates to functions expecting datetimes is most likely a mistake.
         if type(field) is DateField and copy.lookup_name in (
             "hour",
             "minute",
@@ -219,14 +209,10 @@ class Now(Func):
         # PostgreSQL's CURRENT_TIMESTAMP means "the time at the start of the
         # transaction". Use STATEMENT_TIMESTAMP to be cross-compatible with
         # other databases.
-        return self.as_sql(
-            compiler, connection, template="STATEMENT_TIMESTAMP()", **extra_context
-        )
+        return self.as_sql(compiler, connection, template="STATEMENT_TIMESTAMP()", **extra_context)
 
     def as_mysql(self, compiler, connection, **extra_context):
-        return self.as_sql(
-            compiler, connection, template="CURRENT_TIMESTAMP(6)", **extra_context
-        )
+        return self.as_sql(compiler, connection, template="CURRENT_TIMESTAMP(6)", **extra_context)
 
     def as_sqlite(self, compiler, connection, **extra_context):
         return self.as_sql(
@@ -237,9 +223,7 @@ class Now(Func):
         )
 
     def as_oracle(self, compiler, connection, **extra_context):
-        return self.as_sql(
-            compiler, connection, template="LOCALTIMESTAMP", **extra_context
-        )
+        return self.as_sql(compiler, connection, template="LOCALTIMESTAMP", **extra_context)
 
 
 class TruncBase(TimezoneMixin, Transform):
@@ -264,47 +248,31 @@ class TruncBase(TimezoneMixin, Transform):
         elif self.tzinfo is not None:
             raise ValueError("tzinfo can only be used with DateTimeField.")
         if isinstance(self.output_field, DateTimeField):
-            sql, params = connection.ops.datetime_trunc_sql(
-                self.kind, sql, tuple(params), tzname
-            )
+            sql, params = connection.ops.datetime_trunc_sql(self.kind, sql, tuple(params), tzname)
         elif isinstance(self.output_field, DateField):
-            sql, params = connection.ops.date_trunc_sql(
-                self.kind, sql, tuple(params), tzname
-            )
+            sql, params = connection.ops.date_trunc_sql(self.kind, sql, tuple(params), tzname)
         elif isinstance(self.output_field, TimeField):
-            sql, params = connection.ops.time_trunc_sql(
-                self.kind, sql, tuple(params), tzname
-            )
+            sql, params = connection.ops.time_trunc_sql(self.kind, sql, tuple(params), tzname)
         else:
-            raise ValueError(
-                "Trunc only valid on DateField, TimeField, or DateTimeField."
-            )
+            raise ValueError("Trunc only valid on DateField, TimeField, or DateTimeField.")
         return sql, params
 
     def resolve_expression(
         self, query=None, allow_joins=True, reuse=None, summarize=False, for_save=False
     ):
-        copy = super().resolve_expression(
-            query, allow_joins, reuse, summarize, for_save
-        )
+        copy = super().resolve_expression(query, allow_joins, reuse, summarize, for_save)
         field = copy.lhs.output_field
         # DateTimeField is a subclass of DateField so this works for both.
         if not isinstance(field, (DateField, TimeField)):
-            raise TypeError(
-                "%r isn't a DateField, TimeField, or DateTimeField." % field.name
-            )
-        # If self.output_field was None, then accessing the field will trigger
-        # the resolver to assign it to self.lhs.output_field.
+            raise TypeError("%r isn't a DateField, TimeField, or DateTimeField." % field.name)
+            # If self.output_field was None, then accessing the field will trigger
+            # the resolver to assign it to self.lhs.output_field.
         if not isinstance(copy.output_field, (DateField, DateTimeField, TimeField)):
-            raise ValueError(
-                "output_field must be either DateField, TimeField, or DateTimeField"
-            )
-        # Passing dates or times to functions expecting datetimes is most
-        # likely a mistake.
+            raise ValueError("output_field must be either DateField, TimeField, or DateTimeField")
+            # Passing dates or times to functions expecting datetimes is most
+            # likely a mistake.
         class_output_field = (
-            self.__class__.output_field
-            if isinstance(self.__class__.output_field, Field)
-            else None
+            self.__class__.output_field if isinstance(self.__class__.output_field, Field) else None
         )
         output_field = class_output_field or copy.output_field
         has_explicit_output_field = (

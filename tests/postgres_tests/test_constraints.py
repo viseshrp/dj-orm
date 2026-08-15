@@ -57,9 +57,7 @@ class SchemaTests(PostgreSQLTestCase):
 
     def test_check_constraint_range_value(self):
         constraint_name = "ints_between"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = CheckConstraint(
             condition=Q(ints__contained_by=NumericRange(10, 30)),
             name=constraint_name,
@@ -93,9 +91,7 @@ class SchemaTests(PostgreSQLTestCase):
 
     def test_check_constraint_daterange_contains(self):
         constraint_name = "dates_contains"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = CheckConstraint(
             condition=Q(dates__contains=F("dates_inner")),
             name=constraint_name,
@@ -117,9 +113,7 @@ class SchemaTests(PostgreSQLTestCase):
 
     def test_check_constraint_datetimerange_contains(self):
         constraint_name = "timestamps_contains"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = CheckConstraint(
             condition=Q(timestamps__contains=F("timestamps_inner")),
             name=constraint_name,
@@ -187,7 +181,7 @@ class SchemaTests(PostgreSQLTestCase):
                 cursor.fetchall(),
                 [("varchar_pattern_ops", constraint.name)],
             )
-        # Drop the constraint.
+            # Drop the constraint.
         with connection.schema_editor() as editor:
             editor.remove_constraint(Scene, constraint)
         self.assertNotIn(constraint.name, self.get_constraints(Scene._meta.db_table))
@@ -589,9 +583,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             ],
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(
-            path, 'djorm.contrib.postgres.constraints.ExclusionConstraint'
-        )
+        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -614,9 +606,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             ],
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(
-            path, 'djorm.contrib.postgres.constraints.ExclusionConstraint'
-        )
+        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -640,9 +630,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             condition=Q(cancelled=False),
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(
-            path, 'djorm.contrib.postgres.constraints.ExclusionConstraint'
-        )
+        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -663,9 +651,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             deferrable=Deferrable.DEFERRED,
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(
-            path, 'djorm.contrib.postgres.constraints.ExclusionConstraint'
-        )
+        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -683,9 +669,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             include=["cancelled", "room"],
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(
-            path, 'djorm.contrib.postgres.constraints.ExclusionConstraint'
-        )
+        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -698,14 +682,10 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def _test_range_overlaps(self, constraint):
         # Create exclusion constraint.
-        self.assertNotIn(
-            constraint.name, self.get_constraints(HotelReservation._meta.db_table)
-        )
+        self.assertNotIn(constraint.name, self.get_constraints(HotelReservation._meta.db_table))
         with connection.schema_editor() as editor:
             editor.add_constraint(HotelReservation, constraint)
-        self.assertIn(
-            constraint.name, self.get_constraints(HotelReservation._meta.db_table)
-        )
+        self.assertIn(constraint.name, self.get_constraints(HotelReservation._meta.db_table))
         # Add initial reservations.
         room101 = Room.objects.create(number=101)
         room102 = Room.objects.create(number=102)
@@ -748,7 +728,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             with self.assertRaisesMessage(ValidationError, msg):
                 constraint.validate(HotelReservation, reservation)
             reservation.save()
-        # Valid range.
+            # Valid range.
         other_valid_reservations = [
             # Other room.
             HotelReservation(
@@ -829,9 +809,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent(self):
         constraint_name = "ints_adjacent"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -847,9 +825,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
         # Drop the constraint.
         with connection.schema_editor() as editor:
             editor.remove_constraint(RangesModel, constraint)
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
 
     def test_validate_range_adjacent(self):
         constraint = ExclusionConstraint(
@@ -894,11 +870,9 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
         with self.assertRaisesMessage(ValidationError, "Custom error message."):
             constraint.validate(RangesModelGeneratedField, range_obj)
 
-        # Excluding referenced or generated field should skip validation.
+            # Excluding referenced or generated field should skip validation.
         constraint.validate(RangesModelGeneratedField, range_obj, exclude={"ints"})
-        constraint.validate(
-            RangesModelGeneratedField, range_obj, exclude={"ints_generated"}
-        )
+        constraint.validate(RangesModelGeneratedField, range_obj, exclude={"ints_generated"})
 
     def test_validate_with_custom_code_and_condition(self):
         constraint = ExclusionConstraint(
@@ -955,9 +929,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_initially_deferred(self):
         constraint_name = "ints_adjacent_deferred"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -973,16 +945,14 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             with transaction.atomic(), connection.cursor() as cursor:
                 quoted_name = connection.ops.quote_name(constraint_name)
                 cursor.execute("SET CONSTRAINTS %s IMMEDIATE" % quoted_name)
-        # Remove adjacent range before the end of transaction.
+                # Remove adjacent range before the end of transaction.
         adjacent_range.delete()
         RangesModel.objects.create(ints=(10, 19))
         RangesModel.objects.create(ints=(51, 60))
 
     def test_range_adjacent_initially_deferred_with_condition(self):
         constraint_name = "ints_adjacent_deferred_with_condition"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -999,7 +969,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             with transaction.atomic(), connection.cursor() as cursor:
                 quoted_name = connection.ops.quote_name(constraint_name)
                 cursor.execute(f"SET CONSTRAINTS {quoted_name} IMMEDIATE")
-        # Remove adjacent range before the end of transaction.
+                # Remove adjacent range before the end of transaction.
         adjacent_range.delete()
         RangesModel.objects.create(ints=(10, 19))
         RangesModel.objects.create(ints=(51, 60))
@@ -1013,9 +983,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_gist_include(self):
         constraint_name = "ints_adjacent_gist_include"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -1033,9 +1001,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_spgist_include(self):
         constraint_name = "ints_adjacent_spgist_include"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -1053,9 +1019,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_gist_include_condition(self):
         constraint_name = "ints_adjacent_gist_include_condition"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -1069,9 +1033,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_spgist_include_condition(self):
         constraint_name = "ints_adjacent_spgist_include_condition"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -1085,9 +1047,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_gist_include_deferrable(self):
         constraint_name = "ints_adjacent_gist_include_deferrable"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -1101,9 +1061,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_spgist_include_deferrable(self):
         constraint_name = "ints_adjacent_spgist_include_deferrable"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[("ints", RangeOperators.ADJACENT_TO)],
@@ -1117,9 +1075,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_opclass(self):
         constraint_name = "ints_adjacent_opclass"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[
@@ -1144,15 +1100,11 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
         # Drop the constraint.
         with connection.schema_editor() as editor:
             editor.remove_constraint(RangesModel, constraint)
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
 
     def test_range_adjacent_opclass_condition(self):
         constraint_name = "ints_adjacent_opclass_condition"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[
@@ -1166,9 +1118,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_opclass_deferrable(self):
         constraint_name = "ints_adjacent_opclass_deferrable"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[
@@ -1182,9 +1132,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_gist_opclass_include(self):
         constraint_name = "ints_adjacent_gist_opclass_include"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[
@@ -1199,9 +1147,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
 
     def test_range_adjacent_spgist_opclass_include(self):
         constraint_name = "ints_adjacent_spgist_opclass_include"
-        self.assertNotIn(
-            constraint_name, self.get_constraints(RangesModel._meta.db_table)
-        )
+        self.assertNotIn(constraint_name, self.get_constraints(RangesModel._meta.db_table))
         constraint = ExclusionConstraint(
             name=constraint_name,
             expressions=[

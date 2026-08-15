@@ -33,21 +33,15 @@ class SimpleDatabaseOperationTests(SimpleTestCase):
         self.assertEqual(self.ops.end_transaction_sql(success=False), "ROLLBACK;")
 
     def test_no_limit_value(self):
-        with self.assertRaisesMessage(
-            NotImplementedError, self.may_require_msg % "no_limit_value"
-        ):
+        with self.assertRaisesMessage(NotImplementedError, self.may_require_msg % "no_limit_value"):
             self.ops.no_limit_value()
 
     def test_quote_name(self):
-        with self.assertRaisesMessage(
-            NotImplementedError, self.may_require_msg % "quote_name"
-        ):
+        with self.assertRaisesMessage(NotImplementedError, self.may_require_msg % "quote_name"):
             self.ops.quote_name("a")
 
     def test_regex_lookup(self):
-        with self.assertRaisesMessage(
-            NotImplementedError, self.may_require_msg % "regex_lookup"
-        ):
+        with self.assertRaisesMessage(NotImplementedError, self.may_require_msg % "regex_lookup"):
             self.ops.regex_lookup(lookup_type="regex")
 
     def test_set_time_zone_sql(self):
@@ -76,15 +70,11 @@ class SimpleDatabaseOperationTests(SimpleTestCase):
 
     def test_adapt_unknown_value_date(self):
         value = timezone.now().date()
-        self.assertEqual(
-            self.ops.adapt_unknown_value(value), self.ops.adapt_datefield_value(value)
-        )
+        self.assertEqual(self.ops.adapt_unknown_value(value), self.ops.adapt_datefield_value(value))
 
     def test_adapt_unknown_value_time(self):
         value = timezone.now().time()
-        self.assertEqual(
-            self.ops.adapt_unknown_value(value), self.ops.adapt_timefield_value(value)
-        )
+        self.assertEqual(self.ops.adapt_unknown_value(value), self.ops.adapt_timefield_value(value))
 
     def test_adapt_timefield_value_none(self):
         self.assertIsNone(self.ops.adapt_timefield_value(None))
@@ -120,15 +110,11 @@ class SimpleDatabaseOperationTests(SimpleTestCase):
             self.ops.time_extract_sql(None, None, None)
 
     def test_date_trunc_sql(self):
-        with self.assertRaisesMessage(
-            NotImplementedError, self.may_require_msg % "date_trunc_sql"
-        ):
+        with self.assertRaisesMessage(NotImplementedError, self.may_require_msg % "date_trunc_sql"):
             self.ops.date_trunc_sql(None, None, None)
 
     def test_time_trunc_sql(self):
-        with self.assertRaisesMessage(
-            NotImplementedError, self.may_require_msg % "time_trunc_sql"
-        ):
+        with self.assertRaisesMessage(NotImplementedError, self.may_require_msg % "time_trunc_sql"):
             self.ops.time_trunc_sql(None, None, None)
 
     def test_datetime_trunc_sql(self):
@@ -184,10 +170,7 @@ class DatabaseOperationTests(TestCase):
     def test_subtract_temporals(self):
         duration_field = DurationField()
         duration_field_internal_type = duration_field.get_internal_type()
-        msg = (
-            "This backend does not support %s subtraction."
-            % duration_field_internal_type
-        )
+        msg = "This backend does not support %s subtraction." % duration_field_internal_type
         with self.assertRaisesMessage(NotSupportedError, msg):
             self.ops.subtract_temporals(duration_field_internal_type, None, None)
 

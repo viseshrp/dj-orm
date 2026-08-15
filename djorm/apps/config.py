@@ -37,18 +37,18 @@ class AppConfig:
                 "The app label '%s' is not a valid Python identifier." % self.label
             )
 
-        # Human-readable name for the application e.g. "Admin".
+            # Human-readable name for the application e.g. "Admin".
         if not hasattr(self, "verbose_name"):
             self.verbose_name = self.label.title()
 
-        # Filesystem path to the application directory e.g.
-        # '/path/to/django/contrib/admin'.
+            # Filesystem path to the application directory e.g.
+            # '/path/to/django/contrib/admin'.
         if not hasattr(self, "path"):
             self.path = self._path_from_module(app_module)
 
-        # Module containing models e.g. <module 'django.contrib.admin.models'
-        # from 'django/contrib/admin/models.py'>. Set by import_models().
-        # None if the application doesn't have a models module.
+            # Module containing models e.g. <module 'django.contrib.admin.models'
+            # from 'django/contrib/admin/models.py'>. Set by import_models().
+            # None if the application doesn't have a models module.
         self.models_module = None
 
         # Mapping of lowercase model names to model classes. Initially set to
@@ -151,19 +151,19 @@ class AppConfig:
                     elif len(app_configs) == 1:
                         app_config_class = app_configs[0][1]
 
-            # Use the default app config class if we didn't find anything.
+                        # Use the default app config class if we didn't find anything.
             if app_config_class is None:
                 app_config_class = cls
                 app_name = entry
 
-        # If import_string succeeds, entry is an app config class.
+                # If import_string succeeds, entry is an app config class.
         if app_config_class is None:
             try:
                 app_config_class = import_string(entry)
             except Exception:
                 pass
-        # If both import_module and import_string failed, it means that entry
-        # doesn't have a valid value.
+                # If both import_module and import_string failed, it means that entry
+                # doesn't have a valid value.
         if app_module is None and app_config_class is None:
             # If the last component of entry starts with an uppercase letter,
             # then it was likely intended to be an app config class; if not,
@@ -192,20 +192,20 @@ class AppConfig:
                 # Re-trigger the module import exception.
                 import_module(entry)
 
-        # Check for obvious errors. (This check prevents duck typing, but
-        # it could be removed if it became a problem in practice.)
+                # Check for obvious errors. (This check prevents duck typing, but
+                # it could be removed if it became a problem in practice.)
         if not issubclass(app_config_class, AppConfig):
             raise ImproperlyConfigured("'%s' isn't a subclass of AppConfig." % entry)
 
-        # Obtain app name here rather than in AppClass.__init__ to keep
-        # all error checking for entries in INSTALLED_APPS in one place.
+            # Obtain app name here rather than in AppClass.__init__ to keep
+            # all error checking for entries in INSTALLED_APPS in one place.
         if app_name is None:
             try:
                 app_name = app_config_class.name
             except AttributeError:
                 raise ImproperlyConfigured("'%s' must supply a name attribute." % entry)
 
-        # Ensure app_name points to a valid module.
+                # Ensure app_name points to a valid module.
         try:
             app_module = import_module(app_name)
         except ImportError:
@@ -218,7 +218,7 @@ class AppConfig:
                 )
             )
 
-        # Entry is a path to an app config class.
+            # Entry is a path to an app config class.
         return app_config_class(app_name, app_module)
 
     def get_model(self, model_name, require_ready=True):
@@ -234,9 +234,7 @@ class AppConfig:
         try:
             return self.models[model_name.lower()]
         except KeyError:
-            raise LookupError(
-                "App '%s' doesn't have a '%s' model." % (self.label, model_name)
-            )
+            raise LookupError("App '%s' doesn't have a '%s' model." % (self.label, model_name))
 
     def get_models(self, include_auto_created=False, include_swapped=False):
         """

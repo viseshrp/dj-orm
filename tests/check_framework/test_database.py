@@ -9,7 +9,7 @@ from djorm.test import TestCase
 class DatabaseCheckTests(TestCase):
     databases = {"default", "other"}
 
-    @mock.patch('djorm.db.backends.base.validation.BaseDatabaseValidation.check')
+    @mock.patch("djorm.db.backends.base.validation.BaseDatabaseValidation.check")
     def test_database_checks_called(self, mocked_check):
         check_database_backends()
         self.assertFalse(mocked_check.called)

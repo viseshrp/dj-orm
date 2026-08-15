@@ -20,14 +20,13 @@ def sql_for_table(model):
 
 
 def sql_for_index(model):
-    return "\n".join(
-        str(sql) for sql in connection.schema_editor()._model_indexes_sql(model)
-    )
+    return "\n".join(str(sql) for sql in connection.schema_editor()._model_indexes_sql(model))
+
+    # We can't test the DEFAULT_TABLESPACE and DEFAULT_INDEX_TABLESPACE settings
+    # because they're evaluated when the model class is defined. As a consequence,
+    # @override_settings doesn't work, and the tests depend
 
 
-# We can't test the DEFAULT_TABLESPACE and DEFAULT_INDEX_TABLESPACE settings
-# because they're evaluated when the model class is defined. As a consequence,
-# @override_settings doesn't work, and the tests depend
 class TablespacesTests(TransactionTestCase):
     available_apps = ["model_options"]
 
@@ -84,7 +83,7 @@ class TablespacesTests(TransactionTestCase):
             # 1 for the table + 1 for the primary key + 1 for the index on code
             self.assertNumContains(sql, "tbl_tbsp", 3)
 
-        # 1 for the index on reference
+            # 1 for the index on reference
         self.assertNumContains(sql, "idx_tbsp", 1)
 
     @skipIfDBFeature("supports_tablespaces")

@@ -26,9 +26,7 @@ class ReplaceTests(TestCase):
         )
 
     def test_case_sensitive(self):
-        qs = Author.objects.annotate(
-            same_name=Replace(F("name"), Value("r. r."), Value(""))
-        )
+        qs = Author.objects.annotate(same_name=Replace(F("name"), Value("r. r."), Value("")))
         self.assertQuerySetEqual(
             qs,
             [
@@ -41,9 +39,7 @@ class ReplaceTests(TestCase):
 
     def test_replace_expression(self):
         qs = Author.objects.annotate(
-            same_name=Replace(
-                Concat(Value("Author: "), F("name")), Value("Author: "), Value("")
-            ),
+            same_name=Replace(Concat(Value("Author: "), F("name")), Value("Author: "), Value("")),
         )
         self.assertQuerySetEqual(
             qs,

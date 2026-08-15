@@ -207,9 +207,7 @@ class AsyncQuerySetTest(TestCase):
         check = await SimpleModel.objects.acontains(self.s1)
         self.assertIs(check, True)
         # Unsaved instances are not allowed, so use an ID known not to exist.
-        check = await SimpleModel.objects.acontains(
-            SimpleModel(id=self.s3.id + 1, field=4)
-        )
+        check = await SimpleModel.objects.acontains(SimpleModel(id=self.s3.id + 1, field=4))
         self.assertIs(check, False)
 
     async def test_aupdate(self):
@@ -235,9 +233,7 @@ class AsyncQuerySetTest(TestCase):
                 # TODO: Check the captured query when async versions of
                 # self.assertNumQueries/CaptureQueriesContext context
                 # processors are available.
-                result = await SimpleModel.objects.filter(field=1).aexplain(
-                    format=format_
-                )
+                result = await SimpleModel.objects.filter(field=1).aexplain(format=format_)
                 self.assertIsInstance(result, str)
                 self.assertTrue(result)
                 if not format_:

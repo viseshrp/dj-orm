@@ -156,8 +156,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         settings_dict = self.settings_dict
         if not settings_dict["NAME"]:
             raise ImproperlyConfigured(
-                "settings.DATABASES is improperly configured. "
-                "Please supply the NAME value."
+                "settings.DATABASES is improperly configured. Please supply the NAME value."
             )
         kwargs = {
             "database": settings_dict["NAME"],
@@ -180,10 +179,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             )
         kwargs.update({"check_same_thread": False, "uri": True})
         transaction_mode = kwargs.pop("transaction_mode", None)
-        if (
-            transaction_mode is not None
-            and transaction_mode.upper() not in self.transaction_modes
-        ):
+        if transaction_mode is not None and transaction_mode.upper() not in self.transaction_modes:
             allowed_transaction_modes = ", ".join(
                 [f"{mode!r}" for mode in sorted(self.transaction_modes)]
             )
@@ -242,8 +238,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             # sqlite3's internal default is ''. It's different from None.
             # See Modules/_sqlite/connection.c.
             level = ""
-        # 'isolation_level' is a misleading API.
-        # SQLite always runs at the SERIALIZABLE isolation level.
+            # 'isolation_level' is a misleading API.
+            # SQLite always runs at the SERIALIZABLE isolation level.
         with self.wrap_database_errors:
             self.connection.isolation_level = level
 
@@ -278,7 +274,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                     ).fetchall()
                     for table_name in table_names
                 )
-            # See https://www.sqlite.org/pragma.html#pragma_foreign_key_check
+                # See https://www.sqlite.org/pragma.html#pragma_foreign_key_check
             for (
                 table_name,
                 rowid,
@@ -354,7 +350,7 @@ class SQLiteCursorWrapper(Database.Cursor):
     def execute(self, query, params=None):
         if params is None:
             return super().execute(query)
-        # Extract names if params is a mapping, i.e. "pyformat" style is used.
+            # Extract names if params is a mapping, i.e. "pyformat" style is used.
         param_names = list(params) if isinstance(params, Mapping) else None
         query = self.convert_query(query, param_names=param_names)
         return super().execute(query, params)

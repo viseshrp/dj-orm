@@ -61,15 +61,14 @@ class UserArticle(models.Model):
     user = models.ForeignKey(User, models.CASCADE, to_field="username")
     article = models.ForeignKey(Article, models.CASCADE)
 
+    # Models to test correct related_name inheritance
 
-# Models to test correct related_name inheritance
+
 class AbstractArticle(models.Model):
     class Meta:
         abstract = True
 
-    publications = models.ManyToManyField(
-        Publication, name="publications", related_name="+"
-    )
+    publications = models.ManyToManyField(Publication, name="publications", related_name="+")
 
 
 class InheritedArticleA(AbstractArticle):
@@ -82,9 +81,7 @@ class InheritedArticleB(AbstractArticle):
 
 class NullableTargetArticle(models.Model):
     headline = models.CharField(max_length=100)
-    publications = models.ManyToManyField(
-        Publication, through="NullablePublicationThrough"
-    )
+    publications = models.ManyToManyField(Publication, through="NullablePublicationThrough")
 
 
 class NullablePublicationThrough(models.Model):

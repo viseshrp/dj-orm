@@ -36,9 +36,7 @@ class TestNumberFormat(SimpleTestCase):
         )
         self.assertEqual(nformat("-1234.33", ".", decimal_pos=1), "-1234.3")
         self.assertEqual(
-            nformat(
-                "10000", ".", grouping=3, thousand_sep="comma", force_grouping=True
-            ),
+            nformat("10000", ".", grouping=3, thousand_sep="comma", force_grouping=True),
             "10comma000",
         )
 
@@ -83,7 +81,7 @@ class TestNumberFormat(SimpleTestCase):
         for value, decimal_pos, expected_value in tests:
             with self.subTest(value=value, decimal_pos=decimal_pos):
                 self.assertEqual(nformat(value, ".", decimal_pos), expected_value)
-        # Thousand grouping behavior.
+                # Thousand grouping behavior.
         self.assertEqual(
             nformat(1e16, ".", thousand_sep=",", grouping=3, force_grouping=True),
             "10,000,000,000,000,000",
@@ -104,25 +102,17 @@ class TestNumberFormat(SimpleTestCase):
         self.assertEqual(nformat(Decimal("1234"), "."), "1234")
         self.assertEqual(nformat(Decimal("1234.2"), "."), "1234.2")
         self.assertEqual(nformat(Decimal("1234"), ".", decimal_pos=2), "1234.00")
+        self.assertEqual(nformat(Decimal("1234"), ".", grouping=2, thousand_sep=","), "1234")
         self.assertEqual(
-            nformat(Decimal("1234"), ".", grouping=2, thousand_sep=","), "1234"
-        )
-        self.assertEqual(
-            nformat(
-                Decimal("1234"), ".", grouping=2, thousand_sep=",", force_grouping=True
-            ),
+            nformat(Decimal("1234"), ".", grouping=2, thousand_sep=",", force_grouping=True),
             "12,34",
         )
         self.assertEqual(nformat(Decimal("-1234.33"), ".", decimal_pos=1), "-1234.3")
-        self.assertEqual(
-            nformat(Decimal("0.00000001"), ".", decimal_pos=8), "0.00000001"
-        )
+        self.assertEqual(nformat(Decimal("0.00000001"), ".", decimal_pos=8), "0.00000001")
         self.assertEqual(nformat(Decimal("9e-19"), ".", decimal_pos=2), "0.00")
         self.assertEqual(nformat(Decimal(".00000000000099"), ".", decimal_pos=0), "0")
         self.assertEqual(
-            nformat(
-                Decimal("1e16"), ".", thousand_sep=",", grouping=3, force_grouping=True
-            ),
+            nformat(Decimal("1e16"), ".", thousand_sep=",", grouping=3, force_grouping=True),
             "10,000,000,000,000,000",
         )
         self.assertEqual(
@@ -156,9 +146,7 @@ class TestNumberFormat(SimpleTestCase):
         ]
         for value, decimal_pos, expected_value in tests:
             with self.subTest(value=value):
-                self.assertEqual(
-                    nformat(Decimal(value), ".", decimal_pos), expected_value
-                )
+                self.assertEqual(nformat(Decimal(value), ".", decimal_pos), expected_value)
 
     def test_decimal_subclass(self):
         class EuroDecimal(Decimal):

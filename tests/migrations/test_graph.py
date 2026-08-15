@@ -210,9 +210,9 @@ class GraphTests(SimpleTestCase):
             graph.add_dependency(None, ("app_a", str(i + 1)), ("app_b", str(i)))
             graph.add_dependency(None, ("app_a", str(i + 1)), ("app_c", str(i)))
         plan = graph.forwards_plan(("app_a", str(n)))
-        expected = [
-            (app, str(i)) for i in range(1, n) for app in ["app_a", "app_c", "app_b"]
-        ] + [("app_a", str(n))]
+        expected = [(app, str(i)) for i in range(1, n) for app in ["app_a", "app_c", "app_b"]] + [
+            ("app_a", str(n))
+        ]
         self.assertEqual(plan, expected)
 
     def test_plan_invalid_node(self):
@@ -241,8 +241,7 @@ class GraphTests(SimpleTestCase):
         graph.add_dependency("app_a.0003", ("app_a", "0003"), ("app_a", "0002"))
         graph.add_dependency("app_a.0002", ("app_a", "0002"), ("app_a", "0001"))
         msg = (
-            "Migration app_a.0001 dependencies reference nonexistent parent node "
-            "('app_b', '0002')"
+            "Migration app_a.0001 dependencies reference nonexistent parent node ('app_b', '0002')"
         )
         with self.assertRaisesMessage(NodeNotFoundError, msg):
             graph.add_dependency("app_a.0001", ("app_a", "0001"), ("app_b", "0002"))
@@ -254,10 +253,7 @@ class GraphTests(SimpleTestCase):
         # Build graph
         graph = MigrationGraph()
         graph.add_node(("app_a", "0001"), None)
-        msg = (
-            "Migration app_a.0002 dependencies reference nonexistent child node "
-            "('app_a', '0002')"
-        )
+        msg = "Migration app_a.0002 dependencies reference nonexistent child node ('app_a', '0002')"
         with self.assertRaisesMessage(NodeNotFoundError, msg):
             graph.add_dependency("app_a.0002", ("app_a", "0002"), ("app_a", "0001"))
 
@@ -268,8 +264,7 @@ class GraphTests(SimpleTestCase):
             "app_a.0001", ("app_a", "0001"), ("app_b", "0002"), skip_validation=True
         )
         msg = (
-            "Migration app_a.0001 dependencies reference nonexistent parent node "
-            "('app_b', '0002')"
+            "Migration app_a.0001 dependencies reference nonexistent parent node ('app_b', '0002')"
         )
         with self.assertRaisesMessage(NodeNotFoundError, msg):
             graph.validate_consistency()
@@ -280,10 +275,7 @@ class GraphTests(SimpleTestCase):
         graph.add_dependency(
             "app_b.0002", ("app_a", "0001"), ("app_b", "0002"), skip_validation=True
         )
-        msg = (
-            "Migration app_b.0002 dependencies reference nonexistent child node "
-            "('app_a', '0001')"
-        )
+        msg = "Migration app_b.0002 dependencies reference nonexistent child node ('app_a', '0001')"
         with self.assertRaisesMessage(NodeNotFoundError, msg):
             graph.validate_consistency()
 
@@ -303,9 +295,7 @@ class GraphTests(SimpleTestCase):
         """
         msg = "app_a.0001 (req'd by app_b.0002) is missing!"
         graph = MigrationGraph()
-        graph.add_dummy_node(
-            key=("app_a", "0001"), origin="app_b.0002", error_message=msg
-        )
+        graph.add_dummy_node(key=("app_a", "0001"), origin="app_b.0002", error_message=msg)
         with self.assertRaisesMessage(NodeNotFoundError, msg):
             graph.validate_consistency()
 
@@ -315,12 +305,8 @@ class GraphTests(SimpleTestCase):
         """
         # Add some dummy nodes to be replaced.
         graph = MigrationGraph()
-        graph.add_dummy_node(
-            key=("app_a", "0001"), origin="app_a.0002", error_message="BAD!"
-        )
-        graph.add_dummy_node(
-            key=("app_a", "0002"), origin="app_b.0001", error_message="BAD!"
-        )
+        graph.add_dummy_node(key=("app_a", "0001"), origin="app_a.0002", error_message="BAD!")
+        graph.add_dummy_node(key=("app_a", "0002"), origin="app_b.0001", error_message="BAD!")
         graph.add_dependency(
             "app_a.0002", ("app_a", "0002"), ("app_a", "0001"), skip_validation=True
         )
@@ -347,7 +333,7 @@ class GraphTests(SimpleTestCase):
         # Ensure `validate_consistency()` still raises an error at this stage.
         with self.assertRaisesMessage(NodeNotFoundError, "BAD!"):
             graph.validate_consistency()
-        # Remove the dummy nodes.
+            # Remove the dummy nodes.
         graph.remove_replaced_nodes(
             replacement=("app_a", "0001_squashed_0002"),
             replaced=[("app_a", "0001"), ("app_a", "0002")],
@@ -385,9 +371,7 @@ class GraphTests(SimpleTestCase):
         graph.add_node(("app_a", "0001_squashed_0002"), None)
         # Add a child node to test dependency remapping.
         graph.add_node(("app_b", "0001"), None)
-        graph.add_dependency(
-            "app_b.0001", ("app_b", "0001"), ("app_a", "0001_squashed_0002")
-        )
+        graph.add_dependency("app_b.0001", ("app_b", "0001"), ("app_a", "0001_squashed_0002"))
         # Remove the replacement node.
         graph.remove_replacement_node(
             replacement=("app_a", "0001_squashed_0002"),
@@ -424,9 +408,7 @@ class GraphTests(SimpleTestCase):
         graph.add_node(("app_b", "0002"), None)
         graph.add_node(("app_c", "0001_squashed_0002"), None)
 
-        graph.add_dependency(
-            "app_b.0001", ("app_b", "0001"), ("app_c", "0001_squashed_0002")
-        )
+        graph.add_dependency("app_b.0001", ("app_b", "0001"), ("app_c", "0001_squashed_0002"))
         graph.add_dependency("app_b.0002", ("app_b", "0002"), ("app_a", "0001"))
         graph.add_dependency("app_b.0002", ("app_b", "0002"), ("app_b", "0001"))
         graph.add_dependency(

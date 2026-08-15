@@ -26,9 +26,7 @@ class NamesToPathTests(TestCase):
 
     def test_tenant_id(self):
         query = Query(User)
-        path, final_field, targets, rest = query.names_to_path(
-            ["tenant", "id"], User._meta
-        )
+        path, final_field, targets, rest = query.names_to_path(["tenant", "id"], User._meta)
 
         self.assertEqual(
             path,
@@ -50,9 +48,7 @@ class NamesToPathTests(TestCase):
 
     def test_user_id(self):
         query = Query(Comment)
-        path, final_field, targets, rest = query.names_to_path(
-            ["user", "id"], Comment._meta
-        )
+        path, final_field, targets, rest = query.names_to_path(["user", "id"], Comment._meta)
 
         self.assertEqual(
             path,

@@ -59,9 +59,7 @@ class CustomColumnsTests(TestCase):
         )
 
     def test_get_author_m2m_relation(self):
-        self.assertSequenceEqual(
-            self.article.authors.filter(last_name="Jones"), [self.a2]
-        )
+        self.assertSequenceEqual(self.article.authors.filter(last_name="Jones"), [self.a2])
 
     def test_author_querying(self):
         self.assertSequenceEqual(
@@ -95,9 +93,7 @@ class CustomColumnsTests(TestCase):
         ):
             getattr(a, "firstname")
 
-        with self.assertRaisesMessage(
-            AttributeError, "'Author' object has no attribute 'last'"
-        ):
+        with self.assertRaisesMessage(AttributeError, "'Author' object has no attribute 'last'"):
             getattr(a, "last")
 
     def test_m2m_table(self):

@@ -54,11 +54,7 @@ class WhereNode(tree.Node):
             or (not in_negated and self.connector == OR)
             or self.connector == XOR
         )
-        if (
-            must_remain_connected
-            and self.contains_aggregate
-            and not self.contains_over_clause
-        ):
+        if must_remain_connected and self.contains_aggregate and not self.contains_over_clause:
             # It's must cheaper to short-circuit and stash everything in the
             # HAVING clause than split children if possible.
             return None, self, None
@@ -96,20 +92,12 @@ class WhereNode(tree.Node):
                     "Heterogeneous disjunctive predicates against window functions are "
                     "not implemented when performing conditional aggregation."
                 )
-        where_node = (
-            self.create(where_parts, self.connector, self.negated)
-            if where_parts
-            else None
-        )
+        where_node = self.create(where_parts, self.connector, self.negated) if where_parts else None
         having_node = (
-            self.create(having_parts, self.connector, self.negated)
-            if having_parts
-            else None
+            self.create(having_parts, self.connector, self.negated) if having_parts else None
         )
         qualify_node = (
-            self.create(qualify_parts, self.connector, self.negated)
-            if qualify_parts
-            else None
+            self.create(qualify_parts, self.connector, self.negated) if qualify_parts else None
         )
         return where_node, having_node, qualify_node
 
@@ -142,9 +130,7 @@ class WhereNode(tree.Node):
             if len(self.children) > 2:
                 rhs_sum = Mod(rhs_sum, 2)
             rhs = Exact(1, rhs_sum)
-            return self.__class__([lhs, rhs], AND, self.negated).as_sql(
-                compiler, connection
-            )
+            return self.__class__([lhs, rhs], AND, self.negated).as_sql(compiler, connection)
 
         for child in self.children:
             try:
@@ -159,11 +145,11 @@ class WhereNode(tree.Node):
                     result_params.extend(params)
                 else:
                     full_needed -= 1
-            # Check if this node matches nothing or everything.
-            # First check the amount of full nodes and empty nodes
-            # to make this node empty/full.
-            # Now, check if this node is full/empty using the
-            # counts.
+                    # Check if this node matches nothing or everything.
+                    # First check the amount of full nodes and empty nodes
+                    # to make this node empty/full.
+                    # Now, check if this node is full/empty using the
+                    # counts.
             if empty_needed == 0:
                 if self.negated:
                     raise FullResultSet

@@ -8,7 +8,7 @@ from djorm.utils.itercompat import is_iterable
 class TestIterCompat(SimpleTestCase):
     def test_is_iterable_deprecation(self):
         msg = (
-            'djorm.utils.itercompat.is_iterable() is deprecated. '
+            "djorm.utils.itercompat.is_iterable() is deprecated. "
             "Use isinstance(..., collections.abc.Iterable) instead."
         )
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:

@@ -29,9 +29,7 @@ class BaseConstraint:
     # def __init__(
     #     self, *, name, violation_error_code=None, violation_error_message=None
     # ):
-    def __init__(
-        self, *args, name=None, violation_error_code=None, violation_error_message=None
-    ):
+    def __init__(self, *args, name=None, violation_error_code=None, violation_error_message=None):
         # RemovedInDjango60Warning.
         if name is None and not args:
             raise TypeError(
@@ -45,11 +43,10 @@ class BaseConstraint:
             self.violation_error_message = violation_error_message
         else:
             self.violation_error_message = self.default_violation_error_message
-        # RemovedInDjango60Warning.
+            # RemovedInDjango60Warning.
         if args:
             warnings.warn(
-                f"Passing positional arguments to {self.__class__.__name__} is "
-                f"deprecated.",
+                f"Passing positional arguments to {self.__class__.__name__} is deprecated.",
                 RemovedInDjango60Warning,
                 stacklevel=2,
             )
@@ -77,9 +74,7 @@ class BaseConstraint:
             if field_name in exclude:
                 return True
             field = get_field(field_name)
-            if field.generated and cls._expression_refs_exclude(
-                model, field.expression, exclude
-            ):
+            if field.generated and cls._expression_refs_exclude(model, field.expression, exclude):
                 return True
         return False
 
@@ -113,7 +108,7 @@ class BaseConstraint:
                     continue
             except FieldDoesNotExist:
                 continue
-            # JOIN must happen at the first lookup.
+                # JOIN must happen at the first lookup.
             first_lookup = lookups[0]
             if (
                 hasattr(field, "get_transform")
@@ -134,7 +129,7 @@ class BaseConstraint:
 
     def deconstruct(self):
         path = "%s.%s" % (self.__class__.__module__, self.__class__.__name__)
-        path = path.replace('djorm.db.models.constraints', 'djorm.db.models')
+        path = path.replace("djorm.db.models.constraints", "djorm.db.models")
         kwargs = {"name": self.name}
         if (
             self.violation_error_message is not None
@@ -173,9 +168,7 @@ class CheckConstraint(BaseConstraint):
             condition = check
         self.condition = condition
         if not getattr(condition, "conditional", False):
-            raise TypeError(
-                "CheckConstraint.condition must be a Q instance or boolean expression."
-            )
+            raise TypeError("CheckConstraint.condition must be a Q instance or boolean expression.")
         super().__init__(
             name=name,
             violation_error_code=violation_error_code,
@@ -219,8 +212,7 @@ class CheckConstraint(BaseConstraint):
             )
         elif (
             connection.features.supports_table_check_constraints
-            or "supports_table_check_constraints"
-            not in model._meta.required_db_features
+            or "supports_table_check_constraints" not in model._meta.required_db_features
         ):
             references = set()
             condition = self.condition
@@ -328,13 +320,10 @@ class UniqueConstraint(BaseConstraint):
             raise ValueError("A unique constraint must be named.")
         if not expressions and not fields:
             raise ValueError(
-                "At least one field or expression is required to define a "
-                "unique constraint."
+                "At least one field or expression is required to define a unique constraint."
             )
         if expressions and fields:
-            raise ValueError(
-                "UniqueConstraint.fields and expressions are mutually exclusive."
-            )
+            raise ValueError("UniqueConstraint.fields and expressions are mutually exclusive.")
         if not isinstance(condition, (NoneType, Q)):
             raise ValueError("UniqueConstraint.condition must be a Q instance.")
         if condition and deferrable:
@@ -348,12 +337,10 @@ class UniqueConstraint(BaseConstraint):
         if expressions and opclasses:
             raise ValueError(
                 "UniqueConstraint.opclasses cannot be used with expressions. "
-                'Use djorm.contrib.postgres.indexes.OpClass() instead.'
+                "Use djorm.contrib.postgres.indexes.OpClass() instead."
             )
         if not isinstance(deferrable, (NoneType, Deferrable)):
-            raise TypeError(
-                "UniqueConstraint.deferrable must be a Deferrable instance."
-            )
+            raise TypeError("UniqueConstraint.deferrable must be a Deferrable instance.")
         if not isinstance(include, (NoneType, list, tuple)):
             raise TypeError("UniqueConstraint.include must be a list or tuple.")
         if not isinstance(opclasses, (list, tuple)):
@@ -410,8 +397,7 @@ class UniqueConstraint(BaseConstraint):
         ):
             errors.append(
                 checks.Warning(
-                    f"{connection.display_name} does not support deferrable unique "
-                    "constraints.",
+                    f"{connection.display_name} does not support deferrable unique constraints.",
                     hint=(
                         "A constraint won't be created. Silence this warning if you "
                         "don't care about it."
@@ -506,9 +492,7 @@ class UniqueConstraint(BaseConstraint):
 
     def constraint_sql(self, model, schema_editor):
         fields = [model._meta.get_field(field_name) for field_name in self.fields]
-        include = [
-            model._meta.get_field(field_name).column for field_name in self.include
-        ]
+        include = [model._meta.get_field(field_name).column for field_name in self.include]
         condition = self._get_condition_sql(model, schema_editor)
         expressions = self._get_index_expressions(model, schema_editor)
         return schema_editor._unique_sql(
@@ -525,9 +509,7 @@ class UniqueConstraint(BaseConstraint):
 
     def create_sql(self, model, schema_editor):
         fields = [model._meta.get_field(field_name) for field_name in self.fields]
-        include = [
-            model._meta.get_field(field_name).column for field_name in self.include
-        ]
+        include = [model._meta.get_field(field_name).column for field_name in self.include]
         condition = self._get_condition_sql(model, schema_editor)
         expressions = self._get_index_expressions(model, schema_editor)
         return schema_editor._create_unique_sql(
@@ -544,9 +526,7 @@ class UniqueConstraint(BaseConstraint):
 
     def remove_sql(self, model, schema_editor):
         condition = self._get_condition_sql(model, schema_editor)
-        include = [
-            model._meta.get_field(field_name).column for field_name in self.include
-        ]
+        include = [model._meta.get_field(field_name).column for field_name in self.include]
         expressions = self._get_index_expressions(model, schema_editor)
         return schema_editor._delete_unique_sql(
             model,
@@ -569,11 +549,7 @@ class UniqueConstraint(BaseConstraint):
             "" if self.deferrable is None else " deferrable=%r" % self.deferrable,
             "" if not self.include else " include=%s" % repr(self.include),
             "" if not self.opclasses else " opclasses=%s" % repr(self.opclasses),
-            (
-                ""
-                if self.nulls_distinct is None
-                else " nulls_distinct=%r" % self.nulls_distinct
-            ),
+            ("" if self.nulls_distinct is None else " nulls_distinct=%r" % self.nulls_distinct),
             (
                 ""
                 if self.violation_error_code is None
@@ -629,9 +605,7 @@ class UniqueConstraint(BaseConstraint):
                     return
                 field = model._meta.get_field(field_name)
                 if field.generated:
-                    if exclude and self._expression_refs_exclude(
-                        model, field.expression, exclude
-                    ):
+                    if exclude and self._expression_refs_exclude(model, field.expression, exclude):
                         return
                     generated_field_names.append(field.name)
                 else:
@@ -641,9 +615,7 @@ class UniqueConstraint(BaseConstraint):
                         and lookup_value is None
                         or (
                             lookup_value == ""
-                            and connections[
-                                using
-                            ].features.interprets_empty_strings_as_nulls
+                            and connections[using].features.interprets_empty_strings_as_nulls
                         )
                     ):
                         # A composite constraint containing NULL value cannot cause
@@ -696,14 +668,11 @@ class UniqueConstraint(BaseConstraint):
             if queryset.exists():
                 if (
                     self.fields
-                    and self.violation_error_message
-                    == self.default_violation_error_message
+                    and self.violation_error_message == self.default_violation_error_message
                 ):
                     # When fields are defined, use the unique_error_message() as
                     # a default for backward compatibility.
-                    validation_error_message = instance.unique_error_message(
-                        model, self.fields
-                    )
+                    validation_error_message = instance.unique_error_message(model, self.fields)
                     raise ValidationError(
                         validation_error_message,
                         code=validation_error_message.code,
@@ -713,9 +682,7 @@ class UniqueConstraint(BaseConstraint):
                     code=self.violation_error_code,
                 )
         else:
-            against = instance._get_field_expression_map(
-                meta=model._meta, exclude=exclude
-            )
+            against = instance._get_field_expression_map(meta=model._meta, exclude=exclude)
             try:
                 if (self.condition & Exists(queryset.filter(self.condition))).check(
                     against, using=using

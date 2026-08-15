@@ -11,8 +11,7 @@ from djorm.utils.datastructures import OrderedSet
 
 FieldInfo = namedtuple(
     "FieldInfo",
-    BaseFieldInfo._fields
-    + ("extra", "is_unsigned", "has_json_constraint", "comment", "data_type"),
+    BaseFieldInfo._fields + ("extra", "is_unsigned", "has_json_constraint", "comment", "data_type"),
 )
 InfoLine = namedtuple(
     "InfoLine",
@@ -65,8 +64,8 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 return "PositiveSmallIntegerField"
         if description.data_type.upper() == "UUID":
             return "UUIDField"
-        # JSON data type is an alias for LONGTEXT in MariaDB, use check
-        # constraints clauses to introspect JSONField.
+            # JSON data type is an alias for LONGTEXT in MariaDB, use check
+            # constraints clauses to introspect JSONField.
         if description.has_json_constraint:
             return "JSONField"
         return field_type
@@ -92,10 +91,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         interface."
         """
         json_constraints = {}
-        if (
-            self.connection.mysql_is_mariadb
-            and self.connection.features.can_introspect_json_field
-        ):
+        if self.connection.mysql_is_mariadb and self.connection.features.can_introspect_json_field:
             # JSON data type is an alias for LONGTEXT in MariaDB, select
             # JSON_VALID() constraints to introspect JSONField.
             cursor.execute(
@@ -111,7 +107,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 [table_name],
             )
             json_constraints = {row[0] for row in cursor.fetchall()}
-        # A default collation for the given table.
+            # A default collation for the given table.
         cursor.execute(
             """
             SELECT  table_collation
@@ -149,9 +145,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         )
         field_info = {line[0]: InfoLine(*line) for line in cursor.fetchall()}
 
-        cursor.execute(
-            "SELECT * FROM %s LIMIT 1" % self.connection.ops.quote_name(table_name)
-        )
+        cursor.execute("SELECT * FROM %s LIMIT 1" % self.connection.ops.quote_name(table_name))
 
         def to_int(i):
             return int(i) if i is not None else i
@@ -280,12 +274,10 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 if self.connection.features.supports_index_column_ordering:
                     constraints[constraint]["orders"] = []
             constraints[constraint]["columns"].add(column)
-        # Add check constraints.
+            # Add check constraints.
         if self.connection.features.can_introspect_check_constraints:
             unnamed_constraints_index = 0
-            columns = {
-                info.name for info in self.get_table_description(cursor, table_name)
-            }
+            columns = {info.name for info in self.get_table_description(cursor, table_name)}
             if self.connection.mysql_is_mariadb:
                 type_query = """
                     SELECT c.constraint_name, c.check_clause
@@ -309,9 +301,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 """
             cursor.execute(type_query, [table_name])
             for constraint, check_clause in cursor.fetchall():
-                constraint_columns = self._parse_constraint_columns(
-                    check_clause, columns
-                )
+                constraint_columns = self._parse_constraint_columns(check_clause, columns)
                 # Ensure uniqueness of unnamed constraints. Unnamed unique
                 # and check columns constraints have the same name as
                 # a column.
@@ -326,10 +316,8 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                     "check": True,
                     "foreign_key": None,
                 }
-        # Now add in the indexes
-        cursor.execute(
-            "SHOW INDEX FROM %s" % self.connection.ops.quote_name(table_name)
-        )
+                # Now add in the indexes
+        cursor.execute("SHOW INDEX FROM %s" % self.connection.ops.quote_name(table_name))
         for table, non_unique, index, colseq, column, order, type_ in [
             x[:6] + (x[10],) for x in cursor.fetchall()
         ]:
@@ -344,13 +332,11 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 if self.connection.features.supports_index_column_ordering:
                     constraints[index]["orders"] = []
             constraints[index]["index"] = True
-            constraints[index]["type"] = (
-                Index.suffix if type_ == "BTREE" else type_.lower()
-            )
+            constraints[index]["type"] = Index.suffix if type_ == "BTREE" else type_.lower()
             constraints[index]["columns"].add(column)
             if self.connection.features.supports_index_column_ordering:
                 constraints[index]["orders"].append("DESC" if order == "D" else "ASC")
-        # Convert the sorted sets to lists
+                # Convert the sorted sets to lists
         for constraint in constraints.values():
             constraint["columns"] = list(constraint["columns"])
         return constraints

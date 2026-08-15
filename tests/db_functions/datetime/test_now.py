@@ -25,13 +25,9 @@ class NowTests(TestCase):
             text=lorem_ipsum,
             written=timezone.now(),
         )
-        num_updated = Article.objects.filter(id=a1.id, published=None).update(
-            published=Now()
-        )
+        num_updated = Article.objects.filter(id=a1.id, published=None).update(published=Now())
         self.assertEqual(num_updated, 1)
-        num_updated = Article.objects.filter(id=a1.id, published=None).update(
-            published=Now()
-        )
+        num_updated = Article.objects.filter(id=a1.id, published=None).update(published=Now())
         self.assertEqual(num_updated, 0)
         a1.refresh_from_db()
         self.assertIsInstance(a1.published, datetime)
@@ -56,10 +52,6 @@ class NowTests(TestCase):
             text=lorem_ipsum,
             written=timezone.now(),
         )
-        now_string = (
-            Article.objects.annotate(now_string=Cast(Now(), TextField()))
-            .get()
-            .now_string
-        )
+        now_string = Article.objects.annotate(now_string=Cast(Now(), TextField())).get().now_string
         precision = connection.features.time_cast_precision
         self.assertRegex(now_string, rf"^.*\.\d{{1,{precision}}}")

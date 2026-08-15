@@ -25,9 +25,7 @@ class BulkCreateUnnestTests(TestCase):
 
     def test_unnest_eligible(self):
         with self.assertNumQueries(1) as ctx:
-            Square.objects.bulk_create(
-                [Square(root=2, square=4), Square(root=3, square=9)]
-            )
+            Square.objects.bulk_create([Square(root=2, square=4), Square(root=3, square=9)])
         self.assertIn("UNNEST", ctx[0]["sql"])
 
     def test_unnest_eligible_foreign_keys(self):
@@ -40,9 +38,7 @@ class BulkCreateUnnestTests(TestCase):
                 ]
             )
         self.assertIn("UNNEST", ctx[0]["sql"])
-        self.assertEqual(
-            [article.reporter for article in articles], [reporter, reporter]
-        )
+        self.assertEqual([article.reporter for article in articles], [reporter, reporter])
 
     def test_parametrized_db_type(self):
         with self.assertRaises(DataError):

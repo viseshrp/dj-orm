@@ -99,9 +99,7 @@ def json_script(value, element_id=None, encoder=None):
     """
     from djorm.core.serializers.json import DjangoJSONEncoder
 
-    json_str = json.dumps(value, cls=encoder or DjangoJSONEncoder).translate(
-        _json_script_escapes
-    )
+    json_str = json.dumps(value, cls=encoder or DjangoJSONEncoder).translate(_json_script_escapes)
     if element_id:
         template = '<script id="{}" type="application/json">{}</script>'
         args = (element_id, mark_safe(json_str))
@@ -219,8 +217,8 @@ def strip_tags(value):
     for long_open_tag in long_open_tag_without_closing_re.finditer(value):
         if long_open_tag.group().count("<") >= MAX_STRIP_TAGS_DEPTH:
             raise SuspiciousOperation
-    # Note: in typical case this loop executes _strip_once twice (the second
-    # execution does not remove any more tags).
+            # Note: in typical case this loop executes _strip_once twice (the second
+            # execution does not remove any more tags).
     strip_tags_depth = 0
     while "<" in value and ">" in value:
         if strip_tags_depth >= MAX_STRIP_TAGS_DEPTH:
@@ -255,17 +253,16 @@ def smart_urlquote(url):
         # invalid IPv6 URL (normally square brackets in hostname part).
         return unquote_quote(url)
 
-    # Handle IDN as percent-encoded UTF-8 octets, per WHATWG URL Specification
-    # section 3.5 and RFC 3986 section 3.2.2. Defer any IDNA to the user agent.
-    # See #36013.
+        # Handle IDN as percent-encoded UTF-8 octets, per WHATWG URL Specification
+        # section 3.5 and RFC 3986 section 3.2.2. Defer any IDNA to the user agent.
+        # See #36013.
     netloc = unquote_quote(netloc)
 
     if query:
         # Separately unquoting key/value, so as to not mix querystring separators
         # included in query values. See #22267.
         query_parts = [
-            (unquote(q[0]), unquote(q[1]))
-            for q in parse_qsl(query, keep_blank_values=True)
+            (unquote(q[0]), unquote(q[1])) for q in parse_qsl(query, keep_blank_values=True)
         ]
         # urlencode will take care of quoting
         query = urlencode(query_parts)
@@ -365,7 +362,7 @@ class Urlizer:
                 domain = quote(domain, safe="")
                 url = self.mailto_template.format(local=local, domain=domain)
                 nofollow_attr = ""
-            # Make link.
+                # Make link.
             if url:
                 trimmed = self.trim_url(middle, limit=trim_url_limit)
                 if autoescape and not safe_input:
@@ -477,9 +474,7 @@ urlizer = Urlizer()
 
 @keep_lazy_text
 def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
-    return urlizer(
-        text, trim_url_limit=trim_url_limit, nofollow=nofollow, autoescape=autoescape
-    )
+    return urlizer(text, trim_url_limit=trim_url_limit, nofollow=nofollow, autoescape=autoescape)
 
 
 def avoid_wrapping(value):
@@ -497,13 +492,11 @@ def html_safe(klass):
     """
     if "__html__" in klass.__dict__:
         raise ValueError(
-            "can't apply @html_safe to %s because it defines "
-            "__html__()." % klass.__name__
+            "can't apply @html_safe to %s because it defines __html__()." % klass.__name__
         )
     if "__str__" not in klass.__dict__:
         raise ValueError(
-            "can't apply @html_safe to %s because it doesn't "
-            "define __str__()." % klass.__name__
+            "can't apply @html_safe to %s because it doesn't define __str__()." % klass.__name__
         )
     klass_str = klass.__str__
     klass.__str__ = lambda self: mark_safe(klass_str(self))

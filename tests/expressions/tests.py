@@ -116,17 +116,15 @@ class BasicExpressionsTests(TestCase):
             based_in_eu=True,
             ceo=Employee.objects.create(firstname="Frank", lastname="Meyer", salary=20),
         )
-        cls.max = Employee.objects.create(
-            firstname="Max", lastname="Mustermann", salary=30
-        )
+        cls.max = Employee.objects.create(firstname="Max", lastname="Mustermann", salary=30)
         cls.gmbh = Company.objects.create(
             name="Test GmbH", num_employees=32, num_chairs=1, ceo=cls.max
         )
 
     def setUp(self):
-        self.company_query = Company.objects.values(
+        self.company_query = Company.objects.values("name", "num_employees", "num_chairs").order_by(
             "name", "num_employees", "num_chairs"
-        ).order_by("name", "num_employees", "num_chairs")
+        )
 
     def test_annotate_values_aggregate(self):
         companies = (
@@ -135,9 +133,7 @@ class BasicExpressionsTests(TestCase):
             )
             .values("num_employees", "salaries")
             .aggregate(
-                result=Sum(
-                    F("salaries") + F("num_employees"), output_field=IntegerField()
-                ),
+                result=Sum(F("salaries") + F("num_employees"), output_field=IntegerField()),
             )
         )
         self.assertEqual(companies["result"], 2395)
@@ -246,9 +242,7 @@ class BasicExpressionsTests(TestCase):
         self._test_slicing_of_f_expressions(Company)
 
     def test_slicing_of_f_expressions_textfield(self):
-        Text.objects.bulk_create(
-            [Text(name=company.name) for company in Company.objects.all()]
-        )
+        Text.objects.bulk_create([Text(name=company.name) for company in Company.objects.all()])
         self._test_slicing_of_f_expressions(Text)
 
     def test_slicing_of_f_expressions_with_annotate(self):
@@ -330,9 +324,7 @@ class BasicExpressionsTests(TestCase):
 
     def test_order_of_operations(self):
         # Law of order of operations is followed
-        self.company_query.update(
-            num_chairs=F("num_employees") + 2 * F("num_employees")
-        )
+        self.company_query.update(num_chairs=F("num_employees") + 2 * F("num_employees"))
         self.assertSequenceEqual(
             self.company_query,
             [
@@ -344,9 +336,7 @@ class BasicExpressionsTests(TestCase):
 
     def test_parenthesis_priority(self):
         # Law of order of operations can be overridden by parentheses
-        self.company_query.update(
-            num_chairs=(F("num_employees") + 2) * F("num_employees")
-        )
+        self.company_query.update(num_chairs=(F("num_employees") + 2) * F("num_employees"))
         self.assertSequenceEqual(
             self.company_query,
             [
@@ -393,9 +383,7 @@ class BasicExpressionsTests(TestCase):
         # F Expressions can also span joins
         Company.objects.update(point_of_contact=F("ceo"))
         c = Company.objects.first()
-        c.point_of_contact = Employee.objects.create(
-            firstname="Guido", lastname="van Rossum"
-        )
+        c.point_of_contact = Employee.objects.create(firstname="Guido", lastname="van Rossum")
         c.save()
 
         self.assertQuerySetEqual(
@@ -405,21 +393,17 @@ class BasicExpressionsTests(TestCase):
             ordered=False,
         )
 
-        Company.objects.exclude(ceo__firstname=F("point_of_contact__firstname")).update(
-            name="foo"
-        )
+        Company.objects.exclude(ceo__firstname=F("point_of_contact__firstname")).update(name="foo")
         self.assertEqual(
-            Company.objects.exclude(ceo__firstname=F("point_of_contact__firstname"))
-            .get()
-            .name,
+            Company.objects.exclude(ceo__firstname=F("point_of_contact__firstname")).get().name,
             "foo",
         )
 
         msg = "Joined field references are not permitted in this query"
         with self.assertRaisesMessage(FieldError, msg):
-            Company.objects.exclude(
-                ceo__firstname=F("point_of_contact__firstname")
-            ).update(name=F("point_of_contact__lastname"))
+            Company.objects.exclude(ceo__firstname=F("point_of_contact__firstname")).update(
+                name=F("point_of_contact__lastname")
+            )
 
     def test_object_update(self):
         # F expressions can be used to update attributes on single objects
@@ -430,9 +414,7 @@ class BasicExpressionsTests(TestCase):
 
     def test_new_object_save(self):
         # We should be able to use Funcs when inserting new data
-        test_co = Company(
-            name=Lower(Value("UPPER")), num_employees=32, num_chairs=1, ceo=self.max
-        )
+        test_co = Company(name=Lower(Value("UPPER")), num_employees=32, num_chairs=1, ceo=self.max)
         test_co.save()
         test_co.refresh_from_db()
         self.assertEqual(test_co.name, "upper")
@@ -446,18 +428,13 @@ class BasicExpressionsTests(TestCase):
 
     def test_object_create_with_aggregate(self):
         # Aggregates are not allowed when inserting new data
-        msg = (
-            "Aggregate functions are not allowed in this query "
-            "(num_employees=Max(Value(1)))."
-        )
+        msg = "Aggregate functions are not allowed in this query (num_employees=Max(Value(1)))."
         with self.assertRaisesMessage(FieldError, msg):
             Company.objects.create(
                 name="Company",
                 num_employees=Max(Value(1)),
                 num_chairs=1,
-                ceo=Employee.objects.create(
-                    firstname="Just", lastname="Doit", salary=30
-                ),
+                ceo=Employee.objects.create(firstname="Just", lastname="Doit", salary=30),
             )
 
     def test_object_update_fk(self):
@@ -483,9 +460,7 @@ class BasicExpressionsTests(TestCase):
     def test_object_update_unsaved_objects(self):
         # F expressions cannot be used to update attributes on objects which do
         # not yet exist in the database
-        acme = Company(
-            name="The Acme Widget Co.", num_employees=12, num_chairs=5, ceo=self.max
-        )
+        acme = Company(name="The Acme Widget Co.", num_employees=12, num_chairs=5, ceo=self.max)
         acme.num_employees = F("num_employees") + 16
         msg = (
             'Failed to insert expression "Col(expressions_company, '
@@ -521,9 +496,7 @@ class BasicExpressionsTests(TestCase):
             Employee.objects.filter(lastname__startswith=F("firstname")),
             [e2, e3] if connection.features.has_case_insensitive_like else [e2],
         )
-        qs = Employee.objects.filter(lastname__istartswith=F("firstname")).order_by(
-            "pk"
-        )
+        qs = Employee.objects.filter(lastname__istartswith=F("firstname")).order_by("pk")
         self.assertSequenceEqual(qs, [e2, e3])
 
     def test_ticket_18375_join_reuse(self):
@@ -566,12 +539,8 @@ class BasicExpressionsTests(TestCase):
         self.assertEqual(str(qs.query).count("JOIN"), 2)
 
     def test_order_by_exists(self):
-        mary = Employee.objects.create(
-            firstname="Mary", lastname="Mustermann", salary=20
-        )
-        mustermanns_by_seniority = Employee.objects.filter(
-            lastname="Mustermann"
-        ).order_by(
+        mary = Employee.objects.create(firstname="Mary", lastname="Mustermann", salary=20)
+        mustermanns_by_seniority = Employee.objects.filter(lastname="Mustermann").order_by(
             # Order by whether the employee is the CEO of a company
             Exists(Company.objects.filter(ceo=OuterRef("pk"))).desc()
         )
@@ -630,9 +599,7 @@ class BasicExpressionsTests(TestCase):
         Employee.objects.create(firstname="Bob", lastname="Brown", salary=40)
         qs = (
             Employee.objects.annotate(
-                is_point_of_contact=Exists(
-                    Company.objects.filter(point_of_contact=OuterRef("pk"))
-                ),
+                is_point_of_contact=Exists(Company.objects.filter(point_of_contact=OuterRef("pk"))),
                 is_not_point_of_contact=~Exists(
                     Company.objects.filter(point_of_contact=OuterRef("pk"))
                 ),
@@ -664,10 +631,7 @@ class BasicExpressionsTests(TestCase):
         # Could use Coalesce(subq, Value('')) instead except for the bug in
         # oracledb mentioned in #23843.
         bob = results[0]
-        if (
-            bob["largest_company"] == ""
-            and connection.features.interprets_empty_strings_as_nulls
-        ):
+        if bob["largest_company"] == "" and connection.features.interprets_empty_strings_as_nulls:
             bob["largest_company"] = None
 
         self.assertEqual(
@@ -797,12 +761,10 @@ class BasicExpressionsTests(TestCase):
                 SimulationRun(start=second, end=first, midpoint="00:00"),
             ]
         )
-        inner = Time.objects.filter(
-            time=OuterRef(OuterRef("time")), pk=OuterRef("start")
-        ).values("time")
-        middle = SimulationRun.objects.annotate(other=Subquery(inner)).values("other")[
-            :1
-        ]
+        inner = Time.objects.filter(time=OuterRef(OuterRef("time")), pk=OuterRef("start")).values(
+            "time"
+        )
+        middle = SimulationRun.objects.annotate(other=Subquery(inner)).values("other")[:1]
         outer = Time.objects.annotate(other=Subquery(middle, output_field=TimeField()))
         # This is a contrived example. It exercises the double OuterRef form.
         self.assertCountEqual(outer, [first, second, third])
@@ -811,13 +773,9 @@ class BasicExpressionsTests(TestCase):
         first = Time.objects.create(time="09:00")
         second = Time.objects.create(time="17:00")
         SimulationRun.objects.create(start=first, end=second, midpoint="12:00")
-        inner = SimulationRun.objects.filter(start=OuterRef(OuterRef("pk"))).values(
-            "start"
-        )
+        inner = SimulationRun.objects.filter(start=OuterRef(OuterRef("pk"))).values("start")
         middle = Time.objects.annotate(other=Subquery(inner)).values("other")[:1]
-        outer = Time.objects.annotate(
-            other=Subquery(middle, output_field=IntegerField())
-        )
+        outer = Time.objects.annotate(other=Subquery(middle, output_field=IntegerField()))
         # This exercises the double OuterRef form with AutoField as pk.
         self.assertCountEqual(outer, [first, second])
 
@@ -869,9 +827,7 @@ class BasicExpressionsTests(TestCase):
     def test_subquery_filter_by_lazy(self):
         self.max.manager = Manager.objects.create(name="Manager")
         self.max.save()
-        max_manager = SimpleLazyObject(
-            lambda: Manager.objects.get(pk=self.max.manager.pk)
-        )
+        max_manager = SimpleLazyObject(lambda: Manager.objects.get(pk=self.max.manager.pk))
         qs = Company.objects.annotate(
             ceo_manager=Subquery(
                 Employee.objects.filter(
@@ -902,9 +858,7 @@ class BasicExpressionsTests(TestCase):
         self.assertNotIn("GROUP BY", sql)
 
     def test_object_create_with_f_expression_in_subquery(self):
-        Company.objects.create(
-            name="Big company", num_employees=100000, num_chairs=1, ceo=self.max
-        )
+        Company.objects.create(name="Big company", num_employees=100000, num_chairs=1, ceo=self.max)
         biggest_company = Company.objects.create(
             name="Biggest company",
             num_chairs=1,
@@ -1007,9 +961,7 @@ class BasicExpressionsTests(TestCase):
                         Employee.objects.filter(
                             pk=OuterRef("secretary__pk"),
                         )
-                        .annotate(
-                            secretary_based_in_eu=OuterRef(OuterRef("based_in_eu"))
-                        )
+                        .annotate(secretary_based_in_eu=OuterRef(OuterRef("based_in_eu")))
                         .filter(
                             Exists(
                                 Company.objects.filter(
@@ -1032,15 +984,11 @@ class BasicExpressionsTests(TestCase):
         self.assertEqual(pickle.loads(pickle.dumps(expr)), expr)
 
     def test_incorrect_field_in_F_expression(self):
-        with self.assertRaisesMessage(
-            FieldError, "Cannot resolve keyword 'nope' into field."
-        ):
+        with self.assertRaisesMessage(FieldError, "Cannot resolve keyword 'nope' into field."):
             list(Employee.objects.filter(firstname=F("nope")))
 
     def test_incorrect_joined_field_in_F_expression(self):
-        with self.assertRaisesMessage(
-            FieldError, "Cannot resolve keyword 'nope' into field."
-        ):
+        with self.assertRaisesMessage(FieldError, "Cannot resolve keyword 'nope' into field."):
             list(Company.objects.filter(ceo__pk=F("point_of_contact__nope")))
 
     def test_exists_in_filter(self):
@@ -1174,9 +1122,7 @@ class IterableLookupInnerExpressionsTests(TestCase):
         )
         self.assertCountEqual(
             Company.objects.filter(
-                num_employees__in=(
-                    [F("num_chairs") - 10, F("num_chairs"), F("num_chairs") + 10]
-                )
+                num_employees__in=([F("num_chairs") - 10, F("num_chairs"), F("num_chairs") + 10])
             ),
             [self.c5040, self.c5050, self.c5060],
         )
@@ -1190,17 +1136,13 @@ class IterableLookupInnerExpressionsTests(TestCase):
         SimulationRun.objects.create(start=None, end=t2, midpoint=midpoint)
         SimulationRun.objects.create(start=None, end=None, midpoint=midpoint)
 
-        queryset = SimulationRun.objects.filter(
-            midpoint__range=[F("start__time"), F("end__time")]
-        )
+        queryset = SimulationRun.objects.filter(midpoint__range=[F("start__time"), F("end__time")])
         self.assertSequenceEqual(queryset, [s1])
         for alias in queryset.query.alias_map.values():
             if isinstance(alias, Join):
                 self.assertEqual(alias.join_type, constants.INNER)
 
-        queryset = SimulationRun.objects.exclude(
-            midpoint__range=[F("start__time"), F("end__time")]
-        )
+        queryset = SimulationRun.objects.exclude(midpoint__range=[F("start__time"), F("end__time")])
         self.assertQuerySetEqual(queryset, [], ordered=False)
         for alias in queryset.query.alias_map.values():
             if isinstance(alias, Join):
@@ -1237,8 +1179,7 @@ class IterableLookupInnerExpressionsTests(TestCase):
 
     @unittest.skipUnless(
         connection.vendor == "sqlite",
-        "This defensive test only works on databases that don't validate parameter "
-        "types",
+        "This defensive test only works on databases that don't validate parameter types",
     )
     def test_expressions_not_introduce_sql_injection_via_untrusted_string_inclusion(
         self,
@@ -1327,7 +1268,7 @@ class FTests(SimpleTestCase):
     def test_deconstruct(self):
         f = F("name")
         path, args, kwargs = f.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.F')
+        self.assertEqual(path, "djorm.db.models.F")
         self.assertEqual(args, (f.name,))
         self.assertEqual(kwargs, {})
 
@@ -1474,9 +1415,7 @@ class ExpressionsTests(TestCase):
 class SimpleExpressionTests(SimpleTestCase):
     def test_equal(self):
         self.assertEqual(Expression(), Expression())
-        self.assertEqual(
-            Expression(IntegerField()), Expression(output_field=IntegerField())
-        )
+        self.assertEqual(Expression(IntegerField()), Expression(output_field=IntegerField()))
         self.assertEqual(Expression(IntegerField()), mock.ANY)
         self.assertNotEqual(Expression(IntegerField()), Expression(CharField()))
 
@@ -1493,9 +1432,10 @@ class SimpleExpressionTests(SimpleTestCase):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
 
-        # The identity of expressions that obscure their __init__() signature
-        # with *args and **kwargs cannot be determined when bound with
-        # different combinations or *args and **kwargs.
+                # The identity of expressions that obscure their __init__() signature
+                # with *args and **kwargs cannot be determined when bound with
+                # different combinations or *args and **kwargs.
+
         self.assertNotEqual(
             InitCaptureExpression(IntegerField()),
             InitCaptureExpression(output_field=IntegerField()),
@@ -1593,9 +1533,7 @@ class ExpressionsNumericTests(TestCase):
         """
         We can increment a value of all objects in a query set.
         """
-        self.assertEqual(
-            Number.objects.filter(integer__gt=0).update(integer=F("integer") + 1), 2
-        )
+        self.assertEqual(Number.objects.filter(integer__gt=0).update(integer=F("integer") + 1), 2)
         self.assertQuerySetEqual(
             Number.objects.all(),
             [(-1, -1), (43, 42), (1338, 1337)],
@@ -1608,9 +1546,7 @@ class ExpressionsNumericTests(TestCase):
         We can filter for objects, where a value is not equals the value
         of an other field.
         """
-        self.assertEqual(
-            Number.objects.filter(integer__gt=0).update(integer=F("integer") + 1), 2
-        )
+        self.assertEqual(Number.objects.filter(integer__gt=0).update(integer=F("integer") + 1), 2)
         self.assertQuerySetEqual(
             Number.objects.exclude(float=F("integer")),
             [(43, 42), (1338, 1337)],
@@ -1636,9 +1572,7 @@ class ExpressionsNumericTests(TestCase):
         )
 
         self.assertEqual(Number.objects.get(pk=n.pk).integer, 10)
-        self.assertEqual(
-            Number.objects.get(pk=n.pk).float, Approximate(256.900, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=n.pk).float, Approximate(256.900, places=3))
 
     def test_decimal_expression(self):
         n = Number.objects.create(integer=1, decimal_value=Decimal("0.5"))
@@ -1661,9 +1595,7 @@ class ExpressionOperatorTests(TestCase):
         )
 
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 57)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(58.200, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(58.200, places=3))
 
     def test_lefthand_subtraction(self):
         # LH Subtraction of floats and integers
@@ -1672,9 +1604,7 @@ class ExpressionOperatorTests(TestCase):
         )
 
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 27)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(-27.200, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(-27.200, places=3))
 
     def test_lefthand_multiplication(self):
         # Multiplication of floats and integers
@@ -1683,9 +1613,7 @@ class ExpressionOperatorTests(TestCase):
         )
 
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 630)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(661.850, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(661.850, places=3))
 
     def test_lefthand_division(self):
         # LH Division of floats and integers
@@ -1694,9 +1622,7 @@ class ExpressionOperatorTests(TestCase):
         )
 
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 21)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(0.363, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(0.363, places=3))
 
     def test_lefthand_modulo(self):
         # LH Modulo arithmetic on integers
@@ -1746,9 +1672,7 @@ class ExpressionOperatorTests(TestCase):
             integer=F("integer") ** 2, float=F("float") ** 1.5
         )
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 1764)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(61.02, places=2)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(61.02, places=2))
 
     def test_lefthand_bitwise_xor(self):
         Number.objects.update(integer=F("integer").bitxor(48))
@@ -1767,9 +1691,7 @@ class ExpressionOperatorTests(TestCase):
         employee.refresh_from_db()
         self.assertIsNone(employee.salary)
 
-    @unittest.skipUnless(
-        connection.vendor == "oracle", "Oracle doesn't support bitwise XOR."
-    )
+    @unittest.skipUnless(connection.vendor == "oracle", "Oracle doesn't support bitwise XOR.")
     def test_lefthand_bitwise_xor_not_supported(self):
         msg = "Bitwise XOR is not supported in Oracle."
         with self.assertRaisesMessage(NotSupportedError, msg):
@@ -1783,9 +1705,7 @@ class ExpressionOperatorTests(TestCase):
 
         # RH Addition of floats and integers
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 57)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(58.200, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(58.200, places=3))
 
     def test_right_hand_subtraction(self):
         Number.objects.filter(pk=self.n.pk).update(
@@ -1794,9 +1714,7 @@ class ExpressionOperatorTests(TestCase):
 
         # RH Subtraction of floats and integers
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, -27)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(27.200, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(27.200, places=3))
 
     def test_right_hand_multiplication(self):
         # RH Multiplication of floats and integers
@@ -1805,9 +1723,7 @@ class ExpressionOperatorTests(TestCase):
         )
 
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 630)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(661.850, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(661.850, places=3))
 
     def test_right_hand_division(self):
         # RH Division of floats and integers
@@ -1816,9 +1732,7 @@ class ExpressionOperatorTests(TestCase):
         )
 
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 15)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(2.755, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(2.755, places=3))
 
     def test_right_hand_modulo(self):
         # RH Modulo arithmetic on integers
@@ -1832,9 +1746,7 @@ class ExpressionOperatorTests(TestCase):
             integer=2 ** F("integer"), float=1.5 ** F("float")
         )
         self.assertEqual(Number.objects.get(pk=self.n.pk).integer, 4398046511104)
-        self.assertEqual(
-            Number.objects.get(pk=self.n.pk).float, Approximate(536.308, places=3)
-        )
+        self.assertEqual(Number.objects.get(pk=self.n.pk).float, Approximate(536.308, places=3))
 
 
 class FTimeDeltaTests(TestCase):
@@ -1868,9 +1780,7 @@ class FTimeDeltaTests(TestCase):
             estimated_time=delta0,
         )
         cls.deltas.append(delta0)
-        cls.delays.append(
-            cls.e0.start - datetime.datetime.combine(cls.e0.assigned, midnight)
-        )
+        cls.delays.append(cls.e0.start - datetime.datetime.combine(cls.e0.assigned, midnight))
         cls.days_long.append(cls.e0.completed - cls.e0.assigned)
 
         # e1: started one day after assigned, tiny duration, data
@@ -1952,9 +1862,7 @@ class FTimeDeltaTests(TestCase):
 
     def test_multiple_query_compilation(self):
         # Ticket #21643
-        queryset = Experiment.objects.filter(
-            end__lt=F("start") + datetime.timedelta(hours=1)
-        )
+        queryset = Experiment.objects.filter(end__lt=F("start") + datetime.timedelta(hours=1))
         q1 = str(queryset.query)
         q2 = str(queryset.query)
         self.assertEqual(q1, q2)
@@ -1969,56 +1877,40 @@ class FTimeDeltaTests(TestCase):
 
     def test_delta_add(self):
         for i, delta in enumerate(self.deltas):
-            test_set = [
-                e.name for e in Experiment.objects.filter(end__lt=F("start") + delta)
-            ]
+            test_set = [e.name for e in Experiment.objects.filter(end__lt=F("start") + delta)]
             self.assertEqual(test_set, self.expnames[:i])
 
-            test_set = [
-                e.name for e in Experiment.objects.filter(end__lt=delta + F("start"))
-            ]
+            test_set = [e.name for e in Experiment.objects.filter(end__lt=delta + F("start"))]
             self.assertEqual(test_set, self.expnames[:i])
 
-            test_set = [
-                e.name for e in Experiment.objects.filter(end__lte=F("start") + delta)
-            ]
+            test_set = [e.name for e in Experiment.objects.filter(end__lte=F("start") + delta)]
             self.assertEqual(test_set, self.expnames[: i + 1])
 
     def test_delta_subtract(self):
         for i, delta in enumerate(self.deltas):
-            test_set = [
-                e.name for e in Experiment.objects.filter(start__gt=F("end") - delta)
-            ]
+            test_set = [e.name for e in Experiment.objects.filter(start__gt=F("end") - delta)]
             self.assertEqual(test_set, self.expnames[:i])
 
-            test_set = [
-                e.name for e in Experiment.objects.filter(start__gte=F("end") - delta)
-            ]
+            test_set = [e.name for e in Experiment.objects.filter(start__gte=F("end") - delta)]
             self.assertEqual(test_set, self.expnames[: i + 1])
 
     def test_exclude(self):
         for i, delta in enumerate(self.deltas):
-            test_set = [
-                e.name for e in Experiment.objects.exclude(end__lt=F("start") + delta)
-            ]
+            test_set = [e.name for e in Experiment.objects.exclude(end__lt=F("start") + delta)]
             self.assertEqual(test_set, self.expnames[i:])
 
-            test_set = [
-                e.name for e in Experiment.objects.exclude(end__lte=F("start") + delta)
-            ]
+            test_set = [e.name for e in Experiment.objects.exclude(end__lte=F("start") + delta)]
             self.assertEqual(test_set, self.expnames[i + 1 :])
 
     def test_date_comparison(self):
         for i, days in enumerate(self.days_long):
             test_set = [
-                e.name
-                for e in Experiment.objects.filter(completed__lt=F("assigned") + days)
+                e.name for e in Experiment.objects.filter(completed__lt=F("assigned") + days)
             ]
             self.assertEqual(test_set, self.expnames[:i])
 
             test_set = [
-                e.name
-                for e in Experiment.objects.filter(completed__lte=F("assigned") + days)
+                e.name for e in Experiment.objects.filter(completed__lte=F("assigned") + days)
             ]
             self.assertEqual(test_set, self.expnames[: i + 1])
 
@@ -2027,19 +1919,13 @@ class FTimeDeltaTests(TestCase):
         self.assertGreater(test_set.count(), 0)
         self.assertEqual(
             [e.name for e in test_set],
-            [
-                e.name
-                for e in Experiment.objects.all()
-                if e.end == e.start + e.estimated_time
-            ],
+            [e.name for e in Experiment.objects.all() if e.end == e.start + e.estimated_time],
         )
 
     def test_datetime_and_duration_field_addition_with_annotate_and_no_output_field(
         self,
     ):
-        test_set = Experiment.objects.annotate(
-            estimated_end=F("start") + F("estimated_time")
-        )
+        test_set = Experiment.objects.annotate(estimated_end=F("start") + F("estimated_time"))
         self.assertEqual(
             [e.estimated_end for e in test_set],
             [e.start + e.estimated_time for e in test_set],
@@ -2047,9 +1933,7 @@ class FTimeDeltaTests(TestCase):
 
     @skipUnlessDBFeature("supports_temporal_subtraction")
     def test_datetime_subtraction_with_annotate_and_no_output_field(self):
-        test_set = Experiment.objects.annotate(
-            calculated_duration=F("end") - F("start")
-        )
+        test_set = Experiment.objects.annotate(calculated_duration=F("end") - F("start"))
         self.assertEqual(
             [e.calculated_duration for e in test_set],
             [e.end - e.start for e in test_set],
@@ -2057,25 +1941,16 @@ class FTimeDeltaTests(TestCase):
 
     def test_mixed_comparisons1(self):
         for i, delay in enumerate(self.delays):
-            test_set = [
-                e.name
-                for e in Experiment.objects.filter(assigned__gt=F("start") - delay)
-            ]
+            test_set = [e.name for e in Experiment.objects.filter(assigned__gt=F("start") - delay)]
             self.assertEqual(test_set, self.expnames[:i])
 
-            test_set = [
-                e.name
-                for e in Experiment.objects.filter(assigned__gte=F("start") - delay)
-            ]
+            test_set = [e.name for e in Experiment.objects.filter(assigned__gte=F("start") - delay)]
             self.assertEqual(test_set, self.expnames[: i + 1])
 
     def test_mixed_comparisons2(self):
         for i, delay in enumerate(self.delays):
             delay = datetime.timedelta(delay.days)
-            test_set = [
-                e.name
-                for e in Experiment.objects.filter(start__lt=F("assigned") + delay)
-            ]
+            test_set = [e.name for e in Experiment.objects.filter(start__lt=F("assigned") + delay)]
             self.assertEqual(test_set, self.expnames[:i])
 
             test_set = [
@@ -2107,15 +1982,11 @@ class FTimeDeltaTests(TestCase):
             list(Experiment.objects.filter(start=F("start") * datetime.timedelta(0)))
 
     def test_durationfield_add(self):
-        zeros = [
-            e.name
-            for e in Experiment.objects.filter(start=F("start") + F("estimated_time"))
-        ]
+        zeros = [e.name for e in Experiment.objects.filter(start=F("start") + F("estimated_time"))]
         self.assertEqual(zeros, ["e0"])
 
         end_less = [
-            e.name
-            for e in Experiment.objects.filter(end__lt=F("start") + F("estimated_time"))
+            e.name for e in Experiment.objects.filter(end__lt=F("start") + F("estimated_time"))
         ]
         self.assertEqual(end_less, ["e2"])
 
@@ -2178,24 +2049,17 @@ class FTimeDeltaTests(TestCase):
         )
 
         at_least_5_days = {
-            e.name
-            for e in queryset.filter(
-                completion_duration__gte=datetime.timedelta(days=5)
-            )
+            e.name for e in queryset.filter(completion_duration__gte=datetime.timedelta(days=5))
         }
         self.assertEqual(at_least_5_days, {"e3", "e4", "e5"})
 
         at_least_120_days = {
-            e.name
-            for e in queryset.filter(
-                completion_duration__gte=datetime.timedelta(days=120)
-            )
+            e.name for e in queryset.filter(completion_duration__gte=datetime.timedelta(days=120))
         }
         self.assertEqual(at_least_120_days, {"e5"})
 
         less_than_5_days = {
-            e.name
-            for e in queryset.filter(completion_duration__lt=datetime.timedelta(days=5))
+            e.name for e in queryset.filter(completion_duration__lt=datetime.timedelta(days=5))
         }
         self.assertEqual(less_than_5_days, {"e0", "e1", "e2"})
 
@@ -2271,14 +2135,12 @@ class FTimeDeltaTests(TestCase):
     @skipUnlessDBFeature("supports_temporal_subtraction")
     def test_datetime_subtraction(self):
         under_estimate = [
-            e.name
-            for e in Experiment.objects.filter(estimated_time__gt=F("end") - F("start"))
+            e.name for e in Experiment.objects.filter(estimated_time__gt=F("end") - F("start"))
         ]
         self.assertEqual(under_estimate, ["e2"])
 
         over_estimate = [
-            e.name
-            for e in Experiment.objects.filter(estimated_time__lt=F("end") - F("start"))
+            e.name for e in Experiment.objects.filter(estimated_time__lt=F("end") - F("start"))
         ]
         self.assertEqual(over_estimate, ["e4"])
 
@@ -2349,8 +2211,7 @@ class FTimeDeltaTests(TestCase):
                 start_sub_seconds=F("start") + datetime.timedelta(seconds=-30),
             )
             .annotate(
-                start_sub_minutes=F("start_sub_seconds")
-                + datetime.timedelta(minutes=-30),
+                start_sub_minutes=F("start_sub_seconds") + datetime.timedelta(minutes=-30),
             )
             .annotate(
                 start_sub_hours=F("start_sub_minutes") + datetime.timedelta(hours=-2),
@@ -2379,30 +2240,24 @@ class ValueTests(TestCase):
     def test_update_UUIDField_using_Value(self):
         UUID.objects.create()
         UUID.objects.update(
-            uuid=Value(
-                uuid.UUID("12345678901234567890123456789012"), output_field=UUIDField()
-            )
+            uuid=Value(uuid.UUID("12345678901234567890123456789012"), output_field=UUIDField())
         )
-        self.assertEqual(
-            UUID.objects.get().uuid, uuid.UUID("12345678901234567890123456789012")
-        )
+        self.assertEqual(UUID.objects.get().uuid, uuid.UUID("12345678901234567890123456789012"))
 
     def test_deconstruct(self):
         value = Value("name")
         path, args, kwargs = value.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.Value')
+        self.assertEqual(path, "djorm.db.models.Value")
         self.assertEqual(args, (value.value,))
         self.assertEqual(kwargs, {})
 
     def test_deconstruct_output_field(self):
         value = Value("name", output_field=CharField())
         path, args, kwargs = value.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.Value')
+        self.assertEqual(path, "djorm.db.models.Value")
         self.assertEqual(args, (value.value,))
         self.assertEqual(len(kwargs), 1)
-        self.assertEqual(
-            kwargs["output_field"].deconstruct(), CharField().deconstruct()
-        )
+        self.assertEqual(kwargs["output_field"].deconstruct(), CharField().deconstruct())
 
     def test_repr(self):
         tests = [
@@ -2541,9 +2396,9 @@ class ExistsTests(TestCase):
 
     def test_select_negated_empty_exists(self):
         manager = Manager.objects.create()
-        qs = Manager.objects.annotate(
-            not_exists=~Exists(Manager.objects.none())
-        ).filter(pk=manager.pk)
+        qs = Manager.objects.annotate(not_exists=~Exists(Manager.objects.none())).filter(
+            pk=manager.pk
+        )
         self.assertSequenceEqual(qs, [manager])
         self.assertIs(qs.get().not_exists, True)
 
@@ -2605,9 +2460,7 @@ class ReprTests(SimpleTestCase):
             "ColPairs('alias', ['t1', 't2'], ['s1', 's2'], 'f')",
         )
         self.assertEqual(repr(F("published")), "F(published)")
-        self.assertEqual(
-            repr(F("cost") + F("tax")), "<CombinedExpression: F(cost) + F(tax)>"
-        )
+        self.assertEqual(repr(F("cost") + F("tax")), "<CombinedExpression: F(cost) + F(tax)>")
         self.assertEqual(
             repr(ExpressionWrapper(F("cost") + F("tax"), IntegerField())),
             "ExpressionWrapper(F(cost) + F(tax))",
@@ -2616,17 +2469,11 @@ class ReprTests(SimpleTestCase):
             repr(Func("published", function="TO_CHAR")),
             "Func(F(published), function=TO_CHAR)",
         )
-        self.assertEqual(
-            repr(F("published")[0:2]), "Sliced(F(published), slice(0, 2, None))"
-        )
-        self.assertEqual(
-            repr(OuterRef("name")[1:5]), "Sliced(OuterRef(name), slice(1, 5, None))"
-        )
+        self.assertEqual(repr(F("published")[0:2]), "Sliced(F(published), slice(0, 2, None))")
+        self.assertEqual(repr(OuterRef("name")[1:5]), "Sliced(OuterRef(name), slice(1, 5, None))")
         self.assertEqual(repr(OrderBy(Value(1))), "OrderBy(Value(1), descending=False)")
         self.assertEqual(repr(RawSQL("table.col", [])), "RawSQL(table.col, [])")
-        self.assertEqual(
-            repr(Ref("sum_cost", Sum("cost"))), "Ref(sum_cost, Sum(F(cost)))"
-        )
+        self.assertEqual(repr(Ref("sum_cost", Sum("cost"))), "Ref(sum_cost, Sum(F(cost)))")
         self.assertEqual(repr(Value(1)), "Value(1)")
         self.assertEqual(
             repr(ExpressionList(F("col"), F("anothercol"))),
@@ -2653,9 +2500,7 @@ class ReprTests(SimpleTestCase):
         self.assertEqual(repr(Min("a")), "Min(F(a))")
         self.assertEqual(repr(StdDev("a")), "StdDev(F(a), sample=False)")
         self.assertEqual(repr(Sum("a")), "Sum(F(a))")
-        self.assertEqual(
-            repr(Variance("a", sample=True)), "Variance(F(a), sample=True)"
-        )
+        self.assertEqual(repr(Variance("a", sample=True)), "Variance(F(a), sample=True)")
 
     def test_distinct_aggregates(self):
         self.assertEqual(repr(Count("a", distinct=True)), "Count(F(a), distinct=True)")
@@ -2663,25 +2508,15 @@ class ReprTests(SimpleTestCase):
 
     def test_filtered_aggregates(self):
         filter = Q(a=1)
-        self.assertEqual(
-            repr(Avg("a", filter=filter)), "Avg(F(a), filter=(AND: ('a', 1)))"
-        )
-        self.assertEqual(
-            repr(Count("a", filter=filter)), "Count(F(a), filter=(AND: ('a', 1)))"
-        )
-        self.assertEqual(
-            repr(Max("a", filter=filter)), "Max(F(a), filter=(AND: ('a', 1)))"
-        )
-        self.assertEqual(
-            repr(Min("a", filter=filter)), "Min(F(a), filter=(AND: ('a', 1)))"
-        )
+        self.assertEqual(repr(Avg("a", filter=filter)), "Avg(F(a), filter=(AND: ('a', 1)))")
+        self.assertEqual(repr(Count("a", filter=filter)), "Count(F(a), filter=(AND: ('a', 1)))")
+        self.assertEqual(repr(Max("a", filter=filter)), "Max(F(a), filter=(AND: ('a', 1)))")
+        self.assertEqual(repr(Min("a", filter=filter)), "Min(F(a), filter=(AND: ('a', 1)))")
         self.assertEqual(
             repr(StdDev("a", filter=filter)),
             "StdDev(F(a), filter=(AND: ('a', 1)), sample=False)",
         )
-        self.assertEqual(
-            repr(Sum("a", filter=filter)), "Sum(F(a), filter=(AND: ('a', 1)))"
-        )
+        self.assertEqual(repr(Sum("a", filter=filter)), "Sum(F(a), filter=(AND: ('a', 1)))")
         self.assertEqual(
             repr(Variance("a", sample=True, filter=filter)),
             "Variance(F(a), filter=(AND: ('a', 1)), sample=True)",
@@ -2693,9 +2528,7 @@ class ReprTests(SimpleTestCase):
 
 
 class CombinableTests(SimpleTestCase):
-    bitwise_msg = (
-        "Use .bitand(), .bitor(), and .bitxor() for bitwise logical operations."
-    )
+    bitwise_msg = "Use .bitand(), .bitor(), and .bitxor() for bitwise logical operations."
 
     def test_negation(self):
         c = Combinable()
@@ -2762,9 +2595,7 @@ class CombinedExpressionTests(SimpleTestCase):
         ]
         for lhs, rhs, combined in tests:
             for connector in connectors:
-                with self.subTest(
-                    lhs=lhs, connector=connector, rhs=rhs, combined=combined
-                ):
+                with self.subTest(lhs=lhs, connector=connector, rhs=rhs, combined=combined):
                     expr = CombinedExpression(
                         Expression(lhs()),
                         connector,
@@ -2794,9 +2625,7 @@ class CombinedExpressionTests(SimpleTestCase):
             (DateField, Combinable.SUB, null),
         ]
         for lhs, connector, rhs in tests:
-            msg = (
-                f"Cannot infer type of {connector!r} expression involving these types: "
-            )
+            msg = f"Cannot infer type of {connector!r} expression involving these types: "
             with self.subTest(lhs=lhs, connector=connector, rhs=rhs):
                 expr = CombinedExpression(
                     Expression(lhs()),
@@ -2857,9 +2686,7 @@ class CombinedExpressionTests(SimpleTestCase):
             (DurationField, Combinable.SUB, DateTimeField, FieldError),
         ]
         for lhs, connector, rhs, combined in tests:
-            msg = (
-                f"Cannot infer type of {connector!r} expression involving these types: "
-            )
+            msg = f"Cannot infer type of {connector!r} expression involving these types: "
             with self.subTest(lhs=lhs, connector=connector, rhs=rhs, combined=combined):
                 expr = CombinedExpression(
                     Expression(lhs()),

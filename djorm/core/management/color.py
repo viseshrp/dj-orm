@@ -50,7 +50,8 @@ def supports_color():
             else:
                 return reg_key_value == 1
 
-    # isatty is not always implemented, #6223.
+                # isatty is not always implemented, #6223.
+
     is_a_tty = hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
 
     return is_a_tty and (
@@ -72,7 +73,11 @@ class Style:
 
 
 def make_style(config_string=""):
-    '\n    Create a Style object from the given config_string.\n\n    If config_string is empty djorm.utils.termcolors.DEFAULT_PALETTE is used.\n    '
+    """
+    Create a Style object from the given config_string.
+
+    If config_string is empty djorm.utils.termcolors.DEFAULT_PALETTE is used.
+    """
 
     style = Style()
 
@@ -92,8 +97,8 @@ def make_style(config_string=""):
 
         setattr(style, role, style_func)
 
-    # For backwards compatibility,
-    # set style for ERROR_OUTPUT == ERROR
+        # For backwards compatibility,
+        # set style for ERROR_OUTPUT == ERROR
     style.ERROR_OUTPUT = style.ERROR
 
     return style

@@ -19,14 +19,11 @@ from asgiref.sync import iscoroutinefunction
 from djorm.apps import apps
 from djorm.apps.registry import Apps
 from djorm.conf import UserSettingsHolder, settings
-from djorm.core import mail
 from djorm.core.exceptions import ImproperlyConfigured
 from djorm.core.signals import request_started, setting_changed
 from djorm.db import DEFAULT_DB_ALIAS, connections, reset_queries
 from djorm.db.models.options import Options
-from djorm.template import Template
 from djorm.test.signals import template_rendered
-from djorm.urls import get_script_prefix, set_script_prefix
 from djorm.utils.translation import deactivate
 from djorm.utils.version import PYPY
 
@@ -34,6 +31,21 @@ try:
     import jinja2
 except ImportError:
     jinja2 = None
+
+try:
+    from djorm.template import Template
+except ImportError:
+    Template = None
+
+try:
+    from djorm.urls import get_script_prefix, set_script_prefix
+except ImportError:
+
+    def get_script_prefix():
+        return "/"
+
+    def set_script_prefix(prefix):
+        return None
 
 
 __all__ = (
@@ -136,20 +148,11 @@ def setup_test_environment(debug=None):
     saved_data = SimpleNamespace()
     _TestState.saved_data = saved_data
 
-    saved_data.allowed_hosts = settings.ALLOWED_HOSTS
-    # Add the default host of the test client.
-    settings.ALLOWED_HOSTS = [*settings.ALLOWED_HOSTS, "testserver"]
-
     saved_data.debug = settings.DEBUG
     settings.DEBUG = debug
-
-    saved_data.email_backend = settings.EMAIL_BACKEND
-    settings.EMAIL_BACKEND = 'djorm.core.mail.backends.locmem.EmailBackend'
-
-    saved_data.template_render = Template._render
-    Template._render = instrumented_test_render
-
-    mail.outbox = []
+    if Template is not None:
+        saved_data.template_render = Template._render
+        Template._render = instrumented_test_render
 
     deactivate()
 
@@ -161,13 +164,11 @@ def teardown_test_environment():
     """
     saved_data = _TestState.saved_data
 
-    settings.ALLOWED_HOSTS = saved_data.allowed_hosts
     settings.DEBUG = saved_data.debug
-    settings.EMAIL_BACKEND = saved_data.email_backend
-    Template._render = saved_data.template_render
+    if Template is not None:
+        Template._render = saved_data.template_render
 
     del _TestState.saved_data
-    del mail.outbox
 
 
 def setup_databases(
@@ -217,23 +218,21 @@ def setup_databases(
                                 verbosity=verbosity,
                                 keepdb=keepdb,
                             )
-            # Configure all other connections as mirrors of the first one
+                            # Configure all other connections as mirrors of the first one
             else:
                 connections[alias].creation.set_as_test_mirror(
                     connections[first_alias].settings_dict
                 )
 
-    # Configure the test mirrors.
+                # Configure the test mirrors.
     for alias, mirror_alias in mirrored_aliases.items():
-        connections[alias].creation.set_as_test_mirror(
-            connections[mirror_alias].settings_dict
-        )
+        connections[alias].creation.set_as_test_mirror(connections[mirror_alias].settings_dict)
 
-    # Serialize content of test databases only once all of them are setup to
-    # account for database mirroring and routing during serialization. This
-    # slightly horrific process is so people who are testing on databases
-    # without transactions or using TransactionTestCase still get a clean
-    # database on every test run.
+        # Serialize content of test databases only once all of them are setup to
+        # account for database mirroring and routing during serialization. This
+        # slightly horrific process is so people who are testing on databases
+        # without transactions or using TransactionTestCase still get a clean
+        # database on every test run.
     for serialize_connection in serialize_connections:
         serialize_connection._test_serialized_contents = (
             serialize_connection.creation.serialize_db_to_string()
@@ -285,8 +284,7 @@ def dependency_ordered(test_databases, dependencies):
             all_deps.update(dependencies.get(alias, []))
         if not all_deps.isdisjoint(aliases):
             raise ImproperlyConfigured(
-                "Circular dependency: databases %r depend on each other, "
-                "but are aliases." % aliases
+                "Circular dependency: databases %r depend on each other, but are aliases." % aliases
             )
         dependencies_map[sig] = all_deps
 
@@ -357,9 +355,7 @@ def get_unique_databases_and_mirrors(aliases=None):
                     alias != DEFAULT_DB_ALIAS
                     and connection.creation.test_db_signature() != default_sig
                 ):
-                    dependencies[alias] = test_settings.get(
-                        "DEPENDENCIES", [DEFAULT_DB_ALIAS]
-                    )
+                    dependencies[alias] = test_settings.get("DEPENDENCIES", [DEFAULT_DB_ALIAS])
 
     test_databases = dict(dependency_ordered(test_databases.items(), dependencies))
     return test_databases, mirrored_aliases
@@ -543,8 +539,7 @@ class override_settings(TestContextDecorator):
 
         if not issubclass(cls, SimpleTestCase):
             raise ValueError(
-                "Only subclasses of Django SimpleTestCase can be decorated "
-                "with override_settings"
+                "Only subclasses of Django SimpleTestCase can be decorated with override_settings"
             )
         self.save_options(cls)
         return cls
@@ -571,9 +566,7 @@ class modify_settings(override_settings):
             test_func._modified_settings = self.operations
         else:
             # Duplicate list to prevent subclasses from altering their parent.
-            test_func._modified_settings = (
-                list(test_func._modified_settings) + self.operations
-            )
+            test_func._modified_settings = list(test_func._modified_settings) + self.operations
 
     def enable(self):
         self.options = {}
@@ -646,9 +639,7 @@ def compare_xml(want, got):
         return _norm_whitespace_re.sub(" ", v)
 
     def child_text(element):
-        return "".join(
-            c.data for c in element.childNodes if c.nodeType == Node.TEXT_NODE
-        )
+        return "".join(c.data for c in element.childNodes if c.nodeType == Node.TEXT_NODE)
 
     def children(element):
         return [c for c in element.childNodes if c.nodeType == Node.ELEMENT_NODE]
@@ -670,9 +661,7 @@ def compare_xml(want, got):
         got_children = children(got_element)
         if len(want_children) != len(got_children):
             return False
-        return all(
-            check_element(want, got) for want, got in zip(want_children, got_children)
-        )
+        return all(check_element(want, got) for want, got in zip(want_children, got_children))
 
     def first_node(document):
         for node in document.childNodes:
@@ -693,7 +682,7 @@ def compare_xml(want, got):
         want = wrapper % want
         got = wrapper % got
 
-    # Parse the want and got strings, and compare the parsings.
+        # Parse the want and got strings, and compare the parsings.
     want_root = first_node(parseString(want))
     got_root = first_node(parseString(got))
 
@@ -757,11 +746,11 @@ class ignore_warnings(TestContextDecorator):
     def disable(self):
         self.catch_warnings.__exit__(*sys.exc_info())
 
+        # On OSes that don't provide tzset (Windows), we can't set the timezone
+        # in which the program runs. As a consequence, we must skip tests that
+        # don't enforce a specific timezone (with timezone.override or equivalent),
+        # or attempt to interpret naive datetimes in the default timezone.
 
-# On OSes that don't provide tzset (Windows), we can't set the timezone
-# in which the program runs. As a consequence, we must skip tests that
-# don't enforce a specific timezone (with timezone.override or equivalent),
-# or attempt to interpret naive datetimes in the default timezone.
 
 requires_tz_support = skipUnless(
     TZ_SUPPORT,
@@ -857,24 +846,7 @@ def freeze_time(t):
 
 
 def require_jinja2(test_func):
-    """
-    Decorator to enable a Jinja2 template engine in addition to the regular
-    Django template engine for a test or skip it if Jinja2 isn't available.
-    """
-    test_func = skipIf(jinja2 is None, "this test requires jinja2")(test_func)
-    return override_settings(
-        TEMPLATES=[
-            {
-                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
-                "APP_DIRS": True,
-            },
-            {
-                "BACKEND": 'djorm.template.backends.jinja2.Jinja2',
-                "APP_DIRS": True,
-                "OPTIONS": {"keep_trailing_newline": True},
-            },
-        ]
-    )(test_func)
+    return skipIf(True, "jinja2 template backend is not available in this fork")(test_func)
 
 
 class override_script_prefix(TestContextDecorator):
@@ -899,7 +871,7 @@ class LoggingCaptureMixin:
     """
 
     def setUp(self):
-        self.logger = logging.getLogger("django")
+        self.logger = logging.getLogger("djorm")
         self.old_stream = self.logger.handlers[0].stream
         self.logger_output = StringIO()
         self.logger.handlers[0].stream = self.logger_output

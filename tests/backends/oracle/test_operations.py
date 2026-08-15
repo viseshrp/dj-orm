@@ -12,9 +12,7 @@ class OperationsTests(TransactionTestCase):
     available_apps = ["backends"]
 
     def test_sequence_name_truncation(self):
-        seq_name = connection.ops._get_no_autofield_sequence_name(
-            "schema_authorwithevenlongee869"
-        )
+        seq_name = connection.ops._get_no_autofield_sequence_name("schema_authorwithevenlongee869")
         self.assertEqual(seq_name, "SCHEMA_AUTHORWITHEVENLOB0B8_SQ")
 
     def test_bulk_batch_size(self):
@@ -62,8 +60,7 @@ class OperationsTests(TransactionTestCase):
         )
         self.assertEqual(
             statements[-1],
-            'ALTER TABLE "BACKENDS_TAG" ENABLE CONSTRAINT '
-            '"BACKENDS__CONTENT_T_FD9D7A85_F";',
+            'ALTER TABLE "BACKENDS_TAG" ENABLE CONSTRAINT "BACKENDS__CONTENT_T_FD9D7A85_F";',
         )
 
     def test_sql_flush_allow_cascade(self):
@@ -113,8 +110,7 @@ class OperationsTests(TransactionTestCase):
         )
         self.assertEqual(
             statements[3],
-            'ALTER TABLE "BACKENDS_TAG" ENABLE CONSTRAINT '
-            '"BACKENDS__CONTENT_T_FD9D7A85_F";',
+            'ALTER TABLE "BACKENDS_TAG" ENABLE CONSTRAINT "BACKENDS__CONTENT_T_FD9D7A85_F";',
         )
         # Sequences.
         self.assertEqual(len(statements[4:]), 2)

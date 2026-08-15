@@ -25,7 +25,7 @@ def get_json_dumps(encoder):
 
 
 class DatabaseOperations(BaseDatabaseOperations):
-    compiler_module = 'djorm.db.backends.postgresql.compiler'
+    compiler_module = "djorm.db.backends.postgresql.compiler"
     cast_char_field_without_max_length = "varchar"
     explain_prefix = "EXPLAIN"
     explain_options = frozenset(
@@ -76,12 +76,11 @@ class DatabaseOperations(BaseDatabaseOperations):
             # PostgreSQL configuration so we need to explicitly cast them.
             # We must also remove components of the type within brackets:
             # varchar(255) -> varchar.
-            return (
-                "CAST(%%s AS %s)" % output_field.db_type(self.connection).split("(")[0]
-            )
+            return "CAST(%%s AS %s)" % output_field.db_type(self.connection).split("(")[0]
         return "%s"
 
-    # EXTRACT format cannot be passed in parameters.
+        # EXTRACT format cannot be passed in parameters.
+
     _extract_format_re = _lazy_re_compile(r"[A-Z_]+")
 
     def date_extract_sql(self, lookup_type, sql, params):
@@ -181,7 +180,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             else:
                 lookup = "%s::text"
 
-        # Use UPPER(x) for case-insensitive lookups; it's faster.
+                # Use UPPER(x) for case-insensitive lookups; it's faster.
         if lookup_type in ("iexact", "icontains", "istartswith", "iendswith"):
             lookup = "UPPER(%s)" % lookup
 
@@ -208,8 +207,8 @@ class DatabaseOperations(BaseDatabaseOperations):
         if not tables:
             return []
 
-        # Perform a single SQL 'TRUNCATE x, y, z...;' statement. It allows us
-        # to truncate tables referenced by a foreign key in any other table.
+            # Perform a single SQL 'TRUNCATE x, y, z...;' statement. It allows us
+            # to truncate tables referenced by a foreign key in any other table.
         sql_parts = [
             style.SQL_KEYWORD("TRUNCATE"),
             ", ".join(style.SQL_FIELD(self.quote_name(table)) for table in tables),
@@ -374,11 +373,10 @@ class DatabaseOperations(BaseDatabaseOperations):
         if serialize := options.pop("serialize", None):
             if serialize.upper() in {"TEXT", "BINARY"}:
                 extra["SERIALIZE"] = serialize.upper()
-        # Normalize options.
+                # Normalize options.
         if options:
             options = {
-                name.upper(): "true" if value else "false"
-                for name, value in options.items()
+                name.upper(): "true" if value else "false" for name, value in options.items()
             }
             for valid_option in self.explain_options:
                 value = options.pop(valid_option, None)
@@ -398,10 +396,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             return "ON CONFLICT(%s) DO UPDATE SET %s" % (
                 ", ".join(map(self.quote_name, unique_fields)),
                 ", ".join(
-                    [
-                        f"{field} = EXCLUDED.{field}"
-                        for field in map(self.quote_name, update_fields)
-                    ]
+                    [f"{field} = EXCLUDED.{field}" for field in map(self.quote_name, update_fields)]
                 ),
             )
         return super().on_conflict_suffix_sql(

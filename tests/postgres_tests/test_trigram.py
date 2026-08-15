@@ -55,9 +55,7 @@ class TrigramTest(PostgreSQLTestCase):
             field="Gumby rides on the path of Middlesbrough",
         )
         self.assertSequenceEqual(
-            self.Model.objects.filter(
-                field__trigram_strict_word_similar="Middlesborough"
-            ),
+            self.Model.objects.filter(field__trigram_strict_word_similar="Middlesborough"),
             [obj],
         )
         self.assertSequenceEqual(

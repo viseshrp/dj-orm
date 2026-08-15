@@ -25,9 +25,7 @@ class ValuesExpressionsTests(TestCase):
             name="Test GmbH",
             num_employees=32,
             num_chairs=1,
-            ceo=Employee.objects.create(
-                firstname="Max", lastname="Mustermann", salary=30
-            ),
+            ceo=Employee.objects.create(firstname="Max", lastname="Mustermann", salary=30),
         )
 
     def test_values_expression(self):
@@ -92,9 +90,7 @@ class ValuesExpressionsTests(TestCase):
             joes.values("firstname", sum_salary=Sum("salary")),
             [{"firstname": "Joe", "sum_salary": 12}],
         )
-        self.assertSequenceEqual(
-            joes.values(sum_salary=Sum("salary")), [{"sum_salary": 12}]
-        )
+        self.assertSequenceEqual(joes.values(sum_salary=Sum("salary")), [{"sum_salary": 12}])
 
     def test_values_list_expression(self):
         companies = Company.objects.values_list("name", F("ceo__salary"))

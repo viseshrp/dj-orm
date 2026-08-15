@@ -60,9 +60,7 @@ class StringLookupTests(TestCase):
         a = Article(name="Test", text="The quick brown fox jumps over the lazy dog.")
         a.save()
         self.assertEqual(
-            Article.objects.get(
-                text__exact="The quick brown fox jumps over the lazy dog."
-            ),
+            Article.objects.get(text__exact="The quick brown fox jumps over the lazy dog."),
             a,
         )
 
@@ -76,10 +74,6 @@ class StringLookupTests(TestCase):
         """
         a = Article(name="IP test", text="The body", submitted_from="192.0.2.100")
         a.save()
-        self.assertSequenceEqual(
-            Article.objects.filter(submitted_from__contains="192.0.2"), [a]
-        )
+        self.assertSequenceEqual(Article.objects.filter(submitted_from__contains="192.0.2"), [a])
         # The searches do not match the subnet mask (/32 in this case)
-        self.assertEqual(
-            Article.objects.filter(submitted_from__contains="32").count(), 0
-        )
+        self.assertEqual(Article.objects.filter(submitted_from__contains="32").count(), 0)

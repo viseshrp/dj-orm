@@ -9,9 +9,7 @@ from djorm.utils.functional import cached_property
 
 class Author(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    first_book = models.ForeignKey(
-        "Book", models.CASCADE, related_name="first_time_authors"
-    )
+    first_book = models.ForeignKey("Book", models.CASCADE, related_name="first_time_authors")
     favorite_authors = models.ManyToManyField(
         "self", through="FavoriteAuthors", symmetrical=False, related_name="favors_me"
     )
@@ -29,9 +27,7 @@ class AuthorWithAge(Author):
 
 
 class FavoriteAuthors(models.Model):
-    author = models.ForeignKey(
-        Author, models.CASCADE, to_field="name", related_name="i_like"
-    )
+    author = models.ForeignKey(Author, models.CASCADE, to_field="name", related_name="i_like")
     likes_author = models.ForeignKey(
         Author, models.CASCADE, to_field="name", related_name="likes_me"
     )
@@ -42,9 +38,7 @@ class FavoriteAuthors(models.Model):
 
 
 class AuthorAddress(models.Model):
-    author = models.ForeignKey(
-        Author, models.CASCADE, to_field="name", related_name="addresses"
-    )
+    author = models.ForeignKey(Author, models.CASCADE, to_field="name", related_name="addresses")
     address = models.TextField()
 
     class Meta:
@@ -91,8 +85,7 @@ class BookReview(models.Model):
     book = models.ForeignKey(BookWithYear, models.CASCADE, null=True)
     notes = models.TextField(null=True, blank=True)
 
-
-# Models for default manager tests
+    # Models for default manager tests
 
 
 class Qualification(models.Model):
@@ -141,8 +134,7 @@ class Department(models.Model):
     class Meta:
         ordering = ["id"]
 
-
-# GenericRelation/GenericForeignKey tests
+        # GenericRelation/GenericForeignKey tests
 
 
 class TaggedItem(models.Model):
@@ -208,15 +200,12 @@ class Comment(models.Model):
         ContentType, models.CASCADE, related_name="comments", null=True
     )
     object_pk_uuid = models.TextField()
-    content_object_uuid = GenericForeignKey(
-        ct_field="content_type_uuid", fk_field="object_pk_uuid"
-    )
+    content_object_uuid = GenericForeignKey(ct_field="content_type_uuid", fk_field="object_pk_uuid")
 
     class Meta:
         ordering = ["id"]
 
-
-# Models for lookup ordering tests
+        # Models for lookup ordering tests
 
 
 class House(models.Model):
@@ -259,8 +248,7 @@ class Person(models.Model):
     class Meta:
         ordering = ["id"]
 
-
-# Models for nullable FK tests
+        # Models for nullable FK tests
 
 
 class Employee(models.Model):
@@ -274,8 +262,7 @@ class Employee(models.Model):
 class SelfDirectedEmployee(Employee):
     pass
 
-
-# Ticket #19607
+    # Ticket #19607
 
 
 class LessonEntry(models.Model):
@@ -287,22 +274,18 @@ class WordEntry(models.Model):
     lesson_entry = models.ForeignKey(LessonEntry, models.CASCADE)
     name = models.CharField(max_length=200)
 
-
-# Ticket #21410: Regression when related_name="+"
+    # Ticket #21410: Regression when related_name="+"
 
 
 class Author2(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    first_book = models.ForeignKey(
-        "Book", models.CASCADE, related_name="first_time_authors+"
-    )
+    first_book = models.ForeignKey("Book", models.CASCADE, related_name="first_time_authors+")
     favorite_books = models.ManyToManyField("Book", related_name="+")
 
     class Meta:
         ordering = ["id"]
 
-
-# Models for many-to-many with UUID pk test:
+        # Models for many-to-many with UUID pk test:
 
 
 class Pet(models.Model):
@@ -313,8 +296,6 @@ class Pet(models.Model):
 
 class Flea(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    current_room = models.ForeignKey(
-        Room, models.SET_NULL, related_name="fleas", null=True
-    )
+    current_room = models.ForeignKey(Room, models.SET_NULL, related_name="fleas", null=True)
     pets_visited = models.ManyToManyField(Pet, related_name="fleas_hosted")
     people_visited = models.ManyToManyField(Person, related_name="fleas_hosted")

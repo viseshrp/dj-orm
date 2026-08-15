@@ -93,9 +93,7 @@ class CompositePKGetTests(TestCase):
     def test_lookup_errors(self):
         m_tuple = "'%s' lookup of 'pk' must be a tuple or a list"
         m_2_elements = "'%s' lookup of 'pk' must have 2 elements"
-        m_tuple_collection = (
-            "'in' lookup of 'pk' must be a collection of tuples or lists"
-        )
+        m_tuple_collection = "'in' lookup of 'pk' must be a collection of tuples or lists"
         m_2_elements_each = "'in' lookup of 'pk' must have 2 elements each"
         test_cases = (
             ({"pk": 1}, m_tuple % "exact"),

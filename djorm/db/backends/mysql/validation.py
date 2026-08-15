@@ -10,9 +10,7 @@ class DatabaseValidation(BaseDatabaseValidation):
         return issues
 
     def _check_sql_mode(self, **kwargs):
-        if not (
-            self.connection.sql_mode & {"STRICT_TRANS_TABLES", "STRICT_ALL_TABLES"}
-        ):
+        if not (self.connection.sql_mode & {"STRICT_TRANS_TABLES", "STRICT_ALL_TABLES"}):
             return [
                 checks.Warning(
                     "%s Strict Mode is not set for database connection '%s'"

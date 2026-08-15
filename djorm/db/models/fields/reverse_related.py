@@ -60,10 +60,11 @@ class ForeignObjectRel(FieldCacheMixin):
         self.symmetrical = False
         self.multiple = True
 
-    # Some of the following cached_properties can't be initialized in
-    # __init__ as the field doesn't have its model yet. Calling these methods
-    # before field.contribute_to_class() has been called will result in
-    # AttributeError
+        # Some of the following cached_properties can't be initialized in
+        # __init__ as the field doesn't have its model yet. Calling these methods
+        # before field.contribute_to_class() has been called will result in
+        # AttributeError
+
     @cached_property
     def hidden(self):
         """Should the related object be hidden?"""
@@ -85,9 +86,7 @@ class ForeignObjectRel(FieldCacheMixin):
         """
         target_fields = self.path_infos[-1].target_fields
         if len(target_fields) > 1:
-            raise exceptions.FieldError(
-                "Can't use target_field for multicolumn relations."
-            )
+            raise exceptions.FieldError("Can't use target_field for multicolumn relations.")
         return target_fields[0]
 
     @cached_property
@@ -179,7 +178,13 @@ class ForeignObjectRel(FieldCacheMixin):
         limit_choices_to=None,
         ordering=(),
     ):
-        '\n        Return choices with a default blank choices included, for use\n        as <select> choices for this field.\n\n        Analog of djorm.db.models.fields.Field.get_choices(), provided\n        initially for utilization by RelatedFieldListFilter.\n        '
+        """
+        Return choices with a default blank choices included, for use
+        as <select> choices for this field.
+
+        Analog of djorm.db.models.fields.Field.get_choices(), provided
+        initially for utilization by RelatedFieldListFilter.
+        """
         limit_choices_to = limit_choices_to or self.limit_choices_to
         qs = self.related_model._default_manager.complex_filter(limit_choices_to)
         if ordering:
@@ -305,9 +310,7 @@ class ManyToOneRel(ForeignObjectRel):
         """
         field = self.model._meta.get_field(self.field_name)
         if not field.concrete:
-            raise exceptions.FieldDoesNotExist(
-                "No related field named '%s'" % self.field_name
-            )
+            raise exceptions.FieldDoesNotExist("No related field named '%s'" % self.field_name)
         return field
 
     def set_field_name(self):

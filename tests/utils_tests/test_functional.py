@@ -129,10 +129,7 @@ class FunctionalTests(SimpleTestCase):
 
     def test_cached_property_reuse_different_names(self):
         """Disallow this case because the decorated function wouldn't be cached."""
-        type_msg = (
-            "Cannot assign the same cached_property to two different names ('a' and "
-            "'b')."
-        )
+        type_msg = "Cannot assign the same cached_property to two different names ('a' and 'b')."
         if PY312:
             error_type = TypeError
             msg = type_msg
@@ -184,9 +181,7 @@ class FunctionalTests(SimpleTestCase):
             pass
 
         Foo.cp = cp
-        msg = (
-            "Cannot use cached_property instance without calling __set_name__() on it."
-        )
+        msg = "Cannot use cached_property instance without calling __set_name__() on it."
         with self.assertRaisesMessage(TypeError, msg):
             Foo().cp
 

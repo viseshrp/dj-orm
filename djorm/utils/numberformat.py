@@ -35,7 +35,7 @@ def format(
     # Make the common case fast
     if isinstance(number, int) and not use_grouping and not decimal_pos:
         return mark_safe(number)
-    # sign
+        # sign
     sign = ""
     # Treat potentially very large/small floats as Decimals.
     if isinstance(number, float) and "e" in str(number).lower():
@@ -48,8 +48,8 @@ def format(
             if abs(number) < cutoff:
                 number = Decimal("0")
 
-        # Format values with more than 200 digits (an arbitrary cutoff) using
-        # scientific notation to avoid high memory usage in {:f}'.format().
+                # Format values with more than 200 digits (an arbitrary cutoff) using
+                # scientific notation to avoid high memory usage in {:f}'.format().
         _, digits, exponent = number.as_tuple()
         if abs(exponent) + len(digits) > 200:
             number = "{:e}".format(number)
@@ -72,7 +72,7 @@ def format(
     if str_number[0] == "-":
         sign = "-"
         str_number = str_number[1:]
-    # decimal part
+        # decimal part
     if "." in str_number:
         int_part, dec_part = str_number.split(".")
         if decimal_pos is not None:

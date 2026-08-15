@@ -80,9 +80,7 @@ class DatesTests(TestCase):
                 datetime.date(2010, 7, 28),
             ],
         )
-        self.assertSequenceEqual(
-            Article.objects.dates("comments__approval_date", "day"), []
-        )
+        self.assertSequenceEqual(Article.objects.dates("comments__approval_date", "day"), [])
         self.assertSequenceEqual(
             Category.objects.dates("articles__pub_date", "day"),
             [

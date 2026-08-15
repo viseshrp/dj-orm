@@ -4,9 +4,7 @@ from djorm.test import SimpleTestCase
 
 
 class SimpleDatabaseIntrospectionTests(SimpleTestCase):
-    may_require_msg = (
-        "subclasses of BaseDatabaseIntrospection may require a %s() method"
-    )
+    may_require_msg = "subclasses of BaseDatabaseIntrospection may require a %s() method"
 
     def setUp(self):
         self.introspection = BaseDatabaseIntrospection(connection=connection)

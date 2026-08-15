@@ -17,10 +17,7 @@ class Command(BaseCommand):
             "--database",
             default=DEFAULT_DB_ALIAS,
             choices=tuple(connections),
-            help=(
-                'Nominates a database to print the SQL for. Defaults to the "default" '
-                "database."
-            ),
+            help=('Nominates a database to print the SQL for. Defaults to the "default" database.'),
         )
 
     def handle(self, **options):

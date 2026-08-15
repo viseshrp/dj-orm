@@ -38,8 +38,9 @@ class NestedForeignKeysTests(TestCase):
             title="Monty Python and the Holy Grail", director=cls.director
         )
 
-    # This test failed in #16715 because in some cases INNER JOIN was selected
-    # for the second foreign key relation instead of LEFT OUTER JOIN.
+        # This test failed in #16715 because in some cases INNER JOIN was selected
+        # for the second foreign key relation instead of LEFT OUTER JOIN.
+
     def test_inheritance(self):
         Event.objects.create()
         Screening.objects.create(movie=self.movie)
@@ -55,9 +56,7 @@ class NestedForeignKeysTests(TestCase):
         self.assertEqual(len(Event.objects.values("screening__movie__title")), 2)
         # This failed.
         self.assertEqual(
-            len(
-                Event.objects.values("screening__movie__pk", "screening__movie__title")
-            ),
+            len(Event.objects.values("screening__movie__pk", "screening__movie__title")),
             2,
         )
 
@@ -65,7 +64,8 @@ class NestedForeignKeysTests(TestCase):
         self.assertEqual(Event.objects.filter(screening__movie=self.movie).count(), 1)
         self.assertEqual(Event.objects.exclude(screening__movie=self.movie).count(), 1)
 
-    # These all work because the second foreign key in the chain has null=True.
+        # These all work because the second foreign key in the chain has null=True.
+
     def test_inheritance_null_FK(self):
         Event.objects.create()
         ScreeningNullFK.objects.create(movie=None)
@@ -81,19 +81,13 @@ class NestedForeignKeysTests(TestCase):
         self.assertEqual(len(Event.objects.values("screeningnullfk__movie__title")), 3)
         self.assertEqual(
             len(
-                Event.objects.values(
-                    "screeningnullfk__movie__pk", "screeningnullfk__movie__title"
-                )
+                Event.objects.values("screeningnullfk__movie__pk", "screeningnullfk__movie__title")
             ),
             3,
         )
 
-        self.assertEqual(
-            Event.objects.filter(screeningnullfk__movie=self.movie).count(), 1
-        )
-        self.assertEqual(
-            Event.objects.exclude(screeningnullfk__movie=self.movie).count(), 2
-        )
+        self.assertEqual(Event.objects.filter(screeningnullfk__movie=self.movie).count(), 1)
+        self.assertEqual(Event.objects.exclude(screeningnullfk__movie=self.movie).count(), 2)
 
     def test_null_exclude(self):
         screening = ScreeningNullFK.objects.create(movie=None)
@@ -102,8 +96,9 @@ class NestedForeignKeysTests(TestCase):
             list(ScreeningNullFK.objects.exclude(movie__id=self.movie.pk)), [screening]
         )
 
-    # This test failed in #16715 because in some cases INNER JOIN was selected
-    # for the second foreign key relation instead of LEFT OUTER JOIN.
+        # This test failed in #16715 because in some cases INNER JOIN was selected
+        # for the second foreign key relation instead of LEFT OUTER JOIN.
+
     def test_explicit_ForeignKey(self):
         Package.objects.create()
         screening = Screening.objects.create(movie=self.movie)
@@ -119,20 +114,15 @@ class NestedForeignKeysTests(TestCase):
         self.assertEqual(len(Package.objects.values("screening__movie__title")), 2)
         # This failed.
         self.assertEqual(
-            len(
-                Package.objects.values(
-                    "screening__movie__pk", "screening__movie__title"
-                )
-            ),
+            len(Package.objects.values("screening__movie__pk", "screening__movie__title")),
             2,
         )
 
         self.assertEqual(Package.objects.filter(screening__movie=self.movie).count(), 1)
-        self.assertEqual(
-            Package.objects.exclude(screening__movie=self.movie).count(), 1
-        )
+        self.assertEqual(Package.objects.exclude(screening__movie=self.movie).count(), 1)
 
-    # These all work because the second foreign key in the chain has null=True.
+        # These all work because the second foreign key in the chain has null=True.
+
     def test_explicit_ForeignKey_NullFK(self):
         PackageNullFK.objects.create()
         screening = ScreeningNullFK.objects.create(movie=None)
@@ -142,36 +132,25 @@ class NestedForeignKeysTests(TestCase):
 
         self.assertEqual(len(PackageNullFK.objects.all()), 3)
         self.assertEqual(len(PackageNullFK.objects.select_related("screening")), 3)
-        self.assertEqual(
-            len(PackageNullFK.objects.select_related("screening__movie")), 3
-        )
+        self.assertEqual(len(PackageNullFK.objects.select_related("screening__movie")), 3)
 
         self.assertEqual(len(PackageNullFK.objects.values()), 3)
         self.assertEqual(len(PackageNullFK.objects.values("screening__pk")), 3)
         self.assertEqual(len(PackageNullFK.objects.values("screening__movie__pk")), 3)
+        self.assertEqual(len(PackageNullFK.objects.values("screening__movie__title")), 3)
         self.assertEqual(
-            len(PackageNullFK.objects.values("screening__movie__title")), 3
-        )
-        self.assertEqual(
-            len(
-                PackageNullFK.objects.values(
-                    "screening__movie__pk", "screening__movie__title"
-                )
-            ),
+            len(PackageNullFK.objects.values("screening__movie__pk", "screening__movie__title")),
             3,
         )
 
-        self.assertEqual(
-            PackageNullFK.objects.filter(screening__movie=self.movie).count(), 1
-        )
-        self.assertEqual(
-            PackageNullFK.objects.exclude(screening__movie=self.movie).count(), 2
-        )
+        self.assertEqual(PackageNullFK.objects.filter(screening__movie=self.movie).count(), 1)
+        self.assertEqual(PackageNullFK.objects.exclude(screening__movie=self.movie).count(), 2)
+
+        # Some additional tests for #16715. The only difference is the depth of the
+        # nesting as we now use 4 models instead of 3 (and thus 3 relations). This
+        # checks if promotion of join types works for deeper nesting too.
 
 
-# Some additional tests for #16715. The only difference is the depth of the
-# nesting as we now use 4 models instead of 3 (and thus 3 relations). This
-# checks if promotion of join types works for deeper nesting too.
 class DeeplyNestedForeignKeysTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -185,15 +164,11 @@ class DeeplyNestedForeignKeysTests(TestCase):
         Screening.objects.create(movie=self.movie)
 
         self.assertEqual(len(Event.objects.all()), 2)
-        self.assertEqual(
-            len(Event.objects.select_related("screening__movie__director")), 2
-        )
+        self.assertEqual(len(Event.objects.select_related("screening__movie__director")), 2)
 
         self.assertEqual(len(Event.objects.values()), 2)
         self.assertEqual(len(Event.objects.values("screening__movie__director__pk")), 2)
-        self.assertEqual(
-            len(Event.objects.values("screening__movie__director__name")), 2
-        )
+        self.assertEqual(len(Event.objects.values("screening__movie__director__name")), 2)
         self.assertEqual(
             len(
                 Event.objects.values(
@@ -203,44 +178,26 @@ class DeeplyNestedForeignKeysTests(TestCase):
             2,
         )
         self.assertEqual(
-            len(
-                Event.objects.values(
-                    "screening__movie__pk", "screening__movie__director__pk"
-                )
-            ),
+            len(Event.objects.values("screening__movie__pk", "screening__movie__director__pk")),
+            2,
+        )
+        self.assertEqual(
+            len(Event.objects.values("screening__movie__pk", "screening__movie__director__name")),
+            2,
+        )
+        self.assertEqual(
+            len(Event.objects.values("screening__movie__title", "screening__movie__director__pk")),
             2,
         )
         self.assertEqual(
             len(
-                Event.objects.values(
-                    "screening__movie__pk", "screening__movie__director__name"
-                )
-            ),
-            2,
-        )
-        self.assertEqual(
-            len(
-                Event.objects.values(
-                    "screening__movie__title", "screening__movie__director__pk"
-                )
-            ),
-            2,
-        )
-        self.assertEqual(
-            len(
-                Event.objects.values(
-                    "screening__movie__title", "screening__movie__director__name"
-                )
+                Event.objects.values("screening__movie__title", "screening__movie__director__name")
             ),
             2,
         )
 
-        self.assertEqual(
-            Event.objects.filter(screening__movie__director=self.director).count(), 1
-        )
-        self.assertEqual(
-            Event.objects.exclude(screening__movie__director=self.director).count(), 1
-        )
+        self.assertEqual(Event.objects.filter(screening__movie__director=self.director).count(), 1)
+        self.assertEqual(Event.objects.exclude(screening__movie__director=self.director).count(), 1)
 
     def test_explicit_ForeignKey(self):
         Package.objects.create()
@@ -248,17 +205,11 @@ class DeeplyNestedForeignKeysTests(TestCase):
         Package.objects.create(screening=screening)
 
         self.assertEqual(len(Package.objects.all()), 2)
-        self.assertEqual(
-            len(Package.objects.select_related("screening__movie__director")), 2
-        )
+        self.assertEqual(len(Package.objects.select_related("screening__movie__director")), 2)
 
         self.assertEqual(len(Package.objects.values()), 2)
-        self.assertEqual(
-            len(Package.objects.values("screening__movie__director__pk")), 2
-        )
-        self.assertEqual(
-            len(Package.objects.values("screening__movie__director__name")), 2
-        )
+        self.assertEqual(len(Package.objects.values("screening__movie__director__pk")), 2)
+        self.assertEqual(len(Package.objects.values("screening__movie__director__name")), 2)
         self.assertEqual(
             len(
                 Package.objects.values(
@@ -268,26 +219,16 @@ class DeeplyNestedForeignKeysTests(TestCase):
             2,
         )
         self.assertEqual(
-            len(
-                Package.objects.values(
-                    "screening__movie__pk", "screening__movie__director__pk"
-                )
-            ),
+            len(Package.objects.values("screening__movie__pk", "screening__movie__director__pk")),
+            2,
+        )
+        self.assertEqual(
+            len(Package.objects.values("screening__movie__pk", "screening__movie__director__name")),
             2,
         )
         self.assertEqual(
             len(
-                Package.objects.values(
-                    "screening__movie__pk", "screening__movie__director__name"
-                )
-            ),
-            2,
-        )
-        self.assertEqual(
-            len(
-                Package.objects.values(
-                    "screening__movie__title", "screening__movie__director__pk"
-                )
+                Package.objects.values("screening__movie__title", "screening__movie__director__pk")
             ),
             2,
         )

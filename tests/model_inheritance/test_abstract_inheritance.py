@@ -180,9 +180,7 @@ class AbstractInheritanceTests(SimpleTestCase):
         self.assertIsInstance(
             OverrideRelatedModelAbstract._meta.get_field("field"), models.CharField
         )
-        self.assertIsInstance(
-            ExtendModelAbstract._meta.get_field("field"), GenericRelation
-        )
+        self.assertIsInstance(ExtendModelAbstract._meta.get_field("field"), GenericRelation)
 
     def test_cannot_override_indirect_abstract_field(self):
         class AbstractBase(models.Model):
@@ -239,9 +237,7 @@ class AbstractInheritanceTests(SimpleTestCase):
         class OverrideRemovedFieldByConcreteModel(RemovedAbstractModelField):
             foo = models.CharField(max_length=50)
 
-        self.assertEqual(
-            OverrideRemovedFieldByConcreteModel._meta.get_field("foo").max_length, 50
-        )
+        self.assertEqual(OverrideRemovedFieldByConcreteModel._meta.get_field("foo").max_length, 50)
 
     def test_shadowed_fkey_id(self):
         class Foo(models.Model):
@@ -409,9 +405,7 @@ class AbstractInheritanceTests(SimpleTestCase):
         model2 = type("Model2", (Mixin2, AbstractModel), model_dict.copy())
         model3 = type("Model3", (DescendantMixin, AbstractModel), model_dict.copy())
         model4 = type("Model4", (Mixin2, Mixin, AbstractModel), model_dict.copy())
-        model5 = type(
-            "Model5", (Mixin2, ConcreteModel2, Mixin, AbstractModel), model_dict.copy()
-        )
+        model5 = type("Model5", (Mixin2, ConcreteModel2, Mixin, AbstractModel), model_dict.copy())
 
         self.assertEqual(
             fields(model1),
@@ -422,18 +416,12 @@ class AbstractInheritanceTests(SimpleTestCase):
             ],
         )
 
-        self.assertEqual(
-            fields(model2), [("id", models.AutoField), ("name", models.CharField)]
-        )
+        self.assertEqual(fields(model2), [("id", models.AutoField), ("name", models.CharField)])
         self.assertEqual(getattr(model2, "age"), 2)
 
-        self.assertEqual(
-            fields(model3), [("id", models.AutoField), ("name", models.CharField)]
-        )
+        self.assertEqual(fields(model3), [("id", models.AutoField), ("name", models.CharField)])
 
-        self.assertEqual(
-            fields(model4), [("id", models.AutoField), ("name", models.CharField)]
-        )
+        self.assertEqual(fields(model4), [("id", models.AutoField), ("name", models.CharField)])
         self.assertEqual(getattr(model4, "age"), 2)
 
         self.assertEqual(

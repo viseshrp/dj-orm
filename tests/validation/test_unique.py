@@ -73,9 +73,7 @@ class GetUniqueCheckTests(unittest.TestCase):
                 bar = models.IntegerField()
                 baz = models.IntegerField()
 
-                Meta = type(
-                    "Meta", (), {"unique_together": unique_together, "apps": Apps()}
-                )
+                Meta = type("Meta", (), {"unique_together": unique_together, "apps": Apps()})
 
             checks, _ = M()._get_unique_checks()
             for t in normalized:
@@ -84,9 +82,7 @@ class GetUniqueCheckTests(unittest.TestCase):
 
     def test_primary_key_is_considered_unique(self):
         m = CustomPKModel()
-        self.assertEqual(
-            ([(CustomPKModel, ("my_pk_field",))], []), m._get_unique_checks()
-        )
+        self.assertEqual(([(CustomPKModel, ("my_pk_field",))], []), m._get_unique_checks())
 
     def test_unique_for_date_gets_picked_up(self):
         m = UniqueForDateModel()
@@ -202,9 +198,7 @@ class PerformUniqueChecksTest(TestCase):
         p = Post(title="Django 1.0 is released")
         with self.assertRaises(ValidationError) as cm:
             p.full_clean()
-        self.assertEqual(
-            cm.exception.message_dict, {"posted": ["This field cannot be null."]}
-        )
+        self.assertEqual(cm.exception.message_dict, {"posted": ["This field cannot be null."]})
 
     def test_unique_for_date_with_nullable_date(self):
         """
@@ -231,13 +225,9 @@ class PerformUniqueChecksTest(TestCase):
         m = UniqueErrorsModel(name="Some Name", no=11)
         with self.assertRaises(ValidationError) as cm:
             m.full_clean()
-        self.assertEqual(
-            cm.exception.message_dict, {"name": ["Custom unique name message."]}
-        )
+        self.assertEqual(cm.exception.message_dict, {"name": ["Custom unique name message."]})
 
         m = UniqueErrorsModel(name="Some Other Name", no=10)
         with self.assertRaises(ValidationError) as cm:
             m.full_clean()
-        self.assertEqual(
-            cm.exception.message_dict, {"no": ["Custom unique number message."]}
-        )
+        self.assertEqual(cm.exception.message_dict, {"no": ["Custom unique number message."]})

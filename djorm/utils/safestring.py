@@ -41,9 +41,9 @@ class SafeString(str, SafeData):
                 t = SafeString(t)
             return t
 
-        # Give the rhs object a chance to handle the addition, for example if
-        # the rhs object's class implements `__radd__`. More details:
-        # https://docs.python.org/3/reference/datamodel.html#object.__radd__
+            # Give the rhs object a chance to handle the addition, for example if
+            # the rhs object's class implements `__radd__`. More details:
+            # https://docs.python.org/3/reference/datamodel.html#object.__radd__
         return NotImplemented
 
     def __str__(self):

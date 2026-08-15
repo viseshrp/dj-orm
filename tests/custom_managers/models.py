@@ -74,9 +74,7 @@ CustomManager = BaseCustomManager.from_queryset(CustomQuerySet)
 
 class CustomInitQuerySet(models.QuerySet):
     # QuerySet with an __init__() method that takes an additional argument.
-    def __init__(
-        self, custom_optional_arg=None, model=None, query=None, using=None, hints=None
-    ):
+    def __init__(self, custom_optional_arg=None, model=None, query=None, using=None, hints=None):
         super().__init__(model=model, query=query, using=using, hints=hints)
 
 
@@ -103,9 +101,7 @@ class Person(models.Model):
     favorite_book = models.ForeignKey(
         "Book", models.SET_NULL, null=True, related_name="favorite_books"
     )
-    favorite_thing_type = models.ForeignKey(
-        "contenttypes.ContentType", models.SET_NULL, null=True
-    )
+    favorite_thing_type = models.ForeignKey("contenttypes.ContentType", models.SET_NULL, null=True)
     favorite_thing_id = models.IntegerField(null=True)
     favorite_thing = GenericForeignKey("favorite_thing_type", "favorite_thing_id")
 
@@ -131,9 +127,7 @@ class FunPerson(models.Model):
         null=True,
         related_name="fun_people_favorite_books",
     )
-    favorite_thing_type = models.ForeignKey(
-        "contenttypes.ContentType", models.SET_NULL, null=True
-    )
+    favorite_thing_type = models.ForeignKey("contenttypes.ContentType", models.SET_NULL, null=True)
     favorite_thing_id = models.IntegerField(null=True)
     favorite_thing = GenericForeignKey("favorite_thing_type", "favorite_thing_id")
 

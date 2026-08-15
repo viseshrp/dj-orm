@@ -104,9 +104,7 @@ class DeleteCascadeTests(TestCase):
         """
         juan = Child.objects.create(name="Juan")
         paints = Toy.objects.create(name="Paints")
-        played = PlayedWith.objects.create(
-            child=juan, toy=paints, date=datetime.date.today()
-        )
+        played = PlayedWith.objects.create(child=juan, toy=paints, date=datetime.date.today())
         PlayedWithNote.objects.create(played=played, note="the next Jackson Pollock")
         self.assertEqual(PlayedWithNote.objects.count(), 1)
         paints.delete()
@@ -134,9 +132,7 @@ class DeleteCascadeTransactionTests(TransactionTestCase):
         Refs #14896.
         """
         r = Researcher.objects.create()
-        email = Email.objects.create(
-            label="office-email", email_address="carl@science.edu"
-        )
+        email = Email.objects.create(label="office-email", email_address="carl@science.edu")
         r.contacts.add(email)
 
         email.delete()
@@ -160,7 +156,7 @@ class LargeDeleteTests(TestCase):
         """
         for x in range(300):
             Book.objects.create(pagecount=x + 100)
-        # attach a signal to make sure we will not fast-delete
+            # attach a signal to make sure we will not fast-delete
 
         def noop(*args, **kwargs):
             pass
@@ -301,38 +297,36 @@ class Ticket19102Tests(TestCase):
     @skipUnlessDBFeature("update_can_self_select")
     def test_ticket_19102_annotate(self):
         with self.assertNumQueries(1):
-            Login.objects.order_by("description").filter(
-                orgunit__name__isnull=False
-            ).annotate(n=models.Count("description")).filter(
-                n=1, pk=self.l1.pk
-            ).delete()
+            Login.objects.order_by("description").filter(orgunit__name__isnull=False).annotate(
+                n=models.Count("description")
+            ).filter(n=1, pk=self.l1.pk).delete()
         self.assertFalse(Login.objects.filter(pk=self.l1.pk).exists())
         self.assertTrue(Login.objects.filter(pk=self.l2.pk).exists())
 
     @skipUnlessDBFeature("update_can_self_select")
     def test_ticket_19102_extra(self):
         with self.assertNumQueries(1):
-            Login.objects.order_by("description").filter(
-                orgunit__name__isnull=False
-            ).extra(select={"extraf": "1"}).filter(pk=self.l1.pk).delete()
+            Login.objects.order_by("description").filter(orgunit__name__isnull=False).extra(
+                select={"extraf": "1"}
+            ).filter(pk=self.l1.pk).delete()
         self.assertFalse(Login.objects.filter(pk=self.l1.pk).exists())
         self.assertTrue(Login.objects.filter(pk=self.l2.pk).exists())
 
     @skipUnlessDBFeature("update_can_self_select")
     def test_ticket_19102_select_related(self):
         with self.assertNumQueries(1):
-            Login.objects.filter(pk=self.l1.pk).filter(
-                orgunit__name__isnull=False
-            ).order_by("description").select_related("orgunit").delete()
+            Login.objects.filter(pk=self.l1.pk).filter(orgunit__name__isnull=False).order_by(
+                "description"
+            ).select_related("orgunit").delete()
         self.assertFalse(Login.objects.filter(pk=self.l1.pk).exists())
         self.assertTrue(Login.objects.filter(pk=self.l2.pk).exists())
 
     @skipUnlessDBFeature("update_can_self_select")
     def test_ticket_19102_defer(self):
         with self.assertNumQueries(1):
-            Login.objects.filter(pk=self.l1.pk).filter(
-                orgunit__name__isnull=False
-            ).order_by("description").only("id").delete()
+            Login.objects.filter(pk=self.l1.pk).filter(orgunit__name__isnull=False).order_by(
+                "description"
+            ).only("id").delete()
         self.assertFalse(Login.objects.filter(pk=self.l1.pk).exists())
         self.assertTrue(Login.objects.filter(pk=self.l2.pk).exists())
 

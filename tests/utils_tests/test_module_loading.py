@@ -29,17 +29,17 @@ class DefaultLoader(unittest.TestCase):
         with self.assertRaises(ImportError):
             import_module("utils_tests.test_module.bad_module")
 
-        # A child that doesn't exist
+            # A child that doesn't exist
         self.assertFalse(module_has_submodule(test_module, "no_such_module"))
         with self.assertRaises(ImportError):
             import_module("utils_tests.test_module.no_such_module")
 
-        # A child that doesn't exist, but is the name of a package on the path
-        self.assertFalse(module_has_submodule(test_module, "django"))
+            # A child that doesn't exist, but is the name of a package on the path
+        self.assertFalse(module_has_submodule(test_module, "djorm"))
         with self.assertRaises(ImportError):
             import_module("utils_tests.test_module.django")
 
-        # Don't be confused by caching of import misses
+            # Don't be confused by caching of import misses
         import types  # NOQA: causes attempted import of utils_tests.types
 
         self.assertFalse(module_has_submodule(sys.modules["utils_tests"], "types"))
@@ -53,21 +53,13 @@ class DefaultLoader(unittest.TestCase):
         """Nested module existence can be tested."""
         test_module = import_module("utils_tests.test_module")
         # A grandchild that exists.
-        self.assertIs(
-            module_has_submodule(test_module, "child_module.grandchild_module"), True
-        )
+        self.assertIs(module_has_submodule(test_module, "child_module.grandchild_module"), True)
         # A grandchild that doesn't exist.
-        self.assertIs(
-            module_has_submodule(test_module, "child_module.no_such_module"), False
-        )
+        self.assertIs(module_has_submodule(test_module, "child_module.no_such_module"), False)
         # A grandchild whose parent doesn't exist.
-        self.assertIs(
-            module_has_submodule(test_module, "no_such_module.grandchild_module"), False
-        )
+        self.assertIs(module_has_submodule(test_module, "no_such_module.grandchild_module"), False)
         # A grandchild whose parent is not a package.
-        self.assertIs(
-            module_has_submodule(test_module, "good_module.no_such_module"), False
-        )
+        self.assertIs(module_has_submodule(test_module, "good_module.no_such_module"), False)
 
 
 class EggLoader(unittest.TestCase):
@@ -101,7 +93,7 @@ class EggLoader(unittest.TestCase):
             with self.assertRaises(ImportError):
                 import_module("egg_module.bad_module")
 
-            # A child that doesn't exist
+                # A child that doesn't exist
             self.assertFalse(module_has_submodule(egg_module, "no_such_module"))
             with self.assertRaises(ImportError):
                 import_module("egg_module.no_such_module")
@@ -122,7 +114,7 @@ class EggLoader(unittest.TestCase):
             with self.assertRaises(ImportError):
                 import_module("egg_module.sub1.sub2.bad_module")
 
-            # A child that doesn't exist
+                # A child that doesn't exist
             self.assertFalse(module_has_submodule(egg_module, "no_such_module"))
             with self.assertRaises(ImportError):
                 import_module("egg_module.sub1.sub2.no_such_module")
@@ -130,7 +122,7 @@ class EggLoader(unittest.TestCase):
 
 class ModuleImportTests(SimpleTestCase):
     def test_import_string(self):
-        cls = import_string('djorm.utils.module_loading.import_string')
+        cls = import_string("djorm.utils.module_loading.import_string")
         self.assertEqual(cls, import_string)
 
         # Test exceptions raised
@@ -190,9 +182,7 @@ class AutodiscoverModulesTestCase(SimpleTestCase):
         from .test_module import site
 
         with self.assertRaisesMessage(Exception, "Some random exception."):
-            autodiscover_modules(
-                "another_good_module", "another_bad_module", register_to=site
-            )
+            autodiscover_modules("another_good_module", "another_bad_module", register_to=site)
         self.assertEqual(site._registry, {"lorem": "ipsum"})
 
     def test_validate_registry_resets_after_missing_module(self):

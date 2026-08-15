@@ -25,8 +25,7 @@ class FieldCacheMixin:
         # raise NotImplementedError
         cache_name = self.get_cache_name()
         warnings.warn(
-            f"Override {self.__class__.__qualname__}.cache_name instead of "
-            "get_cache_name().",
+            f"Override {self.__class__.__qualname__}.cache_name instead of get_cache_name().",
             RemovedInDjango60Warning,
             stacklevel=3,
         )
@@ -54,11 +53,7 @@ class CheckFieldDefaultMixin:
     _default_hint = ("<valid default>", "<invalid default>")
 
     def _check_default(self):
-        if (
-            self.has_default()
-            and self.default is not None
-            and not callable(self.default)
-        ):
+        if self.has_default() and self.default is not None and not callable(self.default):
             return [
                 checks.Warning(
                     "%s default should be a callable instead of an instance "

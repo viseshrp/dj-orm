@@ -87,10 +87,10 @@ class File(FileProxyMixin):
                         # continues after buffer_) or with \r\n
                         # newline (line == b'\n').
                         line = buffer_ + line
-                    # buffer_ handled, clear it.
+                        # buffer_ handled, clear it.
                     buffer_ = None
 
-                # If this is the end of a \n or \r\n line, yield.
+                    # If this is the end of a \n or \r\n line, yield.
                 if endswith_lf(line):
                     yield line
                 else:

@@ -42,9 +42,7 @@ class TestInspectMethods(unittest.TestCase):
         self.assertEqual(inspect.get_func_full_args(Person().no_arguments), [])
 
     def test_get_func_full_args_one_argument(self):
-        self.assertEqual(
-            inspect.get_func_full_args(Person.one_argument), [("something",)]
-        )
+        self.assertEqual(inspect.get_func_full_args(Person.one_argument), [("something",)])
         self.assertEqual(
             inspect.get_func_full_args(Person().one_argument),
             [("something",)],
@@ -87,9 +85,7 @@ class TestInspectMethods(unittest.TestCase):
         self.assertIs(inspect.method_has_no_args(Person().one_argument), False)
 
     def test_func_supports_parameter(self):
-        self.assertIs(
-            inspect.func_supports_parameter(Person.all_kinds, "address"), True
-        )
+        self.assertIs(inspect.func_supports_parameter(Person.all_kinds, "address"), True)
         self.assertIs(
             inspect.func_supports_parameter(Person().all_kinds, "address"),
             True,
@@ -112,6 +108,7 @@ class TestInspectMethods(unittest.TestCase):
         def func_with_annotations(self, name: str, complex: SafeString) -> None:
             pass
 
-        # Inspection fails with deferred annotations with python 3.14+. Earlier
-        # Python versions trigger the NameError on module initialization.
+            # Inspection fails with deferred annotations with python 3.14+. Earlier
+            # Python versions trigger the NameError on module initialization.
+
         self.assertIs(inspect.func_accepts_kwargs(func_with_annotations), False)

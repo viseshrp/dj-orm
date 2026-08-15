@@ -49,10 +49,7 @@ class DatabaseWrapperTests(SimpleTestCase):
 
     def test_get_database_version(self):
         with patch.object(BaseDatabaseWrapper, "__init__", return_value=None):
-            msg = (
-                "subclasses of BaseDatabaseWrapper may require a "
-                "get_database_version() method."
-            )
+            msg = "subclasses of BaseDatabaseWrapper may require a get_database_version() method."
             with self.assertRaisesMessage(NotImplementedError, msg):
                 BaseDatabaseWrapper().get_database_version()
 
@@ -68,7 +65,7 @@ class DatabaseWrapperLoggingTests(TransactionTestCase):
     def test_commit_debug_log(self):
         conn = connections[DEFAULT_DB_ALIAS]
         with CaptureQueriesContext(conn):
-            with self.assertLogs('djorm.db.backends', "DEBUG") as cm:
+            with self.assertLogs("djorm.db.backends", "DEBUG") as cm:
                 with transaction.atomic():
                     Person.objects.create(first_name="first", last_name="last")
 
@@ -76,13 +73,13 @@ class DatabaseWrapperLoggingTests(TransactionTestCase):
                 self.assertEqual(conn.queries_log[-3]["sql"], "BEGIN")
                 self.assertRegex(
                     cm.output[0],
-                    r'DEBUG:djorm.db.backends:\\(\\d+.\\d{3}\\) '
+                    r"DEBUG:djorm.db.backends:\(\d+\.\d{3}\) "
                     rf"BEGIN; args=None; alias={DEFAULT_DB_ALIAS}",
                 )
                 self.assertEqual(conn.queries_log[-1]["sql"], "COMMIT")
                 self.assertRegex(
                     cm.output[-1],
-                    r'DEBUG:djorm.db.backends:\\(\\d+.\\d{3}\\) '
+                    r"DEBUG:djorm.db.backends:\(\d+\.\d{3}\) "
                     rf"COMMIT; args=None; alias={DEFAULT_DB_ALIAS}",
                 )
 
@@ -90,7 +87,7 @@ class DatabaseWrapperLoggingTests(TransactionTestCase):
     def test_rollback_debug_log(self):
         conn = connections[DEFAULT_DB_ALIAS]
         with CaptureQueriesContext(conn):
-            with self.assertLogs('djorm.db.backends', "DEBUG") as cm:
+            with self.assertLogs("djorm.db.backends", "DEBUG") as cm:
                 with self.assertRaises(Exception), transaction.atomic():
                     Person.objects.create(first_name="first", last_name="last")
                     raise Exception("Force rollback")
@@ -98,12 +95,12 @@ class DatabaseWrapperLoggingTests(TransactionTestCase):
                 self.assertEqual(conn.queries_log[-1]["sql"], "ROLLBACK")
                 self.assertRegex(
                     cm.output[-1],
-                    r'DEBUG:djorm.db.backends:\\(\\d+.\\d{3}\\) '
+                    r"DEBUG:djorm.db.backends:\(\d+\.\d{3}\) "
                     rf"ROLLBACK; args=None; alias={DEFAULT_DB_ALIAS}",
                 )
 
     def test_no_logs_without_debug(self):
-        with self.assertNoLogs('djorm.db.backends', "DEBUG"):
+        with self.assertNoLogs("djorm.db.backends", "DEBUG"):
             with self.assertRaises(Exception), transaction.atomic():
                 Person.objects.create(first_name="first", last_name="last")
                 raise Exception("Force rollback")
@@ -262,9 +259,7 @@ class ConnectionHealthChecksTests(SimpleTestCase):
         self.assertIs(old_connection, connection.connection)
 
         # Simulate connection health check failing.
-        with patch.object(
-            connection, "is_usable", return_value=False
-        ) as mocked_is_usable:
+        with patch.object(connection, "is_usable", return_value=False) as mocked_is_usable:
             self.run_query()
             new_connection = connection.connection
             # A new connection is established.
@@ -352,9 +347,7 @@ class ConnectionHealthChecksTests(SimpleTestCase):
         self.assertIs(old_connection, connection.connection)
 
         # Simulate connection health check failing.
-        with patch.object(
-            connection, "is_usable", return_value=False
-        ) as mocked_is_usable:
+        with patch.object(connection, "is_usable", return_value=False) as mocked_is_usable:
             # Simulate outermost atomic block: changing autocommit for
             # a connection.
             connection.set_autocommit(False)
@@ -394,9 +387,7 @@ class MultiDatabaseTests(TestCase):
                         "check_database_version_supported",
                     ) as mocked_check_database_version_supported:
                         connections[db].init_connection_state()
-                        after_first_calls = len(
-                            mocked_check_database_version_supported.mock_calls
-                        )
+                        after_first_calls = len(mocked_check_database_version_supported.mock_calls)
                         connections[db].init_connection_state()
                         self.assertEqual(
                             len(mocked_check_database_version_supported.mock_calls),

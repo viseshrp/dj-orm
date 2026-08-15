@@ -51,9 +51,7 @@ class Command(BaseCommand):
 
         user_settings = module_to_dict(settings._wrapped)
         default = options["default"]
-        default_settings = module_to_dict(
-            Settings(default) if default else global_settings
-        )
+        default_settings = module_to_dict(Settings(default) if default else global_settings)
         output_func = {
             "hash": self.output_hash,
             "unified": self.output_unified,
@@ -76,16 +74,10 @@ class Command(BaseCommand):
         output = []
         for key in sorted(user_settings):
             if key not in default_settings:
-                output.append(
-                    self.style.SUCCESS("+ %s = %s" % (key, user_settings[key]))
-                )
+                output.append(self.style.SUCCESS("+ %s = %s" % (key, user_settings[key])))
             elif user_settings[key] != default_settings[key]:
-                output.append(
-                    self.style.ERROR("- %s = %s" % (key, default_settings[key]))
-                )
-                output.append(
-                    self.style.SUCCESS("+ %s = %s" % (key, user_settings[key]))
-                )
+                output.append(self.style.ERROR("- %s = %s" % (key, default_settings[key])))
+                output.append(self.style.SUCCESS("+ %s = %s" % (key, user_settings[key])))
             elif options["all"]:
                 output.append("  %s = %s" % (key, user_settings[key]))
         return output

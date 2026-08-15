@@ -47,8 +47,8 @@ class DeferRegressionTest(TestCase):
         with self.assertNumQueries(0):
             self.assertEqual(obj.text, "xyzzy")
 
-        # Regression test for #10695. Make sure different instances don't
-        # inadvertently share data in the deferred descriptor objects.
+            # Regression test for #10695. Make sure different instances don't
+            # inadvertently share data in the deferred descriptor objects.
         i = Item.objects.create(name="no I'm first", value=37)
         items = Item.objects.only("value").order_by("-value")
         self.assertEqual(items[0].name, "first")
@@ -151,16 +151,10 @@ class DeferRegressionTest(TestCase):
         self.assertEqual(len(Item.objects.defer("one_to_one_item__name")), 1)
         self.assertEqual(len(Item.objects.select_related("one_to_one_item")), 1)
         self.assertEqual(
-            len(
-                Item.objects.select_related("one_to_one_item").defer(
-                    "one_to_one_item__name"
-                )
-            ),
+            len(Item.objects.select_related("one_to_one_item").defer("one_to_one_item__name")),
             1,
         )
-        self.assertEqual(
-            len(Item.objects.select_related("one_to_one_item").defer("value")), 1
-        )
+        self.assertEqual(len(Item.objects.select_related("one_to_one_item").defer("value")), 1)
         # Make sure that `only()` doesn't break when we pass in a unique relation,
         # rather than a field on the relation.
         self.assertEqual(len(Item.objects.only("one_to_one_item")), 1)
@@ -226,9 +220,7 @@ class DeferRegressionTest(TestCase):
         qs = Feature.objects.only("item__name").select_related("item")
         self.assertEqual(len(qs), 1)
 
-        qs = SpecialFeature.objects.only("feature__item__name").select_related(
-            "feature__item"
-        )
+        qs = SpecialFeature.objects.only("feature__item__name").select_related("feature__item")
         self.assertEqual(len(qs), 1)
 
     def test_defer_annotate_select_related(self):
@@ -343,9 +335,7 @@ class DeferDeletionSignalsTests(TestCase):
         self.post_delete_senders = []
         for sender in self.senders:
             models.signals.pre_delete.connect(self.pre_delete_receiver, sender)
-            self.addCleanup(
-                models.signals.pre_delete.disconnect, self.pre_delete_receiver, sender
-            )
+            self.addCleanup(models.signals.pre_delete.disconnect, self.pre_delete_receiver, sender)
             models.signals.post_delete.connect(self.post_delete_receiver, sender)
             self.addCleanup(
                 models.signals.post_delete.disconnect, self.post_delete_receiver, sender

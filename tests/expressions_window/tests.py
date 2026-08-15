@@ -355,9 +355,9 @@ class WindowFunctionTests(TestCase):
         )
 
     def test_order_by_decimalfield(self):
-        qs = Employee.objects.annotate(
-            rank=Window(expression=Rank(), order_by="bonus")
-        ).order_by("-bonus", "id")
+        qs = Employee.objects.annotate(rank=Window(expression=Rank(), order_by="bonus")).order_by(
+            "-bonus", "id"
+        )
         self.assertQuerySetEqual(
             qs,
             [
@@ -767,9 +767,7 @@ class WindowFunctionTests(TestCase):
                 order_by=F("department").asc(),
             )
         )
-        self.assertEqual(
-            list(qs.values_list("lead_default", flat=True).distinct()), [60000]
-        )
+        self.assertEqual(list(qs.values_list("lead_default", flat=True).distinct()), [60000])
 
     def test_ntile(self):
         """
@@ -844,13 +842,9 @@ class WindowFunctionTests(TestCase):
         fewer than 20 rows in the test data.
         """
         qs = Employee.objects.annotate(
-            nth_value=Window(
-                expression=NthValue("salary", nth=20), order_by=F("salary").asc()
-            )
+            nth_value=Window(expression=NthValue("salary", nth=20), order_by=F("salary").asc())
         )
-        self.assertEqual(
-            list(qs.values_list("nth_value", flat=True).distinct()), [None]
-        )
+        self.assertEqual(list(qs.values_list("nth_value", flat=True).distinct()), [None])
 
     def test_multiple_partitioning(self):
         """
@@ -954,12 +948,8 @@ class WindowFunctionTests(TestCase):
 
     def test_filter(self):
         qs = Employee.objects.annotate(
-            department_salary_rank=Window(
-                Rank(), partition_by="department", order_by="-salary"
-            ),
-            department_avg_age_diff=(
-                Window(Avg("age"), partition_by="department") - F("age")
-            ),
+            department_salary_rank=Window(Rank(), partition_by="department", order_by="-salary"),
+            department_avg_age_diff=(Window(Avg("age"), partition_by="department") - F("age")),
         ).order_by("department", "name")
         # Direct window reference.
         self.assertQuerySetEqual(
@@ -1024,9 +1014,7 @@ class WindowFunctionTests(TestCase):
             .order_by("name")
             .values_list("name", flat=True)
         )
-        self.assertSequenceEqual(
-            qs, ["Adams", "Johnson", "Miller", "Smith", "Wilkinson"]
-        )
+        self.assertSequenceEqual(qs, ["Adams", "Johnson", "Miller", "Smith", "Wilkinson"])
 
     def test_filter_column_ref_rhs(self):
         qs = (
@@ -1037,9 +1025,7 @@ class WindowFunctionTests(TestCase):
             .order_by("name")
             .values_list("name", flat=True)
         )
-        self.assertSequenceEqual(
-            qs, ["Adams", "Johnson", "Miller", "Smith", "Wilkinson"]
-        )
+        self.assertSequenceEqual(qs, ["Adams", "Johnson", "Miller", "Smith", "Wilkinson"])
 
     def test_filter_values(self):
         qs = (
@@ -1058,9 +1044,7 @@ class WindowFunctionTests(TestCase):
 
     def test_filter_alias(self):
         qs = Employee.objects.alias(
-            department_avg_age_diff=(
-                Window(Avg("age"), partition_by="department") - F("age")
-            ),
+            department_avg_age_diff=(Window(Avg("age"), partition_by="department") - F("age")),
         ).order_by("department", "name")
         self.assertQuerySetEqual(
             qs.filter(department_avg_age_diff__gt=0),
@@ -1071,9 +1055,7 @@ class WindowFunctionTests(TestCase):
     def test_filter_select_related(self):
         qs = (
             Employee.objects.alias(
-                department_avg_age_diff=(
-                    Window(Avg("age"), partition_by="department") - F("age")
-                ),
+                department_avg_age_diff=(Window(Avg("age"), partition_by="department") - F("age")),
             )
             .select_related("classification")
             .filter(department_avg_age_diff__gt=0)
@@ -1089,12 +1071,8 @@ class WindowFunctionTests(TestCase):
 
     def test_exclude(self):
         qs = Employee.objects.annotate(
-            department_salary_rank=Window(
-                Rank(), partition_by="department", order_by="-salary"
-            ),
-            department_avg_age_diff=(
-                Window(Avg("age"), partition_by="department") - F("age")
-            ),
+            department_salary_rank=Window(Rank(), partition_by="department", order_by="-salary"),
+            department_avg_age_diff=(Window(Avg("age"), partition_by="department") - F("age")),
         ).order_by("department", "name")
         # Direct window reference.
         self.assertQuerySetEqual(
@@ -1110,9 +1088,7 @@ class WindowFunctionTests(TestCase):
         )
         # Union of multiple windows.
         self.assertQuerySetEqual(
-            qs.exclude(
-                Q(department_salary_rank__gt=1) | Q(department_avg_age_diff__lte=0)
-            ),
+            qs.exclude(Q(department_salary_rank__gt=1) | Q(department_avg_age_diff__lte=0)),
             ["Miller"],
             lambda employee: employee.name,
         )
@@ -1146,16 +1122,11 @@ class WindowFunctionTests(TestCase):
         # Heterogeneous filter between window function and aggregates pushes
         # the WHERE clause to the QUALIFY outer query.
         self.assertSequenceEqual(
-            qs.filter(
-                department_salary_rank=1, department__in=["Accounting", "Management"]
-            ),
+            qs.filter(department_salary_rank=1, department__in=["Accounting", "Management"]),
             ["Adams", "Miller"],
         )
         self.assertSequenceEqual(
-            qs.filter(
-                Q(department_salary_rank=1)
-                | Q(department__in=["Accounting", "Management"])
-            ),
+            qs.filter(Q(department_salary_rank=1) | Q(department__in=["Accounting", "Management"])),
             [
                 "Adams",
                 "Jenson",
@@ -1187,9 +1158,7 @@ class WindowFunctionTests(TestCase):
         """
         self.assertQuerySetEqual(
             Employee.objects.annotate(
-                department_salary_rank=Window(
-                    Rank(), partition_by="department", order_by="-salary"
-                )
+                department_salary_rank=Window(Rank(), partition_by="department", order_by="-salary")
             )
             .filter(department_salary_rank=1)
             .order_by("department")[0:3],
@@ -1251,9 +1220,7 @@ class WindowFunctionTests(TestCase):
             ordered=False,
         )
 
-    @skipUnlessDBFeature(
-        "supports_frame_exclusion", "supports_frame_range_fixed_distance"
-    )
+    @skipUnlessDBFeature("supports_frame_exclusion", "supports_frame_range_fixed_distance")
     def test_range_exclude_current(self):
         qs = Employee.objects.annotate(
             sum=Window(
@@ -1302,9 +1269,7 @@ class WindowFunctionTests(TestCase):
                 frame=ValueRange(start=None, end=None),
             )
         ).order_by("department", "hire_date", "name")
-        self.assertIn(
-            "RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING", str(qs.query)
-        )
+        self.assertIn("RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING", str(qs.query))
         self.assertQuerySetEqual(
             qs,
             [
@@ -1376,9 +1341,7 @@ class WindowFunctionTests(TestCase):
             avg_salary_cohort=Window(
                 expression=Avg("salary"),
                 order_by=[F("hire_date").asc(), F("name").desc()],
-                frame=RowRange(
-                    start=-1, end=1, exclusion=WindowFrameExclusion.CURRENT_ROW
-                ),
+                frame=RowRange(start=-1, end=1, exclusion=WindowFrameExclusion.CURRENT_ROW),
             )
         ).order_by("hire_date")
         self.assertIn(
@@ -1492,9 +1455,7 @@ class WindowFunctionTests(TestCase):
             sum_salary_cohort=Window(
                 expression=Sum("salary"),
                 order_by=[F("hire_date").asc(), F("name").desc()],
-                frame=RowRange(
-                    start=-1, end=1, exclusion=WindowFrameExclusion.NO_OTHERS
-                ),
+                frame=RowRange(start=-1, end=1, exclusion=WindowFrameExclusion.NO_OTHERS),
             )
         ).order_by("hire_date")
         self.assertIn(
@@ -1535,9 +1496,7 @@ class WindowFunctionTests(TestCase):
                     avg_salary_cohort=Window(
                         expression=Avg("salary"),
                         order_by=[F("hire_date").asc(), F("name").desc()],
-                        frame=RowRange(
-                            start=-1, end=1, exclusion=WindowFrameExclusion.CURRENT_ROW
-                        ),
+                        frame=RowRange(start=-1, end=1, exclusion=WindowFrameExclusion.CURRENT_ROW),
                     )
                 )
             )
@@ -1939,26 +1898,19 @@ class WindowUnsupportedTests(TestCase):
         msg = "This backend does not support window expressions."
         with mock.patch.object(connection.features, "supports_over_clause", False):
             with self.assertRaisesMessage(NotSupportedError, msg):
-                Employee.objects.annotate(
-                    dense_rank=Window(expression=DenseRank())
-                ).get()
+                Employee.objects.annotate(dense_rank=Window(expression=DenseRank())).get()
 
     def test_filter_subquery(self):
         qs = Employee.objects.annotate(
-            department_salary_rank=Window(
-                Rank(), partition_by="department", order_by="-salary"
-            )
+            department_salary_rank=Window(Rank(), partition_by="department", order_by="-salary")
         )
-        msg = (
-            "Referencing outer query window expression is not supported: "
-            "department_salary_rank."
-        )
+        msg = "Referencing outer query window expression is not supported: department_salary_rank."
         with self.assertRaisesMessage(NotSupportedError, msg):
             qs.annotate(
                 employee_name=Subquery(
-                    Employee.objects.filter(
-                        age=OuterRef("department_salary_rank")
-                    ).values("name")[:1]
+                    Employee.objects.filter(age=OuterRef("department_salary_rank")).values("name")[
+                        :1
+                    ]
                 )
             )
 

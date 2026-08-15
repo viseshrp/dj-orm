@@ -1,4 +1,9 @@
-'\nSerialization\n\n``djorm.core.serializers`` provides interfaces to converting Django\n``QuerySet`` objects to and from "flat" data (i.e. strings).\n'
+"""
+Serialization
+
+``djorm.core.serializers`` provides interfaces to converting Django
+``QuerySet`` objects to and from "flat" data (i.e. strings).
+"""
 
 from decimal import Decimal
 
@@ -28,9 +33,7 @@ class CategoryMetaData(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=20)
-    meta_data = models.ForeignKey(
-        CategoryMetaData, models.SET_NULL, null=True, default=None
-    )
+    meta_data = models.ForeignKey(CategoryMetaData, models.SET_NULL, null=True, default=None)
 
     class Meta:
         ordering = ("name",)

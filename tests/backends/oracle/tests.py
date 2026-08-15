@@ -199,8 +199,8 @@ class TransactionalTests(TransactionTestCase):
             )
             with self.assertRaises(Database.DatabaseError) as context:
                 connection.connect()
-            # Database exception: "ORA-01017: invalid username/password" is
-            # expected.
+                # Database exception: "ORA-01017: invalid username/password" is
+                # expected.
             self.assertIn("ORA-01017", context.exception.args[0].message)
         finally:
             connection.settings_dict["PASSWORD"] = old_password

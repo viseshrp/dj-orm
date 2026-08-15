@@ -21,9 +21,7 @@ class JSONArrayTests(TestCase):
         self.assertEqual(obj.json_array, [])
 
     def test_basic(self):
-        obj = Author.objects.annotate(
-            json_array=JSONArray(Value("name"), F("name"))
-        ).first()
+        obj = Author.objects.annotate(json_array=JSONArray(Value("name"), F("name"))).first()
         self.assertEqual(obj.json_array, ["name", "Ivan Ivanov"])
 
     def test_expressions(self):
@@ -88,9 +86,9 @@ class JSONArrayTests(TestCase):
 
     @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific tests")
     def test_explicit_cast(self):
-        qs = Author.objects.annotate(
-            json_array=JSONArray(Cast("age", CharField()))
-        ).values("json_array")
+        qs = Author.objects.annotate(json_array=JSONArray(Cast("age", CharField()))).values(
+            "json_array"
+        )
         with self.assertNumQueries(1) as ctx:
             self.assertSequenceEqual(qs, [{"json_array": ["30"]}])
         sql = ctx.captured_queries[0]["sql"]
@@ -102,9 +100,7 @@ class JSONArrayTests(TestCase):
         self.assertQuerySetEqual(qs, Author.objects.order_by("alias"))
 
     def test_order_by_nested_key(self):
-        qs = Author.objects.annotate(arr=JSONArray(JSONArray(F("alias")))).order_by(
-            "-arr__0__0"
-        )
+        qs = Author.objects.annotate(arr=JSONArray(JSONArray(F("alias")))).order_by("-arr__0__0")
         self.assertQuerySetEqual(qs, Author.objects.order_by("-alias"))
 
 
@@ -171,7 +167,7 @@ class JSONArrayObjectTests(TestCase):
         )
 
     def test_order_by_nested_key(self):
-        qs = Author.objects.annotate(
-            arr=JSONArray(JSONObject(alias=F("alias")))
-        ).order_by("-arr__0__alias")
+        qs = Author.objects.annotate(arr=JSONArray(JSONObject(alias=F("alias")))).order_by(
+            "-arr__0__alias"
+        )
         self.assertQuerySetEqual(qs, Author.objects.order_by("-alias"))

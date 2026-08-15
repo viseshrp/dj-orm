@@ -8,19 +8,14 @@ from .models import Article, Category
 class M2MMultipleTests(TestCase):
     def test_multiple(self):
         c1, c2, c3, c4 = [
-            Category.objects.create(name=name)
-            for name in ["Sports", "News", "Crime", "Life"]
+            Category.objects.create(name=name) for name in ["Sports", "News", "Crime", "Life"]
         ]
 
-        a1 = Article.objects.create(
-            headline="Parrot steals", pub_date=datetime(2005, 11, 27)
-        )
+        a1 = Article.objects.create(headline="Parrot steals", pub_date=datetime(2005, 11, 27))
         a1.primary_categories.add(c2, c3)
         a1.secondary_categories.add(c4)
 
-        a2 = Article.objects.create(
-            headline="Parrot runs", pub_date=datetime(2005, 11, 28)
-        )
+        a2 = Article.objects.create(headline="Parrot runs", pub_date=datetime(2005, 11, 28))
         a2.primary_categories.add(c1, c2)
         a2.secondary_categories.add(c4)
 

@@ -65,12 +65,8 @@ class TestUtilsIPv6(SimpleTestCase):
 
     def test_cleans_plain_address(self):
         self.assertEqual(clean_ipv6_address("DEAD::0:BEEF"), "dead::beef")
-        self.assertEqual(
-            clean_ipv6_address("2001:000:a:0000:0:fe:fe:beef"), "2001:0:a::fe:fe:beef"
-        )
-        self.assertEqual(
-            clean_ipv6_address("2001::a:0000:0:fe:fe:beef"), "2001:0:a::fe:fe:beef"
-        )
+        self.assertEqual(clean_ipv6_address("2001:000:a:0000:0:fe:fe:beef"), "2001:0:a::fe:fe:beef")
+        self.assertEqual(clean_ipv6_address("2001::a:0000:0:fe:fe:beef"), "2001:0:a::fe:fe:beef")
 
     def test_cleans_with_v4_mapping(self):
         self.assertEqual(clean_ipv6_address("::ffff:0a0a:0a0a"), "::ffff:10.10.10.10")
@@ -80,15 +76,9 @@ class TestUtilsIPv6(SimpleTestCase):
         self.assertEqual(clean_ipv6_address("::ffff:0.0.0.0"), "::ffff:0.0.0.0")
 
     def test_unpacks_ipv4(self):
-        self.assertEqual(
-            clean_ipv6_address("::ffff:0a0a:0a0a", unpack_ipv4=True), "10.10.10.10"
-        )
-        self.assertEqual(
-            clean_ipv6_address("::ffff:1234:1234", unpack_ipv4=True), "18.52.18.52"
-        )
-        self.assertEqual(
-            clean_ipv6_address("::ffff:18.52.18.52", unpack_ipv4=True), "18.52.18.52"
-        )
+        self.assertEqual(clean_ipv6_address("::ffff:0a0a:0a0a", unpack_ipv4=True), "10.10.10.10")
+        self.assertEqual(clean_ipv6_address("::ffff:1234:1234", unpack_ipv4=True), "18.52.18.52")
+        self.assertEqual(clean_ipv6_address("::ffff:18.52.18.52", unpack_ipv4=True), "18.52.18.52")
 
     def test_address_too_long(self):
         addresses = [

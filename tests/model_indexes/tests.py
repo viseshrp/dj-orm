@@ -44,13 +44,11 @@ class SimpleIndexesTests(SimpleTestCase):
         self.assertEqual(repr(multi_col_index), "<Index: fields=['title', 'author']>")
         self.assertEqual(
             repr(partial_index),
-            "<Index: fields=['title'] name='long_books_idx' "
-            "condition=(AND: ('pages__gt', 400))>",
+            "<Index: fields=['title'] name='long_books_idx' condition=(AND: ('pages__gt', 400))>",
         )
         self.assertEqual(
             repr(covering_index),
-            "<Index: fields=['title'] name='include_idx' "
-            "include=('author', 'pages')>",
+            "<Index: fields=['title'] name='include_idx' include=('author', 'pages')>",
         )
         self.assertEqual(
             repr(opclasses_index),
@@ -59,13 +57,11 @@ class SimpleIndexesTests(SimpleTestCase):
         )
         self.assertEqual(
             repr(func_index),
-            "<Index: expressions=(Lower(F(title)), F(subtitle)) "
-            "name='book_func_idx'>",
+            "<Index: expressions=(Lower(F(title)), F(subtitle)) name='book_func_idx'>",
         )
         self.assertEqual(
             repr(tablespace_index),
-            "<Index: fields=['title'] name='book_tablespace_idx' "
-            "db_tablespace='idx_tbls'>",
+            "<Index: fields=['title'] name='book_tablespace_idx' db_tablespace='idx_tbls'>",
         )
 
     def test_eq(self):
@@ -88,9 +84,7 @@ class SimpleIndexesTests(SimpleTestCase):
         self.assertNotEqual(index, another_index)
 
     def test_index_fields_type(self):
-        with self.assertRaisesMessage(
-            ValueError, "Index.fields must be a list or tuple."
-        ):
+        with self.assertRaisesMessage(ValueError, "Index.fields must be a list or tuple."):
             models.Index(fields="title")
 
     def test_index_fields_strings(self):
@@ -112,18 +106,12 @@ class SimpleIndexesTests(SimpleTestCase):
             models.Index(Upper("foo"), fields=["field"])
 
     def test_opclasses_requires_index_name(self):
-        with self.assertRaisesMessage(
-            ValueError, "An index must be named to use opclasses."
-        ):
+        with self.assertRaisesMessage(ValueError, "An index must be named to use opclasses."):
             models.Index(opclasses=["jsonb_path_ops"])
 
     def test_opclasses_requires_list_or_tuple(self):
-        with self.assertRaisesMessage(
-            ValueError, "Index.opclasses must be a list or tuple."
-        ):
-            models.Index(
-                name="test_opclass", fields=["field"], opclasses="jsonb_path_ops"
-            )
+        with self.assertRaisesMessage(ValueError, "Index.opclasses must be a list or tuple."):
+            models.Index(name="test_opclass", fields=["field"], opclasses="jsonb_path_ops")
 
     def test_opclasses_and_fields_same_length(self):
         msg = "Index.fields and Index.opclasses must have the same number of elements."
@@ -135,9 +123,7 @@ class SimpleIndexesTests(SimpleTestCase):
             )
 
     def test_condition_requires_index_name(self):
-        with self.assertRaisesMessage(
-            ValueError, "An index must be named to use condition."
-        ):
+        with self.assertRaisesMessage(ValueError, "An index must be named to use condition."):
             models.Index(condition=models.Q(pages__gt=400))
 
     def test_expressions_requires_index_name(self):
@@ -148,7 +134,7 @@ class SimpleIndexesTests(SimpleTestCase):
     def test_expressions_with_opclasses(self):
         msg = (
             "Index.opclasses cannot be used with expressions. Use "
-            'djorm.contrib.postgres.indexes.OpClass() instead.'
+            "djorm.contrib.postgres.indexes.OpClass() instead."
         )
         with self.assertRaisesMessage(ValueError, msg):
             models.Index(
@@ -158,9 +144,7 @@ class SimpleIndexesTests(SimpleTestCase):
             )
 
     def test_condition_must_be_q(self):
-        with self.assertRaisesMessage(
-            ValueError, "Index.condition must be a Q instance."
-        ):
+        with self.assertRaisesMessage(ValueError, "Index.condition must be a Q instance."):
             models.Index(condition="invalid", name="long_book_idx")
 
     def test_include_requires_list_or_tuple(self):
@@ -191,8 +175,7 @@ class SimpleIndexesTests(SimpleTestCase):
         # suffix can't be longer than 3 characters.
         long_field_index.suffix = "suff"
         msg = (
-            "Index too long for multiple database support. Is self.suffix "
-            "longer than 3 characters?"
+            "Index too long for multiple database support. Is self.suffix longer than 3 characters?"
         )
         with self.assertRaisesMessage(ValueError, msg):
             long_field_index.set_name_with_model(Book)
@@ -213,7 +196,7 @@ class SimpleIndexesTests(SimpleTestCase):
         index = models.Index(fields=["title"], db_tablespace="idx_tbls")
         index.set_name_with_model(Book)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.Index')
+        self.assertEqual(path, "djorm.db.models.Index")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -232,7 +215,7 @@ class SimpleIndexesTests(SimpleTestCase):
         )
         index.set_name_with_model(Book)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.Index')
+        self.assertEqual(path, "djorm.db.models.Index")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -251,7 +234,7 @@ class SimpleIndexesTests(SimpleTestCase):
         )
         index.set_name_with_model(Book)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.Index')
+        self.assertEqual(path, "djorm.db.models.Index")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -265,7 +248,7 @@ class SimpleIndexesTests(SimpleTestCase):
     def test_deconstruct_with_expressions(self):
         index = models.Index(Upper("title"), name="book_func_idx")
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.Index')
+        self.assertEqual(path, "djorm.db.models.Index")
         self.assertEqual(args, (Upper("title"),))
         self.assertEqual(kwargs, {"name": "book_func_idx"})
 
@@ -323,10 +306,8 @@ class IndexesTests(TestCase):
         ]:
             with self.subTest(fields=fields):
                 index = models.Index(fields=fields, db_tablespace="idx_tbls2")
-                self.assertIn(
-                    '"idx_tbls2"', str(index.create_sql(Book, editor)).lower()
-                )
-        # Indexes without db_tablespace attribute.
+                self.assertIn('"idx_tbls2"', str(index.create_sql(Book, editor)).lower())
+                # Indexes without db_tablespace attribute.
         for fields in [["author"], ["shortcut", "isbn"], ["title", "author"]]:
             with self.subTest(fields=fields):
                 index = models.Index(fields=fields)
@@ -340,8 +321,8 @@ class IndexesTests(TestCase):
                     )
                 else:
                     self.assertNotIn("TABLESPACE", str(index.create_sql(Book, editor)))
-        # Field with db_tablespace specified on the model and an index without
-        # db_tablespace.
+                    # Field with db_tablespace specified on the model and an index without
+                    # db_tablespace.
         index = models.Index(fields=["shortcut"])
         self.assertIn('"idx_tbls"', str(index.create_sql(Book, editor)).lower())
 
@@ -356,7 +337,7 @@ class IndexesTests(TestCase):
         with connection.schema_editor() as editor:
             sql = str(index.create_sql(Book, editor))
             self.assertIn(editor.quote_name("idx_tbls2"), sql)
-        # Functional index without db_tablespace attribute.
+            # Functional index without db_tablespace attribute.
         index = models.Index(Lower("shortcut").desc(), name="functional_no_tbls")
         with connection.schema_editor() as editor:
             sql = str(index.create_sql(Book, editor))

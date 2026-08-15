@@ -31,8 +31,9 @@ def capfirst(x):
         x = str(x)
     return x[0].upper() + x[1:]
 
+    # Set up regular expressions
 
-# Set up regular expressions
+
 re_newlines = _lazy_re_compile(r"\r\n|\r")  # Used in normalize_newlines
 re_camel_case = _lazy_re_compile(r"(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))")
 
@@ -72,13 +73,11 @@ def wrap(text, width):
 
 def add_truncation_text(text, truncate=None):
     if truncate is None:
-        truncate = pgettext(
-            "String to return when truncating text", "%(truncated_text)s…"
-        )
+        truncate = pgettext("String to return when truncating text", "%(truncated_text)s…")
     if "%(truncated_text)s" in truncate:
         return truncate % {"truncated_text": text}
-    # The truncation text didn't contain the %(truncated_text)s string
-    # replacement argument so just append it to the text.
+        # The truncation text didn't contain the %(truncated_text)s string
+        # replacement argument so just append it to the text.
     if text.endswith(truncate):
         # But don't append the truncation text if the current text already ends
         # in this.
@@ -228,7 +227,7 @@ class Truncator(SimpleLazyObject):
                 # Return the truncated string
                 return add_truncation_text(text[: end_index or 0], truncate)
 
-        # Return the original string since no truncation was necessary
+                # Return the original string since no truncation was necessary
         return text
 
     def words(self, num, truncate=None, html=False):
@@ -370,14 +369,13 @@ class StreamingBuffer(BytesIO):
         self.truncate()
         return ret
 
+        # Like compress_string, but for iterators of strings.
 
-# Like compress_string, but for iterators of strings.
+
 def compress_sequence(sequence, *, max_random_bytes=None):
     buf = StreamingBuffer()
     filename = _get_random_filename(max_random_bytes) if max_random_bytes else None
-    with GzipFile(
-        filename=filename, mode="wb", compresslevel=6, fileobj=buf, mtime=0
-    ) as zfile:
+    with GzipFile(filename=filename, mode="wb", compresslevel=6, fileobj=buf, mtime=0) as zfile:
         # Output headers...
         yield buf.read()
         for item in sequence:
@@ -387,9 +385,10 @@ def compress_sequence(sequence, *, max_random_bytes=None):
                 yield data
     yield buf.read()
 
+    # Expression to match some_token and some_token="with spaces" (and similarly
+    # for single-quoted strings).
 
-# Expression to match some_token and some_token="with spaces" (and similarly
-# for single-quoted strings).
+
 smart_split_re = _lazy_re_compile(
     r"""
     ((?:
@@ -456,11 +455,7 @@ def slugify(value, allow_unicode=False):
     if allow_unicode:
         value = unicodedata.normalize("NFKC", value)
     else:
-        value = (
-            unicodedata.normalize("NFKD", value)
-            .encode("ascii", "ignore")
-            .decode("ascii")
-        )
+        value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
     value = re.sub(r"[^\w\s-]", "", value.lower())
     return re.sub(r"[-\s]+", "-", value).strip("-_")
 

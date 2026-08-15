@@ -9,9 +9,7 @@ from djorm.db import models
 
 class Manager(models.Model):
     name = models.CharField(max_length=50)
-    secretary = models.ForeignKey(
-        "Employee", models.CASCADE, null=True, related_name="managers"
-    )
+    secretary = models.ForeignKey("Employee", models.CASCADE, null=True, related_name="managers")
 
 
 class Employee(models.Model):

@@ -41,10 +41,9 @@ class Student(CommonInfo):
     class Meta:
         pass
 
-
-#
-# Abstract base classes with related models
-#
+        #
+        # Abstract base classes with related models
+        #
 
 
 class Post(models.Model):
@@ -71,10 +70,9 @@ class Comment(Attachment):
 class Link(Attachment):
     url = models.URLField()
 
-
-#
-# Multi-table inheritance
-#
+    #
+    # Multi-table inheritance
+    #
 
 
 class Chef(models.Model):
@@ -108,9 +106,7 @@ class ItalianRestaurant(Restaurant):
 
 
 class ItalianRestaurantCommonParent(ItalianRestaurant, Place):
-    place_ptr_two = models.OneToOneField(
-        Place, on_delete=models.CASCADE, parent_link=True
-    )
+    place_ptr_two = models.OneToOneField(Place, on_delete=models.CASCADE, parent_link=True)
 
 
 class Supplier(Place):
@@ -123,20 +119,17 @@ class CustomSupplier(Supplier):
 
 class ParkingLot(Place):
     # An explicit link to the parent (we can control the attribute name).
-    parent = models.OneToOneField(
-        Place, models.CASCADE, primary_key=True, parent_link=True
-    )
+    parent = models.OneToOneField(Place, models.CASCADE, primary_key=True, parent_link=True)
     main_site = models.ForeignKey(Place, models.CASCADE, related_name="lot")
 
-
-#
-# Abstract base classes with related models where the sub-class has the
-# same name in a different app and inherits from the same abstract base
-# class.
-# NOTE: The actual API tests for the following classes are in
-#       model_inheritance_same_model_name/models.py - They are defined
-#       here in order to have the name conflict between apps
-#
+    #
+    # Abstract base classes with related models where the sub-class has the
+    # same name in a different app and inherits from the same abstract base
+    # class.
+    # NOTE: The actual API tests for the following classes are in
+    #       model_inheritance_same_model_name/models.py - They are defined
+    #       here in order to have the name conflict between apps
+    #
 
 
 class Title(models.Model):

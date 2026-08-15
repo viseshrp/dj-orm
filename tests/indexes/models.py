@@ -32,9 +32,7 @@ class Article(models.Model):
     published = models.BooleanField(default=False)
 
     # Add virtual relation to the ArticleTranslation model.
-    translation = CurrentTranslation(
-        ArticleTranslation, models.CASCADE, ["id"], ["article"]
-    )
+    translation = CurrentTranslation(ArticleTranslation, models.CASCADE, ["id"], ["article"])
 
     class Meta:
         indexes = [models.Index(fields=["headline", "pub_date"])]

@@ -63,11 +63,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                 END IF;
             END;
         /"""
-            % {
-                "sq_name": self.connection.ops._get_no_autofield_sequence_name(
-                    model._meta.db_table
-                )
-            }
+            % {"sq_name": self.connection.ops._get_no_autofield_sequence_name(model._meta.db_table)}
         )
 
     def alter_field(self, model, old_field, new_field, strict=False):
@@ -79,18 +75,18 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             # SQLite-ish workaround
             if "ORA-22858" in description or "ORA-22859" in description:
                 self._alter_field_type_workaround(model, old_field, new_field)
-            # If an identity column is changing to a non-numeric type, drop the
-            # identity first.
+                # If an identity column is changing to a non-numeric type, drop the
+                # identity first.
             elif "ORA-30675" in description:
                 self._drop_identity(model._meta.db_table, old_field.column)
                 self.alter_field(model, old_field, new_field, strict)
-            # If a primary key column is changing to an identity column, drop
-            # the primary key first.
+                # If a primary key column is changing to an identity column, drop
+                # the primary key first.
             elif "ORA-30673" in description and old_field.primary_key:
                 self._delete_primary_key(model, strict=True)
                 self._alter_field_type_workaround(model, old_field, new_field)
-            # If a collation is changing on a primary key, drop the primary key
-            # first.
+                # If a collation is changing on a primary key, drop the primary key
+                # first.
             elif "ORA-43923" in description and old_field.primary_key:
                 self._delete_primary_key(model, strict=True)
                 self.alter_field(model, old_field, new_field, strict)
@@ -140,7 +136,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                 # TimeField are stored as TIMESTAMP with a 1900-01-01 date part.
                 new_value = "CONCAT('1900-01-01 ', %s)" % new_value
                 new_value = "TO_TIMESTAMP(%s, 'YYYY-MM-DD HH24:MI:SS.FF')" % new_value
-        # Transfer values across
+                # Transfer values across
         self.execute(
             "UPDATE %s set %s=%s"
             % (
@@ -163,9 +159,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         ) and old_type != new_type:
             for _, rel in _related_non_m2m_objects(new_temp_field, new_field):
                 if rel.field.db_constraint:
-                    self.execute(
-                        self._create_fk_sql(rel.related_model, rel.field, "_fk")
-                    )
+                    self.execute(self._create_fk_sql(rel.related_model, rel.field, "_fk"))
 
     def _alter_column_type_sql(
         self, model, old_field, new_field, new_type, old_collation, new_collation
@@ -203,10 +197,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     def _field_should_be_indexed(self, model, field):
         create_index = super()._field_should_be_indexed(model, field)
         db_type = field.db_type(self.connection)
-        if (
-            db_type is not None
-            and db_type.lower() in self.connection._limited_data_types
-        ):
+        if db_type is not None and db_type.lower() in self.connection._limited_data_types:
             return False
         return create_index
 

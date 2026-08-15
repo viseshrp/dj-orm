@@ -37,10 +37,9 @@ if version < (1, 4, 3):
         "mysqlclient 1.4.3 or newer is required; you have %s." % Database.__version__
     )
 
-
-# MySQLdb returns TIME columns as timedelta -- they are more like timedelta in
-# terms of actual behavior as they are signed and include days -- and Django
-# expects time.
+    # MySQLdb returns TIME columns as timedelta -- they are more like timedelta in
+    # terms of actual behavior as they are signed and include days -- and Django
+    # expects time.
 django_conversions = {
     **conversions,
     **{FIELD_TYPE.TIME: backend_utils.typecast_time},
@@ -142,11 +141,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             _data_types["UUIDField"] = "uuid"
         return _data_types
 
-    # For these data types:
-    # - MySQL < 8.0.13 doesn't accept default values and implicitly treats them
-    #   as nullable
-    # - all versions of MySQL and MariaDB don't support full width database
-    #   indexes
+        # For these data types:
+        # - MySQL < 8.0.13 doesn't accept default values and implicitly treats them
+        #   as nullable
+        # - all versions of MySQL and MariaDB don't support full width database
+        #   indexes
+
     _limited_data_types = (
         "tinyblob",
         "blob",
@@ -230,8 +230,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             kwargs["host"] = settings_dict["HOST"]
         if settings_dict["PORT"]:
             kwargs["port"] = int(settings_dict["PORT"])
-        # We need the number of potentially affected rows after an
-        # "UPDATE", not the number of changed rows.
+            # We need the number of potentially affected rows after an
+            # "UPDATE", not the number of changed rows.
         kwargs["client_flag"] = CLIENT.FOUND_ROWS
         # Validate the transaction isolation level, if specified.
         options = settings_dict["OPTIONS"].copy()
@@ -274,8 +274,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
         if self.isolation_level:
             assignments.append(
-                "SET SESSION TRANSACTION ISOLATION LEVEL %s"
-                % self.isolation_level.upper()
+                "SET SESSION TRANSACTION ISOLATION LEVEL %s" % self.isolation_level.upper()
             )
 
         if assignments:
@@ -432,8 +431,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         match = server_version_re.match(self.mysql_server_info)
         if not match:
             raise Exception(
-                "Unable to determine MySQL version from version string %r"
-                % self.mysql_server_info
+                "Unable to determine MySQL version from version string %r" % self.mysql_server_info
             )
         return tuple(int(x) for x in match.groups())
 

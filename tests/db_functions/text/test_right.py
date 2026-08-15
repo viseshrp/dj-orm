@@ -19,9 +19,7 @@ class RightTests(TestCase):
         )
         # If alias is null, set it to the first 2 lower characters of the name.
         Author.objects.filter(alias__isnull=True).update(alias=Lower(Right("name", 2)))
-        self.assertQuerySetEqual(
-            authors.order_by("name"), ["smithj", "da"], lambda a: a.alias
-        )
+        self.assertQuerySetEqual(authors.order_by("name"), ["smithj", "da"], lambda a: a.alias)
 
     def test_invalid_length(self):
         with self.assertRaisesMessage(ValueError, "'length' must be greater than 0"):
@@ -29,9 +27,7 @@ class RightTests(TestCase):
 
     def test_zero_length(self):
         Author.objects.create(name="Tom", alias="tom")
-        authors = Author.objects.annotate(
-            name_part=Right("name", Length("name") - Length("alias"))
-        )
+        authors = Author.objects.annotate(name_part=Right("name", Length("name") - Length("alias")))
         self.assertQuerySetEqual(
             authors.order_by("name"),
             [
@@ -46,6 +42,4 @@ class RightTests(TestCase):
         authors = Author.objects.annotate(
             name_part=Right("name", Value(3, output_field=IntegerField()))
         )
-        self.assertQuerySetEqual(
-            authors.order_by("name"), ["ith", "nda"], lambda a: a.name_part
-        )
+        self.assertQuerySetEqual(authors.order_by("name"), ["ith", "nda"], lambda a: a.name_part)

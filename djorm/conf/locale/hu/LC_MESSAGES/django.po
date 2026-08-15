@@ -352,16 +352,16 @@ msgid "That page contains no results"
 msgstr "Az oldal nem tartalmaz találatokat"
 
 msgid "Enter a valid value."
-msgstr "Adjon meg egy érvényes értéket."
+msgstr "Adjormn meg egy érvényes értéket."
 
 msgid "Enter a valid domain name."
-msgstr "Adjon meg egy érvényes domain nevet."
+msgstr "Adjormn meg egy érvényes domain nevet."
 
 msgid "Enter a valid URL."
-msgstr "Adjon meg egy érvényes URL-t."
+msgstr "Adjormn meg egy érvényes URL-t."
 
 msgid "Enter a valid integer."
-msgstr "Adjon meg egy érvényes számot."
+msgstr "Adjormn meg egy érvényes számot."
 
 msgid "Enter a valid email address."
 msgstr "Írjon be egy érvényes e-mail címet."
@@ -370,19 +370,19 @@ msgstr "Írjon be egy érvényes e-mail címet."
 msgid ""
 "Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
 msgstr ""
-"Kérjük adjon meg egy érvényes \"domain-darabkát\", amely csak ékezet nélküli "
+"Kérjük adjormn meg egy érvényes \"domain-darabkát\", amely csak ékezet nélküli "
 "betűkből, számokból, aláhúzásból és kötőjelből áll."
 
 msgid ""
 "Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
 "hyphens."
 msgstr ""
-"Kérjük adjon meg egy érvényes \"domain-darabkát\", amely csak betűkből, "
+"Kérjük adjormn meg egy érvényes \"domain-darabkát\", amely csak betűkből, "
 "számokból, aláhúzásból és kötőjelből áll."
 
 #, python-format
 msgid "Enter a valid %(protocol)s address."
-msgstr "Adjon meg egy érvényes %(protocol)s címet."
+msgstr "Adjormn meg egy érvényes %(protocol)s címet."
 
 msgid "IPv4"
 msgstr "IPv4"
@@ -394,25 +394,25 @@ msgid "IPv4 or IPv6"
 msgstr "IPv4 vagy IPv6"
 
 msgid "Enter only digits separated by commas."
-msgstr "Csak számokat adjon meg, vesszővel elválasztva."
+msgstr "Csak számokat adjormn meg, vesszővel elválasztva."
 
 #, python-format
 msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
 msgstr ""
-"Bizonyosodjon meg arról, hogy az érték %(limit_value)s (jelenleg: "
+"Bizonyosodjormn meg arról, hogy az érték %(limit_value)s (jelenleg: "
 "%(show_value)s)."
 
 #, python-format
 msgid "Ensure this value is less than or equal to %(limit_value)s."
-msgstr "Bizonyosodjon meg arról, hogy az érték %(limit_value)s, vagy kisebb."
+msgstr "Bizonyosodjormn meg arról, hogy az érték %(limit_value)s, vagy kisebb."
 
 #, python-format
 msgid "Ensure this value is greater than or equal to %(limit_value)s."
-msgstr "Bizonyosodjon meg arról, hogy az érték %(limit_value)s, vagy nagyobb."
+msgstr "Bizonyosodjormn meg arról, hogy az érték %(limit_value)s, vagy nagyobb."
 
 #, python-format
 msgid "Ensure this value is a multiple of step size %(limit_value)s."
-msgstr "Bizonyosodjon meg arról, hogy az érték %(limit_value)s többszöröse."
+msgstr "Bizonyosodjormn meg arról, hogy az érték %(limit_value)s többszöröse."
 
 #, python-format
 msgid ""
@@ -430,10 +430,10 @@ msgid_plural ""
 "Ensure this value has at least %(limit_value)d characters (it has "
 "%(show_value)d)."
 msgstr[0] ""
-"Bizonyosodjon meg arról, hogy ez az érték legalább %(limit_value)d karaktert "
+"Bizonyosodjormn meg arról, hogy ez az érték legalább %(limit_value)d karaktert "
 "tartalmaz (jelenlegi hossza: %(show_value)d)."
 msgstr[1] ""
-"Bizonyosodjon meg arról, hogy ez az érték legalább %(limit_value)d karaktert "
+"Bizonyosodjormn meg arról, hogy ez az érték legalább %(limit_value)d karaktert "
 "tartalmaz (jelenlegi hossza: %(show_value)d)."
 
 #, python-format
@@ -444,10 +444,10 @@ msgid_plural ""
 "Ensure this value has at most %(limit_value)d characters (it has "
 "%(show_value)d)."
 msgstr[0] ""
-"Bizonyosodjon meg arról, hogy ez az érték legfeljebb %(limit_value)d "
+"Bizonyosodjormn meg arról, hogy ez az érték legfeljebb %(limit_value)d "
 "karaktert tartalmaz (jelenlegi hossza: %(show_value)d)."
 msgstr[1] ""
-"Bizonyosodjon meg arról, hogy ez az érték legfeljebb %(limit_value)d "
+"Bizonyosodjormn meg arról, hogy ez az érték legfeljebb %(limit_value)d "
 "karaktert tartalmaz (jelenlegi hossza: %(show_value)d)."
 
 msgid "Enter a number."
@@ -456,16 +456,16 @@ msgstr "Adj meg egy számot."
 #, python-format
 msgid "Ensure that there are no more than %(max)s digit in total."
 msgid_plural "Ensure that there are no more than %(max)s digits in total."
-msgstr[0] "Bizonyosodjon meg arról, hogy legfeljebb %(max)s számjegyből áll."
-msgstr[1] "Bizonyosodjon meg arról, hogy legfeljebb %(max)s számjegyből áll."
+msgstr[0] "Bizonyosodjormn meg arról, hogy legfeljebb %(max)s számjegyből áll."
+msgstr[1] "Bizonyosodjormn meg arról, hogy legfeljebb %(max)s számjegyből áll."
 
 #, python-format
 msgid "Ensure that there are no more than %(max)s decimal place."
 msgid_plural "Ensure that there are no more than %(max)s decimal places."
 msgstr[0] ""
-"Bizonyosodjon meg arról, hogy legfeljebb %(max)s tizedesjegyből áll."
+"Bizonyosodjormn meg arról, hogy legfeljebb %(max)s tizedesjegyből áll."
 msgstr[1] ""
-"Bizonyosodjon meg arról, hogy legfeljebb %(max)s tizedesjegyből áll."
+"Bizonyosodjormn meg arról, hogy legfeljebb %(max)s tizedesjegyből áll."
 
 #, python-format
 msgid ""
@@ -473,10 +473,10 @@ msgid ""
 msgid_plural ""
 "Ensure that there are no more than %(max)s digits before the decimal point."
 msgstr[0] ""
-"Bizonyosodjon meg arról, hogy legfeljebb %(max)s számjegy van a "
+"Bizonyosodjormn meg arról, hogy legfeljebb %(max)s számjegy van a "
 "tizedesvessző előtt."
 msgstr[1] ""
-"Bizonyosodjon meg arról, hogy legfeljebb %(max)s számjegy van a "
+"Bizonyosodjormn meg arról, hogy legfeljebb %(max)s számjegy van a "
 "tizedesvessző előtt."
 
 #, python-format
@@ -735,19 +735,19 @@ msgid "This field is required."
 msgstr "Ennek a mezőnek a megadása kötelező."
 
 msgid "Enter a whole number."
-msgstr "Adjon meg egy egész számot."
+msgstr "Adjormn meg egy egész számot."
 
 msgid "Enter a valid date."
-msgstr "Adjon meg egy érvényes dátumot."
+msgstr "Adjormn meg egy érvényes dátumot."
 
 msgid "Enter a valid time."
-msgstr "Adjon meg egy érvényes időt."
+msgstr "Adjormn meg egy érvényes időt."
 
 msgid "Enter a valid date/time."
-msgstr "Adjon meg egy érvényes dátumot/időt."
+msgstr "Adjormn meg egy érvényes dátumot/időt."
 
 msgid "Enter a valid duration."
-msgstr "Adjon meg egy érvényes időtartamot."
+msgstr "Adjormn meg egy érvényes időtartamot."
 
 #, python-brace-format
 msgid "The number of days must be between {min_days} and {max_days}."
@@ -767,10 +767,10 @@ msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
 msgid_plural ""
 "Ensure this filename has at most %(max)d characters (it has %(length)d)."
 msgstr[0] ""
-"Bizonyosodjon meg arról, hogy a fájlnév legfeljebb %(max)d karakterből áll "
+"Bizonyosodjormn meg arról, hogy a fájlnév legfeljebb %(max)d karakterből áll "
 "(jelenlegi hossza: %(length)d)."
 msgstr[1] ""
-"Bizonyosodjon meg arról, hogy a fájlnév legfeljebb %(max)d karakterből áll "
+"Bizonyosodjormn meg arról, hogy a fájlnév legfeljebb %(max)d karakterből áll "
 "(jelenlegi hossza: %(length)d)."
 
 msgid "Please either submit a file or check the clear checkbox, not both."
@@ -794,13 +794,13 @@ msgid "Enter a list of values."
 msgstr "Adja meg értékek egy listáját."
 
 msgid "Enter a complete value."
-msgstr "Adjon meg egy teljes értéket."
+msgstr "Adjormn meg egy teljes értéket."
 
 msgid "Enter a valid UUID."
-msgstr "Adjon meg egy érvényes UUID-t."
+msgstr "Adjormn meg egy érvényes UUID-t."
 
 msgid "Enter a valid JSON."
-msgstr "Adjon meg egy érvényes JSON-t."
+msgstr "Adjormn meg egy érvényes JSON-t."
 
 #. Translators: This is the default suffix added to form field labels
 msgid ":"

@@ -46,17 +46,13 @@ class EarliestOrLatestTests(TestCase):
         # Get the earliest Article.
         self.assertEqual(Article.objects.earliest(), a1)
         # Get the earliest Article that matches certain filters.
-        self.assertEqual(
-            Article.objects.filter(pub_date__gt=datetime(2005, 7, 26)).earliest(), a2
-        )
+        self.assertEqual(Article.objects.filter(pub_date__gt=datetime(2005, 7, 26)).earliest(), a2)
 
         # Pass a custom field name to earliest() to change the field that's used
         # to determine the earliest object.
         self.assertEqual(Article.objects.earliest("expire_date"), a2)
         self.assertEqual(
-            Article.objects.filter(pub_date__gt=datetime(2005, 7, 26)).earliest(
-                "expire_date"
-            ),
+            Article.objects.filter(pub_date__gt=datetime(2005, 7, 26)).earliest("expire_date"),
             a2,
         )
 
@@ -74,7 +70,7 @@ class EarliestOrLatestTests(TestCase):
         ):
             Article.objects.earliest()
 
-        # Earliest publication date, earliest expire date.
+            # Earliest publication date, earliest expire date.
         self.assertEqual(
             Article.objects.filter(pub_date=datetime(2005, 7, 28)).earliest(
                 "pub_date", "expire_date"
@@ -91,9 +87,7 @@ class EarliestOrLatestTests(TestCase):
 
         # Meta.get_latest_by may be a tuple.
         Article.objects.model._meta.get_latest_by = ("pub_date", "expire_date")
-        self.assertEqual(
-            Article.objects.filter(pub_date=datetime(2005, 7, 28)).earliest(), a4
-        )
+        self.assertEqual(Article.objects.filter(pub_date=datetime(2005, 7, 28)).earliest(), a4)
 
     def test_earliest_sliced_queryset(self):
         msg = "Cannot change a query once a slice has been taken."
@@ -129,17 +123,13 @@ class EarliestOrLatestTests(TestCase):
         # Get the latest Article.
         self.assertEqual(Article.objects.latest(), a4)
         # Get the latest Article that matches certain filters.
-        self.assertEqual(
-            Article.objects.filter(pub_date__lt=datetime(2005, 7, 27)).latest(), a1
-        )
+        self.assertEqual(Article.objects.filter(pub_date__lt=datetime(2005, 7, 27)).latest(), a1)
 
         # Pass a custom field name to latest() to change the field that's used
         # to determine the latest object.
         self.assertEqual(Article.objects.latest("expire_date"), a1)
         self.assertEqual(
-            Article.objects.filter(pub_date__gt=datetime(2005, 7, 26)).latest(
-                "expire_date"
-            ),
+            Article.objects.filter(pub_date__gt=datetime(2005, 7, 26)).latest("expire_date"),
             a3,
         )
 
@@ -155,7 +145,7 @@ class EarliestOrLatestTests(TestCase):
         ):
             Article.objects.latest()
 
-        # Latest publication date, latest expire date.
+            # Latest publication date, latest expire date.
         self.assertEqual(
             Article.objects.filter(pub_date=datetime(2005, 7, 27)).latest(
                 "pub_date", "expire_date"
@@ -172,9 +162,7 @@ class EarliestOrLatestTests(TestCase):
 
         # Meta.get_latest_by may be a tuple.
         Article.objects.model._meta.get_latest_by = ("pub_date", "expire_date")
-        self.assertEqual(
-            Article.objects.filter(pub_date=datetime(2005, 7, 27)).latest(), a3
-        )
+        self.assertEqual(Article.objects.filter(pub_date=datetime(2005, 7, 27)).latest(), a3)
 
     def test_latest_sliced_queryset(self):
         msg = "Cannot change a query once a slice has been taken."
@@ -201,12 +189,8 @@ class TestFirstLast(TestCase):
         p2 = Person.objects.create(name="Alice", birthday=datetime(1961, 2, 3))
         self.assertEqual(Person.objects.first(), p1)
         self.assertEqual(Person.objects.order_by("name").first(), p2)
-        self.assertEqual(
-            Person.objects.filter(birthday__lte=datetime(1955, 1, 1)).first(), p1
-        )
-        self.assertIsNone(
-            Person.objects.filter(birthday__lte=datetime(1940, 1, 1)).first()
-        )
+        self.assertEqual(Person.objects.filter(birthday__lte=datetime(1955, 1, 1)).first(), p1)
+        self.assertIsNone(Person.objects.filter(birthday__lte=datetime(1940, 1, 1)).first())
 
     def test_last(self):
         p1 = Person.objects.create(name="Alice", birthday=datetime(1950, 1, 1))
@@ -214,12 +198,8 @@ class TestFirstLast(TestCase):
         # Note: by default PK ordering.
         self.assertEqual(Person.objects.last(), p2)
         self.assertEqual(Person.objects.order_by("-name").last(), p1)
-        self.assertEqual(
-            Person.objects.filter(birthday__lte=datetime(1955, 1, 1)).last(), p1
-        )
-        self.assertIsNone(
-            Person.objects.filter(birthday__lte=datetime(1940, 1, 1)).last()
-        )
+        self.assertEqual(Person.objects.filter(birthday__lte=datetime(1955, 1, 1)).last(), p1)
+        self.assertIsNone(Person.objects.filter(birthday__lte=datetime(1940, 1, 1)).last())
 
     def test_index_error_not_suppressed(self):
         """

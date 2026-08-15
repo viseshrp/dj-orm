@@ -9,9 +9,7 @@ from ..models import Author
 class PadTests(TestCase):
     def test_pad(self):
         Author.objects.create(name="John", alias="j")
-        none_value = (
-            "" if connection.features.interprets_empty_strings_as_nulls else None
-        )
+        none_value = "" if connection.features.interprets_empty_strings_as_nulls else None
         tests = (
             (LPad("name", 7, Value("xy")), "xyxJohn"),
             (RPad("name", 7, Value("xy")), "Johnxyx"),

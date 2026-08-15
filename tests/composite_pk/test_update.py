@@ -89,9 +89,7 @@ class CompositePKUpdateTests(TestCase):
         comment_2.text = "bar"
         comment_3.text = "baz"
 
-        result = Comment.objects.bulk_update(
-            [comment_1, comment_2, comment_3], ["text"]
-        )
+        result = Comment.objects.bulk_update([comment_1, comment_2, comment_3], ["text"])
 
         self.assertEqual(result, 3)
         comment_1 = Comment.objects.get(pk=self.comment_1.pk)
@@ -142,17 +140,13 @@ class CompositePKUpdateTests(TestCase):
     def test_update_or_create_with_pre_save_pk_field(self):
         t = TimeStamped.objects.create(id=1)
         self.assertEqual(TimeStamped.objects.count(), 1)
-        t, created = TimeStamped.objects.update_or_create(
-            pk=t.pk, defaults={"text": "new text"}
-        )
+        t, created = TimeStamped.objects.update_or_create(pk=t.pk, defaults={"text": "new text"})
         self.assertIs(created, False)
         self.assertEqual(TimeStamped.objects.count(), 1)
         self.assertEqual(t.text, "new text")
 
     def test_update_comment_by_user_email(self):
-        result = Comment.objects.filter(user__email=self.user_1.email).update(
-            text="foo"
-        )
+        result = Comment.objects.filter(user__email=self.user_1.email).update(text="foo")
 
         self.assertEqual(result, 2)
         comment_1 = Comment.objects.get(pk=self.comment_1.pk)
@@ -185,9 +179,6 @@ class CompositePKUpdateTests(TestCase):
             qs.update(pk=(1, 10))
 
     def test_update_value_not_composite(self):
-        msg = (
-            "Composite primary keys expressions are not allowed in this "
-            "query (text=F('pk'))."
-        )
+        msg = "Composite primary keys expressions are not allowed in this query (text=F('pk'))."
         with self.assertRaisesMessage(FieldError, msg):
             Comment.objects.update(text=F("pk"))

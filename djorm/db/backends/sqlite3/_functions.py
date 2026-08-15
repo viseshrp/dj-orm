@@ -44,15 +44,9 @@ def register(connection):
     )
     create_deterministic_function("django_date_extract", 2, _sqlite_datetime_extract)
     create_deterministic_function("django_date_trunc", 4, _sqlite_date_trunc)
-    create_deterministic_function(
-        "django_datetime_cast_date", 3, _sqlite_datetime_cast_date
-    )
-    create_deterministic_function(
-        "django_datetime_cast_time", 3, _sqlite_datetime_cast_time
-    )
-    create_deterministic_function(
-        "django_datetime_extract", 4, _sqlite_datetime_extract
-    )
+    create_deterministic_function("django_datetime_cast_date", 3, _sqlite_datetime_cast_date)
+    create_deterministic_function("django_datetime_cast_time", 3, _sqlite_datetime_cast_time)
+    create_deterministic_function("django_datetime_extract", 4, _sqlite_datetime_extract)
     create_deterministic_function("django_datetime_trunc", 4, _sqlite_datetime_trunc)
     create_deterministic_function("django_time_extract", 2, _sqlite_time_extract)
     create_deterministic_function("django_time_trunc", 4, _sqlite_time_trunc)
@@ -118,9 +112,9 @@ def _sqlite_datetime_parse(dt, tzname=None, conn_tzname=None):
             hours, minutes = offset.split(":")
             offset_delta = timedelta(hours=int(hours), minutes=int(minutes))
             dt += offset_delta if sign == "+" else -offset_delta
-        # The tzname may originally be just the offset e.g. "+3:00",
-        # which becomes an empty string after splitting the sign and offset.
-        # In this case, use the conn_tzname as fallback.
+            # The tzname may originally be just the offset e.g. "+3:00",
+            # which becomes an empty string after splitting the sign and offset.
+            # In this case, use the conn_tzname as fallback.
         dt = timezone.localtime(dt, zoneinfo.ZoneInfo(tzname or conn_tzname))
     return dt
 
@@ -215,10 +209,7 @@ def _sqlite_datetime_trunc(lookup_type, dt, tzname, conn_tzname):
     elif lookup_type == "hour":
         return f"{dt.year:04d}-{dt.month:02d}-{dt.day:02d} {dt.hour:02d}:00:00"
     elif lookup_type == "minute":
-        return (
-            f"{dt.year:04d}-{dt.month:02d}-{dt.day:02d} "
-            f"{dt.hour:02d}:{dt.minute:02d}:00"
-        )
+        return f"{dt.year:04d}-{dt.month:02d}-{dt.day:02d} {dt.hour:02d}:{dt.minute:02d}:00"
     elif lookup_type == "second":
         return (
             f"{dt.year:04d}-{dt.month:02d}-{dt.day:02d} "
@@ -382,7 +373,7 @@ def _sqlite_ln(x):
 def _sqlite_log(base, x):
     if base is None or x is None:
         return None
-    # Arguments reversed to match SQL standard.
+        # Arguments reversed to match SQL standard.
     return log(x, base)
 
 

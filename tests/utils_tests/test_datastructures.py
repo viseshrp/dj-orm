@@ -1,4 +1,6 @@
-'\nTests for stuff in djorm.utils.datastructures.\n'
+"""
+Tests for stuff in djorm.utils.datastructures.
+"""
 
 import collections.abc
 import copy
@@ -73,9 +75,7 @@ class MultiValueDictTests(SimpleTestCase):
         self.assertEqual(repr(d), "<MultiValueDict: {'key': 'value'}>")
 
     def test_multivaluedict(self):
-        d = MultiValueDict(
-            {"name": ["Adrian", "Simon"], "position": ["Developer"], "empty": []}
-        )
+        d = MultiValueDict({"name": ["Adrian", "Simon"], "position": ["Developer"], "empty": []})
         self.assertEqual(d["name"], "Simon")
         self.assertEqual(d.get("name"), "Simon")
         self.assertEqual(d.getlist("name"), ["Adrian", "Simon"])
@@ -94,9 +94,7 @@ class MultiValueDictTests(SimpleTestCase):
         self.assertIsNone(d.get("lastname"))
         self.assertEqual(d.get("lastname", "nonexistent"), "nonexistent")
         self.assertEqual(d.getlist("lastname"), [])
-        self.assertEqual(
-            d.getlist("doesnotexist", ["Adrian", "Simon"]), ["Adrian", "Simon"]
-        )
+        self.assertEqual(d.getlist("doesnotexist", ["Adrian", "Simon"]), ["Adrian", "Simon"])
         d.setlist("lastname", ["Holovaty", "Willison"])
         self.assertEqual(d.getlist("lastname"), ["Holovaty", "Willison"])
         self.assertEqual(list(d.values()), ["Simon", "Developer", [], "Willison"])
@@ -235,12 +233,12 @@ class MultiValueDictTests(SimpleTestCase):
         for value in [None, True, False, 123, 123.45]:
             with self.subTest(value), self.assertRaises(TypeError):
                 MultiValueDict().update(value)
-        # Iterables of objects that cannot be unpacked raise TypeError.
+                # Iterables of objects that cannot be unpacked raise TypeError.
         for value in [b"123", b"abc", (1, 2, 3), [1, 2, 3], {1, 2, 3}]:
             with self.subTest(value), self.assertRaises(TypeError):
                 MultiValueDict().update(value)
-        # Iterables of unpackable objects with incorrect number of items raise
-        # ValueError.
+                # Iterables of unpackable objects with incorrect number of items raise
+                # ValueError.
         for value in ["123", "abc", ("a", "b", "c"), ["a", "b", "c"], {"a", "b", "c"}]:
             with self.subTest(value), self.assertRaises(ValueError):
                 MultiValueDict().update(value)
@@ -251,9 +249,7 @@ class ImmutableListTests(SimpleTestCase):
         d = ImmutableList(range(10))
 
         # AttributeError: ImmutableList object is immutable.
-        with self.assertRaisesMessage(
-            AttributeError, "ImmutableList object is immutable."
-        ):
+        with self.assertRaisesMessage(AttributeError, "ImmutableList object is immutable."):
             d.sort()
 
         self.assertEqual(repr(d), "(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)")
@@ -274,9 +270,7 @@ class DictWrapperTests(SimpleTestCase):
             return "*%s" % x
 
         d = DictWrapper({"a": "a"}, f, "xx_")
-        self.assertEqual(
-            "Normal: %(a)s. Modified: %(xx_a)s" % d, "Normal: a. Modified: *a"
-        )
+        self.assertEqual("Normal: %(a)s. Modified: %(xx_a)s" % d, "Normal: a. Modified: *a")
 
 
 class CaseInsensitiveMappingTests(SimpleTestCase):
@@ -320,12 +314,8 @@ class CaseInsensitiveMappingTests(SimpleTestCase):
         self.assertEqual(str(dict2), str({"content-type": "text/html"}))
 
     def test_equal(self):
-        self.assertEqual(
-            self.dict1, {"Accept": "application/json", "content-type": "text/html"}
-        )
-        self.assertNotEqual(
-            self.dict1, {"accept": "application/jso", "Content-Type": "text/html"}
-        )
+        self.assertEqual(self.dict1, {"Accept": "application/json", "content-type": "text/html"})
+        self.assertNotEqual(self.dict1, {"accept": "application/jso", "Content-Type": "text/html"})
         self.assertNotEqual(self.dict1, "string")
 
     def test_items(self):

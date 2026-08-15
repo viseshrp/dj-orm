@@ -8,7 +8,7 @@ from djorm.utils.deprecation import RemovedInDjango60Warning
 def is_iterable(x):
     "An implementation independent way of checking for iterables"
     warnings.warn(
-        'djorm.utils.itercompat.is_iterable() is deprecated. '
+        "djorm.utils.itercompat.is_iterable() is deprecated. "
         "Use isinstance(..., collections.abc.Iterable) instead.",
         RemovedInDjango60Warning,
         stacklevel=2,

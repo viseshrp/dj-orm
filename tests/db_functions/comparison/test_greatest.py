@@ -15,29 +15,21 @@ class GreatestTests(TestCase):
     def test_basic(self):
         now = timezone.now()
         before = now - timedelta(hours=1)
-        Article.objects.create(
-            title="Testing with Django", written=before, published=now
-        )
-        articles = Article.objects.annotate(
-            last_updated=Greatest("written", "published")
-        )
+        Article.objects.create(title="Testing with Django", written=before, published=now)
+        articles = Article.objects.annotate(last_updated=Greatest("written", "published"))
         self.assertEqual(articles.first().last_updated, now)
 
     @skipUnlessDBFeature("greatest_least_ignores_nulls")
     def test_ignores_null(self):
         now = timezone.now()
         Article.objects.create(title="Testing with Django", written=now)
-        articles = Article.objects.annotate(
-            last_updated=Greatest("written", "published")
-        )
+        articles = Article.objects.annotate(last_updated=Greatest("written", "published"))
         self.assertEqual(articles.first().last_updated, now)
 
     @skipIfDBFeature("greatest_least_ignores_nulls")
     def test_propagates_null(self):
         Article.objects.create(title="Testing with Django", written=timezone.now())
-        articles = Article.objects.annotate(
-            last_updated=Greatest("written", "published")
-        )
+        articles = Article.objects.annotate(last_updated=Greatest("written", "published"))
         self.assertIsNone(articles.first().last_updated)
 
     def test_coalesce_workaround(self):
@@ -68,15 +60,11 @@ class GreatestTests(TestCase):
 
     def test_all_null(self):
         Article.objects.create(title="Testing with Django", written=timezone.now())
-        articles = Article.objects.annotate(
-            last_updated=Greatest("published", "updated")
-        )
+        articles = Article.objects.annotate(last_updated=Greatest("published", "updated"))
         self.assertIsNone(articles.first().last_updated)
 
     def test_one_expressions(self):
-        with self.assertRaisesMessage(
-            ValueError, "Greatest must take at least two expressions"
-        ):
+        with self.assertRaisesMessage(ValueError, "Greatest must take at least two expressions"):
             Greatest("written")
 
     def test_related_field(self):

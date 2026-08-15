@@ -144,9 +144,7 @@ class BulkCreateTests(TestCase):
         )
 
     def test_non_auto_increment_pk(self):
-        State.objects.bulk_create(
-            [State(two_letter_code=s) for s in ["IL", "NY", "CA", "ME"]]
-        )
+        State.objects.bulk_create([State(two_letter_code=s) for s in ["IL", "NY", "CA", "ME"]])
         self.assertQuerySetEqual(
             State.objects.order_by("two_letter_code"),
             [
@@ -161,9 +159,7 @@ class BulkCreateTests(TestCase):
     @skipUnlessDBFeature("has_bulk_insert")
     def test_non_auto_increment_pk_efficiency(self):
         with self.assertNumQueries(1):
-            State.objects.bulk_create(
-                [State(two_letter_code=s) for s in ["IL", "NY", "CA", "ME"]]
-            )
+            State.objects.bulk_create([State(two_letter_code=s) for s in ["IL", "NY", "CA", "ME"]])
         self.assertQuerySetEqual(
             State.objects.order_by("two_letter_code"),
             [
@@ -195,13 +191,9 @@ class BulkCreateTests(TestCase):
         self.assertEqual(Restaurant.objects.count(), 2)
 
     def test_large_batch(self):
-        TwoFields.objects.bulk_create(
-            [TwoFields(f1=i, f2=i + 1) for i in range(0, 1001)]
-        )
+        TwoFields.objects.bulk_create([TwoFields(f1=i, f2=i + 1) for i in range(0, 1001)])
         self.assertEqual(TwoFields.objects.count(), 1001)
-        self.assertEqual(
-            TwoFields.objects.filter(f1__gte=450, f1__lte=550).count(), 101
-        )
+        self.assertEqual(TwoFields.objects.filter(f1__gte=450, f1__lte=550).count(), 101)
         self.assertEqual(TwoFields.objects.filter(f2__gte=901).count(), 101)
 
     @skipUnlessDBFeature("has_bulk_insert")
@@ -214,9 +206,7 @@ class BulkCreateTests(TestCase):
     def test_large_batch_efficiency(self):
         with override_settings(DEBUG=True):
             connection.queries_log.clear()
-            TwoFields.objects.bulk_create(
-                [TwoFields(f1=i, f2=i + 1) for i in range(0, 1001)]
-            )
+            TwoFields.objects.bulk_create([TwoFields(f1=i, f2=i + 1) for i in range(0, 1001)])
             self.assertLess(len(connection.queries), 10)
 
     def test_large_batch_mixed(self):
@@ -225,10 +215,7 @@ class BulkCreateTests(TestCase):
         mixed together with objects without PK set.
         """
         TwoFields.objects.bulk_create(
-            [
-                TwoFields(id=i if i % 2 == 0 else None, f1=i, f2=i + 1)
-                for i in range(100000, 101000)
-            ]
+            [TwoFields(id=i if i % 2 == 0 else None, f1=i, f2=i + 1) for i in range(100000, 101000)]
         )
         self.assertEqual(TwoFields.objects.count(), 1000)
         # We can't assume much about the ID's created, except that the above
@@ -325,10 +312,7 @@ class BulkCreateTests(TestCase):
             field for field in NullableFields._meta.get_fields() if field.name != "id"
         ]
         NullableFields.objects.bulk_create(
-            [
-                NullableFields(**{**fk_to_auto_fields, field.name: None})
-                for field in nullable_fields
-            ]
+            [NullableFields(**{**fk_to_auto_fields, field.name: None}) for field in nullable_fields]
         )
         self.assertEqual(NullableFields.objects.count(), len(nullable_fields))
         for field in nullable_fields:
@@ -402,9 +386,7 @@ class BulkCreateTests(TestCase):
         self.assertIsNone(conflicting_objects[1].pk)
         # New objects are created and conflicts are ignored.
         new_object = TwoFields(f1=4, f2=4)
-        TwoFields.objects.bulk_create(
-            conflicting_objects + [new_object], ignore_conflicts=True
-        )
+        TwoFields.objects.bulk_create(conflicting_objects + [new_object], ignore_conflicts=True)
         self.assertEqual(TwoFields.objects.count(), 4)
         self.assertIsNone(new_object.pk)
         # Without ignore_conflicts=True, there's a problem.
@@ -461,8 +443,7 @@ class BulkCreateTests(TestCase):
     @skipUnlessDBFeature("supports_update_conflicts")
     def test_update_conflicts_no_update_fields(self):
         msg = (
-            "Fields that will be updated when a row insertion fails on "
-            "conflicts must be provided."
+            "Fields that will be updated when a row insertion fails on conflicts must be provided."
         )
         with self.assertRaisesMessage(ValueError, msg):
             Country.objects.bulk_create(self.data, update_conflicts=True)
@@ -523,7 +504,7 @@ class BulkCreateTests(TestCase):
                 update_fields=["relatedmodel"],
                 unique_fields=["pk"],
             )
-        # Many-to-many relationship.
+            # Many-to-many relationship.
         with self.assertRaisesMessage(ValueError, msg):
             RelatedModel.objects.bulk_create(
                 [RelatedModel(country=self.data[0])],
@@ -560,7 +541,7 @@ class BulkCreateTests(TestCase):
                 update_fields=["name"],
                 unique_fields=["relatedmodel"],
             )
-        # Many-to-many relationship.
+            # Many-to-many relationship.
         with self.assertRaisesMessage(ValueError, msg):
             RelatedModel.objects.bulk_create(
                 [RelatedModel(country=self.data[0])],
@@ -601,21 +582,15 @@ class BulkCreateTests(TestCase):
             ],
         )
 
-    @skipUnlessDBFeature(
-        "supports_update_conflicts", "supports_update_conflicts_with_target"
-    )
+    @skipUnlessDBFeature("supports_update_conflicts", "supports_update_conflicts_with_target")
     def test_update_conflicts_two_fields_unique_fields_first(self):
         self._test_update_conflicts_two_fields(["f1"])
 
-    @skipUnlessDBFeature(
-        "supports_update_conflicts", "supports_update_conflicts_with_target"
-    )
+    @skipUnlessDBFeature("supports_update_conflicts", "supports_update_conflicts_with_target")
     def test_update_conflicts_two_fields_unique_fields_second(self):
         self._test_update_conflicts_two_fields(["f2"])
 
-    @skipUnlessDBFeature(
-        "supports_update_conflicts", "supports_update_conflicts_with_target"
-    )
+    @skipUnlessDBFeature("supports_update_conflicts", "supports_update_conflicts_with_target")
     def test_update_conflicts_unique_fields_pk(self):
         TwoFields.objects.bulk_create(
             [
@@ -649,9 +624,7 @@ class BulkCreateTests(TestCase):
             ],
         )
 
-    @skipUnlessDBFeature(
-        "supports_update_conflicts", "supports_update_conflicts_with_target"
-    )
+    @skipUnlessDBFeature("supports_update_conflicts", "supports_update_conflicts_with_target")
     def test_update_conflicts_two_fields_unique_fields_both(self):
         with self.assertRaises((OperationalError, ProgrammingError)):
             self._test_update_conflicts_two_fields(["f1", "f2"])
@@ -675,9 +648,7 @@ class BulkCreateTests(TestCase):
             Country(
                 name="Czech Republic",
                 iso_two_letter="CZ",
-                description=(
-                    "The Czech Republic is a landlocked country in Central Europe."
-                ),
+                description=("The Czech Republic is a landlocked country in Central Europe."),
             ),
             # New countries.
             Country(name="Australia", iso_two_letter="AU"),
@@ -721,15 +692,11 @@ class BulkCreateTests(TestCase):
             ],
         )
 
-    @skipUnlessDBFeature(
-        "supports_update_conflicts", "supports_update_conflicts_with_target"
-    )
+    @skipUnlessDBFeature("supports_update_conflicts", "supports_update_conflicts_with_target")
     def test_update_conflicts_unique_two_fields_unique_fields_both(self):
         self._test_update_conflicts_unique_two_fields(["iso_two_letter", "name"])
 
-    @skipUnlessDBFeature(
-        "supports_update_conflicts", "supports_update_conflicts_with_target"
-    )
+    @skipUnlessDBFeature("supports_update_conflicts", "supports_update_conflicts_with_target")
     def test_update_conflicts_unique_two_fields_unique_fields_one(self):
         with self.assertRaises((OperationalError, ProgrammingError)):
             self._test_update_conflicts_unique_two_fields(["iso_two_letter"])
@@ -795,9 +762,7 @@ class BulkCreateTests(TestCase):
             ],
         )
 
-    @skipUnlessDBFeature(
-        "supports_update_conflicts", "supports_update_conflicts_with_target"
-    )
+    @skipUnlessDBFeature("supports_update_conflicts", "supports_update_conflicts_with_target")
     def test_update_conflicts_unique_fields(self):
         self._test_update_conflicts(unique_fields=["number"])
 
@@ -806,9 +771,7 @@ class BulkCreateTests(TestCase):
     def test_update_conflicts_no_unique_fields(self):
         self._test_update_conflicts([])
 
-    @skipUnlessDBFeature(
-        "supports_update_conflicts", "supports_update_conflicts_with_target"
-    )
+    @skipUnlessDBFeature("supports_update_conflicts", "supports_update_conflicts_with_target")
     def test_update_conflicts_unique_fields_update_fields_db_column(self):
         FieldsWithDbColumns.objects.bulk_create(
             [

@@ -1,6 +1,6 @@
 import json
 
-from djorm import forms
+from djorm._ext.forms import forms
 from djorm.core import checks, exceptions
 from djorm.db import NotSupportedError, connections, router
 from djorm.db.models import expressions, lookups
@@ -84,8 +84,8 @@ class JSONField(CheckFieldDefaultMixin, Field):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return value
-        # Some backends (SQLite at least) extract non-string values in their
-        # SQL datatypes.
+            # Some backends (SQLite at least) extract non-string values in their
+            # SQL datatypes.
         if isinstance(expression, KeyTransform) and not isinstance(value, str):
             return value
         try:
@@ -167,9 +167,7 @@ class DataContains(FieldGetDbPrepValueMixin, PostgresOperatorLookup):
 
     def as_sql(self, compiler, connection):
         if not connection.features.supports_json_field_contains:
-            raise NotSupportedError(
-                "contains lookup is not supported on this database backend."
-            )
+            raise NotSupportedError("contains lookup is not supported on this database backend.")
         lhs, lhs_params = self.process_lhs(compiler, connection)
         rhs, rhs_params = self.process_rhs(compiler, connection)
         params = tuple(lhs_params) + tuple(rhs_params)
@@ -201,14 +199,12 @@ class HasKeyLookup(PostgresOperatorLookup):
     def _as_sql_parts(self, compiler, connection):
         # Process JSON path from the left-hand side.
         if isinstance(self.lhs, KeyTransform):
-            lhs_sql, lhs_params, lhs_key_transforms = self.lhs.preprocess_lhs(
-                compiler, connection
-            )
+            lhs_sql, lhs_params, lhs_key_transforms = self.lhs.preprocess_lhs(compiler, connection)
             lhs_json_path = compile_json_path(lhs_key_transforms)
         else:
             lhs_sql, lhs_params = self.process_lhs(compiler, connection)
             lhs_json_path = "$"
-        # Process JSON path from the right-hand side.
+            # Process JSON path from the right-hand side.
         rhs = self.rhs
         if not isinstance(rhs, (list, tuple)):
             rhs = [rhs]
@@ -231,17 +227,13 @@ class HasKeyLookup(PostgresOperatorLookup):
     def as_sql(self, compiler, connection, template=None):
         sql_parts = []
         params = []
-        for lhs_sql, lhs_params, rhs_json_path in self._as_sql_parts(
-            compiler, connection
-        ):
+        for lhs_sql, lhs_params, rhs_json_path in self._as_sql_parts(compiler, connection):
             sql_parts.append(template % (lhs_sql, "%s"))
             params.extend(lhs_params + [rhs_json_path])
         return self._combine_sql_parts(sql_parts), tuple(params)
 
     def as_mysql(self, compiler, connection):
-        return self.as_sql(
-            compiler, connection, template="JSON_CONTAINS_PATH(%s, 'one', %s)"
-        )
+        return self.as_sql(compiler, connection, template="JSON_CONTAINS_PATH(%s, 'one', %s)")
 
     def as_oracle(self, compiler, connection):
         # Use a custom delimiter to prevent the JSON path from escaping the SQL
@@ -249,9 +241,7 @@ class HasKeyLookup(PostgresOperatorLookup):
         template = "JSON_EXISTS(%s, q'\uffff%s\uffff')"
         sql_parts = []
         params = []
-        for lhs_sql, lhs_params, rhs_json_path in self._as_sql_parts(
-            compiler, connection
-        ):
+        for lhs_sql, lhs_params, rhs_json_path in self._as_sql_parts(compiler, connection):
             # Add right-hand-side directly into SQL because it cannot be passed
             # as bind variables to JSON_EXISTS. It might result in invalid
             # queries but it is assumed that it cannot be evaded because the
@@ -269,9 +259,7 @@ class HasKeyLookup(PostgresOperatorLookup):
         return super().as_postgresql(compiler, connection)
 
     def as_sqlite(self, compiler, connection):
-        return self.as_sql(
-            compiler, connection, template="JSON_TYPE(%s, %s) IS NOT NULL"
-        )
+        return self.as_sql(compiler, connection, template="JSON_TYPE(%s, %s) IS NOT NULL")
 
 
 class HasKey(HasKeyLookup):
@@ -392,18 +380,13 @@ class KeyTransform(Transform):
                 ")"
             )
         else:
-            sql = (
-                "COALESCE("
-                "JSON_QUERY(%s, q'\uffff%s\uffff'),"
-                "JSON_VALUE(%s, q'\uffff%s\uffff')"
-                ")"
-            )
-        # Add paths directly into SQL because path expressions cannot be passed
-        # as bind variables on Oracle. Use a custom delimiter to prevent the
-        # JSON path from escaping the SQL literal. Each key in the JSON path is
-        # passed through json.dumps() with ensure_ascii=True (the default),
-        # which converts the delimiter into the escaped \uffff format. This
-        # ensures that the delimiter is not present in the JSON path.
+            sql = "COALESCE(JSON_QUERY(%s, q'\uffff%s\uffff'),JSON_VALUE(%s, q'\uffff%s\uffff'))"
+            # Add paths directly into SQL because path expressions cannot be passed
+            # as bind variables on Oracle. Use a custom delimiter to prevent the
+            # JSON path from escaping the SQL literal. Each key in the JSON path is
+            # passed through json.dumps() with ensure_ascii=True (the default),
+            # which converts the delimiter into the escaped \uffff format. This
+            # ensures that the delimiter is not present in the JSON path.
         return sql % ((lhs, json_path) * 2), tuple(params) * 2
 
     def as_postgresql(self, compiler, connection):
@@ -468,8 +451,7 @@ class KeyTransformTextLookupMixin:
     def __init__(self, key_transform, *args, **kwargs):
         if not isinstance(key_transform, KeyTransform):
             raise TypeError(
-                "Transform should be an instance of KeyTransform in order to "
-                "use this lookup."
+                "Transform should be an instance of KeyTransform in order to use this lookup."
             )
         key_text_transform = KeyTextTransform(
             key_transform.key_name,
@@ -488,7 +470,7 @@ class KeyTransformIsNull(lookups.IsNull):
         ).as_oracle(compiler, connection)
         if not self.rhs:
             return sql, params
-        # Column doesn't have a key or IS NULL.
+            # Column doesn't have a key or IS NULL.
         lhs, lhs_params, _ = self.lhs.preprocess_lhs(compiler, connection)
         return "(NOT %s OR %s IS NULL)" % (sql, lhs), tuple(params) + tuple(lhs_params)
 
@@ -511,10 +493,7 @@ class KeyTransformIn(lookups.In):
             sql,
             param,
         )
-        if (
-            not hasattr(param, "as_sql")
-            and not connection.features.has_native_json_field
-        ):
+        if not hasattr(param, "as_sql") and not connection.features.has_native_json_field:
             if connection.vendor == "oracle":
                 value = json.loads(param)
                 sql = "%s(JSON_OBJECT('value' VALUE %%s FORMAT JSON), '$.value')"
@@ -572,15 +551,11 @@ class KeyTransformExact(JSONExact):
         return super().as_sql(compiler, connection)
 
 
-class KeyTransformIExact(
-    CaseInsensitiveMixin, KeyTransformTextLookupMixin, lookups.IExact
-):
+class KeyTransformIExact(CaseInsensitiveMixin, KeyTransformTextLookupMixin, lookups.IExact):
     pass
 
 
-class KeyTransformIContains(
-    CaseInsensitiveMixin, KeyTransformTextLookupMixin, lookups.IContains
-):
+class KeyTransformIContains(CaseInsensitiveMixin, KeyTransformTextLookupMixin, lookups.IContains):
     pass
 
 
@@ -598,9 +573,7 @@ class KeyTransformEndsWith(KeyTransformTextLookupMixin, lookups.EndsWith):
     pass
 
 
-class KeyTransformIEndsWith(
-    CaseInsensitiveMixin, KeyTransformTextLookupMixin, lookups.IEndsWith
-):
+class KeyTransformIEndsWith(CaseInsensitiveMixin, KeyTransformTextLookupMixin, lookups.IEndsWith):
     pass
 
 
@@ -608,9 +581,7 @@ class KeyTransformRegex(KeyTransformTextLookupMixin, lookups.Regex):
     pass
 
 
-class KeyTransformIRegex(
-    CaseInsensitiveMixin, KeyTransformTextLookupMixin, lookups.IRegex
-):
+class KeyTransformIRegex(CaseInsensitiveMixin, KeyTransformTextLookupMixin, lookups.IRegex):
     pass
 
 

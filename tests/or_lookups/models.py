@@ -1,4 +1,12 @@
-'\nOR lookups\n\nTo perform an OR lookup, or a lookup that combines ANDs and ORs, combine\n``QuerySet`` objects using ``&`` and ``|`` operators.\n\nAlternatively, use positional arguments, and pass one or more expressions of\nclauses using the variable ``djorm.db.models.Q``.\n'
+"""
+OR lookups
+
+To perform an OR lookup, or a lookup that combines ANDs and ORs, combine
+``QuerySet`` objects using ``&`` and ``|`` operators.
+
+Alternatively, use positional arguments, and pass one or more expressions of
+clauses using the variable ``djorm.db.models.Q``.
+"""
 
 from djorm.db import models
 

@@ -1,30 +1,68 @@
+default_language_version:
+  python: python3.14
+
+files: ^(\.djorm-maintenance\.toml$|\.github/|\.gitattributes$|\.gitignore$|\.pre-commit-config\.yaml$|CHANGELOG\.md$|CONTRIBUTING\.md$|HANDOFF_LOG\.md$|MAINTENANCE\.md$|Makefile$|README\.md$|SPEC\.md$|codecov\.yml$|codespell\.txt$|djorm/_ext/|djorm/_version\.py$|pyproject\.toml$|scripts/apply_django_lts\.py$|scripts/check_release\.py$|scripts/inspect_dist\.py$|scripts/tag_release\.sh$|tests/djorm_smoke/|tox\.ini$|uv\.lock$)
+
 repos:
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.3.1
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
-    - id: black
-      exclude: \.py-tpl$
-  - repo: https://github.com/adamchainz/blacken-docs
-    rev: 1.19.1
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        exclude: \.py$
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.49.1
     hooks:
-      - id: blacken-docs
-        additional_dependencies:
-        - black==26.3.1
-        files: 'docs/.*\.txt$'
-        args: ["--rst-literal-block"]
-  - repo: https://github.com/PyCQA/isort
-    rev: 7.0.0
+      - id: markdownlint
+        args: [--fix, --disable, MD024, MD033, MD041]
+        files: ^(CHANGELOG|CONTRIBUTING|HANDOFF_LOG|MAINTENANCE|README|SPEC)\.md$
+
+  - repo: local
     hooks:
-      - id: isort
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
-    hooks:
-      - id: flake8
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.12.0
-    hooks:
-      - id: eslint
-  - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.16.3 
-    hooks:
-    - id: zizmor
+      - id: ruff-format
+        name: ruff-format
+        entry: ruff format
+        language: system
+        types: [python]
+        files: ^(djorm/_ext/|djorm/_version\.py$|scripts/(apply_django_lts|check_release|inspect_dist)\.py$|tests/djorm_smoke/)
+
+      - id: ruff-check
+        name: ruff-check
+        entry: ruff check
+        language: system
+        types: [python]
+        files: ^(djorm/_ext/|djorm/_version\.py$|scripts/(apply_django_lts|check_release|inspect_dist)\.py$|tests/djorm_smoke/)
+
+      - id: ty
+        name: ty
+        entry: ty check
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: pip-audit
+        name: pip-audit
+        entry: pip-audit
+        language: system
+        args: [--skip-editable]
+        files: ^(pyproject\.toml|uv\.lock)$
+        pass_filenames: false
+
+      - id: bandit
+        name: bandit
+        entry: bandit
+        language: system
+        args: [-c, pyproject.toml, -r, -n, "3", --severity-level, high, djorm/_ext, scripts]
+        files: ^(djorm/_ext/|scripts/)
+        pass_filenames: false
+
+      - id: codespell
+        name: codespell
+        entry: codespell
+        language: system
+        files: ^(CHANGELOG|CONTRIBUTING|HANDOFF_LOG|MAINTENANCE|README|SPEC)\.md$|^scripts/.*\.(py|sh|md)$

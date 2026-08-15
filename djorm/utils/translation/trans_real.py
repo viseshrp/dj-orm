@@ -156,9 +156,7 @@ class DjangoTranslation(gettext_module.GNUTranslations):
         if self.domain == "django":
             if localedirs is not None:
                 # A module-level cache is used for caching 'django' translations
-                warnings.warn(
-                    "localedirs is ignored when domain is 'django'.", RuntimeWarning
-                )
+                warnings.warn("localedirs is ignored when domain is 'django'.", RuntimeWarning)
                 localedirs = None
             self._init_translation_catalog()
 
@@ -177,8 +175,7 @@ class DjangoTranslation(gettext_module.GNUTranslations):
         ):
             # default lang should have at least one translation file available.
             raise OSError(
-                "No translation files found for default language %s."
-                % settings.LANGUAGE_CODE
+                "No translation files found for default language %s." % settings.LANGUAGE_CODE
             )
         self._add_fallback(localedirs)
         if self._catalog is None:
@@ -236,9 +233,7 @@ class DjangoTranslation(gettext_module.GNUTranslations):
         """Set the GNUTranslations() fallback with the default language."""
         # Don't set a fallback for the default language or any English variant
         # (as it's empty, so it'll ALWAYS fall back to the default language)
-        if self.__language == settings.LANGUAGE_CODE or self.__language.startswith(
-            "en"
-        ):
+        if self.__language == settings.LANGUAGE_CODE or self.__language.startswith("en"):
             return
         if self.domain == "django":
             # Get from cache
@@ -330,7 +325,7 @@ def get_language():
             return t.to_language()
         except AttributeError:
             pass
-    # If we don't have a real translation object, assume it's the default language.
+            # If we don't have a real translation object, assume it's the default language.
     return settings.LANGUAGE_CODE
 
 
@@ -448,9 +443,7 @@ def all_locale_paths():
     """
     Return a list of paths to user-provides languages files.
     """
-    globalpath = os.path.join(
-        os.path.dirname(sys.modules[settings.__module__].__file__), "locale"
-    )
+    globalpath = os.path.join(os.path.dirname(sys.modules[settings.__module__].__file__), "locale")
     app_paths = []
     for app_config in apps.get_app_configs():
         locale_path = os.path.join(app_config.path, "locale")
@@ -518,16 +511,13 @@ def get_supported_language_variant(lang_code, strict=False):
         # Truncate the language code to a maximum length to avoid potential
         # denial of service attacks.
         if len(lang_code) > LANGUAGE_CODE_MAX_LENGTH:
-            if (
-                not strict
-                and (index := lang_code.rfind("-", 0, LANGUAGE_CODE_MAX_LENGTH)) > 0
-            ):
+            if not strict and (index := lang_code.rfind("-", 0, LANGUAGE_CODE_MAX_LENGTH)) > 0:
                 # There is a generic variant under the maximum length accepted length.
                 lang_code = lang_code[:index]
             else:
                 raise LookupError(lang_code)
-        # If 'zh-hant-tw' is not supported, try special fallback or subsequent
-        # language codes i.e. 'zh-hant' and 'zh'.
+                # If 'zh-hant-tw' is not supported, try special fallback or subsequent
+                # language codes i.e. 'zh-hant' and 'zh'.
         possible_lang_codes = [lang_code]
         try:
             possible_lang_codes.extend(LANG_INFO[lang_code]["fallback"])
@@ -583,11 +573,7 @@ def get_language_from_request(request, check_path=False):
             return lang_code
 
     lang_code = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME)
-    if (
-        lang_code is not None
-        and lang_code in get_languages()
-        and check_for_language(lang_code)
-    ):
+    if lang_code is not None and lang_code in get_languages() and check_for_language(lang_code):
         return lang_code
 
     try:
@@ -652,12 +638,12 @@ def parse_accept_lang_header(lang_string):
     if len(lang_string) <= LANGUAGE_CODE_MAX_LENGTH:
         return _parse_accept_lang_header(lang_string)
 
-    # If there is at least one comma in the value, parse up to the last comma
-    # before the max length, skipping any truncated parts at the end of the
-    # header value.
+        # If there is at least one comma in the value, parse up to the last comma
+        # before the max length, skipping any truncated parts at the end of the
+        # header value.
     if (index := lang_string.rfind(",", 0, LANGUAGE_CODE_MAX_LENGTH)) > 0:
         return _parse_accept_lang_header(lang_string[:index])
 
-    # Don't attempt to parse if there is only one language-range value which is
-    # longer than the maximum allowed length and so truncated.
+        # Don't attempt to parse if there is only one language-range value which is
+        # longer than the maximum allowed length and so truncated.
     return ()

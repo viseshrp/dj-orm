@@ -19,9 +19,7 @@ class GenericForeignKeyTests(TestCase):
         self.assertEqual(str(Model.field), "contenttypes_tests.Model.field")
 
     def test_get_content_type_no_arguments(self):
-        with self.assertRaisesMessage(
-            Exception, "Impossible arguments to GFK.get_content_type!"
-        ):
+        with self.assertRaisesMessage(Exception, "Impossible arguments to GFK.get_content_type!"):
             Answer.question.get_content_type()
 
     def test_get_object_cache_respects_deleted_objects(self):
@@ -103,20 +101,14 @@ class GetPrefetchQuerySetDeprecation(TestCase):
     def test_generic_relation_warning(self):
         Question.objects.create(text="test")
         questions = Question.objects.all()
-        msg = (
-            "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() "
-            "instead."
-        )
+        msg = "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() instead."
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:
             questions[0].answer_set.get_prefetch_queryset(questions)
         self.assertEqual(ctx.filename, __file__)
 
     def test_generic_foreign_key_warning(self):
         answers = Answer.objects.all()
-        msg = (
-            "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() "
-            "instead."
-        )
+        msg = "get_prefetch_queryset() is deprecated. Use get_prefetch_querysets() instead."
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:
             Answer.question.get_prefetch_queryset(answers)
         self.assertEqual(ctx.filename, __file__)
@@ -143,9 +135,7 @@ class GetPrefetchQuerySetsTests(TestCase):
     def test_generic_relation_invalid_length(self):
         Question.objects.create(text="test")
         questions = Question.objects.all()
-        msg = (
-            "querysets argument of get_prefetch_querysets() should have a length of 1."
-        )
+        msg = "querysets argument of get_prefetch_querysets() should have a length of 1."
         with self.assertRaisesMessage(ValueError, msg):
             questions[0].answer_set.get_prefetch_querysets(
                 instances=questions,

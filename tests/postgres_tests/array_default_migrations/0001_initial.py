@@ -20,9 +20,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "field",
-                    djorm.contrib.postgres.fields.ArrayField(
-                        models.IntegerField(), size=None
-                    ),
+                    djorm.contrib.postgres.fields.ArrayField(models.IntegerField(), size=None),
                 ),
             ],
             options={},

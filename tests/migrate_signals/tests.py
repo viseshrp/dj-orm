@@ -53,15 +53,16 @@ class OneTimeReceiver:
             # we need to test only one call of migrate
             self.signal.disconnect(self, sender=APP_CONFIG)
 
+            # We connect receiver here and not in unit test code because we need to
+            # connect receiver before test runner creates database.  That is, sequence of
+            # actions would be:
+            #
+            #   1. Test runner imports this module.
+            #   2. We connect receiver.
+            #   3. Test runner calls migrate for create default database.
+            #   4. Test runner execute our unit test code.
 
-# We connect receiver here and not in unit test code because we need to
-# connect receiver before test runner creates database.  That is, sequence of
-# actions would be:
-#
-#   1. Test runner imports this module.
-#   2. We connect receiver.
-#   3. Test runner calls migrate for create default database.
-#   4. Test runner execute our unit test code.
+
 pre_migrate_receiver = OneTimeReceiver(signals.pre_migrate)
 post_migrate_receiver = OneTimeReceiver(signals.post_migrate)
 
@@ -97,9 +98,7 @@ class MigrateSignalTests(TransactionTestCase):
                 self.assertEqual(args["plan"], [])
                 self.assertIsInstance(args["apps"], migrations.state.StateApps)
 
-    @override_settings(
-        MIGRATION_MODULES={"migrate_signals": "migrate_signals.custom_migrations"}
-    )
+    @override_settings(MIGRATION_MODULES={"migrate_signals": "migrate_signals.custom_migrations"})
     def test_migrations_only(self):
         """
         If all apps have migrations, migration signals should be sent.
@@ -126,10 +125,7 @@ class MigrateSignalTests(TransactionTestCase):
             self.assertIsInstance(args["apps"], migrations.state.StateApps)
         self.assertEqual(pre_migrate_receiver.call_args["apps"].get_models(), [])
         self.assertEqual(
-            [
-                model._meta.label
-                for model in post_migrate_receiver.call_args["apps"].get_models()
-            ],
+            [model._meta.label for model in post_migrate_receiver.call_args["apps"].get_models()],
             ["migrate_signals.Signal"],
         )
         # Migrating with an empty plan.
@@ -142,17 +138,11 @@ class MigrateSignalTests(TransactionTestCase):
             interactive=MIGRATE_INTERACTIVE,
         )
         self.assertEqual(
-            [
-                model._meta.label
-                for model in pre_migrate_receiver.call_args["apps"].get_models()
-            ],
+            [model._meta.label for model in pre_migrate_receiver.call_args["apps"].get_models()],
             ["migrate_signals.Signal"],
         )
         self.assertEqual(
-            [
-                model._meta.label
-                for model in post_migrate_receiver.call_args["apps"].get_models()
-            ],
+            [model._meta.label for model in post_migrate_receiver.call_args["apps"].get_models()],
             ["migrate_signals.Signal"],
         )
         # Migrating with an empty plan and --check doesn't emit signals.

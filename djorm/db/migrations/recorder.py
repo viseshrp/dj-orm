@@ -59,7 +59,7 @@ class MigrationRecorder:
         # recheck it's existence.
         if self._has_table:
             return True
-        # It hasn't been confirmed to exist, recheck.
+            # It hasn't been confirmed to exist, recheck.
         with self.connection.cursor() as cursor:
             tables = self.connection.introspection.table_names(cursor)
 
@@ -72,14 +72,12 @@ class MigrationRecorder:
         # in the codebase.
         if self.has_table():
             return
-        # Make the table
+            # Make the table
         try:
             with self.connection.schema_editor() as editor:
                 editor.create_model(self.Migration)
         except DatabaseError as exc:
-            raise MigrationSchemaMissing(
-                "Unable to create the django_migrations table (%s)" % exc
-            )
+            raise MigrationSchemaMissing("Unable to create the django_migrations table (%s)" % exc)
 
     def applied_migrations(self):
         """
@@ -87,10 +85,7 @@ class MigrationRecorder:
         for all applied migrations.
         """
         if self.has_table():
-            return {
-                (migration.app, migration.name): migration
-                for migration in self.migration_qs
-            }
+            return {(migration.app, migration.name): migration for migration in self.migration_qs}
         else:
             # If the django_migrations table doesn't exist, then no migrations
             # are applied.

@@ -24,9 +24,7 @@ class RegexValidator:
     inverse_match = False
     flags = 0
 
-    def __init__(
-        self, regex=None, message=None, code=None, inverse_match=None, flags=None
-    ):
+    def __init__(self, regex=None, message=None, code=None, inverse_match=None, flags=None):
         if regex is not None:
             self.regex = regex
         if message is not None:
@@ -38,9 +36,7 @@ class RegexValidator:
         if flags is not None:
             self.flags = flags
         if self.flags and not isinstance(self.regex, str):
-            raise TypeError(
-                "If the flags are set, regex must be a regular expression string."
-            )
+            raise TypeError("If the flags are set, regex must be a regular expression string.")
 
         self.regex = _lazy_re_compile(self.regex, self.flags)
 
@@ -70,9 +66,7 @@ class DomainNameValidator(RegexValidator):
     message = _("Enter a valid domain name.")
     ul = "\u00a1-\uffff"  # Unicode letters range (must not be a raw string).
     # Host patterns.
-    hostname_re = (
-        r"[a-z" + ul + r"0-9](?:[a-z" + ul + r"0-9-]{0,61}[a-z" + ul + r"0-9])?"
-    )
+    hostname_re = r"[a-z" + ul + r"0-9](?:[a-z" + ul + r"0-9-]{0,61}[a-z" + ul + r"0-9])?"
     # Max length for domain name labels is 63 characters per RFC 1034 sec. 3.1.
     domain_re = r"(?:\.(?!-)[a-z" + ul + r"0-9-]{1,63}(?<!-))*"
     # Top-level domain.
@@ -165,12 +159,12 @@ class URLValidator(RegexValidator):
             raise ValidationError(self.message, code=self.code, params={"value": value})
         if self.unsafe_chars.intersection(value):
             raise ValidationError(self.message, code=self.code, params={"value": value})
-        # Check if the scheme is valid.
+            # Check if the scheme is valid.
         scheme = value.split("://")[0].lower()
         if scheme not in self.schemes:
             raise ValidationError(self.message, code=self.code, params={"value": value})
 
-        # Then check full URL
+            # Then check full URL
         try:
             splitted_url = urlsplit(value)
         except ValueError:
@@ -183,14 +177,12 @@ class URLValidator(RegexValidator):
             try:
                 validate_ipv6_address(potential_ip)
             except ValidationError:
-                raise ValidationError(
-                    self.message, code=self.code, params={"value": value}
-                )
+                raise ValidationError(self.message, code=self.code, params={"value": value})
 
-        # The maximum length of a full host name is 253 characters per RFC 1034
-        # section 3.1. It's defined to be 255 bytes or less, but this includes
-        # one byte for the length of the name and one byte for the trailing dot
-        # that's used to indicate absolute names in DNS.
+                # The maximum length of a full host name is 253 characters per RFC 1034
+                # section 3.1. It's defined to be 255 bytes or less, but this includes
+                # one byte for the length of the name and one byte for the trailing dot
+                # that's used to indicate absolute names in DNS.
         if splitted_url.hostname is None or len(splitted_url.hostname) > 253:
             raise ValidationError(self.message, code=self.code, params={"value": value})
 
@@ -252,9 +244,7 @@ class EmailValidator:
         if not self.user_regex.match(user_part):
             raise ValidationError(self.message, code=self.code, params={"value": value})
 
-        if domain_part not in self.domain_allowlist and not self.validate_domain_part(
-            domain_part
-        ):
+        if domain_part not in self.domain_allowlist and not self.validate_domain_part(domain_part):
             raise ValidationError(self.message, code=self.code, params={"value": value})
 
     def validate_domain_part(self, domain_part):
@@ -293,10 +283,7 @@ validate_slug = RegexValidator(
 slug_unicode_re = _lazy_re_compile(r"^[-\w]+\Z")
 validate_unicode_slug = RegexValidator(
     slug_unicode_re,
-    _(
-        "Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
-        "hyphens."
-    ),
+    _("Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or hyphens."),
     "invalid",
 )
 
@@ -348,9 +335,7 @@ def ip_address_validators(protocol, unpack_ipv4):
     the GenericIPAddressField.
     """
     if protocol != "both" and unpack_ipv4:
-        raise ValueError(
-            "You can only use `unpack_ipv4` if `protocol` is set to 'both'"
-        )
+        raise ValueError("You can only use `unpack_ipv4` if `protocol` is set to 'both'")
     try:
         return ip_address_validator_map[protocol.lower()]
     except KeyError:
@@ -388,9 +373,7 @@ class BaseValidator:
 
     def __call__(self, value):
         cleaned = self.clean(value)
-        limit_value = (
-            self.limit_value() if callable(self.limit_value) else self.limit_value
-        )
+        limit_value = self.limit_value() if callable(self.limit_value) else self.limit_value
         params = {"limit_value": limit_value, "show_value": cleaned, "value": value}
         if self.compare(cleaned, limit_value):
             raise ValidationError(self.message, code=self.code, params=params)
@@ -449,9 +432,7 @@ class StepValueValidator(BaseValidator):
             super().__call__(value)
         else:
             cleaned = self.clean(value)
-            limit_value = (
-                self.limit_value() if callable(self.limit_value) else self.limit_value
-            )
+            limit_value = self.limit_value() if callable(self.limit_value) else self.limit_value
             if self.compare(cleaned, limit_value):
                 offset = cleaned.__class__(self.offset)
                 params = {
@@ -470,10 +451,8 @@ class StepValueValidator(BaseValidator):
 @deconstructible
 class MinLengthValidator(BaseValidator):
     message = ngettext_lazy(
-        "Ensure this value has at least %(limit_value)d character (it has "
-        "%(show_value)d).",
-        "Ensure this value has at least %(limit_value)d characters (it has "
-        "%(show_value)d).",
+        "Ensure this value has at least %(limit_value)d character (it has %(show_value)d).",
+        "Ensure this value has at least %(limit_value)d characters (it has %(show_value)d).",
         "limit_value",
     )
     code = "min_length"
@@ -488,10 +467,8 @@ class MinLengthValidator(BaseValidator):
 @deconstructible
 class MaxLengthValidator(BaseValidator):
     message = ngettext_lazy(
-        "Ensure this value has at most %(limit_value)d character (it has "
-        "%(show_value)d).",
-        "Ensure this value has at most %(limit_value)d characters (it has "
-        "%(show_value)d).",
+        "Ensure this value has at most %(limit_value)d character (it has %(show_value)d).",
+        "Ensure this value has at most %(limit_value)d characters (it has %(show_value)d).",
         "limit_value",
     )
     code = "max_length"
@@ -523,10 +500,8 @@ class DecimalValidator:
             "max",
         ),
         "max_whole_digits": ngettext_lazy(
-            "Ensure that there are no more than %(max)s digit before the decimal "
-            "point.",
-            "Ensure that there are no more than %(max)s digits before the decimal "
-            "point.",
+            "Ensure that there are no more than %(max)s digit before the decimal point.",
+            "Ensure that there are no more than %(max)s digits before the decimal point.",
             "max",
         ),
     }
@@ -538,9 +513,7 @@ class DecimalValidator:
     def __call__(self, value):
         digit_tuple, exponent = value.as_tuple()[1:]
         if exponent in {"F", "n", "N"}:
-            raise ValidationError(
-                self.messages["invalid"], code="invalid", params={"value": value}
-            )
+            raise ValidationError(self.messages["invalid"], code="invalid", params={"value": value})
         if exponent >= 0:
             digits = len(digit_tuple)
             if digit_tuple != (0,):
@@ -612,10 +585,7 @@ class FileExtensionValidator:
 
     def __call__(self, value):
         extension = Path(value.name).suffix[1:].lower()
-        if (
-            self.allowed_extensions is not None
-            and extension not in self.allowed_extensions
-        ):
+        if self.allowed_extensions is not None and extension not in self.allowed_extensions:
             raise ValidationError(
                 self.message,
                 code=self.code,
@@ -629,8 +599,7 @@ class FileExtensionValidator:
     def __eq__(self, other):
         return (
             isinstance(other, self.__class__)
-            and set(self.allowed_extensions or [])
-            == set(other.allowed_extensions or [])
+            and set(self.allowed_extensions or []) == set(other.allowed_extensions or [])
             and self.message == other.message
             and self.code == other.code
         )
@@ -647,9 +616,7 @@ def get_available_image_extensions():
 
 
 def validate_image_file_extension(value):
-    return FileExtensionValidator(allowed_extensions=get_available_image_extensions())(
-        value
-    )
+    return FileExtensionValidator(allowed_extensions=get_available_image_extensions())(value)
 
 
 @deconstructible

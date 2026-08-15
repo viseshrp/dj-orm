@@ -28,19 +28,14 @@ class NullQueriesTests(TestCase):
         self.assertSequenceEqual(Choice.objects.filter(choice__iexact=None), [])
 
         # Excluding the previous result returns everything.
-        self.assertSequenceEqual(
-            Choice.objects.exclude(choice=None).order_by("id"), [c1, c2]
-        )
+        self.assertSequenceEqual(Choice.objects.exclude(choice=None).order_by("id"), [c1, c2])
 
         # Valid query, but fails because foo isn't a keyword
-        msg = (
-            "Cannot resolve keyword 'foo' into field. Choices are: choice, id, poll, "
-            "poll_id"
-        )
+        msg = "Cannot resolve keyword 'foo' into field. Choices are: choice, id, poll, poll_id"
         with self.assertRaisesMessage(FieldError, msg):
             Choice.objects.filter(foo__exact=None)
 
-        # Can't use None on anything other than __exact and __iexact
+            # Can't use None on anything other than __exact and __iexact
         with self.assertRaisesMessage(ValueError, "Cannot use None as a query value"):
             Choice.objects.filter(id__gt=None)
 
@@ -63,9 +58,7 @@ class NullQueriesTests(TestCase):
         self.assertSequenceEqual(OuterA.objects.filter(inner__third__data=None), [obj])
 
         inner = Inner.objects.create(first=obj)
-        self.assertSequenceEqual(
-            Inner.objects.filter(first__inner__third=None), [inner]
-        )
+        self.assertSequenceEqual(Inner.objects.filter(first__inner__third=None), [inner])
 
         # Ticket #13815: check if <reverse>_isnull=False does not produce
         # faulty empty lists

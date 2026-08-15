@@ -33,9 +33,7 @@ from djorm.utils.functional import lazy
 class PromiseTest(SimpleTestCase):
     def test_AutoField(self):
         lazy_func = lazy(lambda: 1, int)
-        self.assertIsInstance(
-            AutoField(primary_key=True).get_prep_value(lazy_func()), int
-        )
+        self.assertIsInstance(AutoField(primary_key=True).get_prep_value(lazy_func()), int)
 
     def test_BinaryField(self):
         lazy_func = lazy(lambda: b"", bytes)
@@ -57,9 +55,7 @@ class PromiseTest(SimpleTestCase):
 
     def test_DateTimeField(self):
         lazy_func = lazy(lambda: datetime.datetime.now(), datetime.datetime)
-        self.assertIsInstance(
-            DateTimeField().get_prep_value(lazy_func()), datetime.datetime
-        )
+        self.assertIsInstance(DateTimeField().get_prep_value(lazy_func()), datetime.datetime)
 
     def test_DecimalField(self):
         lazy_func = lazy(lambda: Decimal("1.2"), Decimal)
@@ -111,15 +107,11 @@ class PromiseTest(SimpleTestCase):
 
     def test_PositiveSmallIntegerField(self):
         lazy_func = lazy(lambda: 1, int)
-        self.assertIsInstance(
-            PositiveSmallIntegerField().get_prep_value(lazy_func()), int
-        )
+        self.assertIsInstance(PositiveSmallIntegerField().get_prep_value(lazy_func()), int)
 
     def test_PositiveBigIntegerField(self):
         lazy_func = lazy(lambda: 1, int)
-        self.assertIsInstance(
-            PositiveBigIntegerField().get_prep_value(lazy_func()), int
-        )
+        self.assertIsInstance(PositiveBigIntegerField().get_prep_value(lazy_func()), int)
 
     def test_SlugField(self):
         lazy_func = lazy(lambda: "slug", str)

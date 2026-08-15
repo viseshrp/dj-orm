@@ -34,8 +34,7 @@ class Comment(models.Model):
     class Meta:
         ordering = ("comment_text",)
 
-
-# Ticket 15823
+        # Ticket 15823
 
 
 class Item(models.Model):

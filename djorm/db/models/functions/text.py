@@ -113,10 +113,7 @@ class ConcatPair(Func):
         # null on either side results in null for expression, wrap with coalesce
         c = self.copy()
         c.set_source_expressions(
-            [
-                Coalesce(expression, Value(""))
-                for expression in c.get_source_expressions()
-            ]
+            [Coalesce(expression, Value("")) for expression in c.get_source_expressions()]
         )
         return c
 
@@ -183,9 +180,7 @@ class Length(Transform):
     output_field = IntegerField()
 
     def as_mysql(self, compiler, connection, **extra_context):
-        return super().as_sql(
-            compiler, connection, function="CHAR_LENGTH", **extra_context
-        )
+        return super().as_sql(compiler, connection, function="CHAR_LENGTH", **extra_context)
 
 
 class Lower(Transform):
@@ -198,11 +193,7 @@ class LPad(Func):
     output_field = CharField()
 
     def __init__(self, expression, length, fill_text=Value(" "), **extra):
-        if (
-            not hasattr(length, "resolve_expression")
-            and length is not None
-            and length < 0
-        ):
+        if not hasattr(length, "resolve_expression") and length is not None and length < 0:
             raise ValueError("'length' must be greater or equal to 0.")
         super().__init__(expression, length, fill_text, **extra)
 
@@ -234,11 +225,7 @@ class Repeat(Func):
     output_field = CharField()
 
     def __init__(self, expression, number, **extra):
-        if (
-            not hasattr(number, "resolve_expression")
-            and number is not None
-            and number < 0
-        ):
+        if not hasattr(number, "resolve_expression") and number is not None and number < 0:
             raise ValueError("'number' must be greater or equal to 0.")
         super().__init__(expression, number, **extra)
 

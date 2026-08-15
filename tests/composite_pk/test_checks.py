@@ -73,8 +73,7 @@ class CompositePKChecksTests(TestCase):
             Foo.check(databases=self.databases),
             [
                 checks.Error(
-                    "The model cannot have more than one field with "
-                    "'primary_key=True'.",
+                    "The model cannot have more than one field with 'primary_key=True'.",
                     obj=Foo,
                     id="models.E026",
                 ),

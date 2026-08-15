@@ -89,7 +89,7 @@ class ImageFieldTestMixin(SerializeMixin):
             self.assertEqual(field.width, width)
             self.assertEqual(field.height, height)
 
-        # Check height/width fields of model, if defined.
+            # Check height/width fields of model, if defined.
         width_field_name = field_name + "_width"
         if hasattr(instance, width_field_name):
             self.assertEqual(getattr(instance, width_field_name), width)

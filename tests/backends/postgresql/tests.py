@@ -63,7 +63,7 @@ class Tests(TestCase):
         )
         with self.assertWarnsMessage(RuntimeWarning, msg):
             with mock.patch(
-                'djorm.db.backends.base.base.BaseDatabaseWrapper.connect',
+                "djorm.db.backends.base.base.BaseDatabaseWrapper.connect",
                 side_effect=mocked_connect,
                 autospec=True,
             ):
@@ -84,7 +84,7 @@ class Tests(TestCase):
         # Cursor is yielded only for the first PostgreSQL database.
         with self.assertWarnsMessage(RuntimeWarning, msg):
             with mock.patch(
-                'djorm.db.backends.base.base.BaseDatabaseWrapper.connect',
+                "djorm.db.backends.base.base.BaseDatabaseWrapper.connect",
                 side_effect=mocked_connect,
                 autospec=True,
             ):
@@ -116,12 +116,12 @@ class Tests(TestCase):
         )
         with self.assertWarnsMessage(RuntimeWarning, msg):
             mocker_connections_all = mock.patch(
-                'djorm.utils.connection.BaseConnectionHandler.all',
+                "djorm.utils.connection.BaseConnectionHandler.all",
                 side_effect=mocked_all,
                 autospec=True,
             )
             mocker_connect = mock.patch(
-                'djorm.db.backends.base.base.BaseDatabaseWrapper.connect',
+                "djorm.db.backends.base.base.BaseDatabaseWrapper.connect",
                 side_effect=mocked_connect,
                 autospec=True,
             )
@@ -265,9 +265,7 @@ class Tests(TestCase):
             connection_1.close()  # Release back to the pool.
             connection_3 = get_connection()
             # Reuses the first connection as it is available.
-            self.assertEqual(
-                connection_3.connection.info.backend_pid, connection_1_backend_pid
-            )
+            self.assertEqual(connection_3.connection.info.backend_pid, connection_1_backend_pid)
         finally:
             # Release all connections back to the pool.
             for conn in connections:
@@ -367,9 +365,7 @@ class Tests(TestCase):
         self.assertIsNone(connection.connection.isolation_level)
 
         new_connection = no_pool_connection()
-        new_connection.settings_dict["OPTIONS"][
-            "isolation_level"
-        ] = IsolationLevel.SERIALIZABLE
+        new_connection.settings_dict["OPTIONS"]["isolation_level"] = IsolationLevel.SERIALIZABLE
         try:
             # Start a transaction so the isolation level isn't reported as 0.
             new_connection.set_autocommit(False)
@@ -518,9 +514,7 @@ class Tests(TestCase):
 
         with mock.patch.object(Database, "__version__", "4.2.1 (dt dec pq3 ext lo64)"):
             self.assertEqual(psycopg_version(), (4, 2, 1))
-        with mock.patch.object(
-            Database, "__version__", "4.2b0.dev1 (dt dec pq3 ext lo64)"
-        ):
+        with mock.patch.object(Database, "__version__", "4.2b0.dev1 (dt dec pq3 ext lo64)"):
             self.assertEqual(psycopg_version(), (4, 2))
 
     @override_settings(DEBUG=True)
@@ -610,6 +604,4 @@ class Tests(TestCase):
         settings = new_connection.settings_dict.copy()
         settings["OPTIONS"]["assume_role"] = "django_nonexistent_role"
         conn = new_connection.connection
-        self.assertIs(
-            CustomDatabaseWrapper(settings)._configure_connection(conn), False
-        )
+        self.assertIs(CustomDatabaseWrapper(settings)._configure_connection(conn), False)

@@ -55,9 +55,7 @@ class GeneratedField(Field):
         compiler = connection.ops.compiler("SQLCompiler")(
             self._query, connection=connection, using=None
         )
-        resolved_expression = self.expression.resolve_expression(
-            self._query, allow_joins=False
-        )
+        resolved_expression = self.expression.resolve_expression(self._query, allow_joins=False)
         sql, params = compiler.compile(resolved_expression)
         if (
             getattr(self.expression, "conditional", False)
@@ -86,8 +84,7 @@ class GeneratedField(Field):
             if error_messages:
                 errors.append(
                     checks.Error(
-                        "GeneratedField.output_field has errors:"
-                        f"{separator}{error_messages}",
+                        f"GeneratedField.output_field has errors:{separator}{error_messages}",
                         obj=self,
                         id="fields.E223",
                     )
@@ -100,8 +97,7 @@ class GeneratedField(Field):
             if warning_messages:
                 errors.append(
                     checks.Warning(
-                        "GeneratedField.output_field has warnings:"
-                        f"{separator}{warning_messages}",
+                        f"GeneratedField.output_field has warnings:{separator}{warning_messages}",
                         obj=self,
                         id="fields.W224",
                     )
@@ -121,12 +117,10 @@ class GeneratedField(Field):
                 continue
             if not (
                 connection.features.supports_virtual_generated_columns
-                or "supports_stored_generated_columns"
-                in self.model._meta.required_db_features
+                or "supports_stored_generated_columns" in self.model._meta.required_db_features
             ) and not (
                 connection.features.supports_stored_generated_columns
-                or "supports_virtual_generated_columns"
-                in self.model._meta.required_db_features
+                or "supports_virtual_generated_columns" in self.model._meta.required_db_features
             ):
                 errors.append(
                     checks.Error(
@@ -150,8 +144,7 @@ class GeneratedField(Field):
                 continue
             if not self.db_persist and not (
                 connection.features.supports_virtual_generated_columns
-                or "supports_virtual_generated_columns"
-                in self.model._meta.required_db_features
+                or "supports_virtual_generated_columns" in self.model._meta.required_db_features
             ):
                 errors.append(
                     checks.Error(
@@ -164,13 +157,11 @@ class GeneratedField(Field):
                 )
             if self.db_persist and not (
                 connection.features.supports_stored_generated_columns
-                or "supports_stored_generated_columns"
-                in self.model._meta.required_db_features
+                or "supports_stored_generated_columns" in self.model._meta.required_db_features
             ):
                 errors.append(
                     checks.Error(
-                        f"{connection.display_name} does not support persisted "
-                        "GeneratedFields.",
+                        f"{connection.display_name} does not support persisted GeneratedFields.",
                         obj=self,
                         id="fields.E222",
                         hint="Set db_persist=False on the field.",

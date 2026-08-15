@@ -22,9 +22,7 @@ class Answer(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
-    parent = models.ForeignKey(
-        "self", models.SET_NULL, related_name="children", null=True
-    )
+    parent = models.ForeignKey("self", models.SET_NULL, related_name="children", null=True)
 
     class Meta:
         order_with_respect_to = "parent"
@@ -32,8 +30,9 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+        # order_with_respect_to points to a model with a OneToOneField primary key.
 
-# order_with_respect_to points to a model with a OneToOneField primary key.
+
 class Entity(models.Model):
     pass
 

@@ -34,10 +34,10 @@ class Storage:
         if not hasattr(content, "chunks"):
             content = File(content, name)
 
-        # Ensure that the name is valid, before and after having the storage
-        # system potentially modifying the name. This duplicates the check made
-        # inside `get_available_name` but it's necessary for those cases where
-        # `get_available_name` is overriden and validation is lost.
+            # Ensure that the name is valid, before and after having the storage
+            # system potentially modifying the name. This duplicates the check made
+            # inside `get_available_name` but it's necessary for those cases where
+            # `get_available_name` is overriden and validation is lost.
         validate_file_name(name, allow_relative_path=True)
 
         # Potentially find a different name depending on storage constraints.
@@ -55,7 +55,7 @@ class Storage:
         exceeds_max_length = max_length and len(name) > max_length
         return not self.exists(name) and not exceeds_max_length
 
-    # These methods are part of the public API, with default implementations.
+        # These methods are part of the public API, with default implementations.
 
     def get_valid_name(self, name):
         """
@@ -80,9 +80,7 @@ class Storage:
         name = str(name).replace("\\", "/")
         dir_name, file_name = os.path.split(name)
         if ".." in pathlib.PurePath(dir_name).parts:
-            raise SuspiciousFileOperation(
-                "Detected path traversal attempt in '%s'" % dir_name
-            )
+            raise SuspiciousFileOperation("Detected path traversal attempt in '%s'" % dir_name)
         validate_file_name(file_name)
         file_ext = "".join(pathlib.PurePath(file_name).suffixes)
         file_root = file_name.removesuffix(file_ext)
@@ -92,12 +90,10 @@ class Storage:
         # exceed the max_length.
         while not self.is_name_available(name, max_length=max_length):
             # file_ext includes the dot.
-            name = os.path.join(
-                dir_name, self.get_alternative_name(file_root, file_ext)
-            )
+            name = os.path.join(dir_name, self.get_alternative_name(file_root, file_ext))
             if max_length is None:
                 continue
-            # Truncate file_root if max_length exceeded.
+                # Truncate file_root if max_length exceeded.
             truncation = len(name) - max_length
             if truncation > 0:
                 file_root = file_root[:-truncation]
@@ -109,9 +105,7 @@ class Storage:
                         "Please make sure that the corresponding file field "
                         'allows sufficient "max_length".' % name
                     )
-                name = os.path.join(
-                    dir_name, self.get_alternative_name(file_root, file_ext)
-                )
+                name = os.path.join(dir_name, self.get_alternative_name(file_root, file_ext))
         return name
 
     def generate_filename(self, filename):
@@ -123,9 +117,7 @@ class Storage:
         # `filename` may include a path as returned by FileField.upload_to.
         dirname, filename = os.path.split(filename)
         if ".." in pathlib.PurePath(dirname).parts:
-            raise SuspiciousFileOperation(
-                "Detected path traversal attempt in '%s'" % dirname
-            )
+            raise SuspiciousFileOperation("Detected path traversal attempt in '%s'" % dirname)
         return os.path.normpath(os.path.join(dirname, self.get_valid_name(filename)))
 
     def path(self, name):
@@ -136,34 +128,28 @@ class Storage:
         """
         raise NotImplementedError("This backend doesn't support absolute paths.")
 
-    # The following methods form the public API for storage systems, but with
-    # no default implementations. Subclasses must implement *all* of these.
+        # The following methods form the public API for storage systems, but with
+        # no default implementations. Subclasses must implement *all* of these.
 
     def delete(self, name):
         """
         Delete the specified file from the storage system.
         """
-        raise NotImplementedError(
-            "subclasses of Storage must provide a delete() method"
-        )
+        raise NotImplementedError("subclasses of Storage must provide a delete() method")
 
     def exists(self, name):
         """
         Return True if a file referenced by the given name already exists in the
         storage system, or False if the name is available for a new file.
         """
-        raise NotImplementedError(
-            "subclasses of Storage must provide an exists() method"
-        )
+        raise NotImplementedError("subclasses of Storage must provide an exists() method")
 
     def listdir(self, path):
         """
         List the contents of the specified path. Return a 2-tuple of lists:
         the first item being directories, the second item being files.
         """
-        raise NotImplementedError(
-            "subclasses of Storage must provide a listdir() method"
-        )
+        raise NotImplementedError("subclasses of Storage must provide a listdir() method")
 
     def size(self, name):
         """
@@ -183,24 +169,18 @@ class Storage:
         Return the last accessed time (as a datetime) of the file specified by
         name. The datetime will be timezone-aware if USE_TZ=True.
         """
-        raise NotImplementedError(
-            "subclasses of Storage must provide a get_accessed_time() method"
-        )
+        raise NotImplementedError("subclasses of Storage must provide a get_accessed_time() method")
 
     def get_created_time(self, name):
         """
         Return the creation time (as a datetime) of the file specified by name.
         The datetime will be timezone-aware if USE_TZ=True.
         """
-        raise NotImplementedError(
-            "subclasses of Storage must provide a get_created_time() method"
-        )
+        raise NotImplementedError("subclasses of Storage must provide a get_created_time() method")
 
     def get_modified_time(self, name):
         """
         Return the last modified time (as a datetime) of the file specified by
         name. The datetime will be timezone-aware if USE_TZ=True.
         """
-        raise NotImplementedError(
-            "subclasses of Storage must provide a get_modified_time() method"
-        )
+        raise NotImplementedError("subclasses of Storage must provide a get_modified_time() method")

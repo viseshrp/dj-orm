@@ -55,9 +55,7 @@ class SchemaIndexesTests(TestCase):
             "sqlite": "indexes_article_c1_c2_l%sng_255179b2ix" % ("o" * 100),
         }
         if connection.vendor not in expected:
-            self.skipTest(
-                "This test is only supported on the built-in database backends."
-            )
+            self.skipTest("This test is only supported on the built-in database backends.")
         self.assertEqual(index_name, expected[connection.vendor])
 
     def test_quoted_index_name(self):
@@ -119,9 +117,10 @@ class SchemaIndexesNotPostgreSQLTests(TransactionTestCase):
             # This would error if opclasses weren't ignored.
             editor.add_index(IndexedArticle2, index)
 
+            # The `condition` parameter is ignored by databases that don't support partial
+            # indexes.
 
-# The `condition` parameter is ignored by databases that don't support partial
-# indexes.
+
 @skipIfDBFeature("supports_partial_indexes")
 class PartialIndexConditionIgnoredTests(TransactionTestCase):
     available_apps = ["indexes"]
@@ -158,9 +157,7 @@ class SchemaIndexesPostgreSQLTests(TransactionTestCase):
 
         index_sql = [
             str(statement)
-            for statement in connection.schema_editor()._model_indexes_sql(
-                IndexedArticle
-            )
+            for statement in connection.schema_editor()._model_indexes_sql(IndexedArticle)
         ]
         self.assertEqual(len(index_sql), 5)
         self.assertIn('("headline" varchar_pattern_ops)', index_sql[1])
@@ -184,9 +181,7 @@ class SchemaIndexesPostgreSQLTests(TransactionTestCase):
             editor.add_index(IndexedArticle2, index)
         with editor.connection.cursor() as cursor:
             cursor.execute(self.get_opclass_query % "test_ops_class")
-            self.assertEqual(
-                cursor.fetchall(), [("varchar_pattern_ops", "test_ops_class")]
-            )
+            self.assertEqual(cursor.fetchall(), [("varchar_pattern_ops", "test_ops_class")])
 
     def test_ops_class_multiple_columns(self):
         index = Index(
@@ -343,9 +338,7 @@ class SchemaIndexesMySQLTests(TransactionTestCase):
             self.skipTest("This test only applies to the InnoDB storage engine")
         index_sql = [
             str(statement)
-            for statement in connection.schema_editor()._model_indexes_sql(
-                ArticleTranslation
-            )
+            for statement in connection.schema_editor()._model_indexes_sql(ArticleTranslation)
         ]
         self.assertEqual(
             index_sql,
@@ -605,9 +598,7 @@ class CoveringIndexTests(TransactionTestCase):
         with connection.schema_editor() as editor:
             extra_sql = ""
             if settings.DEFAULT_INDEX_TABLESPACE:
-                extra_sql = "TABLESPACE %s " % editor.quote_name(
-                    settings.DEFAULT_INDEX_TABLESPACE
-                )
+                extra_sql = "TABLESPACE %s " % editor.quote_name(settings.DEFAULT_INDEX_TABLESPACE)
             self.assertIn(
                 "(%s) INCLUDE (%s) %sWHERE %s "
                 % (

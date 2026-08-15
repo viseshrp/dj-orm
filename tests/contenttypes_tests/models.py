@@ -2,13 +2,12 @@ from urllib.parse import quote
 
 from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from djorm.contrib.contenttypes.models import ContentType
-from djorm.contrib.sites.models import SiteManager
 from djorm.db import models
 
 
 class Site(models.Model):
     domain = models.CharField(max_length=100)
-    objects = SiteManager()
+    objects = models.Manager()
 
 
 class Author(models.Model):

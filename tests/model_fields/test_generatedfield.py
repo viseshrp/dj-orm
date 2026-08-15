@@ -96,9 +96,7 @@ class BaseGeneratedFieldTests(SimpleTestCase):
     def test_db_persist_required(self):
         msg = "GeneratedField.db_persist must be True or False."
         with self.assertRaisesMessage(ValueError, msg):
-            GeneratedField(
-                expression=Lower("name"), output_field=CharField(max_length=255)
-            )
+            GeneratedField(expression=Lower("name"), output_field=CharField(max_length=255))
         with self.assertRaisesMessage(ValueError, msg):
             GeneratedField(
                 expression=Lower("name"),
@@ -111,13 +109,11 @@ class BaseGeneratedFieldTests(SimpleTestCase):
             expression=F("a") + F("b"), output_field=IntegerField(), db_persist=True
         )
         _, path, args, kwargs = field.deconstruct()
-        self.assertEqual(path, 'djorm.db.models.GeneratedField')
+        self.assertEqual(path, "djorm.db.models.GeneratedField")
         self.assertEqual(args, [])
         self.assertEqual(kwargs["db_persist"], True)
         self.assertEqual(kwargs["expression"], F("a") + F("b"))
-        self.assertEqual(
-            kwargs["output_field"].deconstruct(), IntegerField().deconstruct()
-        )
+        self.assertEqual(kwargs["output_field"].deconstruct(), IntegerField().deconstruct())
 
     @isolate_apps("model_fields")
     def test_get_col(self):

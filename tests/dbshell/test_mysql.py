@@ -235,5 +235,5 @@ class MySqlDbshellCommandTestCase(SimpleTestCase):
         self.assertNotEqual(sigint_handler, signal.SIG_IGN)
         with mock.patch("subprocess.run", new=_mock_subprocess_run):
             connection.client.runshell([])
-        # dbshell restores the original handler.
+            # dbshell restores the original handler.
         self.assertEqual(sigint_handler, signal.getsignal(signal.SIGINT))

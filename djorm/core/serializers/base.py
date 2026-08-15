@@ -31,10 +31,7 @@ class DeserializationError(Exception):
         Factory method for creating a deserialization error which has a more
         explanatory message.
         """
-        return cls(
-            "%s: (%s:pk=%s) field_value was '%s'"
-            % (original_exc, model, fk, field_value)
-        )
+        return cls("%s: (%s:pk=%s) field_value was '%s'" % (original_exc, model, fk, field_value))
 
 
 class M2MDeserializationError(Exception):
@@ -62,9 +59,7 @@ class ProgressBar:
             return
         self.prev_done = done
         cr = "" if self.total_count == 1 else "\r"
-        self.output.write(
-            cr + "[" + "." * done + " " * (self.progress_width - done) + "]"
-        )
+        self.output.write(cr + "[" + "." * done + " " * (self.progress_width - done) + "]")
         if done == self.progress_width:
             self.output.write("\n")
         self.output.flush()
@@ -116,18 +111,13 @@ class Serializer:
             # be serialized, otherwise deserialization isn't possible.
             if self.use_natural_primary_keys:
                 pk = concrete_model._meta.pk
-                pk_parent = (
-                    pk if pk.remote_field and pk.remote_field.parent_link else None
-                )
+                pk_parent = pk if pk.remote_field and pk.remote_field.parent_link else None
             else:
                 pk_parent = None
             for field in concrete_model._meta.local_fields:
                 if field.serialize or field is pk_parent:
                     if field.remote_field is None:
-                        if (
-                            self.selected_fields is None
-                            or field.attname in self.selected_fields
-                        ):
+                        if self.selected_fields is None or field.attname in self.selected_fields:
                             self.handle_field(obj, field)
                     else:
                         if (
@@ -137,10 +127,7 @@ class Serializer:
                             self.handle_fk_field(obj, field)
             for field in concrete_model._meta.local_many_to_many:
                 if field.serialize:
-                    if (
-                        self.selected_fields is None
-                        or field.attname in self.selected_fields
-                    ):
+                    if self.selected_fields is None or field.attname in self.selected_fields:
                         self.handle_m2m_field(obj, field)
             self.end_object(obj)
             progress_bar.update(count)
@@ -166,9 +153,7 @@ class Serializer:
         """
         Called when serializing of an object starts.
         """
-        raise NotImplementedError(
-            "subclasses of Serializer must provide a start_object() method"
-        )
+        raise NotImplementedError("subclasses of Serializer must provide a start_object() method")
 
     def end_object(self, obj):
         """
@@ -180,9 +165,7 @@ class Serializer:
         """
         Called to handle each individual (non-relational) field on an object.
         """
-        raise NotImplementedError(
-            "subclasses of Serializer must provide a handle_field() method"
-        )
+        raise NotImplementedError("subclasses of Serializer must provide a handle_field() method")
 
     def handle_fk_field(self, obj, field):
         """
@@ -229,9 +212,7 @@ class Deserializer:
 
     def __next__(self):
         """Iteration interface -- return the next item in the stream"""
-        raise NotImplementedError(
-            "subclasses of Deserializer must provide a __next__() method"
-        )
+        raise NotImplementedError("subclasses of Deserializer must provide a __next__() method")
 
 
 class DeserializedObject:
@@ -267,8 +248,8 @@ class DeserializedObject:
             for accessor_name, object_list in self.m2m_data.items():
                 getattr(self.object, accessor_name).set(object_list)
 
-        # prevent a second (possibly accidental) call to save() from saving
-        # the m2m data twice.
+                # prevent a second (possibly accidental) call to save() from saving
+                # the m2m data twice.
         self.m2m_data = None
 
     def save_deferred_fields(self, using=None):
@@ -282,9 +263,7 @@ class DeserializedObject:
                         field, field_value, using, handle_forward_references=False
                     )
                 except M2MDeserializationError as e:
-                    raise DeserializationError.WithData(
-                        e.original_exc, label, self.object.pk, e.pk
-                    )
+                    raise DeserializationError.WithData(e.original_exc, label, self.object.pk, e.pk)
                 self.m2m_data[field.name] = values
             elif isinstance(field.remote_field, models.ManyToOneRel):
                 try:
@@ -292,9 +271,7 @@ class DeserializedObject:
                         field, field_value, using, handle_forward_references=False
                     )
                 except Exception as e:
-                    raise DeserializationError.WithData(
-                        e, label, self.object.pk, field_value
-                    )
+                    raise DeserializationError.WithData(e, label, self.object.pk, field_value)
                 setattr(self.object, field.attname, value)
         self.save()
 
@@ -331,11 +308,7 @@ def deserialize_m2m_values(field, field_value, using, handle_forward_references)
 
         def m2m_convert(value):
             if hasattr(value, "__iter__") and not isinstance(value, str):
-                return (
-                    model._default_manager.db_manager(using)
-                    .get_by_natural_key(*value)
-                    .pk
-                )
+                return model._default_manager.db_manager(using).get_by_natural_key(*value).pk
             else:
                 return model._meta.pk.to_python(value)
 

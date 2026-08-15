@@ -36,9 +36,7 @@ class Group(models.Model):
     # Table Column Fields
     name = models.CharField(max_length=128)
     group_country = models.ForeignKey(Country, models.CASCADE)
-    members = models.ManyToManyField(
-        Person, related_name="groups", through="Membership"
-    )
+    members = models.ManyToManyField(Person, related_name="groups", through="Membership")
 
     class Meta:
         ordering = ("name",)

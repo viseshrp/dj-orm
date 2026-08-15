@@ -6,7 +6,6 @@ import datetime
 from operator import attrgetter
 from unittest import expectedFailure
 
-from djorm import forms
 from djorm.test import TestCase
 
 from .models import (
@@ -59,9 +58,7 @@ class ModelInheritanceTest(TestCase):
             serves_pizza=False,
         )
         restaurant.save_base(raw=True)
-        italian_restaurant = ItalianRestaurant(
-            restaurant_ptr=restaurant, serves_gnocchi=True
-        )
+        italian_restaurant = ItalianRestaurant(restaurant_ptr=restaurant, serves_gnocchi=True)
         italian_restaurant.save_base(raw=True)
 
         # Create a child-parent chain with an explicit parent link
@@ -75,15 +72,9 @@ class ModelInheritanceTest(TestCase):
         self.assertEqual(places, [place1, place2])
 
         dicts = list(Restaurant.objects.values("name", "serves_hot_dogs"))
-        self.assertEqual(
-            dicts, [{"name": "Guido's House of Pasta", "serves_hot_dogs": True}]
-        )
+        self.assertEqual(dicts, [{"name": "Guido's House of Pasta", "serves_hot_dogs": True}])
 
-        dicts = list(
-            ItalianRestaurant.objects.values(
-                "name", "serves_hot_dogs", "serves_gnocchi"
-            )
-        )
+        dicts = list(ItalianRestaurant.objects.values("name", "serves_hot_dogs", "serves_gnocchi"))
         self.assertEqual(
             dicts,
             [
@@ -139,11 +130,7 @@ class ModelInheritanceTest(TestCase):
             ],
         )
 
-        dicts = list(
-            ItalianRestaurant.objects.values(
-                "name", "serves_hot_dogs", "serves_gnocchi"
-            )
-        )
+        dicts = list(ItalianRestaurant.objects.values("name", "serves_hot_dogs", "serves_gnocchi"))
         self.assertEqual(
             dicts,
             [
@@ -174,11 +161,7 @@ class ModelInheritanceTest(TestCase):
 
         # Note that the name has not changed
         # - name is an attribute of Place, not ItalianRestaurant
-        dicts = list(
-            ItalianRestaurant.objects.values(
-                "name", "serves_hot_dogs", "serves_gnocchi"
-            )
-        )
+        dicts = list(ItalianRestaurant.objects.values("name", "serves_hot_dogs", "serves_gnocchi"))
         self.assertEqual(
             dicts,
             [
@@ -193,9 +176,7 @@ class ModelInheritanceTest(TestCase):
     def test_issue_7105(self):
         # Regressions tests for #7105: dates() queries should be able to use
         # fields from the parent model as easily as the child.
-        Child.objects.create(
-            name="child", created=datetime.datetime(2008, 6, 26, 17, 0, 0)
-        )
+        Child.objects.create(name="child", created=datetime.datetime(2008, 6, 26, 17, 0, 0))
         datetimes = list(Child.objects.datetimes("created", "month"))
         self.assertEqual(datetimes, [datetime.datetime(2008, 6, 1, 0, 0)])
 
@@ -211,9 +192,7 @@ class ModelInheritanceTest(TestCase):
             serves_pizza=False,
         )
         restaurant.save_base(raw=True)
-        italian_restaurant = ItalianRestaurant(
-            restaurant_ptr=restaurant, serves_gnocchi=True
-        )
+        italian_restaurant = ItalianRestaurant(restaurant_ptr=restaurant, serves_gnocchi=True)
         italian_restaurant.save_base(raw=True)
 
         ident = ItalianRestaurant.objects.all()[0].id
@@ -327,13 +306,9 @@ class ModelInheritanceTest(TestCase):
             headline="Hey there!",
             pub_date=datetime.datetime(2009, 3, 1, 8, 0, 0),
         )
-        update = ArticleWithAuthor.objects.filter(author="fred").update(
-            headline="Oh, no!"
-        )
+        update = ArticleWithAuthor.objects.filter(author="fred").update(headline="Oh, no!")
         self.assertEqual(update, 1)
-        update = ArticleWithAuthor.objects.filter(pk=article.pk).update(
-            headline="Oh, no!"
-        )
+        update = ArticleWithAuthor.objects.filter(pk=article.pk).update(headline="Oh, no!")
         self.assertEqual(update, 1)
 
         derivedm1 = DerivedM.objects.create(
@@ -445,41 +420,15 @@ class ModelInheritanceTest(TestCase):
         # when more than one model has a concrete->abstract->concrete
         # inheritance hierarchy.
         self.assertEqual(
-            len(
-                [field for field in BusStation._meta.local_fields if field.primary_key]
-            ),
+            len([field for field in BusStation._meta.local_fields if field.primary_key]),
             1,
         )
         self.assertEqual(
-            len(
-                [
-                    field
-                    for field in TrainStation._meta.local_fields
-                    if field.primary_key
-                ]
-            ),
+            len([field for field in TrainStation._meta.local_fields if field.primary_key]),
             1,
         )
         self.assertIs(BusStation._meta.pk.model, BusStation)
         self.assertIs(TrainStation._meta.pk.model, TrainStation)
-
-    def test_inherited_unique_field_with_form(self):
-        """
-        A model which has different primary key for the parent model passes
-        unique field checking correctly (#17615).
-        """
-
-        class ProfileForm(forms.ModelForm):
-            class Meta:
-                model = Profile
-                fields = "__all__"
-
-        User.objects.create(username="user_only")
-        p = Profile.objects.create(username="user_with_profile")
-        form = ProfileForm(
-            {"username": "user_with_profile", "extra": "hello"}, instance=p
-        )
-        self.assertTrue(form.is_valid())
 
     def test_inheritance_joins(self):
         # Test for #17502 - check that filtering through two levels of
@@ -516,12 +465,8 @@ class ModelInheritanceTest(TestCase):
 
     def test_inheritance_select_related(self):
         # Regression test for #7246
-        r1 = Restaurant.objects.create(
-            name="Nobu", serves_hot_dogs=True, serves_pizza=False
-        )
-        r2 = Restaurant.objects.create(
-            name="Craft", serves_hot_dogs=False, serves_pizza=True
-        )
+        r1 = Restaurant.objects.create(name="Nobu", serves_hot_dogs=True, serves_pizza=False)
+        r2 = Restaurant.objects.create(name="Craft", serves_hot_dogs=False, serves_pizza=True)
         Supplier.objects.create(name="John", restaurant=r1)
         Supplier.objects.create(name="Jane", restaurant=r2)
 
@@ -541,9 +486,7 @@ class ModelInheritanceTest(TestCase):
         r = Restaurant.objects.create()
         s = Supplier.objects.create(restaurant=r)
         # The mismatch between Restaurant and Place is intentional (#28175).
-        self.assertSequenceEqual(
-            Supplier.objects.filter(restaurant__in=Place.objects.all()), [s]
-        )
+        self.assertSequenceEqual(Supplier.objects.filter(restaurant__in=Place.objects.all()), [s])
 
     def test_ptr_accessor_assigns_state(self):
         r = Restaurant.objects.create()
@@ -579,8 +522,8 @@ class ModelInheritanceTest(TestCase):
             self.assertEqual(restaurant.place_ptr.restaurant, restaurant)
             self.assertEqual(restaurant.italianrestaurant, italian_restaurant)
 
-        # One query is made when accessing the parent objects when the instance
-        # is deferred.
+            # One query is made when accessing the parent objects when the instance
+            # is deferred.
         italian_restaurant = ItalianRestaurant.objects.only("serves_gnocchi").get(
             pk=italian_restaurant.pk
         )
@@ -589,8 +532,8 @@ class ModelInheritanceTest(TestCase):
             self.assertEqual(restaurant.place_ptr.restaurant, restaurant)
             self.assertEqual(restaurant.italianrestaurant, italian_restaurant)
 
-        # No queries are made when accessing the parent objects when the
-        # instance has deferred a field not present in the parent table.
+            # No queries are made when accessing the parent objects when the
+            # instance has deferred a field not present in the parent table.
         italian_restaurant = ItalianRestaurant.objects.defer("serves_gnocchi").get(
             pk=italian_restaurant.pk
         )

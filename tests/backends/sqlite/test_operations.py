@@ -73,9 +73,7 @@ class SQLiteOperationsTests(TestCase):
             ],
         )
         self.assertIs(
-            statements[-1].startswith(
-                'UPDATE "sqlite_sequence" SET "seq" = 0 WHERE "name" IN ('
-            ),
+            statements[-1].startswith('UPDATE "sqlite_sequence" SET "seq" = 0 WHERE "name" IN ('),
             True,
         )
         self.assertIn("'backends_person'", statements[-1])
@@ -91,20 +89,14 @@ class SQLiteOperationsTests(TestCase):
         self.assertEqual(connection.ops.bulk_batch_size([], [Person()]), 1)
         first_name_field = Person._meta.get_field("first_name")
         last_name_field = Person._meta.get_field("last_name")
+        self.assertEqual(connection.ops.bulk_batch_size([first_name_field], [Person()]), 500)
         self.assertEqual(
-            connection.ops.bulk_batch_size([first_name_field], [Person()]), 500
-        )
-        self.assertEqual(
-            connection.ops.bulk_batch_size(
-                [first_name_field, last_name_field], [Person()]
-            ),
+            connection.ops.bulk_batch_size([first_name_field, last_name_field], [Person()]),
             connection.features.max_query_params // 2,
         )
         composite_pk = models.CompositePrimaryKey("first_name", "last_name")
         composite_pk.fields = [first_name_field, last_name_field]
         self.assertEqual(
-            connection.ops.bulk_batch_size(
-                [composite_pk, first_name_field], [Person()]
-            ),
+            connection.ops.bulk_batch_size([composite_pk, first_name_field], [Person()]),
             connection.features.max_query_params // 3,
         )

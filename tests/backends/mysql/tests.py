@@ -19,9 +19,7 @@ def get_connection():
 class IsolationLevelTests(TestCase):
     read_committed = "read committed"
     repeatable_read = "repeatable read"
-    isolation_values = {
-        level: level.upper() for level in (read_committed, repeatable_read)
-    }
+    isolation_values = {level: level.upper() for level in (read_committed, repeatable_read)}
 
     @classmethod
     def setUpClass(cls):
@@ -40,8 +38,7 @@ class IsolationLevelTests(TestCase):
     def get_isolation_level(connection):
         with connection.cursor() as cursor:
             cursor.execute(
-                "SHOW VARIABLES "
-                "WHERE variable_name IN ('transaction_isolation', 'tx_isolation')"
+                "SHOW VARIABLES WHERE variable_name IN ('transaction_isolation', 'tx_isolation')"
             )
             return cursor.fetchone()[1].replace("-", " ")
 
@@ -55,15 +52,11 @@ class IsolationLevelTests(TestCase):
             self.assertNotIn(query, last_query)
 
     def test_connect_isolation_level(self):
-        self.assertEqual(
-            self.get_isolation_level(connection), self.configured_isolation_level
-        )
+        self.assertEqual(self.get_isolation_level(connection), self.configured_isolation_level)
 
     def test_setting_isolation_level(self):
         with get_connection() as new_connection:
-            new_connection.settings_dict["OPTIONS"][
-                "isolation_level"
-            ] = self.other_isolation_level
+            new_connection.settings_dict["OPTIONS"]["isolation_level"] = self.other_isolation_level
             self.assertEqual(
                 self.get_isolation_level(new_connection),
                 self.isolation_values[self.other_isolation_level],
@@ -72,9 +65,9 @@ class IsolationLevelTests(TestCase):
     def test_uppercase_isolation_level(self):
         # Upper case values are also accepted in 'isolation_level'.
         with get_connection() as new_connection:
-            new_connection.settings_dict["OPTIONS"][
-                "isolation_level"
-            ] = self.other_isolation_level.upper()
+            new_connection.settings_dict["OPTIONS"]["isolation_level"] = (
+                self.other_isolation_level.upper()
+            )
             self.assertEqual(
                 self.get_isolation_level(new_connection),
                 self.isolation_values[self.other_isolation_level],

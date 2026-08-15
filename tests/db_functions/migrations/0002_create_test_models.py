@@ -21,9 +21,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "authors",
-                    models.ManyToManyField(
-                        "db_functions.Author", related_name="articles"
-                    ),
+                    models.ManyToManyField("db_functions.Author", related_name="articles"),
                 ),
                 ("title", models.CharField(max_length=50)),
                 ("summary", models.CharField(max_length=200, null=True, blank=True)),
@@ -41,9 +39,7 @@ class Migration(migrations.Migration):
                 ("age", models.PositiveSmallIntegerField(default=30)),
                 (
                     "author",
-                    models.ForeignKey(
-                        "db_functions.Author", models.CASCADE, related_name="fans"
-                    ),
+                    models.ForeignKey("db_functions.Author", models.CASCADE, related_name="fans"),
                 ),
                 ("fan_since", models.DateTimeField(null=True, blank=True)),
             ],
@@ -67,9 +63,7 @@ class Migration(migrations.Migration):
                 ("n1", models.DecimalField(decimal_places=2, max_digits=6)),
                 (
                     "n2",
-                    models.DecimalField(
-                        decimal_places=7, max_digits=9, null=True, blank=True
-                    ),
+                    models.DecimalField(decimal_places=7, max_digits=9, null=True, blank=True),
                 ),
             ],
         ),

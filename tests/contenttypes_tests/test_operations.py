@@ -17,7 +17,7 @@ class ContentTypeOperationsTests(TransactionTestCase):
     databases = {"default", "other"}
     available_apps = [
         "contenttypes_tests",
-        'djorm.contrib.contenttypes',
+        "djorm.contrib.contenttypes",
     ]
 
     class TestRouter:
@@ -26,9 +26,7 @@ class ContentTypeOperationsTests(TransactionTestCase):
 
     def setUp(self):
         app_config = apps.get_app_config("contenttypes_tests")
-        models.signals.post_migrate.connect(
-            self.assertOperationsInjected, sender=app_config
-        )
+        models.signals.post_migrate.connect(self.assertOperationsInjected, sender=app_config)
         self.addCleanup(
             models.signals.post_migrate.disconnect,
             self.assertOperationsInjected,
@@ -41,9 +39,7 @@ class ContentTypeOperationsTests(TransactionTestCase):
             for operation in operations:
                 if isinstance(operation, migrations.RenameModel):
                     next_operation = next(operations)
-                    self.assertIsInstance(
-                        next_operation, contenttypes_management.RenameContentType
-                    )
+                    self.assertIsInstance(next_operation, contenttypes_management.RenameContentType)
                     self.assertEqual(next_operation.app_label, migration.app_label)
                     self.assertEqual(next_operation.old_model, operation.old_name_lower)
                     self.assertEqual(next_operation.new_model, operation.new_name_lower)
@@ -58,14 +54,10 @@ class ContentTypeOperationsTests(TransactionTestCase):
             verbosity=0,
         )
         self.assertFalse(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="foo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="foo").exists()
         )
         self.assertTrue(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="renamedfoo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="renamedfoo").exists()
         )
         call_command(
             "migrate",
@@ -76,21 +68,15 @@ class ContentTypeOperationsTests(TransactionTestCase):
             verbosity=0,
         )
         self.assertTrue(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="foo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="foo").exists()
         )
         self.assertFalse(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="renamedfoo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="renamedfoo").exists()
         )
 
     @override_settings(DATABASE_ROUTERS=[TestRouter()])
     def test_existing_content_type_rename_other_database(self):
-        ContentType.objects.using("other").create(
-            app_label="contenttypes_tests", model="foo"
-        )
+        ContentType.objects.using("other").create(app_label="contenttypes_tests", model="foo")
         other_content_types = ContentType.objects.using("other").filter(
             app_label="contenttypes_tests"
         )
@@ -123,14 +109,10 @@ class ContentTypeOperationsTests(TransactionTestCase):
             verbosity=0,
         )
         self.assertFalse(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="foo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="foo").exists()
         )
         self.assertTrue(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="renamedfoo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="renamedfoo").exists()
         )
         call_command(
             "migrate",
@@ -141,14 +123,10 @@ class ContentTypeOperationsTests(TransactionTestCase):
             verbosity=0,
         )
         self.assertTrue(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="foo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="foo").exists()
         )
         self.assertFalse(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="renamedfoo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="renamedfoo").exists()
         )
 
     def test_content_type_rename_conflict(self):
@@ -162,14 +140,10 @@ class ContentTypeOperationsTests(TransactionTestCase):
             verbosity=0,
         )
         self.assertTrue(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="foo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="foo").exists()
         )
         self.assertTrue(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="renamedfoo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="renamedfoo").exists()
         )
         call_command(
             "migrate",
@@ -180,12 +154,8 @@ class ContentTypeOperationsTests(TransactionTestCase):
             verbosity=0,
         )
         self.assertTrue(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="foo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="foo").exists()
         )
         self.assertTrue(
-            ContentType.objects.filter(
-                app_label="contenttypes_tests", model="renamedfoo"
-            ).exists()
+            ContentType.objects.filter(app_label="contenttypes_tests", model="renamedfoo").exists()
         )

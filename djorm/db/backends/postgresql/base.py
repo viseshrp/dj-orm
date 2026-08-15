@@ -71,7 +71,7 @@ else:
     )
     psycopg2.extensions.register_type(INETARRAY)
 
-# Some of these import psycopg, so import them after checking if it's installed.
+    # Some of these import psycopg, so import them after checking if it's installed.
 from .client import DatabaseClient  # NOQA isort:skip
 from .creation import DatabaseCreation  # NOQA isort:skip
 from .features import DatabaseFeatures  # NOQA isort:skip
@@ -157,9 +157,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     #
     # Note: we use str.format() here for readability as '%' is used as a wildcard for
     # the LIKE operator.
-    pattern_esc = (
-        r"REPLACE(REPLACE(REPLACE({}, E'\\', E'\\\\'), E'%%', E'\\%%'), E'_', E'\\_')"
-    )
+    pattern_esc = r"REPLACE(REPLACE(REPLACE({}, E'\\', E'\\\\'), E'%%', E'\\%%'), E'_', E'\\_')"
     pattern_ops = {
         "contains": "LIKE '%%' || {} || '%%'",
         "icontains": "LIKE '%%' || UPPER({}) || '%%'",
@@ -189,10 +187,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
         if self.alias not in self._connection_pools:
             if self.settings_dict.get("CONN_MAX_AGE", 0) != 0:
-                raise ImproperlyConfigured(
-                    "Pooling doesn't support persistent connections."
-                )
-            # Set the default options.
+                raise ImproperlyConfigured("Pooling doesn't support persistent connections.")
+                # Set the default options.
             if pool_options is True:
                 pool_options = {}
 
@@ -276,11 +272,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         server_side_binding = conn_params.pop("server_side_binding", None)
         conn_params.setdefault(
             "cursor_factory",
-            (
-                ServerBindingCursor
-                if is_psycopg3 and server_side_binding is True
-                else Cursor
-            ),
+            (ServerBindingCursor if is_psycopg3 and server_side_binding is True else Cursor),
         )
         if settings_dict["USER"]:
             conn_params["user"] = settings_dict["USER"]
@@ -291,14 +283,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         if settings_dict["PORT"]:
             conn_params["port"] = settings_dict["PORT"]
         if is_psycopg3:
-            conn_params["context"] = get_adapters_template(
-                settings.USE_TZ, self.timezone
-            )
+            conn_params["context"] = get_adapters_template(settings.USE_TZ, self.timezone)
             # Disable prepared statements by default to keep connection poolers
             # working. Can be reenabled via OPTIONS in the settings dict.
-            conn_params["prepare_threshold"] = conn_params.pop(
-                "prepare_threshold", None
-            )
+            conn_params["prepare_threshold"] = conn_params.pop("prepare_threshold", None)
         return conn_params
 
     @async_unsafe
@@ -336,9 +324,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             # Register dummy loads() to avoid a round trip from psycopg2's
             # decode to json.dumps() to json.loads(), when using a custom
             # decoder in JSONField.
-            psycopg2.extras.register_default_jsonb(
-                conn_or_curs=connection, loads=lambda x: x
-            )
+            psycopg2.extras.register_default_jsonb(conn_or_curs=connection, loads=lambda x: x)
         return connection
 
     def ensure_timezone(self):
@@ -453,12 +439,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             current_task = asyncio.current_task()
         except RuntimeError:
             current_task = None
-        # Current task can be none even if the current_task call didn't error
+            # Current task can be none even if the current_task call didn't error
         if current_task:
             task_ident = str(id(current_task))
         else:
             task_ident = "sync"
-        # Use that and the thread ident to get a unique name
+            # Use that and the thread ident to get a unique name
         return self._cursor(
             name="_django_curs_%d_%s_%d"
             % (

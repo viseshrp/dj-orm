@@ -21,15 +21,12 @@ class InspectDBTests(PostgreSQLTestCase):
         self.assertFieldsInModel(
             "postgres_tests_rangesmodel",
             [
-                'ints = djorm.contrib.postgres.fields.IntegerRangeField(blank=True, '
-                "null=True)",
-                'bigints = djorm.contrib.postgres.fields.BigIntegerRangeField('
+                "ints = djorm.contrib.postgres.fields.IntegerRangeField(blank=True, null=True)",
+                "bigints = djorm.contrib.postgres.fields.BigIntegerRangeField("
                 "blank=True, null=True)",
-                'decimals = djorm.contrib.postgres.fields.DecimalRangeField('
+                "decimals = djorm.contrib.postgres.fields.DecimalRangeField(blank=True, null=True)",
+                "timestamps = djorm.contrib.postgres.fields.DateTimeRangeField("
                 "blank=True, null=True)",
-                'timestamps = djorm.contrib.postgres.fields.DateTimeRangeField('
-                "blank=True, null=True)",
-                'dates = djorm.contrib.postgres.fields.DateRangeField(blank=True, '
-                "null=True)",
+                "dates = djorm.contrib.postgres.fields.DateRangeField(blank=True, null=True)",
             ],
         )

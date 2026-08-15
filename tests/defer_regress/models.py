@@ -35,9 +35,7 @@ class Child(models.Model):
 class Leaf(models.Model):
     name = models.CharField(max_length=10)
     child = models.ForeignKey(Child, models.CASCADE)
-    second_child = models.ForeignKey(
-        Child, models.SET_NULL, related_name="other", null=True
-    )
+    second_child = models.ForeignKey(Child, models.SET_NULL, related_name="other", null=True)
     value = models.IntegerField(default=42)
 
 

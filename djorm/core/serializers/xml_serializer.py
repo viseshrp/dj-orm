@@ -40,9 +40,7 @@ class Serializer(base.Serializer):
 
     def indent(self, level):
         if self.options.get("indent") is not None:
-            self.xml.ignorableWhitespace(
-                "\n" + " " * self.options.get("indent") * level
-            )
+            self.xml.ignorableWhitespace("\n" + " " * self.options.get("indent") * level)
 
     def start_serialization(self):
         """
@@ -128,9 +126,7 @@ class Serializer(base.Serializer):
         self._start_relational_field(field)
         related_att = getattr(obj, field.attname)
         if related_att is not None:
-            if self.use_natural_foreign_keys and hasattr(
-                field.remote_field.model, "natural_key"
-            ):
+            if self.use_natural_foreign_keys and hasattr(field.remote_field.model, "natural_key"):
                 related = getattr(obj, field.name)
                 # If related object has a natural key, use it
                 related = related.natural_key()
@@ -153,9 +149,7 @@ class Serializer(base.Serializer):
         """
         if field.remote_field.through._meta.auto_created:
             self._start_relational_field(field)
-            if self.use_natural_foreign_keys and hasattr(
-                field.remote_field.model, "natural_key"
-            ):
+            if self.use_natural_foreign_keys and hasattr(field.remote_field.model, "natural_key"):
                 # If the objects in the m2m have a natural key, use it
                 def handle_m2m(value):
                     natural = value.natural_key()
@@ -169,9 +163,7 @@ class Serializer(base.Serializer):
 
                 def queryset_iterator(obj, field):
                     attr = getattr(obj, field.name)
-                    chunk_size = (
-                        2000 if getattr(attr, "prefetch_cache_name", None) else None
-                    )
+                    chunk_size = 2000 if getattr(attr, "prefetch_cache_name", None) else None
                     return attr.iterator(chunk_size)
 
             else:
@@ -244,12 +236,10 @@ class Deserializer(base.Deserializer):
         # Start building a data dictionary from the object.
         data = {}
         if node.hasAttribute("pk"):
-            data[Model._meta.pk.attname] = Model._meta.pk.to_python(
-                node.getAttribute("pk")
-            )
+            data[Model._meta.pk.attname] = Model._meta.pk.to_python(node.getAttribute("pk"))
 
-        # Also start building a dict of m2m data (this is saved as
-        # {m2m_accessor_attribute : [list_of_related_objects]})
+            # Also start building a dict of m2m data (this is saved as
+            # {m2m_accessor_attribute : [list_of_related_objects]})
         m2m_data = {}
         deferred_fields = {}
 
@@ -260,21 +250,17 @@ class Deserializer(base.Deserializer):
             # sensing a pattern here?)
             field_name = field_node.getAttribute("name")
             if not field_name:
-                raise base.DeserializationError(
-                    "<field> node is missing the 'name' attribute"
-                )
+                raise base.DeserializationError("<field> node is missing the 'name' attribute")
 
-            # Get the field from the Model. This will raise a
-            # FieldDoesNotExist if, well, the field doesn't exist, which will
-            # be propagated correctly unless ignorenonexistent=True is used.
+                # Get the field from the Model. This will raise a
+                # FieldDoesNotExist if, well, the field doesn't exist, which will
+                # be propagated correctly unless ignorenonexistent=True is used.
             if self.ignore and field_name not in field_names:
                 continue
             field = Model._meta.get_field(field_name)
 
             # As is usually the case, relation fields get the special treatment.
-            if field.remote_field and isinstance(
-                field.remote_field, models.ManyToManyRel
-            ):
+            if field.remote_field and isinstance(field.remote_field, models.ManyToManyRel):
                 value = self._handle_m2m_field_node(field_node, field)
                 if value == base.DEFER_FIELD:
                     deferred_fields[field] = [
@@ -286,14 +272,11 @@ class Deserializer(base.Deserializer):
                     ]
                 else:
                     m2m_data[field.name] = value
-            elif field.remote_field and isinstance(
-                field.remote_field, models.ManyToOneRel
-            ):
+            elif field.remote_field and isinstance(field.remote_field, models.ManyToOneRel):
                 value = self._handle_fk_field_node(field_node, field)
                 if value == base.DEFER_FIELD:
                     deferred_fields[field] = [
-                        getInnerText(k).strip()
-                        for k in field_node.getElementsByTagName("natural")
+                        getInnerText(k).strip() for k in field_node.getElementsByTagName("natural")
                     ]
                 else:
                     data[field.attname] = value
@@ -327,9 +310,9 @@ class Deserializer(base.Deserializer):
                     # If there are 'natural' subelements, it must be a natural key
                     field_value = [getInnerText(k).strip() for k in keys]
                     try:
-                        obj = model._default_manager.db_manager(
-                            self.db
-                        ).get_by_natural_key(*field_value)
+                        obj = model._default_manager.db_manager(self.db).get_by_natural_key(
+                            *field_value
+                        )
                     except ObjectDoesNotExist:
                         if self.handle_forward_references:
                             return base.DEFER_FIELD
@@ -343,15 +326,13 @@ class Deserializer(base.Deserializer):
                 else:
                     # Otherwise, treat like a normal PK
                     field_value = getInnerText(node).strip()
-                    obj_pk = model._meta.get_field(
-                        field.remote_field.field_name
-                    ).to_python(field_value)
+                    obj_pk = model._meta.get_field(field.remote_field.field_name).to_python(
+                        field_value
+                    )
                 return obj_pk
             else:
                 field_value = getInnerText(node).strip()
-                return model._meta.get_field(field.remote_field.field_name).to_python(
-                    field_value
-                )
+                return model._meta.get_field(field.remote_field.field_name).to_python(field_value)
 
     def _handle_m2m_field_node(self, node, field):
         """
@@ -366,11 +347,7 @@ class Deserializer(base.Deserializer):
                 if keys:
                     # If there are 'natural' subelements, it must be a natural key
                     field_value = [getInnerText(k).strip() for k in keys]
-                    obj_pk = (
-                        default_manager.db_manager(self.db)
-                        .get_by_natural_key(*field_value)
-                        .pk
-                    )
+                    obj_pk = default_manager.db_manager(self.db).get_by_natural_key(*field_value).pk
                 else:
                     # Otherwise, treat like a normal PK value.
                     obj_pk = model._meta.pk.to_python(n.getAttribute("pk"))
@@ -401,15 +378,13 @@ class Deserializer(base.Deserializer):
         model_identifier = node.getAttribute(attr)
         if not model_identifier:
             raise base.DeserializationError(
-                "<%s> node is missing the required '%s' attribute"
-                % (node.nodeName, attr)
+                "<%s> node is missing the required '%s' attribute" % (node.nodeName, attr)
             )
         try:
             return apps.get_model(model_identifier)
         except (LookupError, TypeError):
             raise base.DeserializationError(
-                "<%s> node has invalid model identifier: '%s'"
-                % (node.nodeName, model_identifier)
+                "<%s> node has invalid model identifier: '%s'" % (node.nodeName, model_identifier)
             )
 
 
@@ -424,10 +399,7 @@ def getInnerTextList(node):
     # inspired by https://mail.python.org/pipermail/xml-sig/2005-March/011022.html
     result = []
     for child in node.childNodes:
-        if (
-            child.nodeType == child.TEXT_NODE
-            or child.nodeType == child.CDATA_SECTION_NODE
-        ):
+        if child.nodeType == child.TEXT_NODE or child.nodeType == child.CDATA_SECTION_NODE:
             result.append(child.data)
         elif child.nodeType == child.ELEMENT_NODE:
             result.extend(getInnerTextList(child))
@@ -435,8 +407,7 @@ def getInnerTextList(node):
             pass
     return result
 
-
-# Below code based on Christian Heimes' defusedxml
+    # Below code based on Christian Heimes' defusedxml
 
 
 class DefusedExpatParser(_ExpatParser):
@@ -454,9 +425,7 @@ class DefusedExpatParser(_ExpatParser):
     def start_doctype_decl(self, name, sysid, pubid, has_internal_subset):
         raise DTDForbidden(name, sysid, pubid)
 
-    def entity_decl(
-        self, name, is_parameter_entity, value, base, sysid, pubid, notation_name
-    ):
+    def entity_decl(self, name, is_parameter_entity, value, base, sysid, pubid, notation_name):
         raise EntitiesForbidden(name, value, base, sysid, pubid, notation_name)
 
     def unparsed_entity_decl(self, name, base, sysid, pubid, notation_name):

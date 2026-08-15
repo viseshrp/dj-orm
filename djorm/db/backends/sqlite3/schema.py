@@ -12,9 +12,7 @@ from djorm.db.models import CompositePrimaryKey, UniqueConstraint
 class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     sql_delete_table = "DROP TABLE %(table)s"
     sql_create_fk = None
-    sql_create_inline_fk = (
-        "REFERENCES %(to_table)s (%(to_column)s) DEFERRABLE INITIALLY DEFERRED"
-    )
+    sql_create_inline_fk = "REFERENCES %(to_table)s (%(to_column)s) DEFERRABLE INITIALLY DEFERRED"
     sql_create_column_inline_fk = sql_create_inline_fk
     sql_delete_column = "ALTER TABLE %(table)s DROP COLUMN %(column)s"
     sql_create_unique = "CREATE UNIQUE INDEX %(name)s ON %(table)s (%(columns)s)"
@@ -52,7 +50,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             pass
         except sqlite3.ProgrammingError:
             pass
-        # Manual emulation of SQLite parameter quoting
+            # Manual emulation of SQLite parameter quoting
         if isinstance(value, bool):
             return str(int(value))
         elif isinstance(value, (Decimal, float, int)):
@@ -67,16 +65,12 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             # character.
             return "X'%s'" % value.hex()
         else:
-            raise ValueError(
-                "Cannot quote parameter value %r of type %s" % (value, type(value))
-            )
+            raise ValueError("Cannot quote parameter value %r of type %s" % (value, type(value)))
 
     def prepare_default(self, value):
         return self.quote_value(value)
 
-    def _remake_table(
-        self, model, create_field=None, delete_field=None, alter_fields=None
-    ):
+    def _remake_table(self, model, create_field=None, delete_field=None, alter_fields=None):
         """
         Shortcut to transform a model from old_model into new_model
 
@@ -99,7 +93,8 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         def is_self_referential(f):
             return f.is_relation and f.remote_field.model is model
 
-        # Work out the new fields dict / mapping
+            # Work out the new fields dict / mapping
+
         body = {
             f.name: f.clone() if is_self_referential(f) else f
             for f in model._meta.local_concrete_fields
@@ -111,8 +106,8 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         if isinstance(pk, CompositePrimaryKey):
             body[pk.name] = pk.clone()
 
-        # Since mapping might mix column names and default values,
-        # its values must be already quoted.
+            # Since mapping might mix column names and default values,
+            # its values must be already quoted.
         mapping = {
             f.column: self.quote_name(f.column)
             for f in model._meta.local_concrete_fields
@@ -139,7 +134,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                     if field.auto_created:
                         del body[name]
                         del mapping[field.column]
-        # Add in any created fields
+                        # Add in any created fields
         if create_field:
             body[create_field.name] = create_field
             # Choose a default and insert it into the copy map
@@ -151,7 +146,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                 mapping[create_field.column] = self.prepare_default(
                     self.effective_default(create_field)
                 )
-        # Add in any altered fields
+                # Add in any altered fields
         for alter_field in alter_fields:
             old_field, new_field = alter_field
             body.pop(old_field.name, None)
@@ -172,31 +167,25 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                 mapping[new_field.column] = case_sql
             else:
                 mapping[new_field.column] = self.quote_name(old_field.column)
-        # Remove any deleted fields
+                # Remove any deleted fields
         if delete_field:
             del body[delete_field.name]
             mapping.pop(delete_field.column, None)
             # Remove any implicit M2M tables
-            if (
-                delete_field.many_to_many
-                and delete_field.remote_field.through._meta.auto_created
-            ):
+            if delete_field.many_to_many and delete_field.remote_field.through._meta.auto_created:
                 return self.delete_model(delete_field.remote_field.through)
-        # Work inside a new app registry
+                # Work inside a new app registry
         apps = Apps()
 
         # Work out the new value of unique_together, taking renames into
         # account
         unique_together = [
-            [rename_mapping.get(n, n) for n in unique]
-            for unique in model._meta.unique_together
+            [rename_mapping.get(n, n) for n in unique] for unique in model._meta.unique_together
         ]
 
         indexes = model._meta.indexes
         if delete_field:
-            indexes = [
-                index for index in indexes if delete_field.name not in index.fields
-            ]
+            indexes = [index for index in indexes if delete_field.name not in index.fields]
 
         constraints = list(model._meta.constraints)
 
@@ -246,7 +235,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             new_model._meta.local_fields.remove(auto_pk)
             new_model.pk = None
 
-        # Create a new table with the updated schema.
+            # Create a new table with the updated schema.
         self.create_model(new_model)
 
         # Copy data from the old table into the new table
@@ -291,9 +280,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             )
             # Remove all deferred statements referencing the deleted table.
             for sql in list(self.deferred_sql):
-                if isinstance(sql, Statement) and sql.references_table(
-                    model._meta.db_table
-                ):
+                if isinstance(sql, Statement) and sql.references_table(model._meta.db_table):
                     self.deferred_sql.remove(sql)
 
     def add_field(self, model, field):
@@ -337,7 +324,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             # For implicit M2M tables, delete the auto-created table
             if field.remote_field.through._meta.auto_created:
                 self.delete_model(field.remote_field.through)
-            # For explicit "through" M2M fields, do nothing
+                # For explicit "through" M2M fields, do nothing
         elif (
             self.connection.features.can_alter_table_drop_column
             # Primary keys, unique fields, indexed fields, and foreign keys are
@@ -348,7 +335,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             and not (field.remote_field and field.db_constraint)
         ):
             super().remove_field(model, field)
-        # For everything else, remake.
+            # For everything else, remake.
         else:
             # It might not actually have a column behind it
             if field.db_parameters(connection=self.connection)["type"] is None:
@@ -380,18 +367,14 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             )
         ):
             return self.execute(
-                self._rename_field_sql(
-                    model._meta.db_table, old_field, new_field, new_type
-                )
+                self._rename_field_sql(model._meta.db_table, old_field, new_field, new_type)
             )
-        # Alter by remaking table
+            # Alter by remaking table
         self._remake_table(model, alter_fields=[(old_field, new_field)])
         # Rebuild tables with FKs pointing to this field.
         old_collation = old_db_params.get("collation")
         new_collation = new_db_params.get("collation")
-        if new_field.unique and (
-            old_type != new_type or old_collation != new_collation
-        ):
+        if new_field.unique and (old_type != new_type or old_collation != new_collation):
             related_models = set()
             opts = new_field.model._meta
             for remote_field in opts.related_objects:
@@ -439,18 +422,14 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                         # The field that points to the model itself is needed,
                         # so that table can be remade with the new self field -
                         # this is m2m_field_name().
-                        old_field.remote_field.through._meta.get_field(
-                            old_field.m2m_field_name()
-                        ),
-                        new_field.remote_field.through._meta.get_field(
-                            new_field.m2m_field_name()
-                        ),
+                        old_field.remote_field.through._meta.get_field(old_field.m2m_field_name()),
+                        new_field.remote_field.through._meta.get_field(new_field.m2m_field_name()),
                     ),
                 ],
             )
             return
 
-        # Make a new through table
+            # Make a new through table
         self.create_model(new_field.remote_field.through)
         # Copy the data across
         self.execute(

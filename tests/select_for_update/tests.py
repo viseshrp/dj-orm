@@ -44,9 +44,7 @@ class SelectForUpdateTests(TransactionTestCase):
         self.country2 = Country.objects.create(name="France")
         self.city1 = City.objects.create(name="Liberchies", country=self.country1)
         self.city2 = City.objects.create(name="Samois-sur-Seine", country=self.country2)
-        self.person = Person.objects.create(
-            name="Reinhardt", born=self.city1, died=self.city2
-        )
+        self.person = Person.objects.create(name="Reinhardt", born=self.city1, died=self.city2)
         self.person_profile = PersonProfile.objects.create(person=self.person)
 
         # We need another database connection in transaction to test that one
@@ -273,9 +271,7 @@ class SelectForUpdateTests(TransactionTestCase):
     @skipUnlessDBFeature("has_select_for_update_of")
     def test_for_update_of_followed_by_values_list(self):
         with transaction.atomic():
-            values = list(
-                Person.objects.select_for_update(of=("self",)).values_list("pk")
-            )
+            values = list(Person.objects.select_for_update(of=("self",)).values_list("pk"))
         self.assertEqual(values, [(self.person.pk,)])
 
     @skipUnlessDBFeature("has_select_for_update_of")
@@ -413,9 +409,9 @@ class SelectForUpdateTests(TransactionTestCase):
             with self.subTest(of=of):
                 with self.assertRaisesMessage(FieldError, msg % ", ".join(of)):
                     with transaction.atomic():
-                        Person.objects.select_related(
-                            "born__country"
-                        ).select_for_update(of=of).get()
+                        Person.objects.select_related("born__country").select_for_update(
+                            of=of
+                        ).get()
 
     @skipUnlessDBFeature("has_select_for_update", "has_select_for_update_of")
     def test_related_but_unselected_of_argument_raises_error(self):
@@ -451,9 +447,7 @@ class SelectForUpdateTests(TransactionTestCase):
                 EUCity.objects.select_related(
                     "country",
                 ).select_for_update(of=("name",)).get()
-        with self.assertRaisesMessage(
-            FieldError, msg % "country_ptr, country_ptr__entity_ptr"
-        ):
+        with self.assertRaisesMessage(FieldError, msg % "country_ptr, country_ptr__entity_ptr"):
             with transaction.atomic():
                 EUCountry.objects.select_for_update(of=("name",)).get()
 
@@ -532,10 +526,7 @@ class SelectForUpdateTests(TransactionTestCase):
 
     @skipIfDBFeature("supports_select_for_update_with_limit")
     def test_unsupported_select_for_update_with_limit(self):
-        msg = (
-            "LIMIT/OFFSET is not supported with select_for_update on this database "
-            "backend."
-        )
+        msg = "LIMIT/OFFSET is not supported with select_for_update on this database backend."
         with self.assertRaisesMessage(NotSupportedError, msg):
             with transaction.atomic():
                 list(Person.objects.order_by("pk").select_for_update()[1:2])
@@ -588,8 +579,8 @@ class SelectForUpdateTests(TransactionTestCase):
         if sanity_count >= 10:
             raise ValueError("Thread did not run and block")
 
-        # Check the person hasn't been updated. Since this isn't
-        # using FOR UPDATE, it won't block.
+            # Check the person hasn't been updated. Since this isn't
+            # using FOR UPDATE, it won't block.
         p = Person.objects.get(pk=self.person.pk)
         self.assertEqual("Reinhardt", p.name)
 
@@ -670,7 +661,5 @@ class SelectForUpdateTests(TransactionTestCase):
         to specify a row locking order to prevent deadlocks (#27193).
         """
         with transaction.atomic():
-            qs = Person.objects.filter(
-                id__in=Person.objects.order_by("-id").select_for_update()
-            )
+            qs = Person.objects.filter(id__in=Person.objects.order_by("-id").select_for_update())
             self.assertIn("ORDER BY", str(qs.query))

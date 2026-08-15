@@ -65,8 +65,7 @@ class BaseManager:
                 raise ValueError(
                     "Could not find manager %s in %s.\n"
                     "Please note that you need to inherit from managers you "
-                    "dynamically generated with 'from_queryset()'."
-                    % (name, module_name)
+                    "dynamically generated with 'from_queryset()'." % (name, module_name)
                 )
             return (
                 False,  # as_manager
@@ -89,18 +88,16 @@ class BaseManager:
             return manager_method
 
         new_methods = {}
-        for name, method in inspect.getmembers(
-            queryset_class, predicate=inspect.isfunction
-        ):
+        for name, method in inspect.getmembers(queryset_class, predicate=inspect.isfunction):
             # Only copy missing methods.
             if hasattr(cls, name):
                 continue
-            # Only copy public methods or methods with the attribute
-            # queryset_only=False.
+                # Only copy public methods or methods with the attribute
+                # queryset_only=False.
             queryset_only = getattr(method, "queryset_only", None)
             if queryset_only or (queryset_only is None and name.startswith("_")):
                 continue
-            # Copy the method onto the manager.
+                # Copy the method onto the manager.
             new_methods[name] = create_method(name, method)
         return new_methods
 
@@ -143,9 +140,9 @@ class BaseManager:
     def db(self):
         return self._db or router.db_for_read(self.model, **self._hints)
 
-    #######################
-    # PROXIES TO QUERYSET #
-    #######################
+        #######################
+        # PROXIES TO QUERYSET #
+        #######################
 
     def get_queryset(self):
         """
@@ -165,8 +162,7 @@ class BaseManager:
 
     def __eq__(self, other):
         return (
-            isinstance(other, self.__class__)
-            and self._constructor_args == other._constructor_args
+            isinstance(other, self.__class__) and self._constructor_args == other._constructor_args
         )
 
     def __hash__(self):
@@ -183,9 +179,7 @@ class ManagerDescriptor:
 
     def __get__(self, instance, cls=None):
         if instance is not None:
-            raise AttributeError(
-                "Manager isn't accessible via %s instances" % cls.__name__
-            )
+            raise AttributeError("Manager isn't accessible via %s instances" % cls.__name__)
 
         if cls._meta.abstract:
             raise AttributeError(

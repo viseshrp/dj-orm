@@ -117,9 +117,7 @@ class AdvancedTests(TestCase):
         """
         Multiple fields can be updated at once
         """
-        resp = DataPoint.objects.filter(value="apple").update(
-            value="fruit", another_value="peach"
-        )
+        resp = DataPoint.objects.filter(value="apple").update(value="fruit", another_value="peach")
         self.assertEqual(resp, 1)
         d = DataPoint.objects.get(name="d0")
         self.assertEqual(d.value, "fruit")
@@ -159,7 +157,7 @@ class AdvancedTests(TestCase):
     def test_update_m2m_field(self):
         msg = (
             "Cannot update model field "
-            '<djorm.db.models.fields.related.ManyToManyField: m2m_foo> '
+            "<djorm.db.models.fields.related.ManyToManyField: m2m_foo> "
             "(only non-relations and foreign keys permitted)."
         )
         with self.assertRaisesMessage(FieldError, msg):
@@ -231,9 +229,7 @@ class AdvancedTests(TestCase):
             "Count(Col(update_bar_m2m_foo, update.Bar_m2m_foo.foo))"
         )
         with self.assertRaisesMessage(FieldError, msg):
-            Bar.objects.annotate(m2m_count=Count("m2m_foo")).order_by(
-                "m2m_count"
-            ).update(x=2)
+            Bar.objects.annotate(m2m_count=Count("m2m_foo")).order_by("m2m_count").update(x=2)
 
     def test_update_ordered_by_inline_m2m_annotation(self):
         foo = Foo.objects.create(target="test")
@@ -257,9 +253,9 @@ class AdvancedTests(TestCase):
         self.assertEqual(Bar.objects.get().x, 4)
 
     def test_update_values_annotation(self):
-        RelatedPoint.objects.annotate(abs_id=Abs("id")).filter(
-            data__is_active=False
-        ).values("id", "abs_id").update(data=self.d0)
+        RelatedPoint.objects.annotate(abs_id=Abs("id")).filter(data__is_active=False).values(
+            "id", "abs_id"
+        ).update(data=self.d0)
         self.r1.refresh_from_db(fields=["data"])
         self.assertEqual(self.r1.data, self.d0)
 
@@ -276,9 +272,9 @@ class AdvancedTests(TestCase):
         )
 
     def test_update_negated_f_conditional_annotation(self):
-        DataPoint.objects.annotate(
-            is_d2=Case(When(name="d2", then=True), default=False)
-        ).update(is_active=~F("is_d2"))
+        DataPoint.objects.annotate(is_d2=Case(When(name="d2", then=True), default=False)).update(
+            is_active=~F("is_d2")
+        )
         self.assertCountEqual(
             DataPoint.objects.values_list("name", "is_active"),
             [("d0", True), ("d2", False), ("d3", True)],

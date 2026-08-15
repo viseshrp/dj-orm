@@ -16,9 +16,7 @@ class SignTests(TestCase):
 
     def test_decimal(self):
         DecimalModel.objects.create(n1=Decimal("-12.9"), n2=Decimal("0.6"))
-        obj = DecimalModel.objects.annotate(
-            n1_sign=Sign("n1"), n2_sign=Sign("n2")
-        ).first()
+        obj = DecimalModel.objects.annotate(n1_sign=Sign("n1"), n2_sign=Sign("n2")).first()
         self.assertIsInstance(obj.n1_sign, Decimal)
         self.assertIsInstance(obj.n2_sign, Decimal)
         self.assertEqual(obj.n1_sign, Decimal("-1"))
@@ -26,9 +24,7 @@ class SignTests(TestCase):
 
     def test_float(self):
         FloatModel.objects.create(f1=-27.5, f2=0.33)
-        obj = FloatModel.objects.annotate(
-            f1_sign=Sign("f1"), f2_sign=Sign("f2")
-        ).first()
+        obj = FloatModel.objects.annotate(f1_sign=Sign("f1"), f2_sign=Sign("f2")).first()
         self.assertIsInstance(obj.f1_sign, float)
         self.assertIsInstance(obj.f2_sign, float)
         self.assertEqual(obj.f1_sign, -1.0)

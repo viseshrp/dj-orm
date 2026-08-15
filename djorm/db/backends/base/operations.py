@@ -20,7 +20,7 @@ class BaseDatabaseOperations:
     performs ordering or calculates the ID of a recently-inserted row.
     """
 
-    compiler_module = 'djorm.db.models.sql.compiler'
+    compiler_module = "djorm.db.models.sql.compiler"
 
     # Integer field safe ranges by `internal_type` as documented
     # in docs/ref/models/fields.txt.
@@ -109,8 +109,7 @@ class BaseDatabaseOperations:
         extracts a value from the given date field field_name.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseOperations may require a date_extract_sql() "
-            "method"
+            "subclasses of BaseDatabaseOperations may require a date_extract_sql() method"
         )
 
     def date_trunc_sql(self, lookup_type, sql, params, tzname=None):
@@ -123,8 +122,7 @@ class BaseDatabaseOperations:
         timezone.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseOperations may require a date_trunc_sql() "
-            "method."
+            "subclasses of BaseDatabaseOperations may require a date_trunc_sql() method."
         )
 
     def datetime_cast_date_sql(self, sql, params, tzname):
@@ -132,8 +130,7 @@ class BaseDatabaseOperations:
         Return the SQL to cast a datetime value to date value.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseOperations may require a "
-            "datetime_cast_date_sql() method."
+            "subclasses of BaseDatabaseOperations may require a datetime_cast_date_sql() method."
         )
 
     def datetime_cast_time_sql(self, sql, params, tzname):
@@ -141,8 +138,7 @@ class BaseDatabaseOperations:
         Return the SQL to cast a datetime value to time value.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseOperations may require a "
-            "datetime_cast_time_sql() method"
+            "subclasses of BaseDatabaseOperations may require a datetime_cast_time_sql() method"
         )
 
     def datetime_extract_sql(self, lookup_type, sql, params, tzname):
@@ -152,8 +148,7 @@ class BaseDatabaseOperations:
         datetime field field_name.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseOperations may require a datetime_extract_sql() "
-            "method"
+            "subclasses of BaseDatabaseOperations may require a datetime_extract_sql() method"
         )
 
     def datetime_trunc_sql(self, lookup_type, sql, params, tzname):
@@ -163,8 +158,7 @@ class BaseDatabaseOperations:
         field_name to a datetime object with only the given specificity.
         """
         raise NotImplementedError(
-            "subclasses of BaseDatabaseOperations may require a datetime_trunc_sql() "
-            "method"
+            "subclasses of BaseDatabaseOperations may require a datetime_trunc_sql() method"
         )
 
     def time_trunc_sql(self, lookup_type, sql, params, tzname=None):
@@ -201,9 +195,7 @@ class BaseDatabaseOperations:
         duplicates.
         """
         if fields:
-            raise NotSupportedError(
-                "DISTINCT ON fields is not supported by this database backend"
-            )
+            raise NotSupportedError("DISTINCT ON fields is not supported by this database backend")
         else:
             return ["DISTINCT"], []
 
@@ -443,7 +435,21 @@ class BaseDatabaseOperations:
         return ""
 
     def sql_flush(self, style, tables, *, reset_sequences=False, allow_cascade=False):
-        '\n        Return a list of SQL statements required to remove all data from\n        the given database tables (without actually removing the tables\n        themselves).\n\n        The `style` argument is a Style object as returned by either\n        color_style() or no_style() in djorm.core.management.color.\n\n        If `reset_sequences` is True, the list includes SQL statements required\n        to reset the sequences.\n\n        The `allow_cascade` argument determines whether truncation may cascade\n        to tables with foreign keys pointing the tables being truncated.\n        PostgreSQL requires a cascade even if these tables are empty.\n        '
+        """
+        Return a list of SQL statements required to remove all data from
+        the given database tables (without actually removing the tables
+        themselves).
+
+        The `style` argument is a Style object as returned by either
+        color_style() or no_style() in djorm.core.management.color.
+
+        If `reset_sequences` is True, the list includes SQL statements required
+        to reset the sequences.
+
+        The `allow_cascade` argument determines whether truncation may cascade
+        to tables with foreign keys pointing the tables being truncated.
+        PostgreSQL requires a cascade even if these tables are empty.
+        """
         raise NotImplementedError(
             "subclasses of BaseDatabaseOperations must provide an sql_flush() method"
         )
@@ -459,11 +465,23 @@ class BaseDatabaseOperations:
                     cursor.execute(sql)
 
     def sequence_reset_by_name_sql(self, style, sequences):
-        '\n        Return a list of the SQL statements required to reset sequences\n        passed in `sequences`.\n\n        The `style` argument is a Style object as returned by either\n        color_style() or no_style() in djorm.core.management.color.\n        '
+        """
+        Return a list of the SQL statements required to reset sequences
+        passed in `sequences`.
+
+        The `style` argument is a Style object as returned by either
+        color_style() or no_style() in djorm.core.management.color.
+        """
         return []
 
     def sequence_reset_sql(self, style, model_list):
-        '\n        Return a list of the SQL statements required to reset sequences for\n        the given models.\n\n        The `style` argument is a Style object as returned by either\n        color_style() or no_style() in djorm.core.management.color.\n        '
+        """
+        Return a list of the SQL statements required to reset sequences for
+        the given models.
+
+        The `style` argument is a Style object as returned by either
+        color_style() or no_style() in djorm.core.management.color.
+        """
         return []  # No sequence reset required by default.
 
     def start_transaction_sql(self):
@@ -491,8 +509,9 @@ class BaseDatabaseOperations:
         """Prepare a value for use in a LIKE query."""
         return str(x).replace("\\", "\\\\").replace("%", r"\%").replace("_", r"\_")
 
-    # Same as prep_for_like_query(), but called for "iexact" matches, which
-    # need not necessarily be implemented using "LIKE" in the backend.
+        # Same as prep_for_like_query(), but called for "iexact" matches, which
+        # need not necessarily be implemented using "LIKE" in the backend.
+
     prep_for_iexact_query = prep_for_like_query
 
     def validate_autopk_value(self, value):
@@ -582,9 +601,7 @@ class BaseDatabaseOperations:
         """
         if iso_year:
             first = datetime.date.fromisocalendar(value, 1, 1)
-            second = datetime.date.fromisocalendar(
-                value + 1, 1, 1
-            ) - datetime.timedelta(days=1)
+            second = datetime.date.fromisocalendar(value + 1, 1, 1) - datetime.timedelta(days=1)
         else:
             first = datetime.date(value, 1, 1)
             second = datetime.date(value, 12, 31)
@@ -603,9 +620,9 @@ class BaseDatabaseOperations:
         """
         if iso_year:
             first = datetime.datetime.fromisocalendar(value, 1, 1)
-            second = datetime.datetime.fromisocalendar(
-                value + 1, 1, 1
-            ) - datetime.timedelta(microseconds=1)
+            second = datetime.datetime.fromisocalendar(value + 1, 1, 1) - datetime.timedelta(
+                microseconds=1
+            )
         else:
             first = datetime.datetime(value, 1, 1)
             second = datetime.datetime(value, 12, 31, 23, 59, 59, 999999)
@@ -688,9 +705,7 @@ class BaseDatabaseOperations:
             lhs_sql, lhs_params = lhs
             rhs_sql, rhs_params = rhs
             return "(%s - %s)" % (lhs_sql, rhs_sql), (*lhs_params, *rhs_params)
-        raise NotSupportedError(
-            "This backend does not support %s subtraction." % internal_type
-        )
+        raise NotSupportedError("This backend does not support %s subtraction." % internal_type)
 
     def window_frame_value(self, value):
         if isinstance(value, int):
@@ -712,9 +727,7 @@ class BaseDatabaseOperations:
                 f"start argument must be an integer, zero, or None, but got '{start}'."
             )
         if end is not None and not isinstance(end, int):
-            raise ValueError(
-                f"end argument must be an integer, zero, or None, but got '{end}'."
-            )
+            raise ValueError(f"end argument must be an integer, zero, or None, but got '{end}'.")
         start_ = self.window_frame_value(start) or self.UNBOUNDED_PRECEDING
         end_ = self.window_frame_value(end) or self.UNBOUNDED_FOLLOWING
         return start_, end_
@@ -724,15 +737,11 @@ class BaseDatabaseOperations:
             isinstance(start, int) and start > 0
         ):
             raise ValueError(
-                "start argument must be a negative integer, zero, or None, "
-                "but got '%s'." % start
+                "start argument must be a negative integer, zero, or None, but got '%s'." % start
             )
-        if (end is not None and not isinstance(end, int)) or (
-            isinstance(end, int) and end < 0
-        ):
+        if (end is not None and not isinstance(end, int)) or (isinstance(end, int) and end < 0):
             raise ValueError(
-                "end argument must be a positive integer, zero, or None, but got '%s'."
-                % end
+                "end argument must be a positive integer, zero, or None, but got '%s'." % end
             )
         start_ = self.window_frame_value(start) or self.UNBOUNDED_PRECEDING
         end_ = self.window_frame_value(end) or self.UNBOUNDED_FOLLOWING
@@ -748,9 +757,7 @@ class BaseDatabaseOperations:
 
     def explain_query_prefix(self, format=None, **options):
         if not self.connection.features.supports_explaining_query_execution:
-            raise NotSupportedError(
-                "This backend does not support explaining query execution."
-            )
+            raise NotSupportedError("This backend does not support explaining query execution.")
         if format:
             supported_formats = self.connection.features.supported_explain_formats
             normalized_format = format.upper()
@@ -759,9 +766,7 @@ class BaseDatabaseOperations:
                 if supported_formats:
                     msg += " Allowed formats: %s" % ", ".join(sorted(supported_formats))
                 else:
-                    msg += (
-                        f" {self.connection.display_name} does not support any formats."
-                    )
+                    msg += f" {self.connection.display_name} does not support any formats."
                 raise ValueError(msg)
         if options:
             raise ValueError("Unknown options: %s" % ", ".join(sorted(options.keys())))

@@ -73,7 +73,7 @@ def iter_format_modules(lang, format_module_path=None):
             format_module_path = [format_module_path]
         for path in format_module_path:
             format_locations.append(path + ".%s")
-    format_locations.append('djorm.conf.locale.%s')
+    format_locations.append("djorm.conf.locale.%s")
     locale = to_locale(lang)
     locales = [locale]
     if "_" in locale:
@@ -91,9 +91,7 @@ def get_format_modules(lang=None):
     if lang is None:
         lang = get_language()
     if lang not in _format_modules_cache:
-        _format_modules_cache[lang] = list(
-            iter_format_modules(lang, settings.FORMAT_MODULE_PATH)
-        )
+        _format_modules_cache[lang] = list(iter_format_modules(lang, settings.FORMAT_MODULE_PATH))
     return _format_modules_cache[lang]
 
 
@@ -117,9 +115,9 @@ def get_format(format_type, lang=None, use_l10n=None):
     except KeyError:
         pass
 
-    # The requested format_type has not been cached yet. Try to find it in any
-    # of the format_modules for the given lang if l10n is enabled. If it's not
-    # there or if l10n is disabled, fall back to the project settings.
+        # The requested format_type has not been cached yet. Try to find it in any
+        # of the format_modules for the given lang if l10n is enabled. If it's not
+        # there or if l10n is disabled, fall back to the project settings.
     val = None
     if use_l10n:
         for module in get_format_modules(lang):
@@ -152,9 +150,7 @@ def date_format(value, format=None, use_l10n=None):
     If use_l10n is provided and is not None, that will force the value to
     be localized (or not), otherwise it's always localized.
     """
-    return dateformat.format(
-        value, get_format(format or "DATE_FORMAT", use_l10n=use_l10n)
-    )
+    return dateformat.format(value, get_format(format or "DATE_FORMAT", use_l10n=use_l10n))
 
 
 def time_format(value, format=None, use_l10n=None):
@@ -164,9 +160,7 @@ def time_format(value, format=None, use_l10n=None):
     If use_l10n is provided and is not None, it forces the value to
     be localized (or not), otherwise it's always localized.
     """
-    return dateformat.time_format(
-        value, get_format(format or "TIME_FORMAT", use_l10n=use_l10n)
-    )
+    return dateformat.time_format(value, get_format(format or "TIME_FORMAT", use_l10n=use_l10n))
 
 
 def number_format(value, decimal_pos=None, use_l10n=None, force_grouping=False):
@@ -286,11 +280,7 @@ def sanitize_separators(value):
             parts.append(decimals)
         if settings.USE_THOUSAND_SEPARATOR:
             thousand_sep = get_format("THOUSAND_SEPARATOR")
-            if (
-                thousand_sep == "."
-                and value.count(".") == 1
-                and len(value.split(".")[-1]) != 3
-            ):
+            if thousand_sep == "." and value.count(".") == 1 and len(value.split(".")[-1]) != 3:
                 # Special case where we suspect a dot meant decimal separator
                 # (see #22171).
                 pass

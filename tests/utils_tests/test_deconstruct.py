@@ -12,9 +12,7 @@ class DeconstructibleChildClass(DeconstructibleClass):
     pass
 
 
-@deconstructible(
-    path="utils_tests.deconstructible_classes.DeconstructibleWithPathClass"
-)
+@deconstructible(path="utils_tests.deconstructible_classes.DeconstructibleWithPathClass")
 class DeconstructibleWithPathClass:
     pass
 

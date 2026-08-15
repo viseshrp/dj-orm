@@ -100,8 +100,7 @@ class YearExact(models.lookups.Lookup):
         # conversions in SQL instead of in Python to support F() references.
         return (
             "%(lhs)s >= (%(rhs)s || '-01-01')::date "
-            "AND %(lhs)s <= (%(rhs)s || '-12-31')::date"
-            % {"lhs": lhs_sql, "rhs": rhs_sql},
+            "AND %(lhs)s <= (%(rhs)s || '-12-31')::date" % {"lhs": lhs_sql, "rhs": rhs_sql},
             params,
         )
 
@@ -186,8 +185,7 @@ class CustomField(models.TextField):
 class CustomModel(models.Model):
     field = CustomField()
 
-
-# We will register this class temporarily in the test method.
+    # We will register this class temporarily in the test method.
 
 
 class InMonth(models.lookups.Lookup):
@@ -270,15 +268,11 @@ class LookupTests(TestCase):
         a4 = Author.objects.create(name="a4", age=4)
         with register_lookup(models.IntegerField, Div3Lookup):
             self.assertSequenceEqual(Author.objects.filter(age__div3=0), [a3])
-            self.assertSequenceEqual(
-                Author.objects.filter(age__div3=1).order_by("age"), [a1, a4]
-            )
+            self.assertSequenceEqual(Author.objects.filter(age__div3=1).order_by("age"), [a1, a4])
             self.assertSequenceEqual(Author.objects.filter(age__div3=2), [a2])
             self.assertSequenceEqual(Author.objects.filter(age__div3=3), [])
 
-    @unittest.skipUnless(
-        connection.vendor == "postgresql", "PostgreSQL specific SQL used"
-    )
+    @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific SQL used")
     def test_birthdate_month(self):
         a1 = Author.objects.create(name="a1", birthdate=date(1981, 2, 16))
         a2 = Author.objects.create(name="a2", birthdate=date(2012, 2, 29))
@@ -297,9 +291,7 @@ class LookupTests(TestCase):
             self.assertSequenceEqual(
                 Author.objects.filter(birthdate__inmonth=date(2012, 3, 12)), [a4]
             )
-            self.assertSequenceEqual(
-                Author.objects.filter(birthdate__inmonth=date(2012, 4, 1)), []
-            )
+            self.assertSequenceEqual(Author.objects.filter(birthdate__inmonth=date(2012, 4, 1)), [])
 
     def test_div3_extract(self):
         with register_lookup(models.IntegerField, Div3Transform):
@@ -313,9 +305,7 @@ class LookupTests(TestCase):
             self.assertSequenceEqual(baseqs.filter(age__div3__in=[0, 2]), [a2, a3])
             self.assertSequenceEqual(baseqs.filter(age__div3__in=[2, 4]), [a2])
             self.assertSequenceEqual(baseqs.filter(age__div3__gte=3), [])
-            self.assertSequenceEqual(
-                baseqs.filter(age__div3__range=(1, 2)), [a1, a2, a4]
-            )
+            self.assertSequenceEqual(baseqs.filter(age__div3__range=(1, 2)), [a1, a2, a4])
 
     def test_foreignobject_lookup_registration(self):
         field = Article._meta.get_field("author")
@@ -323,7 +313,7 @@ class LookupTests(TestCase):
         with register_lookup(models.ForeignObject, Exactly):
             self.assertIs(field.get_lookup("exactly"), Exactly)
 
-        # ForeignObject should ignore regular Field lookups
+            # ForeignObject should ignore regular Field lookups
         with register_lookup(models.Field, Exactly):
             self.assertIsNone(field.get_lookup("exactly"))
 
@@ -338,7 +328,7 @@ class LookupTests(TestCase):
         with register_lookup(models.ForeignObject, Exactly):
             # getting the lookups again should re-cache
             self.assertIn("exactly", field.get_lookups())
-        # Unregistration should bust the cache.
+            # Unregistration should bust the cache.
         self.assertNotIn("exactly", field.get_lookups())
 
 
@@ -361,9 +351,7 @@ class BilateralTransformTests(TestCase):
         with register_lookup(models.CharField, UpperBilateralTransform):
             msg = "Bilateral transformations on nested querysets are not implemented."
             with self.assertRaisesMessage(NotImplementedError, msg):
-                Author.objects.filter(
-                    name__upper__in=Author.objects.values_list("name")
-                )
+                Author.objects.filter(name__upper__in=Author.objects.values_list("name"))
 
     def test_bilateral_multi_value(self):
         with register_lookup(models.CharField, UpperBilateralTransform):
@@ -375,9 +363,7 @@ class BilateralTransformTests(TestCase):
                 ]
             )
             self.assertQuerySetEqual(
-                Author.objects.filter(name__upper__in=["foo", "bar", "doe"]).order_by(
-                    "name"
-                ),
+                Author.objects.filter(name__upper__in=["foo", "bar", "doe"]).order_by("name"),
                 ["Bar", "Foo"],
                 lambda a: a.name,
             )
@@ -394,14 +380,10 @@ class BilateralTransformTests(TestCase):
             self.assertSequenceEqual(baseqs.filter(age__div3__in=[0, 2]), [a2, a3])
             self.assertSequenceEqual(baseqs.filter(age__div3__in=[2, 4]), [a1, a2, a4])
             self.assertSequenceEqual(baseqs.filter(age__div3__gte=3), [a1, a2, a3, a4])
-            self.assertSequenceEqual(
-                baseqs.filter(age__div3__range=(1, 2)), [a1, a2, a4]
-            )
+            self.assertSequenceEqual(baseqs.filter(age__div3__range=(1, 2)), [a1, a2, a4])
 
     def test_bilateral_order(self):
-        with register_lookup(
-            models.IntegerField, Mult3BilateralTransform, Div3BilateralTransform
-        ):
+        with register_lookup(models.IntegerField, Mult3BilateralTransform, Div3BilateralTransform):
             a1 = Author.objects.create(name="a1", age=1)
             a2 = Author.objects.create(name="a2", age=2)
             a3 = Author.objects.create(name="a3", age=3)
@@ -409,9 +391,7 @@ class BilateralTransformTests(TestCase):
             baseqs = Author.objects.order_by("name")
 
             # mult3__div3 always leads to 0
-            self.assertSequenceEqual(
-                baseqs.filter(age__mult3__div3=42), [a1, a2, a3, a4]
-            )
+            self.assertSequenceEqual(baseqs.filter(age__mult3__div3=42), [a1, a2, a3, a4])
             self.assertSequenceEqual(baseqs.filter(age__div3__mult3=42), [a3])
 
     def test_transform_order_by(self):
@@ -430,9 +410,7 @@ class BilateralTransformTests(TestCase):
             a3 = Author.objects.create(name="a3", age=3, average_rating=1.5)
             a4 = Author.objects.create(name="a4", age=4)
             baseqs = Author.objects.order_by("name")
-            self.assertSequenceEqual(
-                baseqs.filter(age__mult3=models.F("age")), [a1, a2, a3, a4]
-            )
+            self.assertSequenceEqual(baseqs.filter(age__mult3=models.F("age")), [a1, a2, a3, a4])
             # Same as age >= average_rating
             self.assertSequenceEqual(
                 baseqs.filter(age__mult3__gte=models.F("average_rating")), [a2, a3]
@@ -463,9 +441,7 @@ class YearLteTests(TestCase):
         models.DateField.register_lookup(YearTransform)
         self.addCleanup(models.DateField._unregister_lookup, YearTransform)
 
-    @unittest.skipUnless(
-        connection.vendor == "postgresql", "PostgreSQL specific SQL used"
-    )
+    @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific SQL used")
     def test_year_lte(self):
         baseqs = Author.objects.order_by("name")
         self.assertSequenceEqual(
@@ -477,15 +453,11 @@ class YearLteTests(TestCase):
         )
 
         self.assertNotIn("BETWEEN", str(baseqs.filter(birthdate__testyear=2012).query))
-        self.assertSequenceEqual(
-            baseqs.filter(birthdate__testyear__lte=2011), [self.a1]
-        )
+        self.assertSequenceEqual(baseqs.filter(birthdate__testyear__lte=2011), [self.a1])
         # The non-optimized version works, too.
         self.assertSequenceEqual(baseqs.filter(birthdate__testyear__lt=2012), [self.a1])
 
-    @unittest.skipUnless(
-        connection.vendor == "postgresql", "PostgreSQL specific SQL used"
-    )
+    @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific SQL used")
     def test_year_lte_fexpr(self):
         self.a2.age = 2011
         self.a2.save()
@@ -497,18 +469,14 @@ class YearLteTests(TestCase):
         self.assertSequenceEqual(
             baseqs.filter(birthdate__testyear__lte=models.F("age")), [self.a3, self.a4]
         )
-        self.assertSequenceEqual(
-            baseqs.filter(birthdate__testyear__lt=models.F("age")), [self.a4]
-        )
+        self.assertSequenceEqual(baseqs.filter(birthdate__testyear__lt=models.F("age")), [self.a4])
 
     def test_year_lte_sql(self):
         # This test will just check the generated SQL for __lte. This
         # doesn't require running on PostgreSQL and spots the most likely
         # error - not running YearLte SQL at all.
         baseqs = Author.objects.order_by("name")
-        self.assertIn(
-            "<= (2011 || ", str(baseqs.filter(birthdate__testyear__lte=2011).query)
-        )
+        self.assertIn("<= (2011 || ", str(baseqs.filter(birthdate__testyear__lte=2011).query))
         self.assertIn("-12-31", str(baseqs.filter(birthdate__testyear__lte=2011).query))
 
     def test_postgres_year_exact(self):
@@ -521,9 +489,7 @@ class YearLteTests(TestCase):
             # Two ways to add a customized implementation for different backends:
             # First is MonkeyPatch of the class.
             def as_custom_sql(self, compiler, connection):
-                lhs_sql, lhs_params = self.process_lhs(
-                    compiler, connection, self.lhs.lhs
-                )
+                lhs_sql, lhs_params = self.process_lhs(compiler, connection, self.lhs.lhs)
                 rhs_sql, rhs_params = self.process_rhs(compiler, connection)
                 params = lhs_params + rhs_params + lhs_params + rhs_params
                 return (
@@ -536,9 +502,7 @@ class YearLteTests(TestCase):
                 )
 
             setattr(YearExact, "as_" + connection.vendor, as_custom_sql)
-            self.assertIn(
-                "concat(", str(Author.objects.filter(birthdate__testyear=2012).query)
-            )
+            self.assertIn("concat(", str(Author.objects.filter(birthdate__testyear=2012).query))
         finally:
             delattr(YearExact, "as_" + connection.vendor)
         try:
@@ -549,9 +513,7 @@ class YearLteTests(TestCase):
                 # "as_postgresql" for postgres and so on, but as we don't know
                 # which DB we are running on, we need to use setattr.
                 def as_custom_sql(self, compiler, connection):
-                    lhs_sql, lhs_params = self.process_lhs(
-                        compiler, connection, self.lhs.lhs
-                    )
+                    lhs_sql, lhs_params = self.process_lhs(compiler, connection, self.lhs.lhs)
                     rhs_sql, rhs_params = self.process_rhs(compiler, connection)
                     params = lhs_params + rhs_params + lhs_params + rhs_params
                     return (
@@ -569,9 +531,7 @@ class YearLteTests(TestCase):
                 CustomYearExact.as_custom_sql,
             )
             YearTransform.register_lookup(CustomYearExact)
-            self.assertIn(
-                "CONCAT(", str(Author.objects.filter(birthdate__testyear=2012).query)
-            )
+            self.assertIn("CONCAT(", str(Author.objects.filter(birthdate__testyear=2012).query))
         finally:
             YearTransform._unregister_lookup(CustomYearExact)
             YearTransform.register_lookup(YearExact)
@@ -603,15 +563,10 @@ class LookupTransformCallOrderTests(SimpleTestCase):
     def test_call_order(self):
         with register_lookup(models.DateField, TrackCallsYearTransform):
             # junk lookup - tries lookup, then transform, then fails
-            msg = (
-                "Unsupported lookup 'junk' for IntegerField or join on the field not "
-                "permitted."
-            )
+            msg = "Unsupported lookup 'junk' for IntegerField or join on the field not permitted."
             with self.assertRaisesMessage(FieldError, msg):
                 Author.objects.filter(birthdate__testyear__junk=2012)
-            self.assertEqual(
-                TrackCallsYearTransform.call_order, ["lookup", "transform"]
-            )
+            self.assertEqual(TrackCallsYearTransform.call_order, ["lookup", "transform"])
             TrackCallsYearTransform.call_order = []
             # junk transform - tries transform only, then fails
             msg = (
@@ -641,15 +596,11 @@ class CustomisedMethodsTests(SimpleTestCase):
         self.assertIn("banana()", str(q.query))
 
     def test_overridden_get_lookup_chain(self):
-        q = CustomModel.objects.filter(
-            field__transformfunc_banana__lookupfunc_elephants=3
-        )
+        q = CustomModel.objects.filter(field__transformfunc_banana__lookupfunc_elephants=3)
         self.assertIn("elephants()", str(q.query))
 
     def test_overridden_get_transform_chain(self):
-        q = CustomModel.objects.filter(
-            field__transformfunc_banana__transformfunc_pear=3
-        )
+        q = CustomModel.objects.filter(field__transformfunc_banana__transformfunc_pear=3)
         self.assertIn("pear()", str(q.query))
 
 
@@ -660,9 +611,7 @@ class SubqueryTransformTests(TestCase):
             a2 = Author.objects.create(name="a2", age=2)
             Author.objects.create(name="a3", age=3)
             Author.objects.create(name="a4", age=4)
-            qs = Author.objects.order_by("name").filter(
-                id__in=Author.objects.filter(age__div3=2)
-            )
+            qs = Author.objects.order_by("name").filter(id__in=Author.objects.filter(age__div3=2))
             self.assertSequenceEqual(qs, [a2])
 
 

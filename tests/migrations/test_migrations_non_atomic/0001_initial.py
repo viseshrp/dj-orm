@@ -25,9 +25,7 @@ class Migration(migrations.Migration):
                 ("title", models.CharField(primary_key=True, max_length=255)),
                 (
                     "publisher",
-                    models.ForeignKey(
-                        "migrations.Publisher", models.SET_NULL, null=True
-                    ),
+                    models.ForeignKey("migrations.Publisher", models.SET_NULL, null=True),
                 ),
             ],
         ),

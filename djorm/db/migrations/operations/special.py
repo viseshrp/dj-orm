@@ -35,9 +35,7 @@ class SeparateDatabaseAndState(Operation):
         for database_operation in self.database_operations:
             to_state = from_state.clone()
             database_operation.state_forwards(app_label, to_state)
-            database_operation.database_forwards(
-                app_label, schema_editor, from_state, to_state
-            )
+            database_operation.database_forwards(app_label, schema_editor, from_state, to_state)
             from_state = to_state
 
     def database_backwards(self, app_label, schema_editor, from_state, to_state):
@@ -47,15 +45,13 @@ class SeparateDatabaseAndState(Operation):
             to_states[dbop] = to_state
             to_state = to_state.clone()
             dbop.state_forwards(app_label, to_state)
-        # to_state now has the states of all the database_operations applied
-        # which is the from_state for the backwards migration of the last
-        # operation.
+            # to_state now has the states of all the database_operations applied
+            # which is the from_state for the backwards migration of the last
+            # operation.
         for database_operation in reversed(self.database_operations):
             from_state = to_state
             to_state = to_states[database_operation]
-            database_operation.database_backwards(
-                app_label, schema_editor, from_state, to_state
-            )
+            database_operation.database_backwards(app_label, schema_editor, from_state, to_state)
 
     def describe(self):
         return "Custom state/database change combination"
@@ -72,9 +68,7 @@ class RunSQL(Operation):
     category = OperationCategory.SQL
     noop = ""
 
-    def __init__(
-        self, sql, reverse_sql=None, state_operations=None, hints=None, elidable=False
-    ):
+    def __init__(self, sql, reverse_sql=None, state_operations=None, hints=None, elidable=False):
         self.sql = sql
         self.reverse_sql = reverse_sql
         self.state_operations = state_operations or []
@@ -102,17 +96,13 @@ class RunSQL(Operation):
             state_operation.state_forwards(app_label, state)
 
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
-        if router.allow_migrate(
-            schema_editor.connection.alias, app_label, **self.hints
-        ):
+        if router.allow_migrate(schema_editor.connection.alias, app_label, **self.hints):
             self._run_sql(schema_editor, self.sql)
 
     def database_backwards(self, app_label, schema_editor, from_state, to_state):
         if self.reverse_sql is None:
             raise NotImplementedError("You cannot reverse this operation")
-        if router.allow_migrate(
-            schema_editor.connection.alias, app_label, **self.hints
-        ):
+        if router.allow_migrate(schema_editor.connection.alias, app_label, **self.hints):
             self._run_sql(schema_editor, self.reverse_sql)
 
     def describe(self):
@@ -143,9 +133,7 @@ class RunPython(Operation):
     category = OperationCategory.PYTHON
     reduces_to_sql = False
 
-    def __init__(
-        self, code, reverse_code=None, atomic=None, hints=None, elidable=False
-    ):
+    def __init__(self, code, reverse_code=None, atomic=None, hints=None, elidable=False):
         self.atomic = atomic
         # Forwards code
         if not callable(code):
@@ -186,9 +174,7 @@ class RunPython(Operation):
         # RunPython has access to all models. Ensure that all models are
         # reloaded in case any are delayed.
         from_state.clear_delayed_apps_cache()
-        if router.allow_migrate(
-            schema_editor.connection.alias, app_label, **self.hints
-        ):
+        if router.allow_migrate(schema_editor.connection.alias, app_label, **self.hints):
             # We now execute the Python code in a context that contains a 'models'
             # object, representing the versioned models as an app registry.
             # We could try to override the global cache, but then people will still
@@ -198,9 +184,7 @@ class RunPython(Operation):
     def database_backwards(self, app_label, schema_editor, from_state, to_state):
         if self.reverse_code is None:
             raise NotImplementedError("You cannot reverse this operation")
-        if router.allow_migrate(
-            schema_editor.connection.alias, app_label, **self.hints
-        ):
+        if router.allow_migrate(schema_editor.connection.alias, app_label, **self.hints):
             self.reverse_code(from_state.apps, schema_editor)
 
     def describe(self):

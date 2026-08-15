@@ -81,9 +81,7 @@ class FileFieldTests(TestCase):
             d.save()
 
         if PY311:
-            self.assertEqual(
-                cm.exception.__notes__, ["Pass a 'name' argument to ContentFile."]
-            )
+            self.assertEqual(cm.exception.__notes__, ["Pass a 'name' argument to ContentFile."])
 
     def test_delete_content_file(self):
         file = ContentFile(b"", name="foo")
@@ -107,9 +105,7 @@ class FileFieldTests(TestCase):
         with self.assertRaises(IntegrityError):
             Document.objects.create(myfile="something.txt")
 
-    @unittest.skipIf(
-        sys.platform == "win32", "Windows doesn't support moving open files."
-    )
+    @unittest.skipIf(sys.platform == "win32", "Windows doesn't support moving open files.")
     # The file's source and destination must be on the same filesystem.
     @override_settings(MEDIA_ROOT=temp.gettempdir())
     def test_move_temporary_file(self):
@@ -117,14 +113,10 @@ class FileFieldTests(TestCase):
         The temporary uploaded file is moved rather than copied to the
         destination.
         """
-        with TemporaryUploadedFile(
-            "something.txt", "text/plain", 0, "UTF-8"
-        ) as tmp_file:
+        with TemporaryUploadedFile("something.txt", "text/plain", 0, "UTF-8") as tmp_file:
             tmp_file_path = tmp_file.temporary_file_path()
             Document.objects.create(myfile=tmp_file)
-            self.assertFalse(
-                os.path.exists(tmp_file_path), "Temporary file still exists"
-            )
+            self.assertFalse(os.path.exists(tmp_file_path), "Temporary file still exists")
 
     def test_open_returns_self(self):
         """
@@ -139,14 +131,10 @@ class FileFieldTests(TestCase):
     def test_media_root_pathlib(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             with override_settings(MEDIA_ROOT=Path(tmp_dir)):
-                with TemporaryUploadedFile(
-                    "foo.txt", "text/plain", 1, "utf-8"
-                ) as tmp_file:
+                with TemporaryUploadedFile("foo.txt", "text/plain", 1, "utf-8") as tmp_file:
                     document = Document.objects.create(myfile=tmp_file)
                     self.assertIs(
-                        document.myfile.storage.exists(
-                            os.path.join("unused", "foo.txt")
-                        ),
+                        document.myfile.storage.exists(os.path.join("unused", "foo.txt")),
                         True,
                     )
 

@@ -38,10 +38,7 @@ class Tests(TestCase):
                 Item.objects.aggregate(aggregate("last_modified"))
             with self.assertRaises(NotSupportedError):
                 Item.objects.aggregate(
-                    **{
-                        "complex": aggregate("last_modified")
-                        + aggregate("last_modified")
-                    }
+                    **{"complex": aggregate("last_modified") + aggregate("last_modified")}
                 )
 
     def test_distinct_aggregation(self):
@@ -49,10 +46,7 @@ class Tests(TestCase):
             allow_distinct = True
 
         aggregate = DistinctAggregate("first", "second", distinct=True)
-        msg = (
-            "SQLite doesn't support DISTINCT on aggregate functions accepting "
-            "multiple arguments."
-        )
+        msg = "SQLite doesn't support DISTINCT on aggregate functions accepting multiple arguments."
         with self.assertRaisesMessage(NotSupportedError, msg):
             connection.ops.check_expression_support(aggregate)
 
@@ -100,7 +94,7 @@ class Tests(TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             settings_dict = {
                 "default": {
-                    "ENGINE": 'djorm.db.backends.sqlite3',
+                    "ENGINE": "djorm.db.backends.sqlite3",
                     "NAME": Path(tmp) / "test.db",
                 },
             }
@@ -119,7 +113,7 @@ class Tests(TestCase):
     def test_init_command(self):
         settings_dict = {
             "default": {
-                "ENGINE": 'djorm.db.backends.sqlite3',
+                "ENGINE": "djorm.db.backends.sqlite3",
                 "NAME": ":memory:",
                 "OPTIONS": {
                     "init_command": "PRAGMA synchronous=3; PRAGMA cache_size=2000;",
@@ -211,7 +205,7 @@ class LastExecutedQueryTest(TestCase):
         params = ["\"'\\"]
         with connection.cursor() as cursor:
             cursor.execute(query, params)
-        # Note that the single quote is repeated
+            # Note that the single quote is repeated
         substituted = "SELECT '\"''\\'"
         self.assertEqual(connection.queries[-1]["sql"], substituted)
 
@@ -238,7 +232,7 @@ class EscapingChecks(TestCase):
         with connection.cursor() as cursor:
             cursor.execute("select strftime('%s', date('now'))")
             response = cursor.fetchall()[0][0]
-        # response should be an non-zero integer
+            # response should be an non-zero integer
         self.assertTrue(int(response))
 
 

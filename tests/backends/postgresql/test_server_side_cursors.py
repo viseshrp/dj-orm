@@ -19,9 +19,7 @@ except ImportError:
 
 @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL tests")
 class ServerSideCursorsPostgres(TestCase):
-    cursor_fields = (
-        "name, statement, is_holdable, is_binary, is_scrollable, creation_time"
-    )
+    cursor_fields = "name, statement, is_holdable, is_binary, is_scrollable, creation_time"
     PostgresCursor = namedtuple("PostgresCursor", cursor_fields)
 
     @classmethod
@@ -31,9 +29,7 @@ class ServerSideCursorsPostgres(TestCase):
 
     def inspect_cursors(self):
         with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT {fields} FROM pg_cursors;".format(fields=self.cursor_fields)
-            )
+            cursor.execute("SELECT {fields} FROM pg_cursors;".format(fields=self.cursor_fields))
             cursors = cursor.fetchall()
         return [self.PostgresCursor._make(cursor) for cursor in cursors]
 
@@ -42,9 +38,7 @@ class ServerSideCursorsPostgres(TestCase):
         for setting in kwargs:
             original_value = connection.settings_dict.get(setting)
             if setting in connection.settings_dict:
-                self.addCleanup(
-                    operator.setitem, connection.settings_dict, setting, original_value
-                )
+                self.addCleanup(operator.setitem, connection.settings_dict, setting, original_value)
             else:
                 self.addCleanup(operator.delitem, connection.settings_dict, setting)
 
@@ -74,16 +68,12 @@ class ServerSideCursorsPostgres(TestCase):
         self.assertUsesCursor(Person.objects.values_list("first_name").iterator())
 
     def test_values_list_flat(self):
-        self.assertUsesCursor(
-            Person.objects.values_list("first_name", flat=True).iterator()
-        )
+        self.assertUsesCursor(Person.objects.values_list("first_name", flat=True).iterator())
 
     def test_values_list_fields_not_equal_to_names(self):
         expr = models.Count("id")
         self.assertUsesCursor(
-            Person.objects.annotate(id__count=expr)
-            .values_list(expr, "id__count")
-            .iterator()
+            Person.objects.annotate(id__count=expr).values_list(expr, "id__count").iterator()
         )
 
     def test_server_side_cursor_many_cursors(self):
@@ -110,8 +100,8 @@ class ServerSideCursorsPostgres(TestCase):
             self.assertUsesCursor(persons)
             del persons  # Close server-side cursor
 
-        # On PyPy, the cursor is left open here and attempting to force garbage
-        # collection breaks the transaction wrapping the test.
+            # On PyPy, the cursor is left open here and attempting to force garbage
+            # collection breaks the transaction wrapping the test.
         with self.override_db_setting(DISABLE_SERVER_SIDE_CURSORS=True):
             self.assertNotUsesCursor(Person.objects.iterator())
 
@@ -131,9 +121,7 @@ class ServerSideCursorsPostgres(TestCase):
             # binding perspective as the parametrized ORDER BY clause doesn't
             # use the same binding parameter as the SELECT clause.
             qs = (
-                Person.objects.order_by(
-                    models.functions.Coalesce("first_name", models.Value(""))
-                )
+                Person.objects.order_by(models.functions.Coalesce("first_name", models.Value("")))
                 .distinct()
                 .iterator()
             )

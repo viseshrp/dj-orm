@@ -11,9 +11,7 @@ class JSONArray(Func):
 
     def as_sql(self, compiler, connection, **extra_context):
         if not connection.features.supports_json_field:
-            raise NotSupportedError(
-                "JSONFields are not supported on this database backend."
-            )
+            raise NotSupportedError("JSONFields are not supported on this database backend.")
         return super().as_sql(compiler, connection, **extra_context)
 
     def as_native(self, compiler, connection, *, returning, **extra_context):
@@ -26,9 +24,7 @@ class JSONArray(Func):
         return self.as_sql(
             compiler,
             connection,
-            template=(
-                f"%(function)s(%(expressions)s {null_on_null} RETURNING {returning})"
-            ),
+            template=(f"%(function)s(%(expressions)s {null_on_null} RETURNING {returning})"),
             **extra_context,
         )
 
@@ -50,9 +46,7 @@ class JSONArray(Func):
         )
 
         if connection.features.is_postgresql_16:
-            return casted_obj.as_native(
-                compiler, connection, returning="JSONB", **extra_context
-            )
+            return casted_obj.as_native(compiler, connection, returning="JSONB", **extra_context)
 
         return casted_obj.as_sql(
             compiler,
@@ -77,9 +71,7 @@ class JSONObject(Func):
 
     def as_sql(self, compiler, connection, **extra_context):
         if not connection.features.has_json_object_function:
-            raise NotSupportedError(
-                "JSONObject() is not supported on this database backend."
-            )
+            raise NotSupportedError("JSONObject() is not supported on this database backend.")
         return super().as_sql(compiler, connection, **extra_context)
 
     def join(self, args):
@@ -109,9 +101,7 @@ class JSONObject(Func):
         )
 
         if connection.features.is_postgresql_16:
-            return copy.as_native(
-                compiler, connection, returning="JSONB", **extra_context
-            )
+            return copy.as_native(compiler, connection, returning="JSONB", **extra_context)
 
         return super(JSONObject, copy).as_sql(
             compiler,

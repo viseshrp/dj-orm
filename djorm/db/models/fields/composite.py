@@ -108,9 +108,7 @@ class CompositePrimaryKey(Field):
         return ColPairs(self.model._meta.db_table, self.fields, self.fields, self)
 
     def get_col(self, alias, output_field=None):
-        if alias == self.model._meta.db_table and (
-            output_field is None or output_field == self
-        ):
+        if alias == self.model._meta.db_table and (output_field is None or output_field == self):
             return self.cached_col
 
         return ColPairs(alias, self.fields, self.fields, output_field)
@@ -149,10 +147,7 @@ class CompositePrimaryKey(Field):
         if isinstance(value, str):
             # Assume we're deserializing.
             vals = json.loads(value)
-            value = [
-                field.to_python(val)
-                for field, val in zip(self.fields, vals, strict=True)
-            ]
+            value = [field.to_python(val) for field, val in zip(self.fields, vals, strict=True)]
         return value
 
 

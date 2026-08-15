@@ -121,10 +121,9 @@ class GenericData(models.Model):
 
     tags = GenericRelation(Tag)
 
-
-# The following test classes are all for validation
-# of related objects; in particular, forward, backward,
-# and self references.
+    # The following test classes are all for validation
+    # of related objects; in particular, forward, backward,
+    # and self references.
 
 
 class Anchor(models.Model):
@@ -182,13 +181,12 @@ class Intermediate(models.Model):
     right = models.ForeignKey(Anchor, models.CASCADE)
     extra = models.CharField(max_length=30, blank=True, default="doesn't matter")
 
-
-# The following test classes are for validating the
-# deserialization of objects that use a user-defined
-# field as the primary key.
-# Some of these data types have been commented out
-# because they can't be used as a primary key on one
-# or all database backends.
+    # The following test classes are for validating the
+    # deserialization of objects that use a user-defined
+    # field as the primary key.
+    # Some of these data types have been commented out
+    # because they can't be used as a primary key on one
+    # or all database backends.
 
 
 class BooleanPKData(models.Model):
@@ -269,9 +267,8 @@ class UUIDDefaultData(models.Model):
 class FKToUUID(models.Model):
     data = models.ForeignKey(UUIDData, models.CASCADE)
 
-
-# Tests for handling fields with pre_save functions, or
-# models with save functions that modify data
+    # Tests for handling fields with pre_save functions, or
+    # models with save functions that modify data
 
 
 class AutoNowDateTimeData(models.Model):
@@ -290,9 +287,8 @@ class ModifyingSaveData(models.Model):
         self.data = 666
         super().save(*args, **kwargs)
 
-
-# Tests for serialization of models using inheritance.
-# Regression for #7202, #7350
+        # Tests for serialization of models using inheritance.
+        # Regression for #7202, #7350
 
 
 class AbstractBaseModel(models.Model):

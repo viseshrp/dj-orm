@@ -7,7 +7,7 @@ from asgiref.sync import async_to_sync, iscoroutinefunction, sync_to_async
 
 from djorm.utils.inspect import func_accepts_kwargs
 
-logger = logging.getLogger('djorm.dispatch')
+logger = logging.getLogger("djorm.dispatch")
 
 
 def _make_id(target):
@@ -87,11 +87,9 @@ class Signal:
         if settings.configured and settings.DEBUG:
             if not callable(receiver):
                 raise TypeError("Signal receivers must be callable.")
-            # Check for **kwargs
+                # Check for **kwargs
             if not func_accepts_kwargs(receiver):
-                raise ValueError(
-                    "Signal receivers must accept keyword arguments (**kwargs)."
-                )
+                raise ValueError("Signal receivers must accept keyword arguments (**kwargs).")
 
         if dispatch_uid:
             lookup_key = (dispatch_uid, _make_id(sender))
@@ -178,10 +176,7 @@ class Signal:
 
         Return a list of tuple pairs [(receiver, response), ... ].
         """
-        if (
-            not self.receivers
-            or self.sender_receivers_cache.get(sender) is NO_RECEIVERS
-        ):
+        if not self.receivers or self.sender_receivers_cache.get(sender) is NO_RECEIVERS:
             return []
         responses = []
         sync_receivers, async_receivers = self._live_receivers(sender)
@@ -192,10 +187,7 @@ class Signal:
 
             async def asend():
                 async_responses = await asyncio.gather(
-                    *(
-                        receiver(signal=self, sender=sender, **named)
-                        for receiver in async_receivers
-                    )
+                    *(receiver(signal=self, sender=sender, **named) for receiver in async_receivers)
                 )
                 return zip(async_receivers, async_responses)
 
@@ -227,10 +219,7 @@ class Signal:
 
         Return a list of tuple pairs [(receiver, response), ...].
         """
-        if (
-            not self.receivers
-            or self.sender_receivers_cache.get(sender) is NO_RECEIVERS
-        ):
+        if not self.receivers or self.sender_receivers_cache.get(sender) is NO_RECEIVERS:
             return []
         sync_receivers, async_receivers = self._live_receivers(sender)
         if sync_receivers:
@@ -251,10 +240,7 @@ class Signal:
         responses, async_responses = await asyncio.gather(
             sync_send(),
             asyncio.gather(
-                *(
-                    receiver(signal=self, sender=sender, **named)
-                    for receiver in async_receivers
-                )
+                *(receiver(signal=self, sender=sender, **named) for receiver in async_receivers)
             ),
         )
         responses.extend(zip(async_receivers, async_responses))
@@ -291,14 +277,11 @@ class Signal:
         If any receiver raises an error (specifically any subclass of
         Exception), return the error instance as the result for that receiver.
         """
-        if (
-            not self.receivers
-            or self.sender_receivers_cache.get(sender) is NO_RECEIVERS
-        ):
+        if not self.receivers or self.sender_receivers_cache.get(sender) is NO_RECEIVERS:
             return []
 
-        # Call each receiver with whatever arguments it can accept.
-        # Return a list of tuple pairs [(receiver, response), ... ].
+            # Call each receiver with whatever arguments it can accept.
+            # Return a list of tuple pairs [(receiver, response), ... ].
         responses = []
         sync_receivers, async_receivers = self._live_receivers(sender)
         for receiver in sync_receivers:
@@ -321,10 +304,7 @@ class Signal:
 
             async def asend():
                 async_responses = await asyncio.gather(
-                    *(
-                        asend_and_wrap_exception(receiver)
-                        for receiver in async_receivers
-                    )
+                    *(asend_and_wrap_exception(receiver) for receiver in async_receivers)
                 )
                 return zip(async_receivers, async_responses)
 
@@ -356,14 +336,11 @@ class Signal:
         If any receiver raises an error (specifically any subclass of
         Exception), return the error instance as the result for that receiver.
         """
-        if (
-            not self.receivers
-            or self.sender_receivers_cache.get(sender) is NO_RECEIVERS
-        ):
+        if not self.receivers or self.sender_receivers_cache.get(sender) is NO_RECEIVERS:
             return []
 
-        # Call each receiver with whatever arguments it can accept.
-        # Return a list of tuple pairs [(receiver, response), ... ].
+            # Call each receiver with whatever arguments it can accept.
+            # Return a list of tuple pairs [(receiver, response), ... ].
         sync_receivers, async_receivers = self._live_receivers(sender)
 
         if sync_receivers:

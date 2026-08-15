@@ -32,9 +32,8 @@ class Connection(models.Model):
         unique=True,
     )
 
-
-# Another non-tree hierarchy that exercises code paths similar to the above
-# example, but in a slightly different configuration.
+    # Another non-tree hierarchy that exercises code paths similar to the above
+    # example, but in a slightly different configuration.
 
 
 class TUser(models.Model):
@@ -61,8 +60,7 @@ class Enrollment(models.Model):
     std = models.ForeignKey(Student, models.CASCADE)
     cls = models.ForeignKey(Class, models.CASCADE)
 
-
-# Models for testing bug #8036.
+    # Models for testing bug #8036.
 
 
 class Country(models.Model):
@@ -87,8 +85,7 @@ class Client(models.Model):
 class SpecialClient(Client):
     value = models.IntegerField()
 
-
-# Some model inheritance exercises
+    # Some model inheritance exercises
 
 
 class Parent(models.Model):
@@ -106,8 +103,7 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
-
-# Models for testing bug #19870.
+        # Models for testing bug #19870.
 
 
 class Fowl(models.Model):

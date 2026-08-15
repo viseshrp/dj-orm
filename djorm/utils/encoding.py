@@ -134,9 +134,10 @@ def iri_to_uri(iri):
         iri = str(iri)
     return quote(iri, safe="/#%[]=:;$&()+,!?*@'~")
 
+    # List of byte values that uri_to_iri() decodes from percent encoding.
+    # First, the unreserved characters from RFC 3986:
 
-# List of byte values that uri_to_iri() decodes from percent encoding.
-# First, the unreserved characters from RFC 3986:
+
 _ascii_ranges = [[45, 46, 95, 126], range(65, 91), range(97, 123)]
 _hextobyte = {
     (fmt % char).encode(): bytes((char,))
@@ -147,9 +148,7 @@ _hextobyte = {
 # And then everything above 128, because bytes ≥ 128 are part of multibyte
 # Unicode characters.
 _hexdig = "0123456789ABCDEFabcdef"
-_hextobyte.update(
-    {(a + b).encode(): bytes.fromhex(a + b) for a in _hexdig[8:] for b in _hexdig}
-)
+_hextobyte.update({(a + b).encode(): bytes.fromhex(a + b) for a in _hexdig[8:] for b in _hexdig})
 
 
 def uri_to_iri(uri):
@@ -240,8 +239,8 @@ def filepath_to_uri(path):
     """
     if path is None:
         return path
-    # I know about `os.sep` and `os.altsep` but I want to leave
-    # some flexibility for hardcoding separators.
+        # I know about `os.sep` and `os.altsep` but I want to leave
+        # some flexibility for hardcoding separators.
     return quote(str(path).replace("\\", "/"), safe="/~!*()'")
 
 

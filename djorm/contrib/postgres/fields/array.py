@@ -32,8 +32,8 @@ class ArrayField(CheckFieldDefaultMixin, Field):
                 *self.default_validators,
                 ArrayMaxLengthValidator(self.size),
             ]
-        # For performance, only add a from_db_value() method if the base field
-        # implements it.
+            # For performance, only add a from_db_value() method if the base field
+            # implements it.
         if hasattr(self.base_field, "from_db_value"):
             self.from_db_value = self._from_db_value
         super().__init__(**kwargs)
@@ -43,9 +43,7 @@ class ArrayField(CheckFieldDefaultMixin, Field):
         try:
             return self.__dict__["model"]
         except KeyError:
-            raise AttributeError(
-                "'%s' object has no attribute 'model'" % self.__class__.__name__
-            )
+            raise AttributeError("'%s' object has no attribute 'model'" % self.__class__.__name__)
 
     @model.setter
     def model(self, model):
@@ -90,8 +88,7 @@ class ArrayField(CheckFieldDefaultMixin, Field):
                 if warning_messages:
                     errors.append(
                         checks.Warning(
-                            "Base field for array has warnings:\n    %s"
-                            % warning_messages,
+                            "Base field for array has warnings:\n    %s" % warning_messages,
                             obj=self,
                             id="postgres.W004",
                         )
@@ -124,16 +121,13 @@ class ArrayField(CheckFieldDefaultMixin, Field):
 
     def get_db_prep_value(self, value, connection, prepared=False):
         if isinstance(value, (list, tuple)):
-            return [
-                self.base_field.get_db_prep_value(i, connection, prepared=False)
-                for i in value
-            ]
+            return [self.base_field.get_db_prep_value(i, connection, prepared=False) for i in value]
         return value
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
-        if path == 'djorm.contrib.postgres.fields.array.ArrayField':
-            path = 'djorm.contrib.postgres.fields.ArrayField'
+        if path == "djorm.contrib.postgres.fields.array.ArrayField":
+            path = "djorm.contrib.postgres.fields.ArrayField"
         kwargs.update(
             {
                 "base_field": self.base_field.clone(),
@@ -152,10 +146,7 @@ class ArrayField(CheckFieldDefaultMixin, Field):
     def _from_db_value(self, value, expression, connection):
         if value is None:
             return value
-        return [
-            self.base_field.from_db_value(item, expression, connection)
-            for item in value
-        ]
+        return [self.base_field.from_db_value(item, expression, connection) for item in value]
 
     def value_to_string(self, obj):
         values = []
@@ -300,8 +291,7 @@ class ArrayLenTransform(Transform):
         lhs, params = compiler.compile(self.lhs)
         # Distinguish NULL and empty arrays
         return (
-            "CASE WHEN %(lhs)s IS NULL THEN NULL ELSE "
-            "coalesce(array_length(%(lhs)s, 1), 0) END"
+            "CASE WHEN %(lhs)s IS NULL THEN NULL ELSE coalesce(array_length(%(lhs)s, 1), 0) END"
         ) % {"lhs": lhs}, params * 2
 
 
@@ -311,8 +301,8 @@ class ArrayInLookup(In):
         values = super().get_prep_lookup()
         if hasattr(values, "resolve_expression"):
             return values
-        # In.process_rhs() expects values to be hashable, so convert lists
-        # to tuples.
+            # In.process_rhs() expects values to be hashable, so convert lists
+            # to tuples.
         prepared_values = []
         for value in values:
             if hasattr(value, "resolve_expression"):

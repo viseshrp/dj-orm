@@ -55,9 +55,7 @@ class PrefetchRelatedObjectsTests(TestCase):
             prefetch_related_objects([book1], "authors")
 
         with self.assertNumQueries(0):
-            self.assertCountEqual(
-                book1.authors.all(), [self.author1, self.author2, self.author3]
-            )
+            self.assertCountEqual(book1.authors.all(), [self.author1, self.author2, self.author3])
 
     def test_m2m_reverse(self):
         author1 = Author.objects.get(id=self.author1.id)
@@ -146,10 +144,7 @@ class PrefetchRelatedObjectsTests(TestCase):
 
         with self.assertNumQueries(0):
             self.assertEqual(
-                [
-                    [[str(r) for r in b.read_by.all()] for b in a.books.all()]
-                    for a in authors
-                ],
+                [[[str(r) for r in b.read_by.all()] for b in a.books.all()] for a in authors],
                 [
                     [["Amy"], ["Belinda"]],  # Charlotte - Poems, Jane Eyre
                     [["Amy"]],  # Anne - Poems
@@ -164,9 +159,7 @@ class PrefetchRelatedObjectsTests(TestCase):
             prefetch_related_objects([book1], Prefetch("authors"))
 
         with self.assertNumQueries(0):
-            self.assertCountEqual(
-                book1.authors.all(), [self.author1, self.author2, self.author3]
-            )
+            self.assertCountEqual(book1.authors.all(), [self.author1, self.author2, self.author3])
 
     def test_prefetch_object_twice(self):
         book1 = Book.objects.get(id=self.book1.id)
@@ -181,14 +174,10 @@ class PrefetchRelatedObjectsTests(TestCase):
     def test_prefetch_object_to_attr(self):
         book1 = Book.objects.get(id=self.book1.id)
         with self.assertNumQueries(1):
-            prefetch_related_objects(
-                [book1], Prefetch("authors", to_attr="the_authors")
-            )
+            prefetch_related_objects([book1], Prefetch("authors", to_attr="the_authors"))
 
         with self.assertNumQueries(0):
-            self.assertCountEqual(
-                book1.the_authors, [self.author1, self.author2, self.author3]
-            )
+            self.assertCountEqual(book1.the_authors, [self.author1, self.author2, self.author3])
 
     def test_prefetch_object_to_attr_twice(self):
         book1 = Book.objects.get(id=self.book1.id)
@@ -213,9 +202,7 @@ class PrefetchRelatedObjectsTests(TestCase):
                 [book1],
                 Prefetch(
                     "authors",
-                    queryset=Author.objects.filter(
-                        id__in=[self.author1.id, self.author2.id]
-                    ),
+                    queryset=Author.objects.filter(id__in=[self.author1.id, self.author2.id]),
                 ),
             )
 

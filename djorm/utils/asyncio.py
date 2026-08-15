@@ -22,18 +22,16 @@ def async_unsafe(message):
             else:
                 if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
                     raise SynchronousOnlyOperation(message)
-            # Pass onward.
+                    # Pass onward.
             return func(*args, **kwargs)
 
         return inner
 
-    # If the message is actually a function, then be a no-arguments decorator.
+        # If the message is actually a function, then be a no-arguments decorator.
+
     if callable(message):
         func = message
-        message = (
-            "You cannot call this from an async context - use a thread or "
-            "sync_to_async."
-        )
+        message = "You cannot call this from an async context - use a thread or sync_to_async."
         return decorator(func)
     else:
         return decorator

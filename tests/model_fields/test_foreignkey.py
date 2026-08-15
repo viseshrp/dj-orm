@@ -24,9 +24,7 @@ class ForeignKeyTests(TestCase):
         """
         char_model_empty = PrimaryKeyCharModel.objects.create(string="")
         fk_model_empty = FkToChar.objects.create(out=char_model_empty)
-        fk_model_empty = FkToChar.objects.select_related("out").get(
-            id=fk_model_empty.pk
-        )
+        fk_model_empty = FkToChar.objects.select_related("out").get(id=fk_model_empty.pk)
         self.assertEqual(fk_model_empty.out, char_model_empty)
 
     @isolate_apps("model_fields")
@@ -40,12 +38,8 @@ class ForeignKeyTests(TestCase):
         model = FKUniqueTrue()
         expected_warnings = [
             checks.Warning(
-                "Setting unique=True on a ForeignKey has the same effect as using a "
-                "OneToOneField.",
-                hint=(
-                    "ForeignKey(unique=True) is usually better served by a "
-                    "OneToOneField."
-                ),
+                "Setting unique=True on a ForeignKey has the same effect as using a OneToOneField.",
+                hint=("ForeignKey(unique=True) is usually better served by a OneToOneField."),
                 obj=FKUniqueTrue.fk_field.field,
                 id="fields.W342",
             )
@@ -95,9 +89,7 @@ class ForeignKeyTests(TestCase):
                 class Meta:
                     app_label = label
 
-            self.assertEqual(
-                ConcreteReferent._meta.get_field("reference").related_model, Referred
-            )
+            self.assertEqual(ConcreteReferent._meta.get_field("reference").related_model, Referred)
 
         assert_app_model_resolved("model_fields")
         assert_app_model_resolved("tests")

@@ -38,10 +38,7 @@ class Command(BaseCommand):
             "args",
             metavar="app_label[.ModelName]",
             nargs="*",
-            help=(
-                "Restricts dumped data to the specified app_label or "
-                "app_label.ModelName."
-            ),
+            help=("Restricts dumped data to the specified app_label or app_label.ModelName."),
         )
         parser.add_argument(
             "--format",
@@ -97,9 +94,7 @@ class Command(BaseCommand):
             help="Only dump objects with given primary keys. Accepts a comma-separated "
             "list of keys. This option only works when you specify one model.",
         )
-        parser.add_argument(
-            "-o", "--output", help="Specifies file to which the output is written."
-        )
+        parser.add_argument("-o", "--output", help="Specifies file to which the output is written.")
 
     def handle(self, *app_labels, **options):
         format = options["format"]
@@ -126,8 +121,7 @@ class Command(BaseCommand):
             app_list = dict.fromkeys(
                 app_config
                 for app_config in apps.get_app_configs()
-                if app_config.models_module is not None
-                and app_config not in excluded_apps
+                if app_config.models_module is not None and app_config not in excluded_apps
             )
         else:
             if len(app_labels) > 1 and primary_keys:
@@ -145,9 +139,7 @@ class Command(BaseCommand):
                     try:
                         model = app_config.get_model(model_label)
                     except LookupError:
-                        raise CommandError(
-                            "Unknown model: %s.%s" % (app_label, model_label)
-                        )
+                        raise CommandError("Unknown model: %s.%s" % (app_label, model_label))
 
                     app_list_value = app_list.setdefault(app_config, [])
 
@@ -158,10 +150,8 @@ class Command(BaseCommand):
                         app_list_value.append(model)
                 except ValueError:
                     if primary_keys:
-                        raise CommandError(
-                            "You can only use --pks option with one model"
-                        )
-                    # This is just an app - no model qualifier
+                        raise CommandError("You can only use --pks option with one model")
+                        # This is just an app - no model qualifier
                     app_label = label
                     try:
                         app_config = apps.get_app_config(app_label)
@@ -171,8 +161,8 @@ class Command(BaseCommand):
                         continue
                     app_list[app_config] = None
 
-        # Check that the serialization format exists; this is a shortcut to
-        # avoid collating all the objects and _then_ failing.
+                    # Check that the serialization format exists; this is a shortcut to
+                    # avoid collating all the objects and _then_ failing.
         if format not in serializers.get_public_serializer_formats():
             try:
                 serializers.get_serializer(format)
@@ -187,9 +177,7 @@ class Command(BaseCommand):
             count the number of objects to be serialized.
             """
             if use_natural_foreign_keys:
-                models = serializers.sort_dependencies(
-                    app_list.items(), allow_cycles=True
-                )
+                models = serializers.sort_dependencies(app_list.items(), allow_cycles=True)
             else:
                 # There is no need to sort dependencies when natural foreign
                 # keys are not used.
@@ -204,8 +192,7 @@ class Command(BaseCommand):
                     continue
                 if model._meta.proxy and model._meta.proxy_for_model not in models:
                     warnings.warn(
-                        "%s is a proxy model and won't be serialized."
-                        % model._meta.label,
+                        "%s is a proxy model and won't be serialized." % model._meta.label,
                         category=ProxyModelWarning,
                     )
                 if not model._meta.proxy and router.allow_migrate_model(using, model):
@@ -220,9 +207,7 @@ class Command(BaseCommand):
                     if count_only:
                         yield queryset.order_by().count()
                     else:
-                        chunk_size = (
-                            2000 if queryset._prefetch_related_lookups else None
-                        )
+                        chunk_size = 2000 if queryset._prefetch_related_lookups else None
                         yield from queryset.iterator(chunk_size=chunk_size)
 
         try:

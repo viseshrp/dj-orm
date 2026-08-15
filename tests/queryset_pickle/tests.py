@@ -19,9 +19,7 @@ from .models import (
 class PickleabilityTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.happening = (
-            Happening.objects.create()
-        )  # make sure the defaults are working (#20158)
+        cls.happening = Happening.objects.create()  # make sure the defaults are working (#20158)
 
     def assert_pickles(self, qs):
         self.assertEqual(list(pickle.loads(pickle.dumps(qs))), list(qs))

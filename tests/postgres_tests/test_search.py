@@ -26,9 +26,7 @@ except ImportError:
 class GrailTestData:
     @classmethod
     def setUpTestData(cls):
-        cls.robin = Scene.objects.create(
-            scene="Scene 10", setting="The dark forest of Ewing"
-        )
+        cls.robin = Scene.objects.create(scene="Scene 10", setting="The dark forest of Ewing")
         cls.minstrel = Character.objects.create(name="Minstrel")
         verses = [
             (
@@ -60,9 +58,7 @@ class GrailTestData:
         ]
         cls.verse0, cls.verse1, cls.verse2 = cls.verses
 
-        cls.witch_scene = Scene.objects.create(
-            scene="Scene 5", setting="Sir Bedemir's Castle"
-        )
+        cls.witch_scene = Scene.objects.create(scene="Scene 5", setting="Sir Bedemir's Castle")
         bedemir = Character.objects.create(name="Bedemir")
         crowd = Character.objects.create(name="Crowd")
         witch = Character.objects.create(name="Witch")
@@ -80,9 +76,7 @@ class GrailTestData:
             dialogue="Right, remove the supports!",
             dialogue_config="english",
         )
-        cls.duck = Line.objects.create(
-            scene=cls.witch_scene, character=duck, dialogue=None
-        )
+        cls.duck = Line.objects.create(scene=cls.witch_scene, character=duck, dialogue=None)
         cls.crowd = Line.objects.create(
             scene=cls.witch_scene, character=crowd, dialogue="A witch! A witch!"
         )
@@ -143,9 +137,7 @@ class SimpleSearchTest(GrailTestData, PostgreSQLTestCase):
 class SearchVectorFieldTest(GrailTestData, PostgreSQLTestCase):
     def test_existing_vector(self):
         Line.objects.update(dialogue_search_vector=SearchVector("dialogue"))
-        searched = Line.objects.filter(
-            dialogue_search_vector=SearchQuery("Robin killed")
-        )
+        searched = Line.objects.filter(dialogue_search_vector=SearchQuery("Robin killed"))
         self.assertSequenceEqual(searched, [self.verse0])
 
     def test_existing_vector_config_explicit(self):
@@ -156,9 +148,7 @@ class SearchVectorFieldTest(GrailTestData, PostgreSQLTestCase):
         self.assertSequenceEqual(searched, [self.french])
 
     def test_single_coalesce_expression(self):
-        searched = Line.objects.annotate(search=SearchVector("dialogue")).filter(
-            search="cadeaux"
-        )
+        searched = Line.objects.annotate(search=SearchVector("dialogue")).filter(search="cadeaux")
         self.assertNotIn("COALESCE(COALESCE", str(searched.query))
 
     def test_values_with_percent(self):
@@ -172,9 +162,7 @@ class SearchConfigTests(PostgreSQLSimpleTestCase):
     def test_from_parameter(self):
         self.assertIsNone(SearchConfig.from_parameter(None))
         self.assertEqual(SearchConfig.from_parameter("foo"), SearchConfig("foo"))
-        self.assertEqual(
-            SearchConfig.from_parameter(SearchConfig("bar")), SearchConfig("bar")
-        )
+        self.assertEqual(SearchConfig.from_parameter(SearchConfig("bar")), SearchConfig("bar"))
 
 
 class MultipleFieldsTest(GrailTestData, PostgreSQLTestCase):
@@ -228,13 +216,9 @@ class MultipleFieldsTest(GrailTestData, PostgreSQLTestCase):
 
     def test_phrase_search(self):
         line_qs = Line.objects.annotate(search=SearchVector("dialogue"))
-        searched = line_qs.filter(
-            search=SearchQuery("burned body his away", search_type="phrase")
-        )
+        searched = line_qs.filter(search=SearchQuery("burned body his away", search_type="phrase"))
         self.assertSequenceEqual(searched, [])
-        searched = line_qs.filter(
-            search=SearchQuery("his body burned away", search_type="phrase")
-        )
+        searched = line_qs.filter(search=SearchQuery("his body burned away", search_type="phrase"))
         self.assertSequenceEqual(searched, [self.verse1])
 
     def test_phrase_search_with_config(self):
@@ -254,19 +238,13 @@ class MultipleFieldsTest(GrailTestData, PostgreSQLTestCase):
         line_qs = Line.objects.annotate(search=SearchVector("dialogue"))
         searched = line_qs.filter(search=SearchQuery("Robin", search_type="raw"))
         self.assertCountEqual(searched, [self.verse0, self.verse1])
-        searched = line_qs.filter(
-            search=SearchQuery("Robin & !'Camelot'", search_type="raw")
-        )
+        searched = line_qs.filter(search=SearchQuery("Robin & !'Camelot'", search_type="raw"))
         self.assertSequenceEqual(searched, [self.verse1])
 
     def test_raw_search_with_config(self):
-        line_qs = Line.objects.annotate(
-            search=SearchVector("dialogue", config="french")
-        )
+        line_qs = Line.objects.annotate(search=SearchVector("dialogue", config="french"))
         searched = line_qs.filter(
-            search=SearchQuery(
-                "'cadeaux' & 'beaux'", search_type="raw", config="french"
-            ),
+            search=SearchQuery("'cadeaux' & 'beaux'", search_type="raw", config="french"),
         )
         self.assertSequenceEqual(searched, [self.french])
 
@@ -299,9 +277,7 @@ class MultipleFieldsTest(GrailTestData, PostgreSQLTestCase):
             search=SearchVector("scene__setting", "dialogue", config="french"),
         )
         searched = line_qs.filter(
-            search=SearchQuery(
-                "cadeau -beau", search_type="websearch", config="french"
-            ),
+            search=SearchQuery("cadeau -beau", search_type="websearch", config="french"),
         )
         self.assertSequenceEqual(searched, [])
         searched = line_qs.filter(
@@ -310,9 +286,7 @@ class MultipleFieldsTest(GrailTestData, PostgreSQLTestCase):
         self.assertSequenceEqual(searched, [self.french])
 
     def test_bad_search_type(self):
-        with self.assertRaisesMessage(
-            ValueError, "Unknown search_type argument 'foo'."
-        ):
+        with self.assertRaisesMessage(ValueError, "Unknown search_type argument 'foo'."):
             SearchQuery("kneecaps", search_type="foo")
 
     def test_config_query_explicit(self):
@@ -329,17 +303,13 @@ class MultipleFieldsTest(GrailTestData, PostgreSQLTestCase):
 
     def test_config_from_field_explicit(self):
         searched = Line.objects.annotate(
-            search=SearchVector(
-                "scene__setting", "dialogue", config=F("dialogue_config")
-            ),
+            search=SearchVector("scene__setting", "dialogue", config=F("dialogue_config")),
         ).filter(search=SearchQuery("cadeaux", config=F("dialogue_config")))
         self.assertSequenceEqual(searched, [self.french])
 
     def test_config_from_field_implicit(self):
         searched = Line.objects.annotate(
-            search=SearchVector(
-                "scene__setting", "dialogue", config=F("dialogue_config")
-            ),
+            search=SearchVector("scene__setting", "dialogue", config=F("dialogue_config")),
         ).filter(search="cadeaux")
         self.assertSequenceEqual(searched, [self.french])
 
@@ -366,10 +336,7 @@ class TestCombinations(GrailTestData, PostgreSQLTestCase):
         )
 
     def test_vector_combined_mismatch(self):
-        msg = (
-            "SearchVector can only be combined with other SearchVector "
-            "instances, got NoneType."
-        )
+        msg = "SearchVector can only be combined with other SearchVector instances, got NoneType."
         with self.assertRaisesMessage(TypeError, msg):
             Line.objects.filter(dialogue__search=None + SearchVector("character__name"))
 
@@ -380,9 +347,7 @@ class TestCombinations(GrailTestData, PostgreSQLTestCase):
                 SearchVector("dialogue", config="english")
                 + SearchVector("dialogue", config="french")
             ),
-        ).filter(
-            search=SearchQuery("cadeaux", config="french") | SearchQuery("nostrils")
-        )
+        ).filter(search=SearchQuery("cadeaux", config="french") | SearchQuery("nostrils"))
         self.assertCountEqual(searched, [self.french, self.verse2])
 
     def test_query_and(self):
@@ -394,18 +359,12 @@ class TestCombinations(GrailTestData, PostgreSQLTestCase):
     def test_query_multiple_and(self):
         searched = Line.objects.annotate(
             search=SearchVector("scene__setting", "dialogue"),
-        ).filter(
-            search=SearchQuery("bedemir")
-            & SearchQuery("scales")
-            & SearchQuery("nostrils")
-        )
+        ).filter(search=SearchQuery("bedemir") & SearchQuery("scales") & SearchQuery("nostrils"))
         self.assertSequenceEqual(searched, [])
 
         searched = Line.objects.annotate(
             search=SearchVector("scene__setting", "dialogue"),
-        ).filter(
-            search=SearchQuery("shall") & SearchQuery("use") & SearchQuery("larger")
-        )
+        ).filter(search=SearchQuery("shall") & SearchQuery("use") & SearchQuery("larger"))
         self.assertSequenceEqual(searched, [self.bedemir0])
 
     def test_query_or(self):
@@ -431,8 +390,7 @@ class TestCombinations(GrailTestData, PostgreSQLTestCase):
     def test_combine_different_configs(self):
         searched = Line.objects.filter(
             dialogue__search=(
-                SearchQuery("cadeau", config="french")
-                | SearchQuery("nostrils", config="english")
+                SearchQuery("cadeau", config="french") | SearchQuery("nostrils", config="english")
             )
         )
         self.assertCountEqual(searched, [self.french, self.verse2])
@@ -440,8 +398,7 @@ class TestCombinations(GrailTestData, PostgreSQLTestCase):
     def test_combined_configs(self):
         searched = Line.objects.filter(
             dialogue__search=(
-                SearchQuery("nostrils", config="simple")
-                & SearchQuery("bowels", config="simple")
+                SearchQuery("nostrils", config="simple") & SearchQuery("bowels", config="simple")
             ),
         )
         self.assertSequenceEqual(searched, [self.verse2])
@@ -457,10 +414,7 @@ class TestCombinations(GrailTestData, PostgreSQLTestCase):
         self.assertCountEqual(searched, [self.verse0, self.verse1, self.verse2])
 
     def test_query_combined_mismatch(self):
-        msg = (
-            "SearchQuery can only be combined with other SearchQuery "
-            "instances, got NoneType."
-        )
+        msg = "SearchQuery can only be combined with other SearchQuery instances, got NoneType."
         with self.assertRaisesMessage(TypeError, msg):
             Line.objects.filter(dialogue__search=None | SearchQuery("kneecaps"))
 
@@ -473,9 +427,7 @@ class TestRankingAndWeights(GrailTestData, PostgreSQLTestCase):
         searched = (
             Line.objects.filter(character=self.minstrel)
             .annotate(
-                rank=SearchRank(
-                    SearchVector("dialogue"), SearchQuery("brave sir robin")
-                ),
+                rank=SearchRank(SearchVector("dialogue"), SearchQuery("brave sir robin")),
             )
             .order_by("rank")
         )
@@ -492,9 +444,7 @@ class TestRankingAndWeights(GrailTestData, PostgreSQLTestCase):
         self.assertSequenceEqual(searched, [self.verse2, self.verse1, self.verse0])
 
     def test_weights_in_vector(self):
-        vector = SearchVector("dialogue", weight="A") + SearchVector(
-            "character__name", weight="D"
-        )
+        vector = SearchVector("dialogue", weight="A") + SearchVector("character__name", weight="D")
         searched = (
             Line.objects.filter(scene=self.witch_scene)
             .annotate(
@@ -504,9 +454,7 @@ class TestRankingAndWeights(GrailTestData, PostgreSQLTestCase):
         )
         self.assertSequenceEqual(searched, [self.crowd, self.witch])
 
-        vector = SearchVector("dialogue", weight="D") + SearchVector(
-            "character__name", weight="A"
-        )
+        vector = SearchVector("dialogue", weight="D") + SearchVector("character__name", weight="A")
         searched = (
             Line.objects.filter(scene=self.witch_scene)
             .annotate(
@@ -517,9 +465,7 @@ class TestRankingAndWeights(GrailTestData, PostgreSQLTestCase):
         self.assertSequenceEqual(searched, [self.witch, self.crowd])
 
     def test_ranked_custom_weights(self):
-        vector = SearchVector("dialogue", weight="D") + SearchVector(
-            "character__name", weight="A"
-        )
+        vector = SearchVector("dialogue", weight="D") + SearchVector("character__name", weight="A")
         weights = [1.0, 0.0, 0.0, 0.5]
         searched = (
             Line.objects.filter(scene=self.witch_scene)
@@ -534,9 +480,7 @@ class TestRankingAndWeights(GrailTestData, PostgreSQLTestCase):
         searched = (
             Line.objects.filter(character=self.minstrel)
             .annotate(
-                rank=SearchRank(
-                    SearchVector("dialogue"), SearchQuery("brave sir robin")
-                ),
+                rank=SearchRank(SearchVector("dialogue"), SearchQuery("brave sir robin")),
             )
             .filter(rank__gt=0.3)
         )
@@ -620,24 +564,20 @@ class SearchQueryTests(PostgreSQLSimpleTestCase):
         tests = (
             (~SearchQuery("a"), "~SearchQuery(Value('a'))"),
             (
-                (SearchQuery("a") | SearchQuery("b"))
-                & (SearchQuery("c") | SearchQuery("d")),
+                (SearchQuery("a") | SearchQuery("b")) & (SearchQuery("c") | SearchQuery("d")),
                 "((SearchQuery(Value('a')) || SearchQuery(Value('b'))) && "
                 "(SearchQuery(Value('c')) || SearchQuery(Value('d'))))",
             ),
             (
                 SearchQuery("a") & (SearchQuery("b") | SearchQuery("c")),
-                "(SearchQuery(Value('a')) && (SearchQuery(Value('b')) || "
-                "SearchQuery(Value('c'))))",
+                "(SearchQuery(Value('a')) && (SearchQuery(Value('b')) || SearchQuery(Value('c'))))",
             ),
             (
                 (SearchQuery("a") | SearchQuery("b")) & SearchQuery("c"),
-                "((SearchQuery(Value('a')) || SearchQuery(Value('b'))) && "
-                "SearchQuery(Value('c')))",
+                "((SearchQuery(Value('a')) || SearchQuery(Value('b'))) && SearchQuery(Value('c')))",
             ),
             (
-                SearchQuery("a")
-                & (SearchQuery("b") & (SearchQuery("c") | SearchQuery("d"))),
+                SearchQuery("a") & (SearchQuery("b") & (SearchQuery("c") | SearchQuery("d"))),
                 "(SearchQuery(Value('a')) && (SearchQuery(Value('b')) && "
                 "(SearchQuery(Value('c')) || SearchQuery(Value('d')))))",
             ),

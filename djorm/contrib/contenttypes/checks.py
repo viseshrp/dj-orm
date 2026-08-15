@@ -10,9 +10,7 @@ def check_generic_foreign_keys(app_configs=None, **kwargs):
     if app_configs is None:
         models = apps.get_models()
     else:
-        models = chain.from_iterable(
-            app_config.get_models() for app_config in app_configs
-        )
+        models = chain.from_iterable(app_config.get_models() for app_config in app_configs)
     errors = []
     fields = (
         obj
@@ -29,9 +27,7 @@ def check_model_name_lengths(app_configs=None, **kwargs):
     if app_configs is None:
         models = apps.get_models()
     else:
-        models = chain.from_iterable(
-            app_config.get_models() for app_config in app_configs
-        )
+        models = chain.from_iterable(app_config.get_models() for app_config in app_configs)
     errors = []
     for model in models:
         if len(model._meta.model_name) > 100:

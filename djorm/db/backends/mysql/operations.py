@@ -11,7 +11,7 @@ from djorm.utils.regex_helper import _lazy_re_compile
 
 
 class DatabaseOperations(BaseDatabaseOperations):
-    compiler_module = 'djorm.db.backends.mysql.compiler'
+    compiler_module = "djorm.db.backends.mysql.compiler"
 
     # MySQL stores positive fields as UNSIGNED ints.
     integer_field_ranges = {
@@ -76,8 +76,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             return f"CAST(DATE_FORMAT({sql}, %s) AS DATE)", (*params, format_str)
         elif lookup_type == "quarter":
             return (
-                f"MAKEDATE(YEAR({sql}), 1) + "
-                f"INTERVAL QUARTER({sql}) QUARTER - INTERVAL 1 QUARTER",
+                f"MAKEDATE(YEAR({sql}), 1) + INTERVAL QUARTER({sql}) QUARTER - INTERVAL 1 QUARTER",
                 (*params, *params),
             )
         elif lookup_type == "week":
@@ -123,8 +122,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             ), (*params, *params, "%Y-%m-01 00:00:00")
         if lookup_type == "week":
             return (
-                f"CAST(DATE_FORMAT("
-                f"DATE_SUB({sql}, INTERVAL WEEKDAY({sql}) DAY), %s) AS DATETIME)"
+                f"CAST(DATE_FORMAT(DATE_SUB({sql}, INTERVAL WEEKDAY({sql}) DAY), %s) AS DATETIME)"
             ), (*params, *params, "%Y-%m-%d 00:00:00")
         try:
             i = fields.index(lookup_type) + 1
@@ -243,27 +241,24 @@ class DatabaseOperations(BaseDatabaseOperations):
         # Zero in AUTO_INCREMENT field does not work without the
         # NO_AUTO_VALUE_ON_ZERO SQL mode.
         if value == 0 and not self.connection.features.allows_auto_pk_0:
-            raise ValueError(
-                "The database backend does not accept 0 as a value for AutoField."
-            )
+            raise ValueError("The database backend does not accept 0 as a value for AutoField.")
         return value
 
     def adapt_datetimefield_value(self, value):
         if value is None:
             return None
 
-        # Expression values are adapted by the database.
+            # Expression values are adapted by the database.
         if hasattr(value, "resolve_expression"):
             return value
 
-        # MySQL doesn't support tz-aware datetimes
+            # MySQL doesn't support tz-aware datetimes
         if timezone.is_aware(value):
             if settings.USE_TZ:
                 value = timezone.make_naive(value, self.connection.timezone)
             else:
                 raise ValueError(
-                    "MySQL backend does not support timezone-aware datetimes when "
-                    "USE_TZ is False."
+                    "MySQL backend does not support timezone-aware datetimes when USE_TZ is False."
                 )
         return str(value)
 
@@ -271,11 +266,11 @@ class DatabaseOperations(BaseDatabaseOperations):
         if value is None:
             return None
 
-        # Expression values are adapted by the database.
+            # Expression values are adapted by the database.
         if hasattr(value, "resolve_expression"):
             return value
 
-        # MySQL doesn't support tz-aware times
+            # MySQL doesn't support tz-aware times
         if timezone.is_aware(value):
             raise ValueError("MySQL backend does not support timezone-aware times.")
 
@@ -290,8 +285,8 @@ class DatabaseOperations(BaseDatabaseOperations):
     def combine_expression(self, connector, sub_expressions):
         if connector == "^":
             return "POW(%s)" % ",".join(sub_expressions)
-        # Convert the result to a signed integer since MySQL's binary operators
-        # return an unsigned integer.
+            # Convert the result to a signed integer since MySQL's binary operators
+            # return an unsigned integer.
         elif connector in ("&", "|", "<<", "#"):
             connector = "^" if connector == "#" else connector
             return "CONVERT(%s, SIGNED)" % connector.join(sub_expressions)
@@ -328,9 +323,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         return value
 
     def binary_placeholder_sql(self, value):
-        return (
-            "_binary %s" if value is not None and not hasattr(value, "as_sql") else "%s"
-        )
+        return "_binary %s" if value is not None and not hasattr(value, "as_sql") else "%s"
 
     def subtract_temporals(self, internal_type, lhs, rhs):
         lhs_sql, lhs_params = lhs
@@ -340,8 +333,7 @@ class DatabaseOperations(BaseDatabaseOperations):
                 # MariaDB includes the microsecond component in TIME_TO_SEC as
                 # a decimal. MySQL returns an integer without microseconds.
                 return (
-                    "CAST((TIME_TO_SEC(%(lhs)s) - TIME_TO_SEC(%(rhs)s)) "
-                    "* 1000000 AS SIGNED)"
+                    "CAST((TIME_TO_SEC(%(lhs)s) - TIME_TO_SEC(%(rhs)s)) * 1000000 AS SIGNED)"
                 ) % {
                     "lhs": lhs_sql,
                     "rhs": rhs_sql,
@@ -352,9 +344,7 @@ class DatabaseOperations(BaseDatabaseOperations):
             return (
                 "((TIME_TO_SEC(%(lhs)s) * 1000000 + MICROSECOND(%(lhs)s)) -"
                 " (TIME_TO_SEC(%(rhs)s) * 1000000 + MICROSECOND(%(rhs)s)))"
-            ) % {"lhs": lhs_sql, "rhs": rhs_sql}, tuple(lhs_params) * 2 + tuple(
-                rhs_params
-            ) * 2
+            ) % {"lhs": lhs_sql, "rhs": rhs_sql}, tuple(lhs_params) * 2 + tuple(rhs_params) * 2
         params = (*rhs_params, *lhs_params)
         return "TIMESTAMPDIFF(MICROSECOND, %s, %s)" % (rhs_sql, lhs_sql), params
 
@@ -362,18 +352,14 @@ class DatabaseOperations(BaseDatabaseOperations):
         # Alias MySQL's TRADITIONAL to TEXT for consistency with other backends.
         if format and format.upper() == "TEXT":
             format = "TRADITIONAL"
-        elif (
-            not format and "TREE" in self.connection.features.supported_explain_formats
-        ):
+        elif not format and "TREE" in self.connection.features.supported_explain_formats:
             # Use TREE by default (if supported) as it's more informative.
             format = "TREE"
         analyze = options.pop("analyze", False)
         prefix = super().explain_query_prefix(format, **options)
         if analyze and self.connection.features.supports_explain_analyze:
             # MariaDB uses ANALYZE instead of EXPLAIN ANALYZE.
-            prefix = (
-                "ANALYZE" if self.connection.mysql_is_mariadb else prefix + " ANALYZE"
-            )
+            prefix = "ANALYZE" if self.connection.mysql_is_mariadb else prefix + " ANALYZE"
         if format and not (analyze and not self.connection.mysql_is_mariadb):
             # Only MariaDB supports the analyze option with formats.
             prefix += " FORMAT=%s" % format
@@ -417,9 +403,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         if isinstance(expression, (Exists, Lookup)):
             return True
         if isinstance(expression, ExpressionWrapper) and expression.conditional:
-            return self.conditional_expression_supported_in_where_clause(
-                expression.expression
-            )
+            return self.conditional_expression_supported_in_where_clause(expression.expression)
         if getattr(expression, "conditional", False):
             return False
         return super().conditional_expression_supported_in_where_clause(expression)
@@ -436,15 +420,12 @@ class DatabaseOperations(BaseDatabaseOperations):
                     field_sql = "%(field)s = new.%(field)s"
                 else:
                     field_sql = "%(field)s = VALUES(%(field)s)"
-            # Use VALUE() on MariaDB.
+                    # Use VALUE() on MariaDB.
             else:
                 field_sql = "%(field)s = VALUE(%(field)s)"
 
             fields = ", ".join(
-                [
-                    field_sql % {"field": field}
-                    for field in map(self.quote_name, update_fields)
-                ]
+                [field_sql % {"field": field} for field in map(self.quote_name, update_fields)]
             )
             return conflict_suffix_sql % {"fields": fields}
         return super().on_conflict_suffix_sql(

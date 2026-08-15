@@ -20,9 +20,7 @@ class CoalesceTests(TestCase):
         )
 
     def test_gt_two_expressions(self):
-        with self.assertRaisesMessage(
-            ValueError, "Coalesce must take at least two expressions"
-        ):
+        with self.assertRaisesMessage(ValueError, "Coalesce must take at least two expressions"):
             Author.objects.annotate(display_name=Coalesce("alias"))
 
     def test_mixed_values(self):
@@ -39,14 +37,10 @@ class CoalesceTests(TestCase):
         article = Article.objects.annotate(
             headline=Coalesce("summary", "text", output_field=TextField()),
         )
-        self.assertQuerySetEqual(
-            article.order_by("title"), [lorem_ipsum], lambda a: a.headline
-        )
+        self.assertQuerySetEqual(article.order_by("title"), [lorem_ipsum], lambda a: a.headline)
         # mixed Text and Char wrapped
         article = Article.objects.annotate(
-            headline=Coalesce(
-                Lower("summary"), Lower("text"), output_field=TextField()
-            ),
+            headline=Coalesce(Lower("summary"), Lower("text"), output_field=TextField()),
         )
         self.assertQuerySetEqual(
             article.order_by("title"), [lorem_ipsum.lower()], lambda a: a.headline

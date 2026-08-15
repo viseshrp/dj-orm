@@ -58,9 +58,7 @@ class TestUtilsText(SimpleTestCase):
 
     def test_truncate_chars(self):
         truncator = text.Truncator("The quick brown fox jumped over the lazy dog.")
-        self.assertEqual(
-            "The quick brown fox jumped over the lazy dog.", truncator.chars(100)
-        ),
+        (self.assertEqual("The quick brown fox jumped over the lazy dog.", truncator.chars(100)),)
         self.assertEqual("The quick brown fox …", truncator.chars(21))
         self.assertEqual("The quick brown fo.....", truncator.chars(23, "....."))
         self.assertEqual(".....", truncator.chars(4, "....."))
@@ -90,9 +88,7 @@ class TestUtilsText(SimpleTestCase):
         # a length shorter than the ellipsis shouldn't break
         self.assertEqual("...", text.Truncator("asdf").chars(1, truncate="..."))
         # lazy strings are handled correctly
-        self.assertEqual(
-            text.Truncator(lazystr("The quick brown fox")).chars(10), "The quick…"
-        )
+        self.assertEqual(text.Truncator(lazystr("The quick brown fox")).chars(10), "The quick…")
 
     def test_truncate_chars_html(self):
         truncator = text.Truncator(
@@ -150,25 +146,19 @@ class TestUtilsText(SimpleTestCase):
         )
 
     def test_truncate_chars_html_with_void_elements(self):
-        truncator = text.Truncator(
-            "<br/>The <hr />quick brown fox jumped over the lazy dog."
-        )
+        truncator = text.Truncator("<br/>The <hr />quick brown fox jumped over the lazy dog.")
         self.assertEqual("<br/>The <hr />quick brown…", truncator.chars(16, html=True))
         truncator = text.Truncator(
             "<br>The <hr/>quick <em>brown fox</em> jumped over the lazy dog."
         )
-        self.assertEqual(
-            "<br>The <hr/>quick <em>brown…</em>", truncator.chars(16, html=True)
-        )
+        self.assertEqual("<br>The <hr/>quick <em>brown…</em>", truncator.chars(16, html=True))
         self.assertEqual("<br>The <hr/>q…", truncator.chars(6, html=True))
         self.assertEqual("<br>The <hr/>…", truncator.chars(5, html=True))
         self.assertEqual("<br>The…", truncator.chars(4, html=True))
         self.assertEqual("<br>Th…", truncator.chars(3, html=True))
 
     def test_truncate_chars_html_with_html_entities(self):
-        truncator = text.Truncator(
-            "<i>Buenos d&iacute;as! &#x00bf;C&oacute;mo est&aacute;?</i>"
-        )
+        truncator = text.Truncator("<i>Buenos d&iacute;as! &#x00bf;C&oacute;mo est&aacute;?</i>")
         self.assertEqual(
             "<i>Buenos días! ¿Cómo está?</i>",
             truncator.chars(40, html=True),
@@ -196,15 +186,11 @@ class TestUtilsText(SimpleTestCase):
 
     def test_truncate_words(self):
         truncator = text.Truncator("The quick brown fox jumped over the lazy dog.")
-        self.assertEqual(
-            "The quick brown fox jumped over the lazy dog.", truncator.words(10)
-        )
+        self.assertEqual("The quick brown fox jumped over the lazy dog.", truncator.words(10))
         self.assertEqual("The quick brown fox…", truncator.words(4))
         self.assertEqual("The quick brown fox[snip]", truncator.words(4, "[snip]"))
         # lazy strings are handled correctly
-        truncator = text.Truncator(
-            lazystr("The quick brown fox jumped over the lazy dog.")
-        )
+        truncator = text.Truncator(lazystr("The quick brown fox jumped over the lazy dog."))
         self.assertEqual("The quick brown fox…", truncator.words(4))
         self.assertEqual("", truncator.words(0))
         self.assertEqual("", truncator.words(-1))
@@ -236,9 +222,7 @@ class TestUtilsText(SimpleTestCase):
             truncator.words(4, "", html=True),
         )
 
-        truncator = text.Truncator(
-            "<p>The  quick \t brown fox jumped over the lazy dog.</p>"
-        )
+        truncator = text.Truncator("<p>The  quick \t brown fox jumped over the lazy dog.</p>")
         self.assertEqual(
             "<p>The quick brown fox…</p>",
             truncator.words(4, html=True),
@@ -259,21 +243,15 @@ class TestUtilsText(SimpleTestCase):
         )
 
         # Test self-closing tags
-        truncator = text.Truncator(
-            "<br/>The <hr />quick brown fox jumped over the lazy dog."
-        )
+        truncator = text.Truncator("<br/>The <hr />quick brown fox jumped over the lazy dog.")
         self.assertEqual("<br/>The <hr />quick brown…", truncator.words(3, html=True))
         truncator = text.Truncator(
             "<br>The <hr/>quick <em>brown fox</em> jumped over the lazy dog."
         )
-        self.assertEqual(
-            "<br>The <hr/>quick <em>brown…</em>", truncator.words(3, html=True)
-        )
+        self.assertEqual("<br>The <hr/>quick <em>brown…</em>", truncator.words(3, html=True))
 
         # Test html entities
-        truncator = text.Truncator(
-            "<i>Buenos d&iacute;as! &#x00bf;C&oacute;mo est&aacute;?</i>"
-        )
+        truncator = text.Truncator("<i>Buenos d&iacute;as! &#x00bf;C&oacute;mo est&aacute;?</i>")
         self.assertEqual(
             "<i>Buenos días! ¿Cómo…</i>",
             truncator.words(3, html=True),
@@ -289,9 +267,7 @@ class TestUtilsText(SimpleTestCase):
         self.assertEqual(truncator.words(1, html=True), "&lt;…")
 
         # Tags with special chars in attrs.
-        truncator = text.Truncator(
-            """<i style="margin: 5%; font: *;">Hello, my dear lady!</i>"""
-        )
+        truncator = text.Truncator("""<i style="margin: 5%; font: *;">Hello, my dear lady!</i>""")
         self.assertEqual(
             """<i style="margin: 5%; font: *;">Hello, my dear…</i>""",
             truncator.words(3, html=True),
@@ -325,21 +301,15 @@ class TestUtilsText(SimpleTestCase):
 
         long_word = "l%sng" % ("o" * 20)
         self.assertEqual(text.wrap(long_word, 20), long_word)
-        self.assertEqual(
-            text.wrap("a %s word" % long_word, 10), "a\n%s\nword" % long_word
-        )
+        self.assertEqual(text.wrap("a %s word" % long_word, 10), "a\n%s\nword" % long_word)
         self.assertEqual(text.wrap(lazystr(digits), 100), "1234 67 9")
 
     def test_normalize_newlines(self):
-        self.assertEqual(
-            text.normalize_newlines("abc\ndef\rghi\r\n"), "abc\ndef\nghi\n"
-        )
+        self.assertEqual(text.normalize_newlines("abc\ndef\rghi\r\n"), "abc\ndef\nghi\n")
         self.assertEqual(text.normalize_newlines("\n\r\r\n\r"), "\n\n\n\n")
         self.assertEqual(text.normalize_newlines("abcdefghi"), "abcdefghi")
         self.assertEqual(text.normalize_newlines(""), "")
-        self.assertEqual(
-            text.normalize_newlines(lazystr("abc\ndef\rghi\r\n")), "abc\ndef\nghi\n"
-        )
+        self.assertEqual(text.normalize_newlines(lazystr("abc\ndef\rghi\r\n")), "abc\ndef\nghi\n")
 
     def test_phone2numeric(self):
         numeric = text.phone2numeric("0800 flowers")
@@ -368,7 +338,7 @@ class TestUtilsText(SimpleTestCase):
         for value, output, is_unicode in items:
             with self.subTest(value=value):
                 self.assertEqual(text.slugify(value, allow_unicode=is_unicode), output)
-        # Interning the result may be useful, e.g. when fed to Path.
+                # Interning the result may be useful, e.g. when fed to Path.
         with self.subTest("intern"):
             self.assertEqual(sys.intern(text.slugify("a")), "a")
 
@@ -398,7 +368,7 @@ class TestUtilsText(SimpleTestCase):
         msg = "Could not derive file name from '???'"
         with self.assertRaisesMessage(SuspiciousFileOperation, msg):
             text.get_valid_filename("???")
-        # After sanitizing this would yield '..'.
+            # After sanitizing this would yield '..'.
         msg = "Could not derive file name from '$.$.$'"
         with self.assertRaisesMessage(SuspiciousFileOperation, msg):
             text.get_valid_filename("$.$.$")
@@ -413,19 +383,15 @@ class TestUtilsText(SimpleTestCase):
         self.assertLess(compressed_length, actual_length)
 
     def test_format_lazy(self):
-        self.assertEqual("django/test", format_lazy("{}/{}", "django", lazystr("test")))
-        self.assertEqual("django/test", format_lazy("{0}/{1}", *("django", "test")))
-        self.assertEqual(
-            "django/test", format_lazy("{a}/{b}", **{"a": "django", "b": "test"})
-        )
-        self.assertEqual(
-            "django/test", format_lazy("{a[0]}/{a[1]}", a=("django", "test"))
-        )
+        self.assertEqual("djorm/test", format_lazy("{}/{}", "djorm", lazystr("test")))
+        self.assertEqual("djorm/test", format_lazy("{0}/{1}", *("djorm", "test")))
+        self.assertEqual("djorm/test", format_lazy("{a}/{b}", **{"a": "djorm", "b": "test"}))
+        self.assertEqual("djorm/test", format_lazy("{a[0]}/{a[1]}", a=("djorm", "test")))
 
         t = {}
         s = format_lazy("{0[a]}-{p[a]}", t, p=t)
-        t["a"] = lazystr("django")
-        self.assertEqual("django-django", s)
+        t["a"] = lazystr("djorm")
+        self.assertEqual("djorm-djorm", s)
         t["a"] = "update"
         self.assertEqual("update-update", s)
 
@@ -436,4 +402,4 @@ class TestUtilsText(SimpleTestCase):
             object="My first try",
         )
         with override("fr"):
-            self.assertEqual("Ajout de article «\xa0My first try\xa0».", s)
+            self.assertEqual("Added article “My first try”.", s)

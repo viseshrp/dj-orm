@@ -22,12 +22,11 @@ from .signals import register_type_handlers
 
 
 def uninstall_if_needed(setting, value, enter, **kwargs):
-    '\n    Undo the effects of PostgresConfig.ready() when djorm.contrib.postgres\n    is "uninstalled" by override_settings().\n    '
-    if (
-        not enter
-        and setting == "INSTALLED_APPS"
-        and 'djorm.contrib.postgres' not in set(value)
-    ):
+    """
+    Undo the effects of PostgresConfig.ready() when djorm.contrib.postgres
+    is "uninstalled" by override_settings().
+    """
+    if not enter and setting == "INSTALLED_APPS" and "djorm.contrib.postgres" not in set(value):
         connection_created.disconnect(register_type_handlers)
         CharField._unregister_lookup(Unaccent)
         TextField._unregister_lookup(Unaccent)
@@ -47,7 +46,7 @@ def uninstall_if_needed(setting, value, enter, **kwargs):
 
 
 class PostgresConfig(AppConfig):
-    name = 'djorm.contrib.postgres'
+    name = "djorm.contrib.postgres"
     verbose_name = _("PostgreSQL extensions")
 
     def ready(self):
@@ -57,11 +56,11 @@ class PostgresConfig(AppConfig):
             if conn.vendor == "postgresql":
                 conn.introspection.data_types_reverse.update(
                     {
-                        3904: 'djorm.contrib.postgres.fields.IntegerRangeField',
-                        3906: 'djorm.contrib.postgres.fields.DecimalRangeField',
-                        3910: 'djorm.contrib.postgres.fields.DateTimeRangeField',
-                        3912: 'djorm.contrib.postgres.fields.DateRangeField',
-                        3926: 'djorm.contrib.postgres.fields.BigIntegerRangeField',
+                        3904: "djorm.contrib.postgres.fields.IntegerRangeField",
+                        3906: "djorm.contrib.postgres.fields.DecimalRangeField",
+                        3910: "djorm.contrib.postgres.fields.DateTimeRangeField",
+                        3912: "djorm.contrib.postgres.fields.DateRangeField",
+                        3926: "djorm.contrib.postgres.fields.BigIntegerRangeField",
                     }
                 )
                 if conn.connection is not None:

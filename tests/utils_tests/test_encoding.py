@@ -35,7 +35,8 @@ class TestEncodingUtils(SimpleTestCase):
             def __str__(self):
                 return b"\xc3\xb6\xc3\xa4\xc3\xbc"
 
-        # str(s) raises a TypeError if the result is not a text type.
+                # str(s) raises a TypeError if the result is not a text type.
+
         with self.assertRaises(TypeError):
             force_str(MyString())
 
@@ -102,9 +103,7 @@ class TestEncodingUtils(SimpleTestCase):
 
         lazy_func = gettext_lazy("x")
         self.assertIs(smart_str(lazy_func), lazy_func)
-        self.assertEqual(
-            smart_str(Test()), "\u0160\u0110\u0106\u017d\u0107\u017e\u0161\u0111"
-        )
+        self.assertEqual(smart_str(Test()), "\u0160\u0110\u0106\u017d\u0107\u017e\u0161\u0111")
         self.assertEqual(smart_str(1), "1")
         self.assertEqual(smart_str("foo"), "foo")
 
@@ -117,9 +116,7 @@ class TestEncodingUtils(SimpleTestCase):
         # function uses recursion.
         data = b"\xfc" * sys.getrecursionlimit()
         try:
-            self.assertEqual(
-                repercent_broken_unicode(data), b"%FC" * sys.getrecursionlimit()
-            )
+            self.assertEqual(repercent_broken_unicode(data), b"%FC" * sys.getrecursionlimit())
         except RecursionError:
             self.fail("Unexpected RecursionError raised.")
 
@@ -132,10 +129,10 @@ class TestEncodingUtils(SimpleTestCase):
             decoded_paths.append(inspect.currentframe().f_back.f_locals["path"])
             return quote(*args, **kwargs)
 
-        with mock.patch('djorm.utils.encoding.quote', mock_quote):
+        with mock.patch("djorm.utils.encoding.quote", mock_quote):
             self.assertEqual(repercent_broken_unicode(data), b"test%FCtest%FCtest%FC")
 
-        # decode() is called on smaller fragment of the path each time.
+            # decode() is called on smaller fragment of the path each time.
         self.assertEqual(
             decoded_paths,
             [b"test\xfctest\xfctest\xfc", b"test\xfctest\xfc", b"test\xfc"],

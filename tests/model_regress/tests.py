@@ -28,8 +28,9 @@ class ModelTests(TestCase):
         with self.assertRaisesMessage(IndexError, msg):
             Worker(1, 2, 3, 4)
 
-    # The bug is that the following queries would raise:
-    # "TypeError: Related Field has invalid lookup: gte"
+            # The bug is that the following queries would raise:
+            # "TypeError: Related Field has invalid lookup: gte"
+
     def test_related_gte_lookup(self):
         """
         Regression test for #10153: foreign key __gte lookups.
@@ -55,9 +56,7 @@ class ModelTests(TestCase):
     def test_empty_choice(self):
         # NOTE: Part of the regression test here is merely parsing the model
         # declaration. The verbose_name, in particular, did not always work.
-        a = Article.objects.create(
-            headline="Look at me!", pub_date=datetime.datetime.now()
-        )
+        a = Article.objects.create(headline="Look at me!", pub_date=datetime.datetime.now())
         # An empty choice field should return None for the display name.
         self.assertIs(a.get_status_display(), None)
 
@@ -178,12 +177,8 @@ class ModelTests(TestCase):
         Event.objects.create(when=datetime.datetime(2000, 1, 1, 6, 1, 1))
         Event.objects.create(when=datetime.datetime(2000, 1, 1, 13, 1, 1))
         e = Event.objects.create(when=datetime.datetime(2000, 1, 1, 12, 0, 20, 24))
-        self.assertEqual(
-            e.get_next_by_when().when, datetime.datetime(2000, 1, 1, 13, 1, 1)
-        )
-        self.assertEqual(
-            e.get_previous_by_when().when, datetime.datetime(2000, 1, 1, 6, 1, 1)
-        )
+        self.assertEqual(e.get_next_by_when().when, datetime.datetime(2000, 1, 1, 13, 1, 1))
+        self.assertEqual(e.get_previous_by_when().when, datetime.datetime(2000, 1, 1, 6, 1, 1))
 
     def test_get_next_prev_by_field_unsaved(self):
         msg = "get_next/get_previous cannot be used on unsaved objects."
@@ -206,14 +201,10 @@ class ModelTests(TestCase):
         # crashing. It's not rocket science.
         dt1 = datetime.datetime(2008, 8, 31, 16, 20, tzinfo=get_fixed_timezone(600))
         dt2 = datetime.datetime(2008, 8, 31, 17, 20, tzinfo=get_fixed_timezone(600))
-        obj = Article.objects.create(
-            headline="A headline", pub_date=dt1, article_text="foo"
-        )
+        obj = Article.objects.create(headline="A headline", pub_date=dt1, article_text="foo")
         obj.pub_date = dt2
         obj.save()
-        self.assertEqual(
-            Article.objects.filter(headline="A headline").update(pub_date=dt1), 1
-        )
+        self.assertEqual(Article.objects.filter(headline="A headline").update(pub_date=dt1), 1)
 
     def test_chained_fks(self):
         """

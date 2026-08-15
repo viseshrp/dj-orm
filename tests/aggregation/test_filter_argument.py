@@ -80,9 +80,7 @@ class FilteredAggregateTests(TestCase):
         ):
             with self.subTest(aggregate=aggregate.__name__):
                 agg = aggregate("age", filter=Q(name__startswith="test"))
-                self.assertEqual(
-                    Author.objects.aggregate(age=agg)["age"], expected_result
-                )
+                self.assertEqual(Author.objects.aggregate(age=agg)["age"], expected_result)
 
     def test_empty_filtered_aggregates(self):
         agg = Count("pk", filter=Q())
@@ -93,9 +91,7 @@ class FilteredAggregateTests(TestCase):
         self.assertEqual(
             Author.objects.annotate(
                 age_annotation=F("age"),
-            ).aggregate(
-                count=agg
-            )["count"],
+            ).aggregate(count=agg)["count"],
             3,
         )
 
@@ -109,16 +105,12 @@ class FilteredAggregateTests(TestCase):
 
     def test_related_aggregates_m2m(self):
         agg = Sum("friends__age", filter=~Q(friends__name="test"))
-        self.assertEqual(
-            Author.objects.filter(name="test").aggregate(age=agg)["age"], 160
-        )
+        self.assertEqual(Author.objects.filter(name="test").aggregate(age=agg)["age"], 160)
 
     def test_related_aggregates_m2m_and_fk(self):
         q = Q(friends__book__publisher__name="Apress") & ~Q(friends__name="test3")
         agg = Sum("friends__book__pages", filter=q)
-        self.assertEqual(
-            Author.objects.filter(name="test").aggregate(pages=agg)["pages"], 528
-        )
+        self.assertEqual(Author.objects.filter(name="test").aggregate(pages=agg)["pages"], 528)
 
     def test_plain_annotate(self):
         agg = Sum("book__pages", filter=Q(book__rating__gt=3))
@@ -233,9 +225,7 @@ class FilteredAggregateTests(TestCase):
             ),
         ).get(pk=self.b1.pk)
         self.assertEqual(book.authors_count, 0)
-        aggregate = Book.objects.aggregate(
-            max_rating=Max("rating", filter=Q(rating__in=[]))
-        )
+        aggregate = Book.objects.aggregate(max_rating=Max("rating", filter=Q(rating__in=[])))
         self.assertEqual(aggregate, {"max_rating": None})
 
     def test_filtered_aggregate_full_condition(self):
@@ -246,7 +236,5 @@ class FilteredAggregateTests(TestCase):
             ),
         ).get(pk=self.b1.pk)
         self.assertEqual(book.authors_count, 2)
-        aggregate = Book.objects.aggregate(
-            max_rating=Max("rating", filter=~Q(rating__in=[]))
-        )
+        aggregate = Book.objects.aggregate(max_rating=Max("rating", filter=~Q(rating__in=[])))
         self.assertEqual(aggregate, {"max_rating": 4.5})

@@ -6,9 +6,7 @@ from djorm.db.backends.base.introspection import FieldInfo as BaseFieldInfo
 from djorm.db.backends.base.introspection import TableInfo as BaseTableInfo
 from djorm.db.backends.oracle.oracledb_any import oracledb
 
-FieldInfo = namedtuple(
-    "FieldInfo", BaseFieldInfo._fields + ("is_autofield", "is_json", "comment")
-)
+FieldInfo = namedtuple("FieldInfo", BaseFieldInfo._fields + ("is_autofield", "is_json", "comment"))
 TableInfo = namedtuple("TableInfo", BaseTableInfo._fields + ("comment",))
 
 
@@ -36,11 +34,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             precision, scale = description[4:6]
             if scale == 0:
                 if precision > 11:
-                    return (
-                        "BigAutoField"
-                        if description.is_autofield
-                        else "BigIntegerField"
-                    )
+                    return "BigAutoField" if description.is_autofield else "BigIntegerField"
                 elif 1 < precision < 6 and description.is_autofield:
                     return "SmallAutoField"
                 elif precision == 1:
@@ -242,8 +236,8 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                     "column": self.identifier_converter(row[1]),
                 }
             ]
-        # To keep backward compatibility for AutoFields that aren't Oracle
-        # identity columns.
+            # To keep backward compatibility for AutoFields that aren't Oracle
+            # identity columns.
         for f in table_fields:
             if isinstance(f, models.AutoField):
                 return [{"table": table_name, "column": f.column}]
@@ -340,7 +334,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 "check": check,
                 "index": unique,  # All uniques come with an index
             }
-        # Foreign key constraints
+            # Foreign key constraints
         cursor.execute(
             """
             SELECT
@@ -374,7 +368,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 "index": False,
                 "columns": columns.split(","),
             }
-        # Now get indexes
+            # Now get indexes
         cursor.execute(
             """
             SELECT

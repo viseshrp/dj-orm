@@ -84,7 +84,8 @@ END;
             f"ORDER BY {cache_key} OFFSET %%s ROWS FETCH FIRST 1 ROWS ONLY"
         )
 
-    # EXTRACT format cannot be passed in parameters.
+        # EXTRACT format cannot be passed in parameters.
+
     _extract_format_re = _lazy_re_compile(r"[A-Z_]+")
 
     def date_extract_sql(self, lookup_type, sql, params):
@@ -107,7 +108,7 @@ END;
             lookup_type = lookup_type.upper()
             if not self._extract_format_re.fullmatch(lookup_type):
                 raise ValueError(f"Invalid loookup type: {lookup_type!r}")
-            # https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html
+                # https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/EXTRACT-datetime.html
             return f"EXTRACT({lookup_type} FROM {sql})", params
         return extract_sql, (*params, extract_param)
 
@@ -125,10 +126,11 @@ END;
             return f"TRUNC({sql})", params
         return f"TRUNC({sql}, %s)", (*params, trunc_param)
 
-    # Oracle crashes with "ORA-03113: end-of-file on communication channel"
-    # if the time zone name is passed in parameter. Use interpolation instead.
-    # https://groups.google.com/forum/#!msg/django-developers/zwQju7hbG78/9l934yelwfsJ
-    # This regexp matches all time zone names from the zoneinfo database.
+        # Oracle crashes with "ORA-03113: end-of-file on communication channel"
+        # if the time zone name is passed in parameter. Use interpolation instead.
+        # https://groups.google.com/forum/#!msg/django-developers/zwQju7hbG78/9l934yelwfsJ
+        # This regexp matches all time zone names from the zoneinfo database.
+
     _tzname_re = _lazy_re_compile(r"^[\w/:+-]+$")
 
     def _prepare_tzname_delta(self, tzname):
@@ -140,9 +142,9 @@ END;
             return sql, params
         if not self._tzname_re.match(tzname):
             raise ValueError("Invalid time zone name: %s" % tzname)
-        # Convert from connection timezone to the local time, returning
-        # TIMESTAMP WITH TIME ZONE and cast it back to TIMESTAMP to strip the
-        # TIME ZONE details.
+            # Convert from connection timezone to the local time, returning
+            # TIMESTAMP WITH TIME ZONE and cast it back to TIMESTAMP to strip the
+            # TIME ZONE details.
         if self.connection.timezone_name != tzname:
             from_timezone_name = self.connection.timezone_name
             to_timezone_name = self._prepare_tzname_delta(tzname)
@@ -237,9 +239,9 @@ END;
             converters.append(self.convert_timefield_value)
         elif internal_type == "UUIDField":
             converters.append(self.convert_uuidfield_value)
-        # Oracle stores empty strings as null. If the field accepts the empty
-        # string, undo this to adhere to the Django convention of using
-        # the empty string instead of null.
+            # Oracle stores empty strings as null. If the field accepts the empty
+            # string, undo this to adhere to the Django convention of using
+            # the empty string instead of null.
         if expression.output_field.empty_strings_allowed:
             converters.append(
                 self.convert_empty_bytes
@@ -263,9 +265,9 @@ END;
             value = bool(value)
         return value
 
-    # oracledb always returns datetime.datetime objects for
-    # DATE and TIMESTAMP columns, but Django wants to see a
-    # python datetime.date, .time, or .datetime.
+        # oracledb always returns datetime.datetime objects for
+        # DATE and TIMESTAMP columns, but Django wants to see a
+        # python datetime.date, .time, or .datetime.
 
     def convert_datetimefield_value(self, value, expression, connection):
         if value is not None:
@@ -337,15 +339,11 @@ END;
         # parameters manually.
         if statement and params:
             if isinstance(params, (tuple, list)):
-                params = {
-                    f":arg{i}": param for i, param in enumerate(dict.fromkeys(params))
-                }
+                params = {f":arg{i}": param for i, param in enumerate(dict.fromkeys(params))}
             elif isinstance(params, dict):
                 params = {f":{key}": val for (key, val) in params.items()}
             for key in sorted(params, key=len, reverse=True):
-                statement = statement.replace(
-                    key, force_str(params[key], errors="replace")
-                )
+                statement = statement.replace(key, force_str(params[key], errors="replace"))
         return statement
 
     def last_insert_id(self, cursor, table_name, pk_name):
@@ -387,9 +385,9 @@ END;
         # We simplify things by making Oracle identifiers always uppercase.
         if not name.startswith('"') and not name.endswith('"'):
             name = '"%s"' % truncate_name(name, self.max_name_length())
-        # Oracle puts the query text into a (query % args) construct, so % signs
-        # in names need to be escaped. The '%%' will be collapsed back to '%' at
-        # that stage so we aren't really making the name longer here.
+            # Oracle puts the query text into a (query % args) construct, so % signs
+            # in names need to be escaped. The '%%' will be collapsed back to '%' at
+            # that stage so we aren't really making the name longer here.
         name = name.replace("%", "%%")
         return name.upper()
 
@@ -609,14 +607,13 @@ END;
         if value is None:
             return None
 
-        # oracledb doesn't support tz-aware datetimes
+            # oracledb doesn't support tz-aware datetimes
         if timezone.is_aware(value):
             if settings.USE_TZ:
                 value = timezone.make_naive(value, self.connection.timezone)
             else:
                 raise ValueError(
-                    "Oracle backend does not support timezone-aware datetimes when "
-                    "USE_TZ is False."
+                    "Oracle backend does not support timezone-aware datetimes when USE_TZ is False."
                 )
 
         return Oracle_datetime.from_datetime(value)
@@ -628,7 +625,7 @@ END;
         if isinstance(value, str):
             return datetime.datetime.strptime(value, "%H:%M:%S")
 
-        # Oracle doesn't support tz-aware times
+            # Oracle doesn't support tz-aware times
         if timezone.is_aware(value):
             raise ValueError("Oracle backend does not support timezone-aware times.")
 
@@ -689,17 +686,17 @@ END;
                 # A model without any fields has fields=[None].
                 if fields[i]:
                     placeholder = field_placeholders[i] % placeholder
-                # Add columns aliases to the first select to avoid "ORA-00918:
-                # column ambiguously defined" when two or more columns in the
-                # first select have the same value.
+                    # Add columns aliases to the first select to avoid "ORA-00918:
+                    # column ambiguously defined" when two or more columns in the
+                    # first select have the same value.
                 if not query:
                     placeholder = "%s col_%s" % (placeholder, i)
                 select.append(placeholder)
             suffix = self.connection.features.bare_select_suffix
             query.append(f"SELECT %s{suffix}" % ", ".join(select))
-        # Bulk insert to tables with Oracle identity columns causes Oracle to
-        # add sequence.nextval to it. Sequence.nextval cannot be used with the
-        # UNION operator. To prevent incorrect SQL, move UNION to a subquery.
+            # Bulk insert to tables with Oracle identity columns causes Oracle to
+            # add sequence.nextval to it. Sequence.nextval cannot be used with the
+            # UNION operator. To prevent incorrect SQL, move UNION to a subquery.
         return "SELECT * FROM (%s)" % " UNION ALL ".join(query)
 
     def subtract_temporals(self, internal_type, lhs, rhs):
@@ -733,9 +730,7 @@ END;
         if isinstance(expression, (Exists, Lookup, WhereNode)):
             return True
         if isinstance(expression, ExpressionWrapper) and expression.conditional:
-            return self.conditional_expression_supported_in_where_clause(
-                expression.expression
-            )
+            return self.conditional_expression_supported_in_where_clause(expression.expression)
         if isinstance(expression, RawSQL) and expression.conditional:
             return True
         return False
