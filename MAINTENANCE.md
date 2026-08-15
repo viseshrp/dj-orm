@@ -93,8 +93,9 @@ The command performs these bounded operations:
 3. Regenerates a canonical `djorm` tree for both the recorded upstream base and
    the new tag, then applies their reviewed fork delta with Git's three-way
    merge support.
-4. Applies clean additions, edits, and deletions automatically. Paths changed
-   incompatibly by upstream remain staged as conflicts for human review.
+4. Applies clean additions, edits, and deletions automatically. Reviewed
+   packaging and CI files stay fork-owned; incompatible changes in retained
+   Django runtime code remain as conflicts for human review.
 5. Writes the new upstream provenance and `A.B.C.N` package version, then runs
    the namespace, package, and retained-suite checks.
 

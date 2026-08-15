@@ -11,6 +11,7 @@ from scripts.apply_django_lts import (
     ApplyError,
     assert_configured_lts,
     distribution_version,
+    is_fork_owned,
     normalize_upstream_version,
     release_series,
 )
@@ -60,6 +61,26 @@ def test_distribution_version_records_rebuild_revision() -> None:
 def test_reject_negative_revision() -> None:
     with pytest.raises(ApplyError):
         distribution_version("5.2.17", -1)
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        ".github/workflows/main.yml",
+        ".pre-commit-config.yaml",
+        "djorm/_ext/forms.py",
+        "pyproject.toml",
+        "scripts/apply_django_lts.py",
+        "tests/djorm_smoke/test_distribution.py",
+        "tox.ini",
+    ],
+)
+def test_lts_application_prefers_reviewed_infrastructure(path: str) -> None:
+    assert is_fork_owned(path)
+
+
+def test_lts_application_reviews_retained_runtime_conflicts() -> None:
+    assert not is_fork_owned("djorm/db/models/query.py")
 
 
 def test_maintenance_config_records_distribution_and_template() -> None:

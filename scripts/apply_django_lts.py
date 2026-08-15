@@ -24,10 +24,39 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10
 CONFIG_NAME = ".djorm-maintenance.toml"
 STATE_NAME = "djorm-apply-state.json"
 FINAL_TAG_RE = re.compile(r"^(?P<parts>\d+(?:\.\d+){0,2})$")
+FORK_OWNED_PATHS = {
+    CONFIG_NAME,
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "HANDOFF_LOG.md",
+    "IMPLEMENTATION_PLAN.md",
+    "MAINTENANCE.md",
+    "Makefile",
+    "README.md",
+    "SPEC.md",
+    "codecov.yml",
+    "codespell.txt",
+    "pyproject.toml",
+    "scripts/README.djorm-rebase.md",
+    "scripts/apply_django_lts.py",
+    "scripts/check_release.py",
+    "scripts/inspect_dist.py",
+    "scripts/rename_namespace.py",
+    "scripts/tag_release.sh",
+    "tox.ini",
+    "uv.lock",
+}
+FORK_OWNED_PREFIXES = (".github/", "djorm/_ext/", "tests/djorm_smoke/")
 
 
 class ApplyError(RuntimeError):
     """A safe, actionable LTS application failure."""
+
+
+def is_fork_owned(path: str) -> bool:
+    return path in FORK_OWNED_PATHS or path.startswith(FORK_OWNED_PREFIXES)
 
 
 @dataclass
@@ -349,7 +378,16 @@ def apply_delta(source_repo: Path, output: Path, state: ApplyState) -> list[str]
             capture=True,
         )
 
-    semantic_conflicts = sorted(set(conflicts) - set(deletion_conflicts))
+    remaining_conflicts = set(conflicts) - set(deletion_conflicts)
+    infrastructure_conflicts = sorted(path for path in remaining_conflicts if is_fork_owned(path))
+    if infrastructure_conflicts:
+        run(
+            ["git", "checkout", state.source_head, "--", *infrastructure_conflicts],
+            cwd=output,
+            capture=True,
+        )
+
+    semantic_conflicts = sorted(remaining_conflicts - set(infrastructure_conflicts))
     if semantic_conflicts:
         run(["git", "reset", "HEAD", "--", *semantic_conflicts], cwd=output, capture=True)
     return semantic_conflicts
