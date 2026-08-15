@@ -93,8 +93,8 @@ Django 5.2.17 -> dj-orm 5.2.17.0
 
 The final component increments only for a Djorm-only rebuild of the same Django
 tag. The update tool creates a separate worktree, performs the namespace
-conversion, replays the fork commits, automatically resolves expected deletion
-conflicts, and stops for human review when upstream changed retained code.
+conversion, applies the reviewed fork tree delta with a three-way merge, and
+stops for human review when upstream changed retained code incompatibly.
 
 ```console
 uv run python scripts/apply_django_lts.py \

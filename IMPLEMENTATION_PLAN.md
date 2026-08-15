@@ -1091,9 +1091,9 @@ Most likely `_ext/` will remain nearly empty in the initial release. It's a conv
 
 Run `scripts/apply_django_lts.py` from a clean LTS source branch. The tool
 fetches an exact reviewed Django LTS tag, creates an isolated candidate
-worktree, performs the namespace conversion, replays the fork changes, and
-runs the package gate. It automatically reapplies only explicit deletions and
-stops for file-by-file review of semantic conflicts.
+worktree, performs the namespace conversion, applies the reviewed fork tree
+delta with a three-way merge, and runs the package gate. It stops for
+file-by-file review of semantic conflicts.
 
 The full command, resume procedure, version mapping, and publication gate are
 maintained in [`MAINTENANCE.md`](MAINTENANCE.md). This replaces the original

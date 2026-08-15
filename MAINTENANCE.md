@@ -71,8 +71,8 @@ Djorm adapts its package name to `dj-orm`, retains the upstream-derived `djorm/`
 tree, and scopes formatters to fork-owned files. To adopt a later YAPC version,
 render it into a temporary directory, review the infrastructure diff, and
 update `yapc_commit` in `.djorm-maintenance.toml`. Routine Django LTS application
-does not require rerendering YAPC; the updater replays the reviewed package
-infrastructure with the rest of the fork stack.
+does not require rerendering YAPC; the updater applies the reviewed package
+infrastructure with the maintained fork delta.
 
 ## Mechanical application
 
@@ -90,15 +90,17 @@ The command performs these bounded operations:
    the ref is a final release in the reviewed `lts_series` list in
    `.djorm-maintenance.toml`.
 2. Creates `release/django-<tag>` in a separate Git worktree.
-3. Replays the pre-extraction documentation commits, runs the namespace rewrite
-   in place, and replays the remaining fork commits.
-4. Resolves modify/delete conflicts automatically only when the fork commit
-   explicitly deletes that path. Content conflicts remain for human review.
+3. Regenerates a canonical `djorm` tree for both the recorded upstream base and
+   the new tag, then applies their reviewed fork delta with Git's three-way
+   merge support.
+4. Applies clean additions, edits, and deletions automatically. Paths changed
+   incompatibly by upstream remain staged as conflicts for human review.
 5. Writes the new upstream provenance and `A.B.C.N` package version, then runs
    the namespace, package, and retained-suite checks.
 
 The source checkout is never switched or rewritten. The tool refuses a dirty
-source or output directory that already exists.
+source or output directory that already exists. This tree-delta design keeps
+future applications independent of historical package paths and commit names.
 
 ### Continue after a semantic conflict
 

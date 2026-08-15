@@ -31,6 +31,3 @@ tests/screenshots/
 docs/_build/
 docs/locale/
 node_modules/
-
-# Interrupted LTS application state
-.djorm-apply-state.json

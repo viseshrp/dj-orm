@@ -66,9 +66,12 @@ def test_maintenance_config_records_distribution_and_template() -> None:
     root = Path(__file__).resolve().parents[2]
     with (root / ".djorm-maintenance.toml").open("rb") as config_file:
         config = tomllib.load(config_file)
+    assert config["schema"] == 2
     assert config["distribution"] == "dj-orm"
+    assert config["application"] == "tree-delta"
     assert len(config["yapc_commit"]) == 40
     assert config["lts_series"] == ["5.2", "6.2"]
+    assert "namespace_commit" not in config
 
 
 def test_namespace_rewrite_preserves_pre_312_fstring_syntax(tmp_path: Path) -> None:

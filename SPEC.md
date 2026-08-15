@@ -492,10 +492,10 @@ upstream/*           ← read-only refs from django/django
 
 To incorporate a new official LTS tag, run `scripts/apply_django_lts.py` as
 documented in `MAINTENANCE.md`. The tool discovers the ordered fork commit
-stack from `.djorm-maintenance.toml`, creates a candidate worktree from the exact
-upstream tag, regenerates the namespace commit, and replays the remaining
-commits. It reapplies explicit deletion conflicts mechanically and stops on
-content conflicts for human review.
+baseline from `.djorm-maintenance.toml`, creates a candidate worktree from the
+exact upstream tag, regenerates both trees under the `djorm` namespace, and
+applies the reviewed tree delta with a three-way merge. It stops on semantic
+conflicts for human review.
 
 ### 9.5 Conflict expectations
 
@@ -506,8 +506,8 @@ Most upstream changes will be in files we don't touch (views, admin, templates, 
 - `djorm/core/management/` — upstream may change command infrastructure.
 - `djorm/utils/` — upstream may change utilities.
 
-The namespace commit is regenerated rather than cherry-picked, which keeps the
-largest transformation reproducible.
+The namespace tree is regenerated rather than replayed from historical paths,
+which keeps the largest transformation reproducible.
 
 ### 9.6 Namespace rename tooling
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the Djorm fork commit stack to an exact Django LTS tag."""
+"""Apply the maintained Djorm tree delta to an exact Django LTS tag."""
 
 from __future__ import annotations
 
@@ -9,8 +9,10 @@ import json
 from pathlib import Path
 import re
 import shlex
+import shutil
 import subprocess
 import sys
+import tempfile
 from typing import Any
 
 try:
@@ -21,6 +23,7 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10
 
 CONFIG_NAME = ".djorm-maintenance.toml"
 STATE_NAME = "djorm-apply-state.json"
+PATCH_NAME = "djorm-maintained.patch"
 FINAL_TAG_RE = re.compile(r"^(?P<parts>\d+(?:\.\d+){0,2})$")
 
 
@@ -37,9 +40,8 @@ class ApplyState:
     django_ref: str
     django_commit: str
     revision: int
-    commits: list[str]
-    namespace_commit: str
-    next_index: int = 0
+    baseline_tree: str
+    phase: str = "namespace"
     generated_namespace_commit: str = ""
 
 
@@ -79,7 +81,7 @@ def read_config(source_repo: Path) -> dict[str, Any]:
         raise ApplyError(f"Missing maintenance configuration: {config_path}")
     with config_path.open("rb") as config_file:
         config = tomllib.load(config_file)
-    if config.get("schema") != 1:
+    if config.get("schema") != 2:
         raise ApplyError(f"Unsupported {CONFIG_NAME} schema: {config.get('schema')!r}")
     required = {
         "distribution",
@@ -87,14 +89,16 @@ def read_config(source_repo: Path) -> dict[str, Any]:
         "upstream_remote",
         "upstream_url",
         "upstream_base_commit",
-        "namespace_commit",
         "lts_series",
+        "application",
     }
     missing = sorted(required - config.keys())
     if missing:
         raise ApplyError(f"Missing {CONFIG_NAME} fields: {', '.join(missing)}")
     if config["distribution"] != "dj-orm":
         raise ApplyError(f"{CONFIG_NAME} must configure the dj-orm distribution.")
+    if config["application"] != "tree-delta":
+        raise ApplyError(f"{CONFIG_NAME} must configure tree-delta application.")
     if (
         not config["lts_series"]
         or not isinstance(config["lts_series"], list)
@@ -170,16 +174,44 @@ def fetch_exact_tag(source_repo: Path, remote: str, django_ref: str) -> str:
     return git(source_repo, "rev-parse", f"refs/tags/{django_ref}^{{commit}}")
 
 
-def commit_stack(source_repo: Path, base_commit: str, source_head: str) -> list[str]:
+def assert_base_commit(source_repo: Path, base_commit: str, source_head: str) -> None:
     if git(source_repo, "merge-base", base_commit, source_head) != base_commit:
         raise ApplyError("Configured upstream base is not an ancestor of the source branch.")
-    output = git(
-        source_repo, "rev-list", "--reverse", "--no-merges", f"{base_commit}..{source_head}"
-    )
-    commits = output.splitlines()
-    if not commits:
-        raise ApplyError("No Djorm commits exist after the configured upstream base.")
-    return commits
+
+
+def create_renamed_base_tree(source_repo: Path, base_commit: str) -> str:
+    """Create the canonical djorm tree for the configured upstream base."""
+    temporary_root = Path(tempfile.mkdtemp(prefix="djorm-base-"))
+    worktree = temporary_root / "worktree"
+    added = False
+    try:
+        run(
+            ["git", "worktree", "add", "--detach", str(worktree), base_commit],
+            cwd=source_repo,
+            capture=False,
+        )
+        added = True
+        run(
+            [
+                sys.executable,
+                str(source_repo / "scripts" / "rename_namespace.py"),
+                "--repo-root",
+                str(worktree),
+            ],
+            cwd=source_repo,
+            capture=False,
+        )
+        run(["git", "add", "-A"], cwd=worktree, capture=True)
+        return git(worktree, "write-tree")
+    finally:
+        if added:
+            run(
+                ["git", "worktree", "remove", "--force", str(worktree)],
+                cwd=source_repo,
+                check=False,
+                capture=True,
+            )
+        shutil.rmtree(temporary_root, ignore_errors=True)
 
 
 def state_path(output: Path) -> Path:
@@ -213,10 +245,9 @@ def create_candidate(
     source_head = assert_source_ready(source_repo, config)
     assert_configured_lts(django_ref, config)
     django_commit = fetch_exact_tag(source_repo, str(config["upstream_remote"]), django_ref)
-    commits = commit_stack(source_repo, str(config["upstream_base_commit"]), source_head)
-    namespace_commit = str(config["namespace_commit"])
-    if namespace_commit not in commits:
-        raise ApplyError("Configured namespace commit is not in the Djorm commit stack.")
+    base_commit = str(config["upstream_base_commit"])
+    assert_base_commit(source_repo, base_commit, source_head)
+    baseline_tree = create_renamed_base_tree(source_repo, base_commit)
 
     branch = f"release/django-{django_ref}"
     if git(source_repo, "show-ref", "--verify", f"refs/heads/{branch}", check=False):
@@ -235,44 +266,14 @@ def create_candidate(
         django_ref=django_ref,
         django_commit=django_commit,
         revision=revision,
-        commits=commits,
-        namespace_commit=namespace_commit,
+        baseline_tree=baseline_tree,
     )
     save_state(output, state)
     return state
 
 
-def cherry_pick_in_progress(output: Path) -> bool:
-    return bool(git(output, "rev-parse", "--verify", "CHERRY_PICK_HEAD", check=False))
-
-
 def unmerged_paths(output: Path) -> list[str]:
     return git(output, "diff", "--name-only", "--diff-filter=U").splitlines()
-
-
-def deleted_paths(source_repo: Path, commit: str) -> set[str]:
-    output = git(
-        source_repo,
-        "diff-tree",
-        "--no-commit-id",
-        "--name-only",
-        "--diff-filter=D",
-        "-r",
-        f"{commit}^",
-        commit,
-    )
-    return set(output.splitlines())
-
-
-def resolve_expected_deletions(output: Path, source_repo: Path, commit: str) -> list[str]:
-    expected_deletions = deleted_paths(source_repo, commit)
-    unresolved: list[str] = []
-    for file_name in unmerged_paths(output):
-        if file_name in expected_deletions:
-            run(["git", "rm", "--", file_name], cwd=output, capture=True)
-        else:
-            unresolved.append(file_name)
-    return unresolved
 
 
 def run_namespace_step(output: Path, source_repo: Path) -> str:
@@ -284,40 +285,69 @@ def run_namespace_step(output: Path, source_repo: Path) -> str:
     )
     run(["git", "add", "-A"], cwd=output, capture=True)
     run(
-        ["git", "commit", "-m", "[namespace] Rename django -> djorm mechanically"],
+        ["git", "commit", "-m", "[namespace] Generate the djorm namespace"],
         cwd=output,
         capture=False,
     )
     return git(output, "rev-parse", "HEAD")
 
 
-def start_cherry_pick(output: Path, source_repo: Path, commit: str) -> list[str]:
-    result = run(["git", "cherry-pick", commit], cwd=output, check=False, capture=True)
+def patch_path(output: Path) -> Path:
+    raw_path = git(output, "rev-parse", "--git-path", PATCH_NAME)
+    path = Path(raw_path)
+    return path if path.is_absolute() else output / path
+
+
+def write_delta_patch(source_repo: Path, state: ApplyState) -> Path:
+    path = patch_path(Path(state.output))
+    result = subprocess.run(
+        [
+            "git",
+            "diff",
+            "--binary",
+            "--full-index",
+            "--no-ext-diff",
+            "--no-renames",
+            state.baseline_tree,
+            state.source_head,
+        ],
+        cwd=source_repo,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    if not result.stdout:
+        raise ApplyError("The maintained Djorm delta is empty.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(result.stdout)
+    return path
+
+
+def pending_resolution_paths(output: Path) -> list[str]:
+    paths = set(unmerged_paths(output))
+    paths.update(git(output, "diff", "--name-only").splitlines())
+    return sorted(paths)
+
+
+def apply_delta(output: Path, patch: Path) -> list[str]:
+    result = run(
+        ["git", "apply", "--3way", "--index", "--whitespace=nowarn", str(patch)],
+        cwd=output,
+        check=False,
+        capture=True,
+    )
     if result.returncode == 0:
         return []
-    if not cherry_pick_in_progress(output):
-        detail = result.stderr.strip() or result.stdout.strip() or "unknown Git error"
-        raise ApplyError(f"Could not cherry-pick {commit}: {detail}")
-    unresolved = resolve_expected_deletions(output, source_repo, commit)
+    unresolved = pending_resolution_paths(output)
     if unresolved:
         return unresolved
-    finish_cherry_pick(output)
-    return []
+    detail = result.stderr.strip() or result.stdout.strip() or "unknown Git error"
+    raise ApplyError(f"Could not apply the maintained Djorm delta: {detail}")
 
 
-def continue_current_cherry_pick(output: Path, source_repo: Path, commit: str) -> list[str]:
-    if not cherry_pick_in_progress(output):
-        return []
-    unresolved = resolve_expected_deletions(output, source_repo, commit)
+def commit_delta(output: Path) -> None:
+    unresolved = pending_resolution_paths(output)
     if unresolved:
-        return unresolved
-    if unmerged_paths(output):
-        return unmerged_paths(output)
-    finish_cherry_pick(output)
-    return []
-
-
-def finish_cherry_pick(output: Path) -> None:
+        raise ApplyError("Resolved delta paths must all be staged: " + ", ".join(unresolved))
     staged = run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=output,
@@ -325,17 +355,20 @@ def finish_cherry_pick(output: Path) -> None:
         capture=True,
     )
     if staged.returncode == 0:
-        run(["git", "cherry-pick", "--skip"], cwd=output, capture=False)
-    else:
-        run(
-            ["git", "-c", "core.editor=true", "cherry-pick", "--continue"],
-            cwd=output,
-            capture=False,
-        )
+        raise ApplyError("The maintained Djorm delta produced no staged changes.")
+    run(
+        ["git", "commit", "-m", "[fork] Apply the maintained dj-orm delta"],
+        cwd=output,
+        capture=False,
+    )
+    patch_path(output).unlink(missing_ok=True)
 
 
 def report_conflicts(output: Path, unresolved: list[str]) -> None:
-    print("Upstream changed retained Djorm code. Resolve and stage these files:", file=sys.stderr)
+    print(
+        "Upstream changed retained Djorm code. Resolve and stage these paths:",
+        file=sys.stderr,
+    )
     for file_name in unresolved:
         print(f"  {file_name}", file=sys.stderr)
     print(
@@ -366,8 +399,9 @@ def write_generated_config(output: Path, state: ApplyState) -> None:
     lts_series = ", ".join(f'"{series}"' for series in source_config["lts_series"])
     text = "\n".join(
         [
-            "schema = 1",
+            "schema = 2",
             'distribution = "dj-orm"',
+            'application = "tree-delta"',
             f'yapc_commit = "{source_config["yapc_commit"]}"',
             'upstream_remote = "upstream"',
             'upstream_url = "https://github.com/django/django.git"',
@@ -375,7 +409,6 @@ def write_generated_config(output: Path, state: ApplyState) -> None:
             f'upstream_series = "{series}"',
             f"lts_series = [{lts_series}]",
             f'upstream_base_commit = "{state.django_commit}"',
-            f'namespace_commit = "{state.generated_namespace_commit}"',
             f"release_revision = {state.revision}",
             "",
         ]
@@ -421,6 +454,7 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
         capture=False,
     )
     state_path(output).unlink(missing_ok=True)
+    patch_path(output).unlink(missing_ok=True)
     print(f"Created {state.branch} at {output}")
     print(f"Distribution version: {version}")
 
@@ -446,32 +480,35 @@ def apply_remaining(state: ApplyState, *, verify: bool) -> int:
     output = Path(state.output)
     source_repo = Path(state.source_repo)
 
-    if state.next_index < len(state.commits) and cherry_pick_in_progress(output):
-        current_commit = state.commits[state.next_index]
-        unresolved = continue_current_cherry_pick(output, source_repo, current_commit)
+    if state.phase == "namespace":
+        state.generated_namespace_commit = run_namespace_step(output, source_repo)
+        state.phase = "delta"
+        save_state(output, state)
+
+    if state.phase == "delta":
+        patch = write_delta_patch(source_repo, state)
+        unresolved = apply_delta(output, patch)
+        if unresolved:
+            state.phase = "delta-conflict"
+            save_state(output, state)
+            report_conflicts(output, unresolved)
+            return 2
+        commit_delta(output)
+        state.phase = "finalize"
+        save_state(output, state)
+
+    if state.phase == "delta-conflict":
+        unresolved = pending_resolution_paths(output)
         if unresolved:
             save_state(output, state)
             report_conflicts(output, unresolved)
             return 2
-        state.next_index += 1
+        commit_delta(output)
+        state.phase = "finalize"
         save_state(output, state)
 
-    while state.next_index < len(state.commits):
-        commit = state.commits[state.next_index]
-        if commit == state.namespace_commit:
-            state.generated_namespace_commit = run_namespace_step(output, source_repo)
-            state.next_index += 1
-            save_state(output, state)
-            continue
-
-        unresolved = start_cherry_pick(output, source_repo, commit)
-        if unresolved:
-            save_state(output, state)
-            report_conflicts(output, unresolved)
-            return 2
-        state.next_index += 1
-        save_state(output, state)
-
+    if state.phase != "finalize":
+        raise ApplyError(f"Unknown application phase: {state.phase!r}")
     finalize(output, state, verify=verify)
     return 0
 
