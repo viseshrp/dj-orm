@@ -29,7 +29,7 @@ LATEST_TAG=$(git tag -l 'v5.2*' --sort=-v:refname | head -1)
 echo "Using tag: $LATEST_TAG"
 
 # 2. Create the djorm working branch from the tag
-git checkout -b djorm/main "$LATEST_TAG"
+git checkout -b main "$LATEST_TAG"
 
 # 3. Verify baseline: run a minimal ORM test to confirm upstream works
 cd tests/
@@ -41,13 +41,13 @@ cd ..
 ### 0.3 Branch structure
 
 ```
-djorm/main              ← primary development branch (based on latest 5.2.x tag)
+main                  ← primary development branch (based on latest 5.2.x tag)
 upstream/stable/5.2.x ← read-only tracking of Django upstream
 ```
 
 ### 0.4 Done check
 
-- [x] `djorm/main` branch exists, based on latest `v5.2.*` tag.
+- [x] `main` branch exists, based on latest `v5.2.*` tag.
 - [x] `python tests/runtests.py --settings=test_sqlite basic` passes.
 - [x] `.git/config` has the upstream remote configured.
 

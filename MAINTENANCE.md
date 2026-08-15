@@ -10,10 +10,10 @@ Djorm follows supported Django LTS lines. It publishes a build for the initial
 LTS tag and for every patch or security tag in that LTS line. It does not track
 non-LTS Django feature releases.
 
-The current LTS development branch uses `djorm/<series>-lts`, for example
-`djorm/5.2-lts`. The automation creates an isolated candidate branch named
-`release/django-<tag>` in a separate worktree. A release tag is cut from that
-candidate only after the full gate passes.
+`main` is the sole long-lived development branch and carries the current LTS
+line. The automation creates an isolated candidate branch named
+`release/django-<tag>` in a separate local worktree. After the full gate passes,
+the candidate tree is merged into `main`; release tags are cut from `main`.
 
 Release tags and distribution versions have four numeric components:
 
@@ -125,11 +125,11 @@ dependency.
 
 Use the same command with the final LTS tag, for example `6.2`. The first run is
 expected to stop where Django changed retained modules. Resolve those files,
-finish the gate, and make the generated branch the new `djorm/6.2-lts`
-development line. Before any later series, add its officially announced series
-identifier to `lts_series` in `.djorm-maintenance.toml`; the tool never guesses
-future LTS numbering. Update `SPEC.md` only when the retained module contract
-or supported Python versions changed.
+finish the gate, and merge the generated candidate tree into `main`. Before any
+later series, add its officially announced series identifier to `lts_series` in
+`.djorm-maintenance.toml`; the tool never guesses future LTS numbering. Update
+`SPEC.md` only when the retained module contract or supported Python versions
+changed.
 
 ## Release gate
 
@@ -152,11 +152,11 @@ make release-check RELEASE_TAG=v5.2.17.0
 - `dj-orm` is the configured distribution;
 - the changelog has a dated entry for the release.
 
-Run `make tag` only from a clean `djorm/*-lts` or `release/django-*` branch that
-matches its configured remote. The tag workflow rebuilds and tests the exact
-tag, then creates a draft GitHub release with the wheel and source archive. The
-separate release workflow publishes those verified files to PyPI only after a
-maintainer publishes the GitHub release.
+Run `make tag` only from a clean `main` branch that matches its configured
+remote. The tag workflow rebuilds and tests the exact tag, then creates a draft
+GitHub release with the wheel and source archive. The separate release workflow
+publishes those verified files to PyPI only after a maintainer publishes the
+GitHub release.
 
 ## PyPI setup
 
@@ -169,13 +169,13 @@ Before the first release:
    needed. Normal branch pushes do not publish.
 4. Protect the `pypi` environment with a required reviewer.
 
-PyPI publication is intentionally separate from ordinary CI. A push to an LTS
-branch builds and checks artifacts but cannot publish them.
+PyPI publication is intentionally separate from ordinary CI. A push to `main`
+builds and checks artifacts but cannot publish them.
 
 ## Current branch status
 
-`djorm/5.2-lts` was originally forked from a development snapshot nine commits
-after Django `5.2.11`, where upstream had already bumped its internal version
-toward `5.2.12`. Its package version is therefore a development version and it
-must not be tagged as a production build. Generate the first candidate from the
-latest final `5.2.x` tag before publishing.
+`main` was originally forked from a development snapshot nine commits after
+Django `5.2.11`, where upstream had already bumped its internal version toward
+`5.2.12`. Its package version is therefore a development version and it must not
+be tagged as a production build. Generate the first candidate from the latest
+final `5.2.x` tag before publishing.

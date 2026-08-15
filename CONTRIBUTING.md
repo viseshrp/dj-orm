@@ -17,12 +17,12 @@ uv run pre-commit install
 
 ## Change code
 
-1. Branch from the applicable `djorm/<series>-lts` branch.
+1. Branch from `main`.
 2. Add a focused regression test to the retained Django suite or
    `tests/djorm_smoke`.
 3. Run `make check` and `make test`.
 4. Update `CHANGELOG.md` for a user-visible Djorm change.
-5. Open a pull request against the same LTS branch.
+5. Open a pull request against `main`.
 
 Do not add web-framework modules, a `django` compatibility namespace, or new
 public convenience APIs without first changing `SPEC.md`.

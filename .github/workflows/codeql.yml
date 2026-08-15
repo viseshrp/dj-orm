@@ -3,7 +3,7 @@ name: CodeQL Python
 on:
   workflow_dispatch:
   push:
-    branches: ["djorm/**", "release/**"]
+    branches: [main]
   pull_request:
   schedule:
     - cron: "0 4 * * 1"

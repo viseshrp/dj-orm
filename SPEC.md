@@ -483,9 +483,9 @@ Upstream-derived modules should **not** be edited with bespoke logic. If a modul
 ### 9.3 Branch strategy
 
 ```
-djorm/5.2-lts          ← maintained Djorm release line
-release/django-5.2.X ← generated candidate in a separate worktree
-upstream/*           ← read-only refs from django/django
+main                  ← sole maintained Djorm release line
+release/django-5.2.X  ← generated candidate in a separate local worktree
+upstream/*            ← read-only refs from django/django
 ```
 
 ### 9.4 Rebase workflow

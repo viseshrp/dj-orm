@@ -5,8 +5,7 @@ on:
   pull_request:
   push:
     branches:
-      - "djorm/**"
-      - "release/**"
+      - main
     tags:
       - "v*"
 

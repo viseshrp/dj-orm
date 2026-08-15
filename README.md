@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/viseshrp/dj-orm/actions/workflows/main.yml/badge.svg)](https://github.com/viseshrp/dj-orm/actions/workflows/main.yml)
 [![Python versions](https://img.shields.io/pypi/pyversions/dj-orm.svg?logo=python&logoColor=white)](https://pypi.org/project/dj-orm/)
-[![Coverage](https://codecov.io/gh/viseshrp/dj-orm/branch/djorm%2F5.2-lts/graph/badge.svg)](https://codecov.io/gh/viseshrp/dj-orm)
+[![Coverage](https://codecov.io/gh/viseshrp/dj-orm/branch/main/graph/badge.svg)](https://codecov.io/gh/viseshrp/dj-orm)
 [![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 
 `djorm` packages Django's ORM, migration framework, and database backends as a
@@ -83,9 +83,8 @@ make check-dist
 
 ## Maintenance and releases
 
-Each supported Django LTS line has a Djorm branch such as `djorm/5.2-lts`.
-Production builds start from an exact official Django release tag and use a
-four-part version:
+`main` carries the currently supported Django LTS line. Production builds start
+from an exact official Django release tag and use a four-part version:
 
 ```text
 Django 5.2.17 -> dj-orm 5.2.17.0
