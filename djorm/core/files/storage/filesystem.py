@@ -7,7 +7,7 @@ from djorm.conf import settings
 from djorm.core.files import File, locks
 from djorm.core.files.move import file_move_safe
 from djorm.core.signals import setting_changed
-from djorm.utils._os import safe_join
+from djorm.utils._os import safe_join, safe_makedirs
 from djorm.utils.deconstruct import deconstructible
 from djorm.utils.deprecation import RemovedInDjango60Warning
 from djorm.utils.encoding import filepath_to_uri
@@ -17,7 +17,7 @@ from .base import Storage
 from .mixins import StorageSettingsMixin
 
 
-@deconstructible(path="djorm.core.files.storage.FileSystemStorage")
+@deconstructible(path='djorm.core.files.storage.FileSystemStorage')
 class FileSystemStorage(Storage, StorageSettingsMixin):
     """
     Standard filesystem storage
@@ -41,7 +41,9 @@ class FileSystemStorage(Storage, StorageSettingsMixin):
         self._allow_overwrite = allow_overwrite
         setting_changed.connect(self._clear_cached_properties)
         # RemovedInDjango60Warning: remove this warning.
-        if self.OS_OPEN_FLAGS != os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0):
+        if self.OS_OPEN_FLAGS != os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(
+            os, "O_BINARY", 0
+        ):
             warnings.warn(
                 "Overriding OS_OPEN_FLAGS is deprecated. Use "
                 "the allow_overwrite parameter instead.",
@@ -65,7 +67,9 @@ class FileSystemStorage(Storage, StorageSettingsMixin):
 
     @cached_property
     def file_permissions_mode(self):
-        return self._value_or_setting(self._file_permissions_mode, settings.FILE_UPLOAD_PERMISSIONS)
+        return self._value_or_setting(
+            self._file_permissions_mode, settings.FILE_UPLOAD_PERMISSIONS
+        )
 
     @cached_property
     def directory_permissions_mode(self):
@@ -83,23 +87,20 @@ class FileSystemStorage(Storage, StorageSettingsMixin):
         directory = os.path.dirname(full_path)
         try:
             if self.directory_permissions_mode is not None:
-                # Set the umask because os.makedirs() doesn't apply the "mode"
+                # Workaround because os.makedirs() doesn't apply the "mode"
                 # argument to intermediate-level directories.
-                old_umask = os.umask(0o777 & ~self.directory_permissions_mode)
-                try:
-                    os.makedirs(directory, self.directory_permissions_mode, exist_ok=True)
-                finally:
-                    os.umask(old_umask)
+                # https://github.com/python/cpython/issues/86533
+                safe_makedirs(directory, self.directory_permissions_mode, exist_ok=True)
             else:
                 os.makedirs(directory, exist_ok=True)
         except FileExistsError:
             raise FileExistsError("%s exists and is not a directory." % directory)
 
-            # There's a potential race condition between get_available_name and
-            # saving the file; it's possible that two threads might return the
-            # same name, at which point all sorts of fun happens. So we need to
-            # try to create the file, but if it already exists we have to go back
-            # to get_available_name() and try again.
+        # There's a potential race condition between get_available_name and
+        # saving the file; it's possible that two threads might return the
+        # same name, at which point all sorts of fun happens. So we need to
+        # try to create the file, but if it already exists we have to go back
+        # to get_available_name() and try again.
 
         while True:
             try:
@@ -111,11 +112,16 @@ class FileSystemStorage(Storage, StorageSettingsMixin):
                         allow_overwrite=self._allow_overwrite,
                     )
 
-                    # This is a normal uploadedfile that we can stream.
+                # This is a normal uploadedfile that we can stream.
                 else:
                     # The combination of O_CREAT and O_EXCL makes os.open() raises an
                     # OSError if the file already exists before it's opened.
-                    open_flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0)
+                    open_flags = (
+                        os.O_WRONLY
+                        | os.O_CREAT
+                        | os.O_EXCL
+                        | getattr(os, "O_BINARY", 0)
+                    )
                     # RemovedInDjango60Warning: when the deprecation ends, replace with:
                     # if self._allow_overwrite:
                     #     open_flags = open_flags & ~os.O_EXCL | os.O_TRUNC
@@ -149,7 +155,7 @@ class FileSystemStorage(Storage, StorageSettingsMixin):
         if self.file_permissions_mode is not None:
             os.chmod(full_path, self.file_permissions_mode)
 
-            # Ensure the saved path is always relative to the storage root.
+        # Ensure the saved path is always relative to the storage root.
         name = os.path.relpath(full_path, self.location)
         # Ensure the moved file has the same gid as the storage root.
         self._ensure_location_group_id(full_path)

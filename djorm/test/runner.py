@@ -45,7 +45,7 @@ except ImportError:
 
 class DebugSQLTextTestResult(unittest.TextTestResult):
     def __init__(self, stream, descriptions, verbosity):
-        self.logger = logging.getLogger("djorm.db.backends")
+        self.logger = logging.getLogger('djorm.db.backends')
         self.logger.setLevel(logging.DEBUG)
         self.debug_sql_stream = None
         super().__init__(stream, descriptions, verbosity)
@@ -83,7 +83,11 @@ class DebugSQLTextTestResult(unittest.TextTestResult):
         super().addSubTest(test, subtest, err)
         if err is not None:
             self.debug_sql_stream.seek(0)
-            errors = self.failures if issubclass(err[0], test.failureException) else self.errors
+            errors = (
+                self.failures
+                if issubclass(err[0], test.failureException)
+                else self.errors
+            )
             errors[-1] = errors[-1] + (self.debug_sql_stream.read(),)
 
     def printErrorList(self, flavour, errors):
@@ -93,7 +97,9 @@ class DebugSQLTextTestResult(unittest.TextTestResult):
             self.stream.writeln(self.separator2)
             self.stream.writeln(err)
             self.stream.writeln(self.separator2)
-            self.stream.writeln(sqlparse.format(sql_debug, reindent=True, keyword_case="upper"))
+            self.stream.writeln(
+                sqlparse.format(sql_debug, reindent=True, keyword_case="upper")
+            )
 
 
 class PDBDebugResult(unittest.TextTestResult):
@@ -183,8 +189,7 @@ class RemoteTestResult(unittest.TestResult):
         pickle.loads(pickle.dumps(obj))
 
     def _print_unpicklable_subtest(self, test, subtest, pickle_exc):
-        print(
-            """
+        print("""
 Subtest failed:
 
     test: {}
@@ -197,8 +202,7 @@ test runner cannot handle it cleanly. Here is the pickling error:
 
 You should re-run this test with --parallel=1 to reproduce the failure
 with a cleaner failure message.
-""".format(test, subtest, pickle_exc)
-        )
+""".format(test, subtest, pickle_exc))
 
     def check_picklable(self, test, err):
         # Ensure that sys.exc_info() tuples are picklable. This displays a
@@ -219,8 +223,7 @@ with a cleaner failure message.
                 pickle_exc_txt, 75, initial_indent="    ", subsequent_indent="    "
             )
             if tblib is None:
-                print(
-                    """
+                print("""
 
 {} failed:
 
@@ -232,11 +235,9 @@ parallel test runner to handle this exception cleanly.
 In order to see the traceback, you should install tblib:
 
     python -m pip install tblib
-""".format(test, original_exc_txt)
-                )
+""".format(test, original_exc_txt))
             else:
-                print(
-                    """
+                print("""
 
 {} failed:
 
@@ -251,8 +252,7 @@ Here's the error encountered while trying to pickle the exception:
 
 You should re-run this test with the --parallel=1 option to reproduce the
 failure and get a correct traceback.
-""".format(test, original_exc_txt, pickle_exc_txt)
-                )
+""".format(test, original_exc_txt, pickle_exc_txt))
             raise
 
     def check_subtest_picklable(self, test, subtest):
@@ -286,7 +286,9 @@ failure and get a correct traceback.
         self.check_picklable(test, err)
 
         event_occurred_before_first_test = self.test_index == -1
-        if event_occurred_before_first_test and isinstance(test, unittest.suite._ErrorHolder):
+        if event_occurred_before_first_test and isinstance(
+            test, unittest.suite._ErrorHolder
+        ):
             self.events.append(("addError", self.test_index, test.id(), err))
         else:
             self.events.append(("addError", self.test_index, err))
@@ -389,7 +391,9 @@ def parallel_type(value):
     try:
         return int(value)
     except ValueError:
-        raise argparse.ArgumentTypeError(f"{value!r} is not an integer or the string 'auto'")
+        raise argparse.ArgumentTypeError(
+            f"{value!r} is not an integer or the string 'auto'"
+        )
 
 
 _worker_id = 0
@@ -479,7 +483,9 @@ class ParallelTestSuite(unittest.TestSuite):
     run_subsuite = _run_subsuite
     runner_class = RemoteTestRunner
 
-    def __init__(self, subsuites, processes, failfast=False, debug_mode=False, buffer=False):
+    def __init__(
+        self, subsuites, processes, failfast=False, debug_mode=False, buffer=False
+    ):
         self.subsuites = subsuites
         self.processes = processes
         self.failfast = failfast
@@ -554,7 +560,11 @@ class ParallelTestSuite(unittest.TestSuite):
             return
         test_index = event[1]
         event_occurred_before_first_test = test_index == -1
-        if event_name == "addError" and event_occurred_before_first_test and len(event) >= 4:
+        if (
+            event_name == "addError"
+            and event_occurred_before_first_test
+            and len(event) >= 4
+        ):
             test_id = event[2]
             test = unittest.suite._ErrorHolder(test_id)
             args = event[3:]
@@ -700,7 +710,8 @@ class DiscoverRunner:
             # unittest does not export the _convert_select_pattern function
             # that converts command-line arguments to patterns.
             self.test_name_patterns = {
-                pattern if "*" in pattern else "*%s*" % pattern for pattern in test_name_patterns
+                pattern if "*" in pattern else "*%s*" % pattern
+                for pattern in test_name_patterns
             }
         self.shuffle = shuffle
         self._shuffler = None
@@ -875,7 +886,7 @@ class DiscoverRunner:
                 tests = self.test_loader.loadTestsFromName(label)
             if tests.countTestCases():
                 return tests
-                # Try discovery if "label" is a package or directory.
+        # Try discovery if "label" is a package or directory.
         is_importable, is_package = try_importing(label)
         if is_importable:
             if not is_package:
@@ -897,8 +908,8 @@ class DiscoverRunner:
         with self.load_with_patterns():
             tests = self.test_loader.discover(start_dir=label, **kwargs)
 
-            # Make unittest forget the top-level dir it calculated from this run,
-            # to support running tests from two different top-levels.
+        # Make unittest forget the top-level dir it calculated from this run,
+        # to support running tests from two different top-levels.
         self.test_loader._top_level_dir = None
         return tests
 
@@ -930,9 +941,9 @@ class DiscoverRunner:
                 )
             all_tests = filter_tests_by_tags(all_tests, self.tags, self.exclude_tags)
 
-            # Put the failures detected at load time first for quicker feedback.
-            # _FailedTest objects include things like test modules that couldn't be
-            # found or that couldn't be loaded due to syntax errors.
+        # Put the failures detected at load time first for quicker feedback.
+        # _FailedTest objects include things like test modules that couldn't be
+        # found or that couldn't be loaded due to syntax errors.
         test_types = (unittest.loader._FailedTest, *self.reorder_by)
         all_tests = list(
             reorder_tests(
@@ -1028,7 +1039,9 @@ class DiscoverRunner:
         teardown_test_environment()
 
     def suite_result(self, suite, result, **kwargs):
-        return len(result.failures) + len(result.errors) + len(result.unexpectedSuccesses)
+        return (
+            len(result.failures) + len(result.errors) + len(result.unexpectedSuccesses)
+        )
 
     def _get_databases(self, suite):
         databases = {}
@@ -1049,7 +1062,8 @@ class DiscoverRunner:
         unused_databases = [alias for alias in connections if alias not in databases]
         if unused_databases:
             self.log(
-                "Skipping setup of unused database(s): %s." % ", ".join(sorted(unused_databases)),
+                "Skipping setup of unused database(s): %s."
+                % ", ".join(sorted(unused_databases)),
                 level=logging.DEBUG,
             )
         return databases
@@ -1066,7 +1080,9 @@ class DiscoverRunner:
         self.setup_test_environment()
         suite = self.build_suite(test_labels)
         databases = self.get_databases(suite)
-        suite.serialized_aliases = set(alias for alias, serialize in databases.items() if serialize)
+        suite.serialized_aliases = set(
+            alias for alias, serialize in databases.items() if serialize
+        )
         suite.used_aliases = set(databases)
         with self.time_keeper.timed("Total database setup"):
             old_config = self.setup_databases(
@@ -1165,13 +1181,13 @@ def reorder_test_bin(tests, shuffler=None, reverse=False):
     if shuffler is None:
         if reverse:
             return reversed(tests)
-            # The function must return an iterator.
+        # The function must return an iterator.
         return iter(tests)
 
     tests = shuffle_tests(tests, shuffler)
     if not reverse:
         return tests
-        # Arguments to reversed() must be reversible.
+    # Arguments to reversed() must be reversible.
     return reversed(list(tests))
 
 

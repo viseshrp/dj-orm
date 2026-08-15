@@ -32,16 +32,14 @@ assert DEST_FOLDER and os.path.exists(
 checksum_file_text = """This file contains MD5, SHA1, and SHA256 checksums for the
 source-code tarball and wheel files of Django {django_version}, released {release_date}.
 
+It also includes the commit hash of the release tag, identifying the exact
+source revision the artifacts were built from.
+
 To use this file, you will need a working install of PGP or other
 compatible public-key encryption software. You will also need to have
 the Django release manager's public key in your keyring. This key has
-the ID ``{pgp_key_id}`` and can be imported from the MIT
-keyserver, for example, if using the open-source GNU Privacy Guard
-implementation of PGP:
-
-    gpg --keyserver pgp.mit.edu --recv-key {pgp_key_id}
-
-or via the GitHub API:
+the ID ``{pgp_key_id}`` and can be imported from GitHub, for example, if
+using the open-source GNU Privacy Guard implementation of PGP:
 
     curl {pgp_key_url} | gpg --import -
 
@@ -77,6 +75,10 @@ SHA256 checksums
 {sha256_tarball}  {tarball_name}
 {sha256_wheel}  {wheel_name}
 
+Git tag
+=======
+
+The {django_version} tag points to commit {commit_hash}.
 """
 
 
@@ -93,6 +95,8 @@ def do_checksum(checksum_algo, release_file):
 
 # Ensure the working directory is clean.
 subprocess.call(["git", "clean", "-fdx"])
+
+commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
 
 django_repo_path = os.path.abspath(os.path.curdir)
 dist_path = os.path.join(django_repo_path, "dist")
@@ -132,6 +136,7 @@ checksum_file_kwargs = dict(
     checksum_file_name=checksum_file_name,
     wheel_name=wheel_name,
     tarball_name=tarball_name,
+    commit_hash=commit_hash,
 )
 checksums = (
     ("md5", hashlib.md5),
@@ -206,12 +211,9 @@ print(
     f"* Signed checksum {checksum_file_path}.asc"
 )
 
-# Test the new version and confirm the signature using Jenkins.
-print("\n==> ACTION Test the release artifacts:")
-print(f"VERSION={django_version} test_new_version.sh")
-
-print("\n==> ACTION Run confirm-release job:")
-print(f"VERSION={django_version} confirm_release.sh")
+# Verify the release artifacts (GPG signature, checksums, and smoke test).
+print("\n==> ACTION Verify the release artifacts:")
+print(f"VERSION={django_version} verify_release.sh")
 
 # Upload to PyPI.
 print("\n==> ACTION Upload to PyPI, ensure your release venv is activated:")

@@ -42,7 +42,8 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         field_type = super().get_field_type(data_type, description)
         if description.is_autofield or (
             # Required for pre-Django 4.1 serial columns.
-            description.default and "nextval" in description.default
+            description.default
+            and "nextval" in description.default
         ):
             if field_type == "IntegerField":
                 return "AutoField"
@@ -54,8 +55,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
 
     def get_table_list(self, cursor):
         """Return a list of table and view names in the current database."""
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT
                 c.relname,
                 CASE
@@ -69,9 +69,12 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
                 AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
                 AND pg_catalog.pg_table_is_visible(c.oid)
-        """
-        )
-        return [TableInfo(*row) for row in cursor.fetchall() if row[0] not in self.ignored_tables]
+        """)
+        return [
+            TableInfo(*row)
+            for row in cursor.fetchall()
+            if row[0] not in self.ignored_tables
+        ]
 
     def get_table_description(self, cursor, table_name):
         """
@@ -104,7 +107,9 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             [table_name],
         )
         field_map = {line[0]: line[1:] for line in cursor.fetchall()}
-        cursor.execute("SELECT * FROM %s LIMIT 1" % self.connection.ops.quote_name(table_name))
+        cursor.execute(
+            "SELECT * FROM %s LIMIT 1" % self.connection.ops.quote_name(table_name)
+        )
         return [
             FieldInfo(
                 line.name,
@@ -141,7 +146,8 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             [table_name],
         )
         return [
-            {"name": row[0], "table": table_name, "column": row[1]} for row in cursor.fetchall()
+            {"name": row[0], "table": table_name, "column": row[1]}
+            for row in cursor.fetchall()
         ]
 
     def get_relations(self, cursor, table_name):
@@ -213,7 +219,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 "definition": None,
                 "options": options,
             }
-            # Now get indexes
+        # Now get indexes
         cursor.execute(
             """
             SELECT

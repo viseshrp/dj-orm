@@ -9,10 +9,10 @@ by the DJANGO_SETTINGS_MODULE environment variable.
 def gettext_noop(s):
     return s
 
-    ####################
-    # CORE             #
-    ####################
 
+####################
+# CORE             #
+####################
 
 DEBUG = False
 
@@ -190,7 +190,7 @@ DATABASE_ROUTERS = []
 # The default is to use the SMTP backend.
 # Third-party backends can be specified by providing a Python path
 # to a module that defines an EmailBackend class.
-EMAIL_BACKEND = "djorm.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = 'djorm.core.mail.backends.smtp.EmailBackend'
 
 # Host for sending email.
 EMAIL_HOST = "localhost"
@@ -216,7 +216,7 @@ INSTALLED_APPS = []
 TEMPLATES = []
 
 # Default form rendering class.
-FORM_RENDERER = "djorm.forms.renderers.DjangoTemplates"
+FORM_RENDERER = 'djorm.forms.renderers.DjangoTemplates'
 
 # RemovedInDjango60Warning: It's a transitional setting helpful in early
 # adoption of "https" as the new default value of forms.URLField.assume_scheme.
@@ -277,10 +277,10 @@ SECRET_KEY_FALLBACKS = []
 
 STORAGES = {
     "default": {
-        "BACKEND": "djorm.core.files.storage.FileSystemStorage",
+        "BACKEND": 'djorm.core.files.storage.FileSystemStorage',
     },
     "staticfiles": {
-        "BACKEND": "djorm.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": 'djorm.contrib.staticfiles.storage.StaticFilesStorage',
     },
 }
 
@@ -302,8 +302,8 @@ STATIC_URL = None
 
 # List of upload handler classes to be applied in order.
 FILE_UPLOAD_HANDLERS = [
-    "djorm.core.files.uploadhandler.MemoryFileUploadHandler",
-    "djorm.core.files.uploadhandler.TemporaryFileUploadHandler",
+    'djorm.core.files.uploadhandler.MemoryFileUploadHandler',
+    'djorm.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
 # Maximum size, in bytes, of a request before it will be streamed to the
@@ -441,7 +441,7 @@ DEFAULT_TABLESPACE = ""
 DEFAULT_INDEX_TABLESPACE = ""
 
 # Default primary key field type.
-DEFAULT_AUTO_FIELD = "djorm.db.models.AutoField"
+DEFAULT_AUTO_FIELD = 'djorm.db.models.AutoField'
 
 # Default X-Frame-Options header value
 X_FRAME_OPTIONS = "DENY"
@@ -500,12 +500,12 @@ SESSION_SAVE_EVERY_REQUEST = False
 # Whether a user's session cookie expires when the web browser is closed.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # The module to store session data
-SESSION_ENGINE = "djorm.contrib.sessions.backends.db"
+SESSION_ENGINE = 'djorm.contrib.sessions.backends.db'
 # Directory to store session files if using the file session module. If None,
 # the backend will use a sensible default.
 SESSION_FILE_PATH = None
 # class to serialize session data
-SESSION_SERIALIZER = "djorm.contrib.sessions.serializers.JSONSerializer"
+SESSION_SERIALIZER = 'djorm.contrib.sessions.serializers.JSONSerializer'
 
 #########
 # CACHE #
@@ -514,7 +514,7 @@ SESSION_SERIALIZER = "djorm.contrib.sessions.serializers.JSONSerializer"
 # The cache backends to use.
 CACHES = {
     "default": {
-        "BACKEND": "djorm.core.cache.backends.locmem.LocMemCache",
+        "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
     }
 }
 CACHE_MIDDLEWARE_KEY_PREFIX = ""
@@ -527,7 +527,7 @@ CACHE_MIDDLEWARE_ALIAS = "default"
 
 AUTH_USER_MODEL = "auth.User"
 
-AUTHENTICATION_BACKENDS = ["djorm.contrib.auth.backends.ModelBackend"]
+AUTHENTICATION_BACKENDS = ['djorm.contrib.auth.backends.ModelBackend']
 
 LOGIN_URL = "/accounts/login/"
 
@@ -542,11 +542,11 @@ PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3
 # password using different algorithms will be converted automatically
 # upon login
 PASSWORD_HASHERS = [
-    "djorm.contrib.auth.hashers.PBKDF2PasswordHasher",
-    "djorm.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
-    "djorm.contrib.auth.hashers.Argon2PasswordHasher",
-    "djorm.contrib.auth.hashers.BCryptSHA256PasswordHasher",
-    "djorm.contrib.auth.hashers.ScryptPasswordHasher",
+    'djorm.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'djorm.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'djorm.contrib.auth.hashers.Argon2PasswordHasher',
+    'djorm.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'djorm.contrib.auth.hashers.ScryptPasswordHasher',
 ]
 
 AUTH_PASSWORD_VALIDATORS = []
@@ -555,7 +555,8 @@ AUTH_PASSWORD_VALIDATORS = []
 # SIGNING #
 ###########
 
-SIGNING_BACKEND = "djorm.core.signing.TimestampSigner"
+SIGNED_COOKIE_LEGACY_SALT_FALLBACK = True
+SIGNING_BACKEND = 'djorm.core.signing.TimestampSigner'
 
 ########
 # CSRF #
@@ -563,7 +564,7 @@ SIGNING_BACKEND = "djorm.core.signing.TimestampSigner"
 
 # Dotted path to callable to be used as view when a request is
 # rejected by the CSRF middleware.
-CSRF_FAILURE_VIEW = "djorm.views.csrf.csrf_failure"
+CSRF_FAILURE_VIEW = 'djorm.views.csrf.csrf_failure'
 
 # Settings for CSRF cookie.
 CSRF_COOKIE_NAME = "csrftoken"
@@ -582,7 +583,7 @@ CSRF_USE_SESSIONS = False
 ############
 
 # Class to use as messages backend
-MESSAGE_STORAGE = "djorm.contrib.messages.storage.fallback.FallbackStorage"
+MESSAGE_STORAGE = 'djorm.contrib.messages.storage.fallback.FallbackStorage'
 
 # Default values of MESSAGE_LEVEL and MESSAGE_TAGS are defined within
 # django.contrib.messages to avoid imports in this settings file.
@@ -599,18 +600,18 @@ LOGGING = {}
 
 # Default exception reporter class used in case none has been
 # specifically assigned to the HttpRequest instance.
-DEFAULT_EXCEPTION_REPORTER = "djorm.views.debug.ExceptionReporter"
+DEFAULT_EXCEPTION_REPORTER = 'djorm.views.debug.ExceptionReporter'
 
 # Default exception reporter filter class used in case none has been
 # specifically assigned to the HttpRequest instance.
-DEFAULT_EXCEPTION_REPORTER_FILTER = "djorm.views.debug.SafeExceptionReporterFilter"
+DEFAULT_EXCEPTION_REPORTER_FILTER = 'djorm.views.debug.SafeExceptionReporterFilter'
 
 ###########
 # TESTING #
 ###########
 
 # The name of the class to use to run the test suite
-TEST_RUNNER = "djorm.test.runner.DiscoverRunner"
+TEST_RUNNER = 'djorm.test.runner.DiscoverRunner'
 
 # Apps that don't need to be serialized at test database creation time
 # (only apps with migrations are to start with)
@@ -633,8 +634,8 @@ STATICFILES_DIRS = []
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = [
-    "djorm.contrib.staticfiles.finders.FileSystemFinder",
-    "djorm.contrib.staticfiles.finders.AppDirectoriesFinder",
+    'djorm.contrib.staticfiles.finders.FileSystemFinder',
+    'djorm.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 ]
 

@@ -5,6 +5,8 @@ upstream release notes for the exact tag named by each Djorm release.
 
 ## Unreleased
 
+## [5.2.17.0] - 2026-08-15
+
 ### Added
 
 - A `dj-orm` distribution with wheel and source-archive builds.

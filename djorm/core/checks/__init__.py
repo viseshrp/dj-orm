@@ -27,7 +27,6 @@ _maybe_import("djorm.core.checks.commands")
 _maybe_import("djorm.core.checks.database")
 _maybe_import("djorm.core.checks.model_checks")
 
-
 __all__ = [
     "CheckMessage",
     "Debug",

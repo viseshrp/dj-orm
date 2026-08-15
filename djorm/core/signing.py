@@ -96,7 +96,9 @@ def b64_decode(s):
 
 
 def base64_hmac(salt, value, key, algorithm="sha1"):
-    return b64_encode(salted_hmac(salt, value, key, algorithm=algorithm).digest()).decode()
+    return b64_encode(
+        salted_hmac(salt, value, key, algorithm=algorithm).digest()
+    ).decode()
 
 
 def _cookie_signer_key(key):
@@ -104,7 +106,31 @@ def _cookie_signer_key(key):
     return b"django.http.cookies" + force_bytes(key)
 
 
-def get_cookie_signer(salt="djorm.core.signing.get_cookie_signer"):
+def _cookie_signer_salt(cookie_name, salt=""):
+    # Prefix the salt length so (cookie_name, salt) pairs can't collide.
+    return f"django.http.cookies.v2:{len(salt)}:{salt}{cookie_name}"
+
+
+def _cookie_signer_legacy_salt(cookie_name, salt=""):
+    return cookie_name + salt
+
+
+def _unsign_cookie(signed_value, *, cookie_name, salt="", max_age=None):
+    try:
+        return get_cookie_signer(salt=_cookie_signer_salt(cookie_name, salt)).unsign(
+            signed_value, max_age=max_age
+        )
+    except BadSignature as exc:
+        if settings.SIGNED_COOKIE_LEGACY_SALT_FALLBACK and not isinstance(
+            exc, SignatureExpired
+        ):
+            return get_cookie_signer(
+                salt=_cookie_signer_legacy_salt(cookie_name, salt)
+            ).unsign(signed_value, max_age=max_age)
+        raise
+
+
+def get_cookie_signer(salt='djorm.core.signing.get_cookie_signer'):
     Signer = import_string(settings.SIGNING_BACKEND)
     return Signer(
         key=_cookie_signer_key(settings.SECRET_KEY),
@@ -126,7 +152,9 @@ class JSONSerializer:
         return json.loads(data.decode("latin-1"))
 
 
-def dumps(obj, key=None, salt="djorm.core.signing", serializer=JSONSerializer, compress=False):
+def dumps(
+    obj, key=None, salt='djorm.core.signing', serializer=JSONSerializer, compress=False
+):
     """
     Return URL-safe, hmac signed base64 compressed JSON string. If key is
     None, use settings.SECRET_KEY instead. The hmac algorithm is the default
@@ -151,7 +179,7 @@ def dumps(obj, key=None, salt="djorm.core.signing", serializer=JSONSerializer, c
 def loads(
     s,
     key=None,
-    salt="djorm.core.signing",
+    salt='djorm.core.signing',
     serializer=JSONSerializer,
     max_age=None,
     fallback_keys=None,
@@ -161,7 +189,9 @@ def loads(
 
     The serializer is expected to accept a bytestring.
     """
-    return TimestampSigner(key=key, salt=salt, fallback_keys=fallback_keys).unsign_object(
+    return TimestampSigner(
+        key=key, salt=salt, fallback_keys=fallback_keys
+    ).unsign_object(
         s,
         serializer=serializer,
         max_age=max_age,
@@ -169,10 +199,14 @@ def loads(
 
 
 class Signer:
-    def __init__(self, *, key=None, sep=":", salt=None, algorithm=None, fallback_keys=None):
+    def __init__(
+        self, *, key=None, sep=":", salt=None, algorithm=None, fallback_keys=None
+    ):
         self.key = key or settings.SECRET_KEY
         self.fallback_keys = (
-            fallback_keys if fallback_keys is not None else settings.SECRET_KEY_FALLBACKS
+            fallback_keys
+            if fallback_keys is not None
+            else settings.SECRET_KEY_FALLBACKS
         )
         self.sep = sep
         self.salt = salt or "%s.%s" % (
@@ -182,7 +216,8 @@ class Signer:
         self.algorithm = algorithm or "sha256"
         if _SEP_UNSAFE.match(self.sep):
             raise ValueError(
-                "Unsafe Signer separator: %r (cannot be empty or consist of only A-z0-9-_=)" % sep,
+                "Unsafe Signer separator: %r (cannot be empty or consist of "
+                "only A-z0-9-_=)" % sep,
             )
 
     def signature(self, value, key=None):
@@ -259,7 +294,7 @@ class TimestampSigner(Signer):
         if max_age is not None:
             if isinstance(max_age, datetime.timedelta):
                 max_age = max_age.total_seconds()
-                # Check timestamp is not older than max_age
+            # Check timestamp is not older than max_age
             age = time.time() - timestamp
             if age > max_age:
                 raise SignatureExpired("Signature age %s > %s seconds" % (age, max_age))
