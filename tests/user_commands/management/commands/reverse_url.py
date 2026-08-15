@@ -1,5 +1,5 @@
-from django.core.management.base import BaseCommand
-from django.urls import reverse
+from djorm.core.management.base import BaseCommand
+from djorm.urls import reverse
 
 
 class Command(BaseCommand):

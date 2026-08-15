@@ -2,8 +2,8 @@ import datetime
 from collections import Counter
 from unittest import mock
 
-from django.core.exceptions import ValidationError
-from django.forms import (
+from djorm.core.exceptions import ValidationError
+from djorm.forms import (
     BaseForm,
     CharField,
     DateField,
@@ -13,7 +13,7 @@ from django.forms import (
     SplitDateTimeField,
     formsets,
 )
-from django.forms.formsets import (
+from djorm.forms.formsets import (
     INITIAL_FORM_COUNT,
     MAX_NUM_FORM_COUNT,
     MIN_NUM_FORM_COUNT,
@@ -23,14 +23,14 @@ from django.forms.formsets import (
     all_valid,
     formset_factory,
 )
-from django.forms.renderers import (
+from djorm.forms.renderers import (
     DjangoTemplates,
     TemplatesSetting,
     get_default_renderer,
 )
-from django.forms.utils import ErrorList
-from django.forms.widgets import HiddenInput
-from django.test import SimpleTestCase
+from djorm.forms.utils import ErrorList
+from djorm.forms.widgets import HiddenInput
+from djorm.test import SimpleTestCase
 
 from . import jinja2_tests
 
@@ -225,9 +225,9 @@ class FormsFormsetTestCase(SimpleTestCase):
 
         with (
             mock.patch(
-                "django.forms.formsets.ManagementForm.is_valid", mocked_is_valid
+                'djorm.forms.formsets.ManagementForm.is_valid', mocked_is_valid
             ),
-            mock.patch("django.forms.forms.BaseForm.full_clean", mocked_full_clean),
+            mock.patch('djorm.forms.forms.BaseForm.full_clean', mocked_full_clean),
         ):
             self.assertTrue(formset.is_valid())
         self.assertEqual(is_valid_counter.call_count, 1)
@@ -1546,7 +1546,7 @@ class FormsFormsetTestCase(SimpleTestCase):
         A custom renderer passed to a formset_factory() is passed to all forms
         and ErrorList.
         """
-        from django.forms.renderers import Jinja2
+        from djorm.forms.renderers import Jinja2
 
         renderer = Jinja2()
         data = {

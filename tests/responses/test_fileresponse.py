@@ -5,9 +5,9 @@ import sys
 import tempfile
 from unittest import skipIf
 
-from django.core.files.base import ContentFile
-from django.http import FileResponse
-from django.test import SimpleTestCase
+from djorm.core.files.base import ContentFile
+from djorm.http import FileResponse
+from djorm.test import SimpleTestCase
 
 
 class UnseekableBytesIO(io.BytesIO):

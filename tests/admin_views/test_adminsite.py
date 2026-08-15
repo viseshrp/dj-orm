@@ -1,9 +1,9 @@
-from django.contrib import admin
-from django.contrib.admin.actions import delete_selected
-from django.contrib.auth.models import User
-from django.test import SimpleTestCase, TestCase, override_settings
-from django.test.client import RequestFactory
-from django.urls import path, reverse
+from djorm.contrib import admin
+from djorm.contrib.admin.actions import delete_selected
+from djorm.contrib.auth.models import User
+from djorm.test import SimpleTestCase, TestCase, override_settings
+from djorm.test.client import RequestFactory
+from djorm.urls import path, reverse
 
 from .models import Article
 

@@ -1,8 +1,8 @@
 import datetime
 
-from django.core.exceptions import ValidationError
-from django.forms import TimeField
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ValidationError
+from djorm.forms import TimeField
+from djorm.test import SimpleTestCase
 
 from . import FormFieldAssertionsMixin
 

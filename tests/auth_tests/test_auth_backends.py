@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from asgiref.sync import sync_to_async
 
-from django.contrib.auth import (
+from djorm.contrib.auth import (
     BACKEND_SESSION_KEY,
     SESSION_KEY,
     _clean_credentials,
@@ -16,14 +16,14 @@ from django.contrib.auth import (
     get_user,
     signals,
 )
-from django.contrib.auth.backends import BaseBackend, ModelBackend
-from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
-from django.contrib.auth.hashers import MD5PasswordHasher
-from django.contrib.auth.models import AnonymousUser, Group, Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.http import HttpRequest
-from django.test import (
+from djorm.contrib.auth.backends import BaseBackend, ModelBackend
+from djorm.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
+from djorm.contrib.auth.hashers import MD5PasswordHasher
+from djorm.contrib.auth.models import AnonymousUser, Group, Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.exceptions import ImproperlyConfigured, PermissionDenied
+from djorm.http import HttpRequest
+from djorm.test import (
     Client,
     RequestFactory,
     SimpleTestCase,
@@ -31,10 +31,10 @@ from django.test import (
     modify_settings,
     override_settings,
 )
-from django.urls import reverse
-from django.utils.version import PY314
-from django.views.debug import ExceptionReporter, technical_500_response
-from django.views.decorators.debug import sensitive_variables
+from djorm.urls import reverse
+from djorm.utils.version import PY314
+from djorm.views.debug import ExceptionReporter, technical_500_response
+from djorm.views.decorators.debug import sensitive_variables
 
 from .models import (
     CustomPermissionsUser,
@@ -138,7 +138,7 @@ class BaseModelBackendTest:
     construct two users for test purposes.
     """
 
-    backend = "django.contrib.auth.backends.ModelBackend"
+    backend = 'djorm.contrib.auth.backends.ModelBackend'
 
     @classmethod
     def setUpClass(cls):
@@ -1036,7 +1036,7 @@ class ChangedBackendSettingsTest(TestCase):
         request.session = self.client.session
         # Remove NewModelBackend
         with self.settings(
-            AUTHENTICATION_BACKENDS=["django.contrib.auth.backends.ModelBackend"]
+            AUTHENTICATION_BACKENDS=['djorm.contrib.auth.backends.ModelBackend']
         ):
             # Get the user from the request
             user = get_user(request)
@@ -1158,7 +1158,7 @@ class AuthenticateTests(TestCase):
         )
 
     @override_settings(
-        ROOT_URLCONF="django.contrib.auth.urls",
+        ROOT_URLCONF='djorm.contrib.auth.urls',
         AUTHENTICATION_BACKENDS=["auth_tests.test_auth_backends.TypeErrorBackend"],
     )
     def test_login_process_sensitive_variables(self):
@@ -1171,7 +1171,7 @@ class AuthenticateTests(TestCase):
             exc_info = sys.exc_info()
 
         rf = RequestFactory()
-        with patch("django.views.debug.ExceptionReporter", FilteredExceptionReporter):
+        with patch('djorm.views.debug.ExceptionReporter', FilteredExceptionReporter):
             response = technical_500_response(rf.get("/"), *exc_info)
 
         self.assertNotContains(response, self.sensitive_password, status_code=500)
@@ -1267,7 +1267,7 @@ class AuthenticateTests(TestCase):
     @override_settings(
         AUTHENTICATION_BACKENDS=(
             "auth_tests.test_auth_backends.SkippedBackend",
-            "django.contrib.auth.backends.ModelBackend",
+            'djorm.contrib.auth.backends.ModelBackend',
         )
     )
     def test_skips_backends_without_arguments(self):
@@ -1280,7 +1280,7 @@ class AuthenticateTests(TestCase):
     @override_settings(
         AUTHENTICATION_BACKENDS=(
             "auth_tests.test_auth_backends.SkippedBackendWithDecoratedMethod",
-            "django.contrib.auth.backends.ModelBackend",
+            'djorm.contrib.auth.backends.ModelBackend',
         )
     )
     def test_skips_backends_with_decorated_method(self):
@@ -1305,7 +1305,7 @@ class AuthenticateTests(TestCase):
                 return self.invariant_user
 
         with unittest.mock.patch(
-            "django.contrib.auth.import_string", return_value=AnnotatedBackend
+            'djorm.contrib.auth.import_string', return_value=AnnotatedBackend
         ):
             self.assertEqual(authenticate(username="test", password="test"), self.user1)
 
@@ -1400,7 +1400,7 @@ class SelectingBackendTests(TestCase):
         user = User.objects.create_user(self.username, "email", self.password)
         expected_message = (
             "backend must be a dotted import path string (got "
-            "<class 'django.contrib.auth.backends.ModelBackend'>)."
+            "<class 'djorm.contrib.auth.backends.ModelBackend'>)."
         )
         with self.assertRaisesMessage(TypeError, expected_message):
             self.client._login(user, backend=ModelBackend)
@@ -1413,7 +1413,7 @@ class SelectingBackendTests(TestCase):
 
 
 @override_settings(
-    AUTHENTICATION_BACKENDS=["django.contrib.auth.backends.AllowAllUsersModelBackend"]
+    AUTHENTICATION_BACKENDS=['djorm.contrib.auth.backends.AllowAllUsersModelBackend']
 )
 class AllowAllUsersModelBackendTest(TestCase):
     """

@@ -1,6 +1,6 @@
 # Fake views for testing url reverse lookup
-from django.http import HttpResponse
-from django.template.response import TemplateResponse
+from djorm.http import HttpResponse
+from djorm.template.response import TemplateResponse
 
 
 def index(request):

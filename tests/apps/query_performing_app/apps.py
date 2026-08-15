@@ -1,5 +1,5 @@
-from django.apps import AppConfig
-from django.db import connections
+from djorm.apps import AppConfig
+from djorm.db import connections
 
 
 class BaseAppConfig(AppConfig):

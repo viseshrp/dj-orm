@@ -6,17 +6,17 @@ from datetime import date
 from io import StringIO
 from unittest import mock
 
-from django.apps import apps
-from django.contrib.auth import get_permission_codename, management
-from django.contrib.auth.management import create_permissions, get_default_username
-from django.contrib.auth.management.commands import changepassword, createsuperuser
-from django.contrib.auth.models import Group, Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.core.management import call_command
-from django.core.management.base import CommandError
-from django.db import migrations
-from django.test import TestCase, override_settings
-from django.utils.translation import gettext_lazy as _
+from djorm.apps import apps
+from djorm.contrib.auth import get_permission_codename, management
+from djorm.contrib.auth.management import create_permissions, get_default_username
+from djorm.contrib.auth.management.commands import changepassword, createsuperuser
+from djorm.contrib.auth.models import Group, Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.management import call_command
+from djorm.core.management.base import CommandError
+from djorm.db import migrations
+from djorm.test import TestCase, override_settings
+from djorm.utils.translation import gettext_lazy as _
 
 from .models import (
     CustomUser,
@@ -160,7 +160,7 @@ class GetDefaultUsernameTestCase(TestCase):
 
 @override_settings(
     AUTH_PASSWORD_VALIDATORS=[
-        {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+        {"NAME": 'djorm.contrib.auth.password_validation.NumericPasswordValidator'},
     ]
 )
 class ChangepasswordManagementCommandTestCase(TestCase):
@@ -285,7 +285,7 @@ class MultiDBChangepasswordManagementCommandTestCase(TestCase):
 @override_settings(
     SILENCED_SYSTEM_CHECKS=["fields.W342"],  # ForeignKey(unique=True)
     AUTH_PASSWORD_VALIDATORS=[
-        {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"}
+        {"NAME": 'djorm.contrib.auth.password_validation.NumericPasswordValidator'}
     ],
 )
 class CreatesuperuserManagementCommandTestCase(TestCase):
@@ -807,7 +807,7 @@ class CreatesuperuserManagementCommandTestCase(TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
@@ -855,7 +855,7 @@ class CreatesuperuserManagementCommandTestCase(TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
@@ -905,7 +905,7 @@ class CreatesuperuserManagementCommandTestCase(TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },

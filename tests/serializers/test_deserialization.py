@@ -2,14 +2,14 @@ import json
 import time
 import unittest
 
-from django.core.serializers.base import DeserializationError, DeserializedObject
-from django.core.serializers.json import Deserializer as JsonDeserializer
-from django.core.serializers.jsonl import Deserializer as JsonlDeserializer
-from django.core.serializers.python import Deserializer
-from django.core.serializers.xml_serializer import Deserializer as XMLDeserializer
-from django.db import models
-from django.test import SimpleTestCase
-from django.test.utils import garbage_collect
+from djorm.core.serializers.base import DeserializationError, DeserializedObject
+from djorm.core.serializers.json import Deserializer as JsonDeserializer
+from djorm.core.serializers.jsonl import Deserializer as JsonlDeserializer
+from djorm.core.serializers.python import Deserializer
+from djorm.core.serializers.xml_serializer import Deserializer as XMLDeserializer
+from djorm.db import models
+from djorm.test import SimpleTestCase
+from djorm.test.utils import garbage_collect
 
 from .models import Author
 
@@ -107,7 +107,7 @@ class TestDeserializer(SimpleTestCase):
 
     @unittest.skipUnless(HAS_YAML, "No yaml library detected")
     def test_yaml_bytes_input(self):
-        from django.core.serializers.pyyaml import Deserializer as YamlDeserializer
+        from djorm.core.serializers.pyyaml import Deserializer as YamlDeserializer
 
         test_string = """- pk: 1
   model: serializers.author

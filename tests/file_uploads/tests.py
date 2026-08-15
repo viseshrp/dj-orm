@@ -9,19 +9,19 @@ from io import BytesIO, StringIO
 from unittest import mock
 from urllib.parse import quote
 
-from django.conf import DEFAULT_STORAGE_ALIAS
-from django.core.exceptions import SuspiciousFileOperation
-from django.core.files import temp as tempfile
-from django.core.files.storage import default_storage
-from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
-from django.http.multipartparser import (
+from djorm.conf import DEFAULT_STORAGE_ALIAS
+from djorm.core.exceptions import SuspiciousFileOperation
+from djorm.core.files import temp as tempfile
+from djorm.core.files.storage import default_storage
+from djorm.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
+from djorm.http.multipartparser import (
     FILE,
     MAX_TOTAL_HEADER_SIZE,
     MultiPartParser,
     MultiPartParserError,
     Parser,
 )
-from django.test import SimpleTestCase, TestCase, client, override_settings
+from djorm.test import SimpleTestCase, TestCase, client, override_settings
 
 from . import uploadhandler
 from .models import FileModel
@@ -596,7 +596,7 @@ class FileUploadTests(TestCase):
             temp_file.write(b"a")
             temp_file.seek(0)
             with mock.patch(
-                "django.http.multipartparser.Parser",
+                'djorm.http.multipartparser.Parser',
                 MockedParser,
             ):
                 response = self.client.post(
@@ -863,7 +863,7 @@ class DirectoryCreationTests(SimpleTestCase):
     @override_settings(
         STORAGES={
             DEFAULT_STORAGE_ALIAS: {
-                "BACKEND": "django.core.files.storage.FileSystemStorage",
+                "BACKEND": 'djorm.core.files.storage.FileSystemStorage',
             }
         }
     )

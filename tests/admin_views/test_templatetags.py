@@ -1,17 +1,17 @@
 import datetime
 import unittest
 
-from django.contrib.admin import ModelAdmin
-from django.contrib.admin.templatetags.admin_list import date_hierarchy
-from django.contrib.admin.templatetags.admin_modify import submit_row
-from django.contrib.admin.templatetags.base import InclusionAdminNode
-from django.contrib.auth import get_permission_codename
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-from django.template.base import Token, TokenType
-from django.test import RequestFactory, TestCase
-from django.urls import reverse
-from django.utils.version import PY314
+from djorm.contrib.admin import ModelAdmin
+from djorm.contrib.admin.templatetags.admin_list import date_hierarchy
+from djorm.contrib.admin.templatetags.admin_modify import submit_row
+from djorm.contrib.admin.templatetags.base import InclusionAdminNode
+from djorm.contrib.auth import get_permission_codename
+from djorm.contrib.auth.admin import UserAdmin
+from djorm.contrib.auth.models import User
+from djorm.template.base import Token, TokenType
+from djorm.test import RequestFactory, TestCase
+from djorm.urls import reverse
+from djorm.utils.version import PY314
 
 from .admin import ArticleAdmin, site
 from .models import Article, Question

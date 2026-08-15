@@ -1,7 +1,7 @@
 import unittest
 
-from django.db import connection
-from django.test import TransactionTestCase, skipUnlessDBFeature
+from djorm.db import connection
+from djorm.test import TransactionTestCase, skipUnlessDBFeature
 
 from ..models import Person, Square
 

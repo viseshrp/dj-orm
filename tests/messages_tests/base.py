@@ -1,11 +1,11 @@
-from django.contrib.messages import Message, constants, get_level, set_level
-from django.contrib.messages.api import MessageFailure
-from django.contrib.messages.constants import DEFAULT_LEVELS
-from django.contrib.messages.storage import default_storage
-from django.http import HttpRequest, HttpResponse
-from django.test import modify_settings, override_settings
-from django.urls import reverse
-from django.utils.translation import gettext_lazy
+from djorm.contrib.messages import Message, constants, get_level, set_level
+from djorm.contrib.messages.api import MessageFailure
+from djorm.contrib.messages.constants import DEFAULT_LEVELS
+from djorm.contrib.messages.storage import default_storage
+from djorm.http import HttpRequest, HttpResponse
+from djorm.test import modify_settings, override_settings
+from djorm.urls import reverse
+from djorm.utils.translation import gettext_lazy
 
 
 def add_level_messages(storage):
@@ -37,13 +37,13 @@ class BaseTests:
             override_settings(
                 TEMPLATES=[
                     {
-                        "BACKEND": "django.template.backends.django.DjangoTemplates",
+                        "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                         "DIRS": [],
                         "APP_DIRS": True,
                         "OPTIONS": {
                             "context_processors": (
-                                "django.contrib.auth.context_processors.auth",
-                                "django.contrib.messages.context_processors.messages",
+                                'djorm.contrib.auth.context_processors.auth',
+                                'djorm.contrib.messages.context_processors.messages',
                             ),
                         },
                     }
@@ -53,7 +53,7 @@ class BaseTests:
                 MESSAGE_STORAGE=(
                     f"{cls.storage_class.__module__}.{cls.storage_class.__name__}"
                 ),
-                SESSION_SERIALIZER="django.contrib.sessions.serializers.JSONSerializer",
+                SESSION_SERIALIZER='djorm.contrib.sessions.serializers.JSONSerializer',
             )
         )
         super().setUpClass()
@@ -212,14 +212,14 @@ class BaseTests:
             self.assertContains(response, msg)
 
     @modify_settings(
-        INSTALLED_APPS={"remove": "django.contrib.messages"},
-        MIDDLEWARE={"remove": "django.contrib.messages.middleware.MessageMiddleware"},
+        INSTALLED_APPS={"remove": 'djorm.contrib.messages'},
+        MIDDLEWARE={"remove": 'djorm.contrib.messages.middleware.MessageMiddleware'},
     )
     @override_settings(
         MESSAGE_LEVEL=constants.DEBUG,
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "DIRS": [],
                 "APP_DIRS": True,
             }
@@ -240,13 +240,13 @@ class BaseTests:
                 self.client.post(add_url, data, follow=True)
 
     @modify_settings(
-        INSTALLED_APPS={"remove": "django.contrib.messages"},
-        MIDDLEWARE={"remove": "django.contrib.messages.middleware.MessageMiddleware"},
+        INSTALLED_APPS={"remove": 'djorm.contrib.messages'},
+        MIDDLEWARE={"remove": 'djorm.contrib.messages.middleware.MessageMiddleware'},
     )
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "DIRS": [],
                 "APP_DIRS": True,
             }

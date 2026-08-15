@@ -1,5 +1,5 @@
-from django.contrib.auth.models import AbstractBaseUser, UserManager
-from django.db import models
+from djorm.contrib.auth.models import AbstractBaseUser, UserManager
+from djorm.db import models
 
 
 class CustomUserNonUniqueUsername(AbstractBaseUser):

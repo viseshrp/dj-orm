@@ -4,29 +4,29 @@ import shutil
 from decimal import Decimal
 from unittest import mock, skipUnless
 
-from django import forms
-from django.core.exceptions import (
+from djorm import forms
+from djorm.core.exceptions import (
     NON_FIELD_ERRORS,
     FieldError,
     ImproperlyConfigured,
     ValidationError,
 )
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db import connection, models
-from django.db.models.query import EmptyQuerySet
-from django.forms.models import (
+from djorm.core.files.uploadedfile import SimpleUploadedFile
+from djorm.db import connection, models
+from djorm.db.models.query import EmptyQuerySet
+from djorm.forms.models import (
     ModelFormMetaclass,
     construct_instance,
     fields_for_model,
     model_to_dict,
     modelform_factory,
 )
-from django.template import Context, Template
-from django.test import SimpleTestCase, TestCase, ignore_warnings, skipUnlessDBFeature
-from django.test.utils import isolate_apps
-from django.utils.choices import BlankChoiceIterator
-from django.utils.deprecation import RemovedInDjango60Warning
-from django.utils.version import PY314, PYPY
+from djorm.template import Context, Template
+from djorm.test import SimpleTestCase, TestCase, ignore_warnings, skipUnlessDBFeature
+from djorm.test.utils import isolate_apps
+from djorm.utils.choices import BlankChoiceIterator
+from djorm.utils.deprecation import RemovedInDjango60Warning
+from djorm.utils.version import PY314, PYPY
 
 from .models import (
     Article,

@@ -1,4 +1,4 @@
-from django.contrib.auth.base_user import AbstractBaseUser
+from djorm.contrib.auth.base_user import AbstractBaseUser
 
 
 class UserWithDisabledLastLoginField(AbstractBaseUser):

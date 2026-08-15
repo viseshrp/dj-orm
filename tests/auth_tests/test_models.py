@@ -1,23 +1,23 @@
 from unittest import mock
 
-from django.conf.global_settings import PASSWORD_HASHERS
-from django.contrib.auth import get_user_model
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.hashers import get_hasher
-from django.contrib.auth.models import (
+from djorm.conf.global_settings import PASSWORD_HASHERS
+from djorm.contrib.auth import get_user_model
+from djorm.contrib.auth.backends import ModelBackend
+from djorm.contrib.auth.base_user import AbstractBaseUser
+from djorm.contrib.auth.hashers import get_hasher
+from djorm.contrib.auth.models import (
     AnonymousUser,
     Group,
     Permission,
     User,
     UserManager,
 )
-from django.contrib.contenttypes.models import ContentType
-from django.core import mail
-from django.db import connection, migrations
-from django.db.migrations.state import ModelState, ProjectState
-from django.db.models.signals import post_save
-from django.test import SimpleTestCase, TestCase, TransactionTestCase, override_settings
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core import mail
+from djorm.db import connection, migrations
+from djorm.db.migrations.state import ModelState, ProjectState
+from djorm.db.models.signals import post_save
+from djorm.test import SimpleTestCase, TestCase, TransactionTestCase, override_settings
 
 from .models import CustomEmailField, IntegerUsernameUser
 
@@ -117,8 +117,8 @@ class LoadDataWithNaturalKeysAndMultipleDatabasesTestCase(TestCase):
 class UserManagerTestCase(TransactionTestCase):
     available_apps = [
         "auth_tests",
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
+        'djorm.contrib.auth',
+        'djorm.contrib.contenttypes',
     ]
 
     def test_create_user(self):
@@ -294,7 +294,7 @@ class AbstractUserTestCase(TestCase):
         user = User.objects.create_user(username="user", password="foo")
         user.set_password("bar")
         with mock.patch(
-            "django.contrib.auth.password_validation.password_changed"
+            'djorm.contrib.auth.password_validation.password_changed'
         ) as pw_changed:
             user.save()
             self.assertEqual(pw_changed.call_count, 1)
@@ -318,7 +318,7 @@ class AbstractUserTestCase(TestCase):
             # Upgrade the password iterations
             hasher.iterations = old_iterations + 1
             with mock.patch(
-                "django.contrib.auth.password_validation.password_changed"
+                'djorm.contrib.auth.password_validation.password_changed'
             ) as pw_changed:
                 user.check_password("foo")
                 self.assertEqual(pw_changed.call_count, 0)
@@ -339,7 +339,7 @@ class AbstractUserTestCase(TestCase):
             # Upgrade the password iterations.
             hasher.iterations = old_iterations + 1
             with mock.patch(
-                "django.contrib.auth.password_validation.password_changed"
+                'djorm.contrib.auth.password_validation.password_changed'
             ) as pw_changed:
                 self.assertIs(await user.acheck_password("foo"), True)
                 self.assertEqual(pw_changed.call_count, 0)
@@ -443,7 +443,7 @@ class UserWithPermTestCase(TestCase):
                     )
 
     @override_settings(
-        AUTHENTICATION_BACKENDS=["django.contrib.auth.backends.BaseBackend"]
+        AUTHENTICATION_BACKENDS=['djorm.contrib.auth.backends.BaseBackend']
     )
     def test_backend_without_with_perm(self):
         self.assertSequenceEqual(User.objects.with_perm("auth.test"), [])
@@ -490,7 +490,7 @@ class UserWithPermTestCase(TestCase):
     @override_settings(
         AUTHENTICATION_BACKENDS=[
             "auth_tests.test_models.CustomModelBackend",
-            "django.contrib.auth.backends.ModelBackend",
+            'djorm.contrib.auth.backends.ModelBackend',
         ]
     )
     def test_multiple_backends(self):

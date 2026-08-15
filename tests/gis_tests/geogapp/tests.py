@@ -4,14 +4,14 @@ Tests for geography support in PostGIS
 
 import os
 
-from django.contrib.gis.db import models
-from django.contrib.gis.db.models.functions import Area, Distance
-from django.contrib.gis.measure import D
-from django.core.exceptions import ValidationError
-from django.db import NotSupportedError, connection
-from django.db.models.functions import Cast
-from django.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
-from django.test.utils import CaptureQueriesContext
+from djorm.contrib.gis.db import models
+from djorm.contrib.gis.db.models.functions import Area, Distance
+from djorm.contrib.gis.measure import D
+from djorm.core.exceptions import ValidationError
+from djorm.db import NotSupportedError, connection
+from djorm.db.models.functions import Cast
+from djorm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djorm.test.utils import CaptureQueriesContext
 
 from ..utils import FuncTestMixin
 from .models import City, CityUnique, County, Zipcode
@@ -86,7 +86,7 @@ class GeographyTest(TestCase):
         "Testing LayerMapping support on models with geography fields."
         # There is a similar test in `layermap` that uses the same data set,
         # but the County model here is a bit different.
-        from django.contrib.gis.utils import LayerMapping
+        from djorm.contrib.gis.utils import LayerMapping
 
         # Getting the shapefile and mapping dictionary.
         shp_path = os.path.realpath(

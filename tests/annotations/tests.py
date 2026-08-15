@@ -3,9 +3,9 @@ from decimal import Decimal
 from itertools import chain
 from unittest import skipUnless
 
-from django.core.exceptions import FieldDoesNotExist, FieldError
-from django.db import connection
-from django.db.models import (
+from djorm.core.exceptions import FieldDoesNotExist, FieldError
+from djorm.db import connection
+from djorm.db.models import (
     BooleanField,
     Case,
     CharField,
@@ -28,8 +28,8 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.expressions import RawSQL
-from django.db.models.functions import (
+from djorm.db.models.expressions import RawSQL
+from djorm.db.models.functions import (
     Cast,
     Coalesce,
     ExtractYear,
@@ -38,9 +38,9 @@ from django.db.models.functions import (
     Lower,
     Trim,
 )
-from django.db.models.sql.query import get_field_names_from_opts
-from django.test import TestCase, skipUnlessDBFeature
-from django.test.utils import register_lookup
+from djorm.db.models.sql.query import get_field_names_from_opts
+from djorm.test import TestCase, skipUnlessDBFeature
+from djorm.test.utils import register_lookup
 
 from .models import (
     Author,

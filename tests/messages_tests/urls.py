@@ -1,12 +1,12 @@
-from django import forms
-from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponse, HttpResponseRedirect
-from django.template import engines
-from django.template.response import TemplateResponse
-from django.urls import path, re_path, reverse
-from django.views.decorators.cache import never_cache
-from django.views.generic.edit import DeleteView, FormView
+from djorm import forms
+from djorm.contrib import messages
+from djorm.contrib.messages.views import SuccessMessageMixin
+from djorm.http import HttpResponse, HttpResponseRedirect
+from djorm.template import engines
+from djorm.template.response import TemplateResponse
+from djorm.urls import path, re_path, reverse
+from djorm.views.decorators.cache import never_cache
+from djorm.views.generic.edit import DeleteView, FormView
 
 from .models import SomeObject
 

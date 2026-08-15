@@ -1,5 +1,5 @@
-from django.forms import Form, MultipleChoiceField, MultipleHiddenInput
-from django.utils.datastructures import MultiValueDict
+from djorm.forms import Form, MultipleChoiceField, MultipleHiddenInput
+from djorm.utils.datastructures import MultiValueDict
 
 from .base import WidgetTest
 

@@ -1,6 +1,6 @@
 import decimal
 
-from django.db import models
+from djorm.db import models
 
 
 class Cash(decimal.Decimal):

@@ -2,14 +2,14 @@ import datetime
 import tempfile
 import uuid
 
-from django.contrib import admin
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
-from django.core.files.storage import FileSystemStorage
-from django.db import models
-from django.utils import timezone
+from djorm.contrib import admin
+from djorm.contrib.auth.models import User
+from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.exceptions import ValidationError
+from djorm.core.files.storage import FileSystemStorage
+from djorm.db import models
+from djorm.utils import timezone
 
 
 class Section(models.Model):

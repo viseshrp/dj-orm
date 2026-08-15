@@ -1,10 +1,10 @@
 import os
 
-from django.conf import settings
-from django.contrib.staticfiles import finders, storage
-from django.core.exceptions import ImproperlyConfigured
-from django.test import SimpleTestCase, override_settings
-from django.utils.deprecation import RemovedInDjango61Warning
+from djorm.conf import settings
+from djorm.contrib.staticfiles import finders, storage
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.test import SimpleTestCase, override_settings
+from djorm.utils.deprecation import RemovedInDjango61Warning
 
 from .cases import StaticFilesTestCase
 from .settings import TEST_ROOT
@@ -123,7 +123,7 @@ class TestDefaultStorageFinder(TestFinders, StaticFilesTestCase):
 
 
 @override_settings(
-    STATICFILES_FINDERS=["django.contrib.staticfiles.finders.FileSystemFinder"],
+    STATICFILES_FINDERS=['djorm.contrib.staticfiles.finders.FileSystemFinder'],
     STATICFILES_DIRS=[os.path.join(TEST_ROOT, "project", "documents")],
 )
 class TestMiscFinder(SimpleTestCase):
@@ -133,13 +133,13 @@ class TestMiscFinder(SimpleTestCase):
 
     def test_get_finder(self):
         self.assertIsInstance(
-            finders.get_finder("django.contrib.staticfiles.finders.FileSystemFinder"),
+            finders.get_finder('djorm.contrib.staticfiles.finders.FileSystemFinder'),
             finders.FileSystemFinder,
         )
 
     def test_get_finder_bad_classname(self):
         with self.assertRaises(ImportError):
-            finders.get_finder("django.contrib.staticfiles.finders.FooBarFinder")
+            finders.get_finder('djorm.contrib.staticfiles.finders.FooBarFinder')
 
     def test_get_finder_bad_module(self):
         with self.assertRaises(ImportError):
@@ -148,7 +148,7 @@ class TestMiscFinder(SimpleTestCase):
     def test_cache(self):
         finders.get_finder.cache_clear()
         for n in range(10):
-            finders.get_finder("django.contrib.staticfiles.finders.FileSystemFinder")
+            finders.get_finder('djorm.contrib.staticfiles.finders.FileSystemFinder')
         cache_info = finders.get_finder.cache_info()
         self.assertEqual(cache_info.hits, 9)
         self.assertEqual(cache_info.currsize, 1)
@@ -204,7 +204,7 @@ class TestMiscFinder(SimpleTestCase):
     def test_location_empty(self):
         msg = (
             "The storage backend of the staticfiles finder "
-            "<class 'django.contrib.staticfiles.finders.DefaultStorageFinder'> "
+            "<class 'djorm.contrib.staticfiles.finders.DefaultStorageFinder'> "
             "doesn't have a valid location."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, msg):

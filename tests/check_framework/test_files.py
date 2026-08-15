@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from django.core.checks import Error
-from django.core.checks.files import check_setting_file_upload_temp_dir
-from django.test import SimpleTestCase
+from djorm.core.checks import Error
+from djorm.core.checks.files import check_setting_file_upload_temp_dir
+from djorm.test import SimpleTestCase
 
 
 class FilesCheckTests(SimpleTestCase):

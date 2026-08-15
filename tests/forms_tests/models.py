@@ -2,8 +2,8 @@ import datetime
 import itertools
 import tempfile
 
-from django.core.files.storage import FileSystemStorage
-from django.db import models
+from djorm.core.files.storage import FileSystemStorage
+from djorm.db import models
 
 callable_default_counter = itertools.count()
 

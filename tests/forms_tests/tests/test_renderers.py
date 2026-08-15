@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from django.forms.renderers import (
+from djorm.forms.renderers import (
     BaseRenderer,
     DjangoDivFormRenderer,
     DjangoTemplates,
@@ -9,8 +9,8 @@ from django.forms.renderers import (
     Jinja2DivFormRenderer,
     TemplatesSetting,
 )
-from django.test import SimpleTestCase, ignore_warnings
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.test import SimpleTestCase, ignore_warnings
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 try:
     import jinja2

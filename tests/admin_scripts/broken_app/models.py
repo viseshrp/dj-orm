@@ -1,1 +1,1 @@
-from django.db import modelz  # NOQA
+from djorm.db import modelz  # NOQA

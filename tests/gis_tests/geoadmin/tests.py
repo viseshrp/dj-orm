@@ -1,13 +1,13 @@
-from django.contrib.auth.models import Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.gis.geos import Point
-from django.core.exceptions import SuspiciousOperation
-from django.test import RequestFactory, TestCase, override_settings
+from djorm.contrib.auth.models import Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.contrib.gis.geos import Point
+from djorm.core.exceptions import SuspiciousOperation
+from djorm.test import RequestFactory, TestCase, override_settings
 
 from .models import City, site, site_gis, site_gis_custom
 
 
-@override_settings(ROOT_URLCONF="django.contrib.gis.tests.geoadmin.urls")
+@override_settings(ROOT_URLCONF='djorm.contrib.gis.tests.geoadmin.urls')
 class GeoAdminTest(TestCase):
     admin_site = site  # ModelAdmin
 
@@ -25,7 +25,7 @@ class GeoAdminTest(TestCase):
         geoadmin = self.admin_site.get_model_admin(City)
         form = geoadmin.get_changelist_form(None)({"point": ""})
         with self.assertRaisesMessage(AssertionError, "no logs"):
-            with self.assertLogs("django.contrib.gis", "ERROR"):
+            with self.assertLogs('djorm.contrib.gis', "ERROR"):
                 output = str(form["point"])
         self.assertInHTML(
             '<textarea id="id_point" class="vSerializedField required" cols="150"'
@@ -36,7 +36,7 @@ class GeoAdminTest(TestCase):
     def test_widget_invalid_string(self):
         geoadmin = self.admin_site.get_model_admin(City)
         form = geoadmin.get_changelist_form(None)({"point": "INVALID()"})
-        with self.assertLogs("django.contrib.gis", "ERROR") as cm:
+        with self.assertLogs('djorm.contrib.gis', "ERROR") as cm:
             output = str(form["point"])
         self.assertInHTML(
             '<textarea id="id_point" class="vSerializedField required" cols="150"'

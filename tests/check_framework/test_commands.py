@@ -1,7 +1,7 @@
-from django.core import checks
-from django.core.checks import Error
-from django.test import SimpleTestCase
-from django.test.utils import isolate_apps, override_settings, override_system_checks
+from djorm.core import checks
+from djorm.core.checks import Error
+from djorm.test import SimpleTestCase
+from djorm.test.utils import isolate_apps, override_settings, override_system_checks
 
 
 @isolate_apps("check_framework.custom_commands_app", attr_name="apps")

@@ -1,8 +1,8 @@
-from django.contrib import admin
-from django.contrib.admin.options import ModelAdmin
-from django.contrib.auth.models import User
-from django.db.models import F
-from django.test import RequestFactory, TestCase
+from djorm.contrib import admin
+from djorm.contrib.admin.options import ModelAdmin
+from djorm.contrib.auth.models import User
+from djorm.db.models import F
+from djorm.test import RequestFactory, TestCase
 
 from .models import (
     Band,

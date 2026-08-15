@@ -1,7 +1,7 @@
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import ProtectedError, Q, Sum
-from django.forms.models import modelform_factory
-from django.test import TestCase, skipIfDBFeature
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.db.models import ProtectedError, Q, Sum
+from djorm.forms.models import modelform_factory
+from djorm.test import TestCase, skipIfDBFeature
 
 from .models import (
     A,

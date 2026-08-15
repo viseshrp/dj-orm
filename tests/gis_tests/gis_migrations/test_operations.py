@@ -1,12 +1,12 @@
 from unittest import skipUnless
 
-from django.contrib.gis.db.models import fields
-from django.contrib.gis.geos import MultiPolygon, Polygon
-from django.core.exceptions import ImproperlyConfigured
-from django.db import connection, migrations, models
-from django.db.migrations.migration import Migration
-from django.db.migrations.state import ProjectState
-from django.test import TransactionTestCase, skipIfDBFeature, skipUnlessDBFeature
+from djorm.contrib.gis.db.models import fields
+from djorm.contrib.gis.geos import MultiPolygon, Polygon
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.db import connection, migrations, models
+from djorm.db.migrations.migration import Migration
+from djorm.db.migrations.state import ProjectState
+from djorm.test import TransactionTestCase, skipIfDBFeature, skipUnlessDBFeature
 
 try:
     GeometryColumns = connection.ops.geometry_columns()
@@ -161,7 +161,7 @@ class OperationTests(OperationTestCase):
         self.assertColumnExists("gis_neighborhood", "path")
         self.assertNotIn("CREATE SPATIAL INDEX", ctx.captured_queries[0]["sql"])
 
-        with self.assertNumQueries(1), self.assertNoLogs("django.contrib.gis", "ERROR"):
+        with self.assertNumQueries(1), self.assertNoLogs('djorm.contrib.gis', "ERROR"):
             self.alter_gis_model(migrations.RemoveField, "Neighborhood", "path")
         self.assertColumnNotExists("gis_neighborhood", "path")
 

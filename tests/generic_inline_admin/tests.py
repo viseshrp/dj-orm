@@ -1,19 +1,19 @@
-from django.contrib import admin
-from django.contrib.admin.sites import AdminSite
-from django.contrib.auth.models import Permission, User
-from django.contrib.contenttypes.admin import GenericTabularInline
-from django.contrib.contenttypes.models import ContentType
-from django.forms.formsets import DEFAULT_MAX_NUM
-from django.forms.models import ModelForm
-from django.test import (
+from djorm.contrib import admin
+from djorm.contrib.admin.sites import AdminSite
+from djorm.contrib.auth.models import Permission, User
+from djorm.contrib.contenttypes.admin import GenericTabularInline
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.forms.formsets import DEFAULT_MAX_NUM
+from djorm.forms.models import ModelForm
+from djorm.test import (
     RequestFactory,
     SimpleTestCase,
     TestCase,
     ignore_warnings,
     override_settings,
 )
-from django.urls import reverse
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.urls import reverse
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from .admin import MediaInline, MediaPermanentInline, PhoneNumberInline
 from .admin import site as admin_site

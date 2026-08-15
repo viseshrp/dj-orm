@@ -2,9 +2,9 @@ import unittest
 from contextlib import contextmanager
 from unittest import mock
 
-from django.core.exceptions import ImproperlyConfigured
-from django.db import NotSupportedError, connection
-from django.test import TestCase, override_settings
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.db import NotSupportedError, connection
+from djorm.test import TestCase, override_settings
 
 
 @contextmanager

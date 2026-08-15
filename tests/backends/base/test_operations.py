@@ -1,21 +1,21 @@
 import decimal
 from unittest import mock
 
-from django.core.management.color import no_style
-from django.db import NotSupportedError, connection, transaction
-from django.db.backends.base.operations import BaseDatabaseOperations
-from django.db.models import DurationField
-from django.db.models.expressions import Col
-from django.db.models.lookups import Exact
-from django.test import (
+from djorm.core.management.color import no_style
+from djorm.db import NotSupportedError, connection, transaction
+from djorm.db.backends.base.operations import BaseDatabaseOperations
+from djorm.db.models import DurationField
+from djorm.db.models.expressions import Col
+from djorm.db.models.lookups import Exact
+from djorm.test import (
     SimpleTestCase,
     TestCase,
     TransactionTestCase,
     override_settings,
     skipIfDBFeature,
 )
-from django.utils import timezone
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.utils import timezone
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from ..models import Author, Book
 

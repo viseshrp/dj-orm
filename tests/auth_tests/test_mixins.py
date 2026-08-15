@@ -1,16 +1,16 @@
 from unittest import mock
 
-from django.contrib.auth import models
-from django.contrib.auth.mixins import (
+from djorm.contrib.auth import models
+from djorm.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
-from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
-from django.test import RequestFactory, SimpleTestCase, TestCase
-from django.views.generic import View
+from djorm.contrib.auth.models import AnonymousUser
+from djorm.core.exceptions import PermissionDenied
+from djorm.http import HttpResponse
+from djorm.test import RequestFactory, SimpleTestCase, TestCase
+from djorm.views.generic import View
 
 
 class AlwaysTrueMixin(UserPassesTestMixin):

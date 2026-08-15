@@ -1,6 +1,6 @@
-from django.core.handlers.wsgi import WSGIHandler
-from django.test import SimpleTestCase, override_settings
-from django.test.client import (
+from djorm.core.handlers.wsgi import WSGIHandler
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.client import (
     BOUNDARY,
     MULTIPART_CONTENT,
     FakePayload,

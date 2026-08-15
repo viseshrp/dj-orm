@@ -1,9 +1,9 @@
-from django.contrib.messages import Message, constants
-from django.contrib.messages.storage.session import SessionStorage
-from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpRequest
-from django.test import TestCase
-from django.utils.safestring import SafeData, mark_safe
+from djorm.contrib.messages import Message, constants
+from djorm.contrib.messages.storage.session import SessionStorage
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.http import HttpRequest
+from djorm.test import TestCase
+from djorm.utils.safestring import SafeData, mark_safe
 
 from .base import BaseTests
 

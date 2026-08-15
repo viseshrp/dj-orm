@@ -1,3 +1,3 @@
-from django.template import Library
+from djorm.template import Library
 
 register = Library()

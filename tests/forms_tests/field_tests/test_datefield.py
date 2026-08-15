@@ -1,10 +1,10 @@
 import sys
 from datetime import date, datetime
 
-from django.core.exceptions import ValidationError
-from django.forms import DateField, Form, HiddenInput, SelectDateWidget
-from django.test import SimpleTestCase
-from django.utils import translation
+from djorm.core.exceptions import ValidationError
+from djorm.forms import DateField, Form, HiddenInput, SelectDateWidget
+from djorm.test import SimpleTestCase
+from djorm.utils import translation
 
 
 class GetDate(Form):

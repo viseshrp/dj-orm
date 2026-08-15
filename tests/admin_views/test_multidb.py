@@ -1,12 +1,12 @@
 from unittest import mock
 
-from django.contrib import admin
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
-from django.http import HttpResponse
-from django.test import TestCase, override_settings
-from django.urls import path, reverse
+from djorm.contrib import admin
+from djorm.contrib.auth.models import User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.contrib.sites.models import Site
+from djorm.http import HttpResponse
+from djorm.test import TestCase, override_settings
+from djorm.urls import path, reverse
 
 from .models import Book
 
@@ -62,7 +62,7 @@ class MultiDatabaseTests(TestCase):
         # Reset the routers' state between each test.
         Router.target_db = None
 
-    @mock.patch("django.contrib.admin.options.transaction")
+    @mock.patch('djorm.contrib.admin.options.transaction')
     def test_add_view(self, mock):
         for db in self.databases:
             with self.subTest(db=db):
@@ -79,7 +79,7 @@ class MultiDatabaseTests(TestCase):
                 )
                 mock.atomic.assert_called_with(using=db)
 
-    @mock.patch("django.contrib.admin.options.transaction")
+    @mock.patch('djorm.contrib.admin.options.transaction')
     def test_read_only_methods_add_view(self, mock):
         for db in self.databases:
             for method in self.READ_ONLY_METHODS:
@@ -93,7 +93,7 @@ class MultiDatabaseTests(TestCase):
                     self.assertEqual(response.status_code, 200)
                     mock.atomic.assert_not_called()
 
-    @mock.patch("django.contrib.admin.options.transaction")
+    @mock.patch('djorm.contrib.admin.options.transaction')
     def test_change_view(self, mock):
         for db in self.databases:
             with self.subTest(db=db):
@@ -113,7 +113,7 @@ class MultiDatabaseTests(TestCase):
                 )
                 mock.atomic.assert_called_with(using=db)
 
-    @mock.patch("django.contrib.admin.options.transaction")
+    @mock.patch('djorm.contrib.admin.options.transaction')
     def test_read_only_methods_change_view(self, mock):
         for db in self.databases:
             for method in self.READ_ONLY_METHODS:
@@ -131,7 +131,7 @@ class MultiDatabaseTests(TestCase):
                     self.assertEqual(response.status_code, 200)
                     mock.atomic.assert_not_called()
 
-    @mock.patch("django.contrib.admin.options.transaction")
+    @mock.patch('djorm.contrib.admin.options.transaction')
     def test_delete_view(self, mock):
         for db in self.databases:
             with self.subTest(db=db):
@@ -151,7 +151,7 @@ class MultiDatabaseTests(TestCase):
                 )
                 mock.atomic.assert_called_with(using=db)
 
-    @mock.patch("django.contrib.admin.options.transaction")
+    @mock.patch('djorm.contrib.admin.options.transaction')
     def test_read_only_methods_delete_view(self, mock):
         for db in self.databases:
             for method in self.READ_ONLY_METHODS:

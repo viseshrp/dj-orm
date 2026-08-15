@@ -1,7 +1,7 @@
 import os
 
-from django.db.models import FilePathField
-from django.test import SimpleTestCase
+from djorm.db.models import FilePathField
+from djorm.test import SimpleTestCase
 
 
 class FilePathFieldTests(SimpleTestCase):

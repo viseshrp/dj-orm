@@ -1,7 +1,7 @@
-from django.template import Context, Template, Variable, VariableDoesNotExist
-from django.template.base import DebugLexer, Lexer, TokenType
-from django.test import SimpleTestCase
-from django.utils.translation import gettext_lazy
+from djorm.template import Context, Template, Variable, VariableDoesNotExist
+from djorm.template.base import DebugLexer, Lexer, TokenType
+from djorm.test import SimpleTestCase
+from djorm.utils.translation import gettext_lazy
 
 
 class LexerTestMixin:

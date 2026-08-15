@@ -1,5 +1,5 @@
-from django.test import SimpleTestCase
-from django.utils import translation
+from djorm.test import SimpleTestCase
+from djorm.utils import translation
 
 from ...utils import setup
 
@@ -7,7 +7,7 @@ from ...utils import setup
 class I18nFiltersTests(SimpleTestCase):
     libraries = {
         "custom": "template_tests.templatetags.custom",
-        "i18n": "django.templatetags.i18n",
+        "i18n": 'djorm.templatetags.i18n',
     }
 
     @setup(

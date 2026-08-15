@@ -1,6 +1,6 @@
 import argparse
 
-from django.core.management.base import BaseCommand
+from djorm.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

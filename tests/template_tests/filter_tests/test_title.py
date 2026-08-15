@@ -1,5 +1,5 @@
-from django.template.defaultfilters import title
-from django.test import SimpleTestCase
+from djorm.template.defaultfilters import title
+from djorm.test import SimpleTestCase
 
 from ..utils import setup
 

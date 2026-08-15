@@ -1,21 +1,21 @@
 from unittest import mock
 
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import NotSupportedError, connection
-from django.db.models import F, Prefetch, QuerySet, prefetch_related_objects
-from django.db.models.fields.related import ForwardManyToOneDescriptor
-from django.db.models.query import get_prefetcher, prefetch_one_level
-from django.db.models.sql import Query
-from django.test import (
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.exceptions import ObjectDoesNotExist
+from djorm.db import NotSupportedError, connection
+from djorm.db.models import F, Prefetch, QuerySet, prefetch_related_objects
+from djorm.db.models.fields.related import ForwardManyToOneDescriptor
+from djorm.db.models.query import get_prefetcher, prefetch_one_level
+from djorm.db.models.sql import Query
+from djorm.test import (
     TestCase,
     ignore_warnings,
     override_settings,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from django.test.utils import CaptureQueriesContext
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.test.utils import CaptureQueriesContext
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from .models import (
     Article,

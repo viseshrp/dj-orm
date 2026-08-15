@@ -1,6 +1,6 @@
-from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.forms import (
+from djorm.core.exceptions import ValidationError
+from djorm.core.files.uploadedfile import SimpleUploadedFile
+from djorm.forms import (
     BooleanField,
     CharField,
     ChoiceField,
@@ -22,10 +22,10 @@ from django.forms import (
     URLField,
     utils,
 )
-from django.template import Context, Template
-from django.test import SimpleTestCase, TestCase, ignore_warnings
-from django.utils.deprecation import RemovedInDjango60Warning
-from django.utils.safestring import mark_safe
+from djorm.template import Context, Template
+from djorm.test import SimpleTestCase, TestCase, ignore_warnings
+from djorm.utils.deprecation import RemovedInDjango60Warning
+from djorm.utils.safestring import mark_safe
 
 from ..models import ChoiceModel
 

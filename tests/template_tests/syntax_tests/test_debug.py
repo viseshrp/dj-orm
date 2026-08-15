@@ -1,5 +1,5 @@
-from django.contrib.auth.models import Group
-from django.test import SimpleTestCase, override_settings
+from djorm.contrib.auth.models import Group
+from djorm.test import SimpleTestCase, override_settings
 
 from ..utils import setup
 

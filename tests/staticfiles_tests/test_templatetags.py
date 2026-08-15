@@ -1,5 +1,5 @@
-from django.conf import STATICFILES_STORAGE_ALIAS
-from django.test import override_settings
+from djorm.conf import STATICFILES_STORAGE_ALIAS
+from djorm.test import override_settings
 
 from .cases import StaticFilesTestCase
 

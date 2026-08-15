@@ -1,6 +1,6 @@
-from django.http import HttpRequest
-from django.template.context_processors import csrf
-from django.test import SimpleTestCase
+from djorm.http import HttpRequest
+from djorm.template.context_processors import csrf
+from djorm.test import SimpleTestCase
 
 from .tests import CsrfFunctionTestMixin
 

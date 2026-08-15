@@ -1,10 +1,10 @@
 import io
 
-from django.conf import settings
-from django.core.cache import cache
-from django.http import HttpResponse
-from django.http.response import HttpResponseBase
-from django.test import SimpleTestCase
+from djorm.conf import settings
+from djorm.core.cache import cache
+from djorm.http import HttpResponse
+from djorm.http.response import HttpResponseBase
+from djorm.test import SimpleTestCase
 
 UTF8 = "utf-8"
 ISO88591 = "iso-8859-1"

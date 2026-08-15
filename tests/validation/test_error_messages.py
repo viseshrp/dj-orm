@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from django.core.exceptions import ValidationError
-from django.db import models
+from djorm.core.exceptions import ValidationError
+from djorm.db import models
 
 
 class ValidationMessagesTest(TestCase):

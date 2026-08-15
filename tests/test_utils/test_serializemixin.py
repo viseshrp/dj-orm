@@ -1,5 +1,5 @@
-from django.test import SimpleTestCase
-from django.test.testcases import SerializeMixin
+from djorm.test import SimpleTestCase
+from djorm.test.testcases import SerializeMixin
 
 
 class TestSerializeMixin(SimpleTestCase):

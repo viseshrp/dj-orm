@@ -1,24 +1,24 @@
-from django.template import TemplateDoesNotExist
-from django.template.loader import get_template, render_to_string, select_template
-from django.test import SimpleTestCase, override_settings
-from django.test.client import RequestFactory
+from djorm.template import TemplateDoesNotExist
+from djorm.template.loader import get_template, render_to_string, select_template
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.client import RequestFactory
 
 
 @override_settings(
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.dummy.TemplateStrings",
+            "BACKEND": 'djorm.template.backends.dummy.TemplateStrings',
             "APP_DIRS": True,
         },
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "OPTIONS": {
                 "context_processors": [
-                    "django.template.context_processors.request",
+                    'djorm.template.context_processors.request',
                 ],
                 "loaders": [
-                    "django.template.loaders.filesystem.Loader",
-                    "django.template.loaders.app_directories.Loader",
+                    'djorm.template.loaders.filesystem.Loader',
+                    'djorm.template.loaders.app_directories.Loader',
                 ],
             },
         },

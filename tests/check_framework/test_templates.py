@@ -1,12 +1,12 @@
 from copy import deepcopy
 from itertools import chain
 
-from django.core.checks import Error, Warning
-from django.core.checks.templates import check_templates
-from django.template import engines
-from django.template.backends.base import BaseEngine
-from django.test import SimpleTestCase
-from django.test.utils import override_settings
+from djorm.core.checks import Error, Warning
+from djorm.core.checks.templates import check_templates
+from djorm.template import engines
+from djorm.template.backends.base import BaseEngine
+from djorm.test import SimpleTestCase
+from djorm.test.utils import override_settings
 
 
 class ErrorEngine(BaseEngine):
@@ -33,14 +33,14 @@ class CheckTemplatesTests(SimpleTestCase):
 class CheckTemplateStringIfInvalidTest(SimpleTestCase):
     TEMPLATES_STRING_IF_INVALID = [
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "NAME": "backend_1",
             "OPTIONS": {
                 "string_if_invalid": False,
             },
         },
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "NAME": "backend_2",
             "OPTIONS": {
                 "string_if_invalid": 42,
@@ -98,7 +98,7 @@ class CheckTemplateStringIfInvalidTest(SimpleTestCase):
 class CheckTemplateTagLibrariesWithSameName(SimpleTestCase):
     def get_settings(self, module_name, module_path, name="django"):
         return {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "NAME": name,
             "OPTIONS": {
                 "libraries": {

@@ -1,6 +1,6 @@
-from django.core import serializers
-from django.db import connection
-from django.test import TestCase
+from djorm.core import serializers
+from djorm.db import connection
+from djorm.test import TestCase
 
 from .models import (
     Child,

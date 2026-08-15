@@ -1,5 +1,5 @@
-from django.urls import include, path
-from django.views.generic import RedirectView
+from djorm.urls import include, path
+from djorm.views.generic import RedirectView
 
 from . import views
 

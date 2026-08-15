@@ -1,11 +1,11 @@
 from datetime import datetime
 from decimal import Decimal
 
-from django import forms
-from django.conf import settings
-from django.contrib import admin
-from django.contrib.admin import helpers
-from django.contrib.admin.utils import (
+from djorm import forms
+from djorm.conf import settings
+from djorm.contrib import admin
+from djorm.contrib.admin import helpers
+from djorm.contrib.admin.utils import (
     NestedObjects,
     build_q_object_from_lookup_parameters,
     display_for_field,
@@ -17,11 +17,11 @@ from django.contrib.admin.utils import (
     lookup_field,
     quote,
 )
-from django.core.validators import EMPTY_VALUES
-from django.db import DEFAULT_DB_ALIAS, models
-from django.test import SimpleTestCase, TestCase, override_settings
-from django.utils.formats import localize
-from django.utils.safestring import mark_safe
+from djorm.core.validators import EMPTY_VALUES
+from djorm.db import DEFAULT_DB_ALIAS, models
+from djorm.test import SimpleTestCase, TestCase, override_settings
+from djorm.utils.formats import localize
+from djorm.utils.safestring import mark_safe
 
 from .models import Article, Car, Count, Event, EventGuide, Location, Site, Vehicle
 

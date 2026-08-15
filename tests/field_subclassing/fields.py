@@ -1,5 +1,5 @@
-from django.db import models
-from django.db.models.query_utils import DeferredAttribute
+from djorm.db import models
+from djorm.db.models.query_utils import DeferredAttribute
 
 
 class CustomTypedField(models.TextField):

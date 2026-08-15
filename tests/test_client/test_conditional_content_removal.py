@@ -1,8 +1,8 @@
 import gzip
 
-from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
-from django.test import SimpleTestCase
-from django.test.client import conditional_content_removal
+from djorm.http import HttpRequest, HttpResponse, StreamingHttpResponse
+from djorm.test import SimpleTestCase
+from djorm.test.client import conditional_content_removal
 
 
 class ConditionalContentTests(SimpleTestCase):

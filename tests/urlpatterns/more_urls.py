@@ -1,4 +1,4 @@
-from django.urls import re_path
+from djorm.urls import re_path
 
 from . import views
 

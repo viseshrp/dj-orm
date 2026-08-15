@@ -1,7 +1,7 @@
-from django.db.models import CharField
-from django.db.models.functions import LTrim, RTrim, Trim
-from django.test import TestCase
-from django.test.utils import register_lookup
+from djorm.db.models import CharField
+from djorm.db.models.functions import LTrim, RTrim, Trim
+from djorm.test import TestCase
+from djorm.test.utils import register_lookup
 
 from ..models import Author
 

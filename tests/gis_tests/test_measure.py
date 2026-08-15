@@ -5,8 +5,8 @@ and conversions. Here are some tests.
 
 import unittest
 
-from django.contrib.gis.measure import A, Area, D, Distance
-from django.test import SimpleTestCase
+from djorm.contrib.gis.measure import A, Area, D, Distance
+from djorm.test import SimpleTestCase
 
 
 class DistanceTest(SimpleTestCase):

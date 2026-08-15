@@ -1,7 +1,7 @@
-from django import forms
-from django.core.exceptions import NON_FIELD_ERRORS
-from django.test import TestCase
-from django.utils.functional import lazy
+from djorm import forms
+from djorm.core.exceptions import NON_FIELD_ERRORS
+from djorm.test import TestCase
+from djorm.utils.functional import lazy
 
 from . import ValidationAssertions
 from .models import (

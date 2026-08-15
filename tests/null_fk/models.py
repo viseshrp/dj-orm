@@ -2,7 +2,7 @@
 Regression tests for proper working of ForeignKey(null=True).
 """
 
-from django.db import models
+from djorm.db import models
 
 
 class SystemDetails(models.Model):

@@ -1,5 +1,5 @@
-from django.apps.registry import Apps
-from django.db import models
+from djorm.apps.registry import Apps
+from djorm.db import models
 
 
 class CustomModelBase(models.base.ModelBase):

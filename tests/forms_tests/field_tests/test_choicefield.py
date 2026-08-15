@@ -1,7 +1,7 @@
-from django.core.exceptions import ValidationError
-from django.db import models
-from django.forms import ChoiceField, Form
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ValidationError
+from djorm.db import models
+from djorm.forms import ChoiceField, Form
+from djorm.test import SimpleTestCase
 
 from . import FormFieldAssertionsMixin
 

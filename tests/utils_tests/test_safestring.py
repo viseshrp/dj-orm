@@ -1,9 +1,9 @@
-from django.template import Context, Template
-from django.test import SimpleTestCase
-from django.utils import html, translation
-from django.utils.functional import Promise, lazy, lazystr
-from django.utils.safestring import SafeData, SafeString, mark_safe
-from django.utils.translation import gettext_lazy
+from djorm.template import Context, Template
+from djorm.test import SimpleTestCase
+from djorm.utils import html, translation
+from djorm.utils.functional import Promise, lazy, lazystr
+from djorm.utils.safestring import SafeData, SafeString, mark_safe
+from djorm.utils.translation import gettext_lazy
 
 
 class customescape(str):

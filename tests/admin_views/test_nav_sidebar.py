@@ -1,8 +1,8 @@
-from django.contrib import admin
-from django.contrib.admin.tests import AdminSeleniumTestCase
-from django.contrib.auth.models import User
-from django.test import TestCase, override_settings
-from django.urls import path, reverse
+from djorm.contrib import admin
+from djorm.contrib.admin.tests import AdminSeleniumTestCase
+from djorm.contrib.auth.models import User
+from djorm.test import TestCase, override_settings
+from djorm.urls import path, reverse
 
 from .models import Héllo
 
@@ -73,13 +73,13 @@ class AdminSidebarTests(TestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "DIRS": [],
                 "APP_DIRS": True,
                 "OPTIONS": {
                     "context_processors": [
-                        "django.contrib.auth.context_processors.auth",
-                        "django.contrib.messages.context_processors.messages",
+                        'djorm.contrib.auth.context_processors.auth',
+                        'djorm.contrib.messages.context_processors.messages',
                     ],
                 },
             }
@@ -99,7 +99,7 @@ class AdminSidebarTests(TestCase):
     def test_included_app_list_template_context_fully_set(self):
         # All context variables should be set when rendering the sidebar.
         url = reverse("test_with_sidebar:auth_user_changelist")
-        with self.assertNoLogs("django.template", "DEBUG"):
+        with self.assertNoLogs('djorm.template', "DEBUG"):
             self.client.get(url)
 
     def test_sidebar_model_name_non_ascii(self):

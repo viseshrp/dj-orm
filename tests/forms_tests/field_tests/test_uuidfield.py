@@ -1,8 +1,8 @@
 import uuid
 
-from django.core.exceptions import ValidationError
-from django.forms import UUIDField
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ValidationError
+from djorm.forms import UUIDField
+from djorm.test import SimpleTestCase
 
 
 class UUIDFieldTest(SimpleTestCase):

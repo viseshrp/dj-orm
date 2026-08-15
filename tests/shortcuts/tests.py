@@ -1,7 +1,7 @@
-from django.http.response import HttpResponseRedirectBase
-from django.shortcuts import redirect
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import require_jinja2
+from djorm.http.response import HttpResponseRedirectBase
+from djorm.shortcuts import redirect
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import require_jinja2
 
 
 @override_settings(ROOT_URLCONF="shortcuts.urls")

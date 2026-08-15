@@ -1,10 +1,10 @@
 import os
 
-from django.template import Context, Engine, TemplateSyntaxError
-from django.template.base import Node
-from django.template.library import InvalidTemplateLibrary
-from django.test import SimpleTestCase
-from django.test.utils import extend_sys_path
+from djorm.template import Context, Engine, TemplateSyntaxError
+from djorm.template.base import Node
+from djorm.template.library import InvalidTemplateLibrary
+from djorm.test import SimpleTestCase
+from djorm.test.utils import extend_sys_path
 
 from .templatetags import custom, inclusion
 from .utils import ROOT

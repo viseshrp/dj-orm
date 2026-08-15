@@ -1,13 +1,11 @@
-"""
-Tests for stuff in django.utils.datastructures.
-"""
+'\nTests for stuff in djorm.utils.datastructures.\n'
 
 import collections.abc
 import copy
 import pickle
 
-from django.test import SimpleTestCase
-from django.utils.datastructures import (
+from djorm.test import SimpleTestCase
+from djorm.utils.datastructures import (
     CaseInsensitiveMapping,
     DictWrapper,
     ImmutableList,

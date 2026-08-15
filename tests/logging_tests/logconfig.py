@@ -1,8 +1,8 @@
 import logging
 
-from django.conf import settings
-from django.core.mail.backends.base import BaseEmailBackend
-from django.views.debug import ExceptionReporter
+from djorm.conf import settings
+from djorm.core.mail.backends.base import BaseEmailBackend
+from djorm.views.debug import ExceptionReporter
 
 
 class MyHandler(logging.Handler):

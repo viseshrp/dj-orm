@@ -5,9 +5,9 @@ from unittest.case import TestCase
 from unittest.result import TestResult
 from unittest.suite import TestSuite, _ErrorHolder
 
-from django.test import SimpleTestCase
-from django.test.runner import ParallelTestSuite, RemoteTestResult
-from django.utils.version import PY311, PY312
+from djorm.test import SimpleTestCase
+from djorm.test.runner import ParallelTestSuite, RemoteTestResult
+from djorm.utils.version import PY311, PY312
 
 try:
     import tblib.pickling_support

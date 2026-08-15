@@ -1,11 +1,11 @@
 import datetime
 
-from django.contrib.sites.models import Site
-from django.http import Http404
-from django.template import TemplateDoesNotExist
-from django.test import RequestFactory, TestCase
-from django.test.utils import override_settings
-from django.views.defaults import (
+from djorm.contrib.sites.models import Site
+from djorm.http import Http404
+from djorm.template import TemplateDoesNotExist
+from djorm.test import RequestFactory, TestCase
+from djorm.test.utils import override_settings
+from djorm.views.defaults import (
     bad_request,
     page_not_found,
     permission_denied,
@@ -68,11 +68,11 @@ class DefaultsTests(TestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "OPTIONS": {
                     "loaders": [
                         (
-                            "django.template.loaders.locmem.Loader",
+                            'djorm.template.loaders.locmem.Loader',
                             {
                                 "404.html": "{{ csrf_token }}",
                             },
@@ -105,11 +105,11 @@ class DefaultsTests(TestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "OPTIONS": {
                     "loaders": [
                         (
-                            "django.template.loaders.locmem.Loader",
+                            'djorm.template.loaders.locmem.Loader',
                             {
                                 "400.html": (
                                     "This is a test template for a 400 error "
@@ -128,11 +128,11 @@ class DefaultsTests(TestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "OPTIONS": {
                     "loaders": [
                         (
-                            "django.template.loaders.locmem.Loader",
+                            'djorm.template.loaders.locmem.Loader',
                             {
                                 "404.html": (
                                     "This is a test template for a 404 error "

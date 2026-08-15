@@ -3,14 +3,14 @@ import unittest.mock
 import warnings
 from datetime import datetime
 
-from django.core.paginator import (
+from djorm.core.paginator import (
     EmptyPage,
     InvalidPage,
     PageNotAnInteger,
     Paginator,
     UnorderedObjectListWarning,
 )
-from django.test import SimpleTestCase, TestCase
+from djorm.test import SimpleTestCase, TestCase
 
 from .custom import ValidAdjacentNumsPaginator
 from .models import Article

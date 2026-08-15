@@ -8,12 +8,12 @@ from unittest import mock
 
 from admin_scripts.tests import AdminScriptTestCase
 
-from django.apps import apps
-from django.core import management
-from django.core.checks import Tags
-from django.core.management import BaseCommand, CommandError, find_commands
-from django.core.management.base import OutputWrapper
-from django.core.management.utils import (
+from djorm.apps import apps
+from djorm.core import management
+from djorm.core.checks import Tags
+from djorm.core.management import BaseCommand, CommandError, find_commands
+from djorm.core.management.base import OutputWrapper
+from djorm.core.management.utils import (
     find_command,
     get_random_secret_key,
     is_ignored_path,
@@ -21,11 +21,11 @@ from django.core.management.utils import (
     popen_wrapper,
     run_formatters,
 )
-from django.db import connection
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import captured_stderr, extend_sys_path
-from django.utils import translation
-from django.utils.version import PY314
+from djorm.db import connection
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import captured_stderr, extend_sys_path
+from djorm.utils import translation
+from djorm.utils.version import PY314
 
 from .management.commands import dance
 from .utils import AssertFormatterFailureCaughtContext
@@ -57,8 +57,8 @@ class OutputWrapperTests(SimpleTestCase):
 # A minimal set of apps to avoid system checks running on all apps.
 @override_settings(
     INSTALLED_APPS=[
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
+        'djorm.contrib.auth',
+        'djorm.contrib.contenttypes',
         "user_commands",
     ],
 )
@@ -220,14 +220,14 @@ class CommandTests(SimpleTestCase):
 
     def test_requires_system_checks_empty(self):
         with mock.patch(
-            "django.core.management.base.BaseCommand.check"
+            'djorm.core.management.base.BaseCommand.check'
         ) as mocked_check:
             management.call_command("no_system_checks")
         self.assertIs(mocked_check.called, False)
 
     def test_requires_system_checks_specific(self):
         with mock.patch(
-            "django.core.management.base.BaseCommand.check"
+            'djorm.core.management.base.BaseCommand.check'
         ) as mocked_check:
             management.call_command("specific_system_checks", skip_checks=False)
         mocked_check.assert_called_once_with(tags=[Tags.staticfiles, Tags.models])
@@ -516,7 +516,7 @@ class CommandRunTests(AdminScriptTestCase):
     def test_skip_checks(self):
         self.write_settings(
             "settings.py",
-            apps=["django.contrib.staticfiles", "user_commands"],
+            apps=['djorm.contrib.staticfiles', "user_commands"],
             sdict={
                 # (staticfiles.E001) The STATICFILES_DIRS setting is not a tuple or
                 # list.

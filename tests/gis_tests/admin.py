@@ -1,6 +1,6 @@
 try:
-    from django.contrib.gis import admin
+    from djorm.contrib.gis import admin
 except ImportError:
-    from django.contrib import admin
+    from djorm.contrib import admin
 
     admin.GISModelAdmin = admin.ModelAdmin

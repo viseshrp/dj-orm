@@ -4,24 +4,24 @@ from itertools import chain
 from unittest import mock
 from urllib.parse import urlencode
 
-from django.core.exceptions import BadRequest, DisallowedHost
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.core.files.uploadhandler import MemoryFileUploadHandler
-from django.core.handlers.wsgi import LimitedStream, WSGIRequest
-from django.http import (
+from djorm.core.exceptions import BadRequest, DisallowedHost
+from djorm.core.files.uploadedfile import InMemoryUploadedFile
+from djorm.core.files.uploadhandler import MemoryFileUploadHandler
+from djorm.core.handlers.wsgi import LimitedStream, WSGIRequest
+from djorm.http import (
     HttpHeaders,
     HttpRequest,
     RawPostDataException,
     UnreadablePostError,
 )
-from django.http.multipartparser import (
+from djorm.http.multipartparser import (
     MAX_TOTAL_HEADER_SIZE,
     LazyStream,
     MultiPartParserError,
 )
-from django.http.request import split_domain_port
-from django.test import RequestFactory, SimpleTestCase, override_settings
-from django.test.client import BOUNDARY, MULTIPART_CONTENT, FakePayload
+from djorm.http.request import split_domain_port
+from djorm.test import RequestFactory, SimpleTestCase, override_settings
+from djorm.test.client import BOUNDARY, MULTIPART_CONTENT, FakePayload
 
 
 class ErrorFileUploadHandler(MemoryFileUploadHandler):

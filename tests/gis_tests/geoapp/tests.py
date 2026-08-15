@@ -3,10 +3,10 @@ from io import StringIO
 from pathlib import Path
 from unittest import mock
 
-from django.contrib.gis import gdal
-from django.contrib.gis.db.models import Extent, MakeLine, Union, functions
-from django.contrib.gis.gdal.raster.source import DisallowedRasterLookup
-from django.contrib.gis.geos import (
+from djorm.contrib.gis import gdal
+from djorm.contrib.gis.db.models import Extent, MakeLine, Union, functions
+from djorm.contrib.gis.gdal.raster.source import DisallowedRasterLookup
+from djorm.contrib.gis.geos import (
     GeometryCollection,
     GEOSGeometry,
     LinearRing,
@@ -18,12 +18,12 @@ from django.contrib.gis.geos import (
     Polygon,
     fromstr,
 )
-from django.core.files.temp import NamedTemporaryFile
-from django.core.management import call_command
-from django.db import DatabaseError, NotSupportedError, connection
-from django.db.models import F, OuterRef, Subquery
-from django.test import SimpleTestCase, TestCase, skipUnlessDBFeature
-from django.test.utils import CaptureQueriesContext
+from djorm.core.files.temp import NamedTemporaryFile
+from djorm.core.management import call_command
+from djorm.db import DatabaseError, NotSupportedError, connection
+from djorm.db.models import F, OuterRef, Subquery
+from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djorm.test.utils import CaptureQueriesContext
 
 from ..data.rasters.textrasters import JSON_RASTER
 from ..utils import skipUnlessGISLookup
@@ -296,10 +296,10 @@ class SaveLoadTests(TestCase):
         obj = GeometryCollectionModel.objects.create(geom=geom)
         with (
             mock.patch(
-                "django.contrib.gis.geos.prototypes.io._WKBReader.limit_hex"
+                'djorm.contrib.gis.geos.prototypes.io._WKBReader.limit_hex'
             ) as hex_limit_mock,
             mock.patch(
-                "django.contrib.gis.geos.prototypes.io._WKBReader.limit_wkb"
+                'djorm.contrib.gis.geos.prototypes.io._WKBReader.limit_wkb'
             ) as wkb_limit_mock,
         ):
             obj.refresh_from_db()
@@ -545,7 +545,7 @@ class GeoLookupTest(TestCase):
 
     def test_wkt_string_in_lookup(self):
         # Valid WKT strings don't emit error logs.
-        with self.assertNoLogs("django.contrib.gis", "ERROR"):
+        with self.assertNoLogs('djorm.contrib.gis', "ERROR"):
             State.objects.filter(poly__intersects="LINESTRING(0 0, 1 1, 5 5)")
 
     @skipUnlessGISLookup("coveredby")

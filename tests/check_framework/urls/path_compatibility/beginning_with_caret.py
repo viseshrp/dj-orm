@@ -1,4 +1,4 @@
-from django.urls import path
+from djorm.urls import path
 
 urlpatterns = [
     path("^beginning-with-caret", lambda x: x),

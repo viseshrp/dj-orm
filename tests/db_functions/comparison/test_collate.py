@@ -1,7 +1,7 @@
-from django.db import connection
-from django.db.models import F, Value
-from django.db.models.functions import Collate
-from django.test import TestCase
+from djorm.db import connection
+from djorm.db.models import F, Value
+from djorm.db.models.functions import Collate
+from djorm.test import TestCase
 
 from ..models import Author
 

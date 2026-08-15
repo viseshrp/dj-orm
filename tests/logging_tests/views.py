@@ -1,11 +1,11 @@
-from django.core.exceptions import DisallowedHost, PermissionDenied, SuspiciousOperation
-from django.http import (
+from djorm.core.exceptions import DisallowedHost, PermissionDenied, SuspiciousOperation
+from djorm.http import (
     Http404,
     HttpResponse,
     HttpResponseRedirect,
     HttpResponseServerError,
 )
-from django.http.multipartparser import MultiPartParserError
+from djorm.http.multipartparser import MultiPartParserError
 
 
 def innocent(request):

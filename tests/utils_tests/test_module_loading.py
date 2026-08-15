@@ -4,9 +4,9 @@ import unittest
 from importlib import import_module
 from zipimport import zipimporter
 
-from django.test import SimpleTestCase, modify_settings
-from django.test.utils import extend_sys_path
-from django.utils.module_loading import (
+from djorm.test import SimpleTestCase, modify_settings
+from djorm.test.utils import extend_sys_path
+from djorm.utils.module_loading import (
     autodiscover_modules,
     import_string,
     module_has_submodule,
@@ -130,7 +130,7 @@ class EggLoader(unittest.TestCase):
 
 class ModuleImportTests(SimpleTestCase):
     def test_import_string(self):
-        cls = import_string("django.utils.module_loading.import_string")
+        cls = import_string('djorm.utils.module_loading.import_string')
         self.assertEqual(cls, import_string)
 
         # Test exceptions raised

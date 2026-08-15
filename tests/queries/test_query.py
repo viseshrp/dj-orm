@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from django.core.exceptions import FieldError
-from django.db import DEFAULT_DB_ALIAS, connection
-from django.db.models import BooleanField, CharField, F, Q
-from django.db.models.expressions import (
+from djorm.core.exceptions import FieldError
+from djorm.db import DEFAULT_DB_ALIAS, connection
+from djorm.db.models import BooleanField, CharField, F, Q
+from djorm.db.models.expressions import (
     Col,
     Exists,
     ExpressionWrapper,
@@ -11,14 +11,14 @@ from django.db.models.expressions import (
     RawSQL,
     Value,
 )
-from django.db.models.fields.related_lookups import RelatedIsNull
-from django.db.models.functions import Lower
-from django.db.models.lookups import Exact, GreaterThan, IsNull, LessThan
-from django.db.models.sql.constants import SINGLE
-from django.db.models.sql.query import JoinPromoter, Query, get_field_names_from_opts
-from django.db.models.sql.where import AND, OR
-from django.test import SimpleTestCase, TestCase, skipUnlessDBFeature
-from django.test.utils import register_lookup
+from djorm.db.models.fields.related_lookups import RelatedIsNull
+from djorm.db.models.functions import Lower
+from djorm.db.models.lookups import Exact, GreaterThan, IsNull, LessThan
+from djorm.db.models.sql.constants import SINGLE
+from djorm.db.models.sql.query import JoinPromoter, Query, get_field_names_from_opts
+from djorm.db.models.sql.where import AND, OR
+from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djorm.test.utils import register_lookup
 
 from .models import Author, Item, ObjectC, Ranking
 

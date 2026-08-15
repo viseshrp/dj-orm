@@ -2,8 +2,8 @@ from datetime import date
 from decimal import Decimal
 from unittest import mock
 
-from django.db import connection, transaction
-from django.db.models import (
+from djorm.db import connection, transaction
+from djorm.db.models import (
     BooleanField,
     Case,
     Count,
@@ -16,10 +16,10 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.functions import Concat
-from django.db.models.lookups import Exact, IStartsWith
-from django.test import TestCase
-from django.test.testcases import skipUnlessDBFeature
+from djorm.db.models.functions import Concat
+from djorm.db.models.lookups import Exact, IStartsWith
+from djorm.test import TestCase
+from djorm.test.testcases import skipUnlessDBFeature
 
 from .models import (
     Author,

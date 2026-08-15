@@ -1,11 +1,11 @@
 from io import BytesIO
 from socketserver import ThreadingMixIn
 
-from django.core.handlers.wsgi import WSGIRequest
-from django.core.servers.basehttp import WSGIRequestHandler, WSGIServer
-from django.test import SimpleTestCase
-from django.test.client import RequestFactory
-from django.test.utils import captured_stderr
+from djorm.core.handlers.wsgi import WSGIRequest
+from djorm.core.servers.basehttp import WSGIRequestHandler, WSGIServer
+from djorm.test import SimpleTestCase
+from djorm.test.client import RequestFactory
+from djorm.test.utils import captured_stderr
 
 
 class Stub(ThreadingMixIn):

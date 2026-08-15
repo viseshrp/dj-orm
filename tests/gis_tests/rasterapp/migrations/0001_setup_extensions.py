@@ -1,7 +1,7 @@
-from django.db import connection, migrations
+from djorm.db import connection, migrations
 
 if connection.features.supports_raster:
-    from django.contrib.postgres.operations import CreateExtension
+    from djorm.contrib.postgres.operations import CreateExtension
 
     class Migration(migrations.Migration):
         operations = [

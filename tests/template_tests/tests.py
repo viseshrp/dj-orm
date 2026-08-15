@@ -2,12 +2,12 @@ import sys
 import unittest
 from typing import TYPE_CHECKING, TypeAlias
 
-from django.template import Context, Engine, TemplateDoesNotExist, TemplateSyntaxError
-from django.template.base import UNKNOWN_SOURCE
-from django.test import SimpleTestCase, override_settings
-from django.urls import NoReverseMatch
-from django.utils import translation
-from django.utils.version import PY314
+from djorm.template import Context, Engine, TemplateDoesNotExist, TemplateSyntaxError
+from djorm.template.base import UNKNOWN_SOURCE
+from djorm.test import SimpleTestCase, override_settings
+from djorm.urls import NoReverseMatch
+from djorm.utils import translation
+from djorm.utils.version import PY314
 
 if TYPE_CHECKING:
     AnnotatedKwarg: TypeAlias = str
@@ -199,10 +199,7 @@ class TemplateTestMixin:
             t.render(Context())
 
     def test_extends_generic_template(self):
-        """
-        #24338 -- Allow extending django.template.backends.django.Template
-        objects.
-        """
+        '\n        #24338 -- Allow extending djorm.template.backends.django.Template\n        objects.\n        '
         engine = self._engine()
         parent = engine.from_string("{% block content %}parent{% endblock %}")
         child = engine.from_string(

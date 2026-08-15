@@ -3,9 +3,9 @@ import unittest
 from datetime import datetime, timezone
 from unittest import mock
 
-from django.test import SimpleTestCase
-from django.utils.datastructures import MultiValueDict
-from django.utils.http import (
+from djorm.test import SimpleTestCase
+from djorm.utils.datastructures import MultiValueDict
+from djorm.utils.http import (
     MAX_URL_LENGTH,
     base36_to_int,
     content_disposition_header,
@@ -350,7 +350,7 @@ class HttpDateProcessingTests(unittest.TestCase):
         )
 
     @unittest.skipIf(platform.architecture()[0] == "32bit", "The Year 2038 problem.")
-    @mock.patch("django.utils.http.datetime")
+    @mock.patch('djorm.utils.http.datetime')
     def test_parsing_rfc850(self, mocked_datetime):
         mocked_datetime.side_effect = datetime
         now_1 = datetime(2019, 11, 6, 8, 49, 37, tzinfo=timezone.utc)

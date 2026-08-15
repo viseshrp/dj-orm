@@ -7,12 +7,12 @@ import warnings
 from io import StringIO
 from unittest import mock
 
-from django.conf import STATICFILES_STORAGE_ALIAS, settings
-from django.contrib.staticfiles.finders import get_finder, get_finders
-from django.contrib.staticfiles.storage import staticfiles_storage
-from django.core.exceptions import ImproperlyConfigured
-from django.core.files.storage import default_storage
-from django.db import (
+from djorm.conf import STATICFILES_STORAGE_ALIAS, settings
+from djorm.contrib.staticfiles.finders import get_finder, get_finders
+from djorm.contrib.staticfiles.storage import staticfiles_storage
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.core.files.storage import default_storage
+from djorm.db import (
     IntegrityError,
     connection,
     connections,
@@ -20,7 +20,7 @@ from django.db import (
     router,
     transaction,
 )
-from django.forms import (
+from djorm.forms import (
     CharField,
     EmailField,
     Form,
@@ -28,28 +28,28 @@ from django.forms import (
     ValidationError,
     formset_factory,
 )
-from django.http import HttpResponse
-from django.template import Context, Template
-from django.template.loader import render_to_string
-from django.test import (
+from djorm.http import HttpResponse
+from djorm.template import Context, Template
+from djorm.template.loader import render_to_string
+from djorm.test import (
     SimpleTestCase,
     TestCase,
     TransactionTestCase,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from django.test.html import HTMLParseError, parse_html
-from django.test.testcases import DatabaseOperationForbidden
-from django.test.utils import (
+from djorm.test.html import HTMLParseError, parse_html
+from djorm.test.testcases import DatabaseOperationForbidden
+from djorm.test.utils import (
     CaptureQueriesContext,
     TestContextDecorator,
     isolate_apps,
     override_settings,
     setup_test_environment,
 )
-from django.urls import NoReverseMatch, path, reverse, reverse_lazy
-from django.utils.html import VOID_ELEMENTS
-from django.utils.version import PY311
+from djorm.urls import NoReverseMatch, path, reverse, reverse_lazy
+from djorm.utils.html import VOID_ELEMENTS
+from djorm.utils.version import PY311
 
 from .models import Car, Person, PossessedCar
 from .views import empty_response
@@ -68,9 +68,7 @@ class SkippingTestCase(SimpleTestCase):
             self.fail("%s should not result in a skipped test." % func.__name__)
 
     def test_skip_unless_db_feature(self):
-        """
-        Testing the django.test.skipUnlessDBFeature decorator.
-        """
+        '\n        Testing the djorm.test.skipUnlessDBFeature decorator.\n        '
 
         # Total hack, but it works, just want an attribute that's always true.
         @skipUnlessDBFeature("__class__")
@@ -111,9 +109,7 @@ class SkippingTestCase(SimpleTestCase):
         )
 
     def test_skip_if_db_feature(self):
-        """
-        Testing the django.test.skipIfDBFeature decorator.
-        """
+        '\n        Testing the djorm.test.skipIfDBFeature decorator.\n        '
 
         @skipIfDBFeature("__class__")
         def test_func():
@@ -261,7 +257,7 @@ class AssertNumQueriesUponConnectionTests(TransactionTestCase):
                     cursor.execute("SELECT 1" + connection.features.bare_select_suffix)
 
         ensure_connection = (
-            "django.db.backends.base.base.BaseDatabaseWrapper.ensure_connection"
+            'djorm.db.backends.base.base.BaseDatabaseWrapper.ensure_connection'
         )
         with mock.patch(ensure_connection, side_effect=make_configuration_query):
             with self.assertNumQueries(1):
@@ -1735,7 +1731,7 @@ class SetupTestEnvironmentTests(SimpleTestCase):
         for type_ in (list, tuple):
             with self.subTest(type_=type_):
                 allowed_hosts = type_("*")
-                with mock.patch("django.test.utils._TestState") as x:
+                with mock.patch('djorm.test.utils._TestState') as x:
                     del x.saved_data
                     with self.settings(ALLOWED_HOSTS=allowed_hosts):
                         setup_test_environment()
@@ -1781,39 +1777,25 @@ class OverrideSettingsTests(SimpleTestCase):
             reverse("second")
 
     def test_override_media_root(self):
-        """
-        Overriding the MEDIA_ROOT setting should be reflected in the
-        base_location attribute of django.core.files.storage.default_storage.
-        """
+        '\n        Overriding the MEDIA_ROOT setting should be reflected in the\n        base_location attribute of djorm.core.files.storage.default_storage.\n        '
         self.assertEqual(default_storage.base_location, "")
         with self.settings(MEDIA_ROOT="test_value"):
             self.assertEqual(default_storage.base_location, "test_value")
 
     def test_override_media_url(self):
-        """
-        Overriding the MEDIA_URL setting should be reflected in the
-        base_url attribute of django.core.files.storage.default_storage.
-        """
+        '\n        Overriding the MEDIA_URL setting should be reflected in the\n        base_url attribute of djorm.core.files.storage.default_storage.\n        '
         self.assertEqual(default_storage.base_location, "")
         with self.settings(MEDIA_URL="/test_value/"):
             self.assertEqual(default_storage.base_url, "/test_value/")
 
     def test_override_file_upload_permissions(self):
-        """
-        Overriding the FILE_UPLOAD_PERMISSIONS setting should be reflected in
-        the file_permissions_mode attribute of
-        django.core.files.storage.default_storage.
-        """
+        '\n        Overriding the FILE_UPLOAD_PERMISSIONS setting should be reflected in\n        the file_permissions_mode attribute of\n        djorm.core.files.storage.default_storage.\n        '
         self.assertEqual(default_storage.file_permissions_mode, 0o644)
         with self.settings(FILE_UPLOAD_PERMISSIONS=0o777):
             self.assertEqual(default_storage.file_permissions_mode, 0o777)
 
     def test_override_file_upload_directory_permissions(self):
-        """
-        Overriding the FILE_UPLOAD_DIRECTORY_PERMISSIONS setting should be
-        reflected in the directory_permissions_mode attribute of
-        django.core.files.storage.default_storage.
-        """
+        '\n        Overriding the FILE_UPLOAD_DIRECTORY_PERMISSIONS setting should be\n        reflected in the directory_permissions_mode attribute of\n        djorm.core.files.storage.default_storage.\n        '
         self.assertIsNone(default_storage.directory_permissions_mode)
         with self.settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777):
             self.assertEqual(default_storage.directory_permissions_mode, 0o777)
@@ -1827,58 +1809,40 @@ class OverrideSettingsTests(SimpleTestCase):
             self.assertEqual(router.routers, test_routers)
 
     def test_override_static_url(self):
-        """
-        Overriding the STATIC_URL setting should be reflected in the
-        base_url attribute of
-        django.contrib.staticfiles.storage.staticfiles_storage.
-        """
+        '\n        Overriding the STATIC_URL setting should be reflected in the\n        base_url attribute of\n        djorm.contrib.staticfiles.storage.staticfiles_storage.\n        '
         with self.settings(STATIC_URL="/test/"):
             self.assertEqual(staticfiles_storage.base_url, "/test/")
 
     def test_override_static_root(self):
-        """
-        Overriding the STATIC_ROOT setting should be reflected in the
-        location attribute of
-        django.contrib.staticfiles.storage.staticfiles_storage.
-        """
+        '\n        Overriding the STATIC_ROOT setting should be reflected in the\n        location attribute of\n        djorm.contrib.staticfiles.storage.staticfiles_storage.\n        '
         with self.settings(STATIC_ROOT="/tmp/test"):
             self.assertEqual(staticfiles_storage.location, os.path.abspath("/tmp/test"))
 
     def test_override_staticfiles_storage(self):
-        """
-        Overriding the STORAGES setting should be reflected in
-        the value of django.contrib.staticfiles.storage.staticfiles_storage.
-        """
+        '\n        Overriding the STORAGES setting should be reflected in\n        the value of djorm.contrib.staticfiles.storage.staticfiles_storage.\n        '
         new_class = "ManifestStaticFilesStorage"
-        new_storage = "django.contrib.staticfiles.storage." + new_class
+        new_storage = 'djorm.contrib.staticfiles.storage.' + new_class
         with self.settings(
             STORAGES={STATICFILES_STORAGE_ALIAS: {"BACKEND": new_storage}}
         ):
             self.assertEqual(staticfiles_storage.__class__.__name__, new_class)
 
     def test_override_staticfiles_finders(self):
-        """
-        Overriding the STATICFILES_FINDERS setting should be reflected in
-        the return value of django.contrib.staticfiles.finders.get_finders.
-        """
+        '\n        Overriding the STATICFILES_FINDERS setting should be reflected in\n        the return value of djorm.contrib.staticfiles.finders.get_finders.\n        '
         current = get_finders()
         self.assertGreater(len(list(current)), 1)
-        finders = ["django.contrib.staticfiles.finders.FileSystemFinder"]
+        finders = ['djorm.contrib.staticfiles.finders.FileSystemFinder']
         with self.settings(STATICFILES_FINDERS=finders):
             self.assertEqual(len(list(get_finders())), len(finders))
 
     def test_override_staticfiles_dirs(self):
-        """
-        Overriding the STATICFILES_DIRS setting should be reflected in
-        the locations attribute of the
-        django.contrib.staticfiles.finders.FileSystemFinder instance.
-        """
-        finder = get_finder("django.contrib.staticfiles.finders.FileSystemFinder")
+        '\n        Overriding the STATICFILES_DIRS setting should be reflected in\n        the locations attribute of the\n        djorm.contrib.staticfiles.finders.FileSystemFinder instance.\n        '
+        finder = get_finder('djorm.contrib.staticfiles.finders.FileSystemFinder')
         test_path = "/tmp/test"
         expected_location = ("", test_path)
         self.assertNotIn(expected_location, finder.locations)
         with self.settings(STATICFILES_DIRS=[test_path]):
-            finder = get_finder("django.contrib.staticfiles.finders.FileSystemFinder")
+            finder = get_finder('djorm.contrib.staticfiles.finders.FileSystemFinder')
             self.assertIn(expected_location, finder.locations)
 
 
@@ -2049,7 +2013,7 @@ class CaptureOnCommitCallbacksTests(TestCase):
             self.callback_called = True
             raise MyException("robust callback")
 
-        with self.assertLogs("django.test", "ERROR") as cm:
+        with self.assertLogs('djorm.test', "ERROR") as cm:
             with self.captureOnCommitCallbacks(execute=True) as callbacks:
                 transaction.on_commit(hook, robust=True)
 
@@ -2143,7 +2107,7 @@ class AllowedDatabaseQueriesTests(SimpleTestCase):
         def thread_func():
             # Passing django.db.connection between threads doesn't work while
             # connections[DEFAULT_DB_ALIAS] does.
-            from django.db import connections
+            from djorm.db import connections
 
             connection = connections["default"]
 

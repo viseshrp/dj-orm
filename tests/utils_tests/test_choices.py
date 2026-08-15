@@ -1,15 +1,15 @@
 import collections.abc
 from unittest import mock
 
-from django.db.models import TextChoices
-from django.test import SimpleTestCase
-from django.utils.choices import (
+from djorm.db.models import TextChoices
+from djorm.test import SimpleTestCase
+from djorm.utils.choices import (
     BaseChoiceIterator,
     CallableChoiceIterator,
     flatten_choices,
     normalize_choices,
 )
-from django.utils.translation import gettext_lazy as _
+from djorm.utils.translation import gettext_lazy as _
 
 
 class SimpleChoiceIterator(BaseChoiceIterator):

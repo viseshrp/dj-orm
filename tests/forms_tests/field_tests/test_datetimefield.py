@@ -1,9 +1,9 @@
 from datetime import date, datetime, timezone
 
-from django.core.exceptions import ValidationError
-from django.forms import DateTimeField
-from django.test import SimpleTestCase
-from django.utils.timezone import get_fixed_timezone
+from djorm.core.exceptions import ValidationError
+from djorm.forms import DateTimeField
+from djorm.test import SimpleTestCase
+from djorm.utils.timezone import get_fixed_timezone
 
 
 class DateTimeFieldTest(SimpleTestCase):

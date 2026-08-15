@@ -1,8 +1,8 @@
 from copy import copy
 from unittest import mock
 
-from django.http import HttpRequest
-from django.template import (
+from djorm.http import HttpRequest
+from djorm.template import (
     Context,
     Engine,
     RequestContext,
@@ -10,8 +10,8 @@ from django.template import (
     Variable,
     VariableDoesNotExist,
 )
-from django.template.context import RenderContext
-from django.test import RequestFactory, SimpleTestCase, override_settings
+from djorm.template.context import RenderContext
+from djorm.test import RequestFactory, SimpleTestCase, override_settings
 
 
 class ContextTests(SimpleTestCase):
@@ -249,7 +249,7 @@ class RequestContextTests(SimpleTestCase):
         engine = Engine(
             loaders=[
                 (
-                    "django.template.loaders.locmem.Loader",
+                    'djorm.template.loaders.locmem.Loader',
                     {
                         "child": '{{ var|default:"none" }}',
                     },
@@ -296,10 +296,10 @@ class RequestContextTests(SimpleTestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "OPTIONS": {
                     "context_processors": [
-                        "django.template.context_processors.request",
+                        'djorm.template.context_processors.request',
                         "template_tests.test_context.context_process_returning_none",
                     ],
                 },

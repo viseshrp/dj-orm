@@ -1,5 +1,5 @@
-from django.http import HttpResponse
-from django.views.decorators.http import condition, etag, last_modified
+from djorm.http import HttpResponse
+from djorm.views.decorators.http import condition, etag, last_modified
 
 from .tests import ETAG, FULL_RESPONSE, LAST_MODIFIED, WEAK_ETAG
 

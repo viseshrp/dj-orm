@@ -1,10 +1,10 @@
 from urllib.parse import urljoin
 
-from django.conf import STATICFILES_STORAGE_ALIAS
-from django.contrib.staticfiles import storage
-from django.forms import Media
-from django.templatetags.static import static
-from django.test import SimpleTestCase, override_settings
+from djorm.conf import STATICFILES_STORAGE_ALIAS
+from djorm.contrib.staticfiles import storage
+from djorm.forms import Media
+from djorm.templatetags.static import static
+from djorm.test import SimpleTestCase, override_settings
 
 
 class StaticTestStorage(storage.StaticFilesStorage):
@@ -13,7 +13,7 @@ class StaticTestStorage(storage.StaticFilesStorage):
 
 
 @override_settings(
-    INSTALLED_APPS=("django.contrib.staticfiles",),
+    INSTALLED_APPS=('djorm.contrib.staticfiles',),
     STORAGES={
         STATICFILES_STORAGE_ALIAS: {
             "BACKEND": "staticfiles_tests.test_forms.StaticTestStorage",

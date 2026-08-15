@@ -1,5 +1,5 @@
-from django.forms.models import ModelForm, inlineformset_factory
-from django.test import TestCase, skipUnlessDBFeature
+from djorm.forms.models import ModelForm, inlineformset_factory
+from djorm.test import TestCase, skipUnlessDBFeature
 
 from .models import Child, Parent, Poem, Poet, School
 

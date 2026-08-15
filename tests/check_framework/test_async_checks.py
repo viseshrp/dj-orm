@@ -1,8 +1,8 @@
 import os
 from unittest import mock
 
-from django.core.checks.async_checks import E001, check_async_unsafe
-from django.test import SimpleTestCase
+from djorm.core.checks.async_checks import E001, check_async_unsafe
+from djorm.test import SimpleTestCase
 
 
 class AsyncCheckTests(SimpleTestCase):

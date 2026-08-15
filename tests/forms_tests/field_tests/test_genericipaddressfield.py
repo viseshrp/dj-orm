@@ -1,7 +1,7 @@
-from django.core.exceptions import ValidationError
-from django.forms import GenericIPAddressField
-from django.test import SimpleTestCase
-from django.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH
+from djorm.core.exceptions import ValidationError
+from djorm.forms import GenericIPAddressField
+from djorm.test import SimpleTestCase
+from djorm.utils.ipv6 import MAX_IPV6_ADDRESS_LENGTH
 
 
 class GenericIPAddressFieldTest(SimpleTestCase):

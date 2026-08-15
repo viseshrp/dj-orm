@@ -1,4 +1,4 @@
-from django.forms import ChoiceField, Form, SelectMultiple
+from djorm.forms import ChoiceField, Form, SelectMultiple
 
 from .base import WidgetTest
 

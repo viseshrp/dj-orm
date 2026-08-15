@@ -1,12 +1,12 @@
 import datetime
 from unittest import mock
 
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.views import shortcut
-from django.contrib.sites.models import Site
-from django.contrib.sites.shortcuts import get_current_site
-from django.http import Http404, HttpRequest
-from django.test import TestCase, override_settings
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.contrib.contenttypes.views import shortcut
+from djorm.contrib.sites.models import Site
+from djorm.contrib.sites.shortcuts import get_current_site
+from djorm.http import Http404, HttpRequest
+from djorm.test import TestCase, override_settings
 
 from .models import (  # isort:skip
     Article,
@@ -145,7 +145,7 @@ class ContentTypesViewsSiteRelTests(TestCase):
         cls.site_2 = Site.objects.create(domain="example2.com", name="example2.com")
         cls.site_3 = Site.objects.create(domain="example3.com", name="example3.com")
 
-    @mock.patch("django.apps.apps.get_model")
+    @mock.patch('djorm.apps.apps.get_model')
     def test_shortcut_view_with_null_site_fk(self, get_model):
         """
         The shortcut view works if a model's ForeignKey to site is None.
@@ -163,7 +163,7 @@ class ContentTypesViewsSiteRelTests(TestCase):
         expected_url = "http://example.com%s" % obj.get_absolute_url()
         self.assertRedirects(response, expected_url, fetch_redirect_response=False)
 
-    @mock.patch("django.apps.apps.get_model")
+    @mock.patch('djorm.apps.apps.get_model')
     def test_shortcut_view_with_site_m2m(self, get_model):
         """
         When the object has a ManyToManyField to Site, redirect to the current
@@ -235,13 +235,13 @@ class ShortcutViewTests(TestCase):
         """
         user_ct = ContentType.objects.get_for_model(FooWithUrl)
         obj = FooWithUrl.objects.create(name="john")
-        with self.modify_settings(INSTALLED_APPS={"append": "django.contrib.sites"}):
+        with self.modify_settings(INSTALLED_APPS={"append": 'djorm.contrib.sites'}):
             response = shortcut(self.request, user_ct.id, obj.id)
             self.assertEqual(
                 "http://%s/users/john/" % get_current_site(self.request).domain,
                 response.headers.get("location"),
             )
-        with self.modify_settings(INSTALLED_APPS={"remove": "django.contrib.sites"}):
+        with self.modify_settings(INSTALLED_APPS={"remove": 'djorm.contrib.sites'}):
             response = shortcut(self.request, user_ct.id, obj.id)
             self.assertEqual(
                 "http://Example.com/users/john/", response.headers.get("location")

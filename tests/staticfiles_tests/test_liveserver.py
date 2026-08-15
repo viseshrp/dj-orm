@@ -1,15 +1,11 @@
-"""
-A subset of the tests in tests/servers/tests exercising
-django.contrib.staticfiles.testing.StaticLiveServerTestCase instead of
-django.test.LiveServerTestCase.
-"""
+'\nA subset of the tests in tests/servers/tests exercising\ndjorm.contrib.staticfiles.testing.StaticLiveServerTestCase instead of\ndjorm.test.LiveServerTestCase.\n'
 
 import os
 from urllib.request import urlopen
 
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.core.exceptions import ImproperlyConfigured
-from django.test import modify_settings, override_settings
+from djorm.contrib.staticfiles.testing import StaticLiveServerTestCase
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.test import modify_settings, override_settings
 
 TEST_ROOT = os.path.dirname(__file__)
 TEST_SETTINGS = {

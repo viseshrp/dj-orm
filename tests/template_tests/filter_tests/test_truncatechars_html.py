@@ -1,5 +1,5 @@
-from django.template.defaultfilters import truncatechars_html
-from django.test import SimpleTestCase
+from djorm.template.defaultfilters import truncatechars_html
+from djorm.test import SimpleTestCase
 
 
 class FunctionTests(SimpleTestCase):

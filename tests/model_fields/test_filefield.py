@@ -5,14 +5,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from django.core.exceptions import FieldError, SuspiciousFileOperation
-from django.core.files import File, temp
-from django.core.files.base import ContentFile
-from django.core.files.uploadedfile import TemporaryUploadedFile
-from django.db import IntegrityError, models
-from django.test import TestCase, override_settings
-from django.test.utils import isolate_apps
-from django.utils.version import PY311
+from djorm.core.exceptions import FieldError, SuspiciousFileOperation
+from djorm.core.files import File, temp
+from djorm.core.files.base import ContentFile
+from djorm.core.files.uploadedfile import TemporaryUploadedFile
+from djorm.db import IntegrityError, models
+from djorm.test import TestCase, override_settings
+from djorm.test.utils import isolate_apps
+from djorm.utils.version import PY311
 
 from .models import Document
 

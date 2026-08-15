@@ -5,16 +5,16 @@ from unittest import TestCase, mock
 
 from admin_scripts.tests import AdminScriptTestCase
 
-from django.conf import settings
-from django.core import mail
-from django.core.exceptions import DisallowedHost, PermissionDenied, SuspiciousOperation
-from django.core.files.temp import NamedTemporaryFile
-from django.core.management import color
-from django.http import HttpResponse
-from django.http.multipartparser import MultiPartParserError
-from django.test import RequestFactory, SimpleTestCase, override_settings
-from django.test.utils import LoggingCaptureMixin
-from django.utils.log import (
+from djorm.conf import settings
+from djorm.core import mail
+from djorm.core.exceptions import DisallowedHost, PermissionDenied, SuspiciousOperation
+from djorm.core.files.temp import NamedTemporaryFile
+from djorm.core.management import color
+from djorm.http import HttpResponse
+from djorm.http.multipartparser import MultiPartParserError
+from djorm.test import RequestFactory, SimpleTestCase, override_settings
+from djorm.test.utils import LoggingCaptureMixin
+from djorm.utils.log import (
     DEFAULT_LOGGING,
     AdminEmailHandler,
     CallbackFilter,
@@ -23,7 +23,7 @@ from django.utils.log import (
     ServerFormatter,
     log_response,
 )
-from django.views.debug import ExceptionReporter
+from djorm.views.debug import ExceptionReporter
 
 from . import views
 from .logconfig import MyEmailBackend
@@ -233,8 +233,8 @@ class HandlerLoggingTests(
     USE_I18N=True,
     LANGUAGES=[("en", "English")],
     MIDDLEWARE=[
-        "django.middleware.locale.LocaleMiddleware",
-        "django.middleware.common.CommonMiddleware",
+        'djorm.middleware.locale.LocaleMiddleware',
+        'djorm.middleware.common.CommonMiddleware',
     ],
     ROOT_URLCONF="logging_tests.urls_i18n",
 )
@@ -574,7 +574,7 @@ class SetupConfigureLogging(SimpleTestCase):
     """
 
     def test_configure_initializes_logging(self):
-        from django import setup
+        from djorm import setup
 
         try:
             with override_settings(

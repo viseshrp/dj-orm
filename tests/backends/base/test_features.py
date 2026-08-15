@@ -1,5 +1,5 @@
-from django.db import connection
-from django.test import SimpleTestCase
+from djorm.db import connection
+from djorm.test import SimpleTestCase
 
 
 class TestDatabaseFeatures(SimpleTestCase):

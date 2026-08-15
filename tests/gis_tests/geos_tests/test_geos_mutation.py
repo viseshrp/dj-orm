@@ -4,7 +4,7 @@
 
 import unittest
 
-from django.contrib.gis.geos import (
+from djorm.contrib.gis.geos import (
     LinearRing,
     LineString,
     MultiPoint,

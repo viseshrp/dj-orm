@@ -1,11 +1,11 @@
 import pickle
 
-from django import forms
-from django.core.exceptions import ValidationError
-from django.db import models
-from django.test import SimpleTestCase, TestCase
-from django.utils.choices import CallableChoiceIterator
-from django.utils.functional import lazy
+from djorm import forms
+from djorm.core.exceptions import ValidationError
+from djorm.db import models
+from djorm.test import SimpleTestCase, TestCase
+from djorm.utils.choices import CallableChoiceIterator
+from djorm.utils.functional import lazy
 
 from .models import (
     Bar,
@@ -44,9 +44,9 @@ class BasicFieldTests(SimpleTestCase):
         __repr__() of a field displays its name.
         """
         f = Foo._meta.get_field("a")
-        self.assertEqual(repr(f), "<django.db.models.fields.CharField: a>")
+        self.assertEqual(repr(f), '<djorm.db.models.fields.CharField: a>')
         f = models.fields.CharField()
-        self.assertEqual(repr(f), "<django.db.models.fields.CharField>")
+        self.assertEqual(repr(f), '<djorm.db.models.fields.CharField>')
 
     def test_field_repr_nested(self):
         """__repr__() uses __qualname__ for nested class support."""
@@ -85,7 +85,7 @@ class BasicFieldTests(SimpleTestCase):
 
     def test_field_str(self):
         f = models.Field()
-        self.assertEqual(str(f), "<django.db.models.fields.Field>")
+        self.assertEqual(str(f), '<djorm.db.models.fields.Field>')
         f = Foo._meta.get_field("a")
         self.assertEqual(str(f), "model_fields.Foo.a")
 

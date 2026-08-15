@@ -1,8 +1,8 @@
 import pickle
 
-from django.core.exceptions import ValidationError
-from django.forms import BooleanField
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ValidationError
+from djorm.forms import BooleanField
+from djorm.test import SimpleTestCase
 
 
 class BooleanFieldTest(SimpleTestCase):

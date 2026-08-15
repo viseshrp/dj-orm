@@ -1,6 +1,6 @@
-from django.db import models
-from django.db.models.fields.related import ForwardManyToOneDescriptor
-from django.utils.translation import get_language
+from djorm.db import models
+from djorm.db.models.fields.related import ForwardManyToOneDescriptor
+from djorm.utils.translation import get_language
 
 
 class ArticleTranslationDescriptor(ForwardManyToOneDescriptor):

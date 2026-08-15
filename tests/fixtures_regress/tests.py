@@ -6,12 +6,12 @@ import unittest
 from io import StringIO
 from pathlib import Path
 
-from django.core import management, serializers
-from django.core.exceptions import ImproperlyConfigured
-from django.core.serializers.base import DeserializationError
-from django.db import IntegrityError, transaction
-from django.db.models import signals
-from django.test import (
+from djorm.core import management, serializers
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.core.serializers.base import DeserializationError
+from djorm.db import IntegrityError, transaction
+from djorm.db.models import signals
+from djorm.test import (
     TestCase,
     TransactionTestCase,
     override_settings,

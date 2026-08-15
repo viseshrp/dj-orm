@@ -2,16 +2,16 @@ import datetime
 import json
 from contextlib import contextmanager
 
-from django.contrib import admin
-from django.contrib.admin.exceptions import NotRegistered
-from django.contrib.admin.tests import AdminSeleniumTestCase
-from django.contrib.admin.views.autocomplete import AutocompleteJsonView
-from django.contrib.auth.models import Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import PermissionDenied
-from django.http import Http404
-from django.test import RequestFactory, override_settings
-from django.urls import reverse, reverse_lazy
+from djorm.contrib import admin
+from djorm.contrib.admin.exceptions import NotRegistered
+from djorm.contrib.admin.tests import AdminSeleniumTestCase
+from djorm.contrib.admin.views.autocomplete import AutocompleteJsonView
+from djorm.contrib.auth.models import Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.exceptions import PermissionDenied
+from djorm.http import Http404
+from djorm.test import RequestFactory, override_settings
+from djorm.urls import reverse, reverse_lazy
 
 from .admin import AnswerAdmin, QuestionAdmin
 from .models import (

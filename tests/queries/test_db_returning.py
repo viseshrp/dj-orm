@@ -1,8 +1,8 @@
 import datetime
 
-from django.db import connection
-from django.test import TestCase, skipUnlessDBFeature
-from django.test.utils import CaptureQueriesContext
+from djorm.db import connection
+from djorm.test import TestCase, skipUnlessDBFeature
+from djorm.test.utils import CaptureQueriesContext
 
 from .models import DumbCategory, NonIntegerPKReturningModel, ReturningModel
 

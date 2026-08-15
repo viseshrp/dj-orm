@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-from django.template.defaultfilters import pluralize
-from django.test import SimpleTestCase
+from djorm.template.defaultfilters import pluralize
+from djorm.test import SimpleTestCase
 
 from ..utils import setup
 

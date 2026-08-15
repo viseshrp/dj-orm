@@ -1,10 +1,10 @@
 from unittest import mock
 
-from django.core.checks import Error
-from django.core.checks import Warning as DjangoWarning
-from django.db import connection, models
-from django.test.testcases import SimpleTestCase
-from django.test.utils import isolate_apps, modify_settings, override_settings
+from djorm.core.checks import Error
+from djorm.core.checks import Warning as DjangoWarning
+from djorm.db import connection, models
+from djorm.test.testcases import SimpleTestCase
+from djorm.test.utils import isolate_apps, modify_settings, override_settings
 
 
 @isolate_apps("invalid_models_tests")

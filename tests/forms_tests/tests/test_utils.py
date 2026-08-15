@@ -1,9 +1,9 @@
 import copy
 import json
 
-from django.core.exceptions import ValidationError
-from django.forms.renderers import DjangoTemplates
-from django.forms.utils import (
+from djorm.core.exceptions import ValidationError
+from djorm.forms.renderers import DjangoTemplates
+from djorm.forms.utils import (
     ErrorDict,
     ErrorList,
     RenderableFieldMixin,
@@ -11,9 +11,9 @@ from django.forms.utils import (
     flatatt,
     pretty_name,
 )
-from django.test import SimpleTestCase
-from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy
+from djorm.test import SimpleTestCase
+from djorm.utils.safestring import mark_safe
+from djorm.utils.translation import gettext_lazy
 
 
 class FormsUtilsTestCase(SimpleTestCase):

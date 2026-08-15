@@ -4,9 +4,9 @@ real-world applications, it gives you the option of querying the database for
 all active sessions for a particular account.
 """
 
-from django.contrib.sessions.backends.db import SessionStore as DBStore
-from django.contrib.sessions.base_session import AbstractBaseSession
-from django.db import models
+from djorm.contrib.sessions.backends.db import SessionStore as DBStore
+from djorm.contrib.sessions.base_session import AbstractBaseSession
+from djorm.db import models
 
 
 class CustomSession(AbstractBaseSession):

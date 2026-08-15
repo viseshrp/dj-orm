@@ -1,10 +1,10 @@
-from django.apps import apps
-from django.contrib.contenttypes.models import ContentType, ContentTypeManager
-from django.contrib.contenttypes.prefetch import GenericPrefetch
-from django.db import models
-from django.db.migrations.state import ModelState, ProjectState
-from django.test import TestCase, override_settings
-from django.test.utils import isolate_apps
+from djorm.apps import apps
+from djorm.contrib.contenttypes.models import ContentType, ContentTypeManager
+from djorm.contrib.contenttypes.prefetch import GenericPrefetch
+from djorm.db import models
+from djorm.db.migrations.state import ModelState, ProjectState
+from djorm.test import TestCase, override_settings
+from djorm.test.utils import isolate_apps
 
 from .models import Author, ConcreteModel, FooWithUrl, ProxyModel
 

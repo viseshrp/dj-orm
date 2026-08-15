@@ -1,4 +1,4 @@
-from django.contrib.postgres.indexes import (
+from djorm.contrib.postgres.indexes import (
     BloomIndex,
     BrinIndex,
     BTreeIndex,
@@ -9,10 +9,10 @@ from django.contrib.postgres.indexes import (
     PostgresIndex,
     SpGistIndex,
 )
-from django.db import connection
-from django.db.models import CharField, F, Index, Q
-from django.db.models.functions import Cast, Collate, Length, Lower
-from django.test.utils import register_lookup
+from djorm.db import connection
+from djorm.db.models import CharField, F, Index, Q
+from djorm.db.models.functions import Cast, Collate, Length, Lower
+from djorm.test.utils import register_lookup
 
 from . import PostgreSQLSimpleTestCase, PostgreSQLTestCase
 from .fields import SearchVector, SearchVectorField
@@ -33,7 +33,7 @@ class IndexTestMixin:
         )
         path, args, kwargs = index.deconstruct()
         self.assertEqual(
-            path, "django.contrib.postgres.indexes.%s" % self.index_class.__name__
+            path, 'djorm.contrib.postgres.indexes.%s' % self.index_class.__name__
         )
         self.assertEqual(args, ())
         self.assertEqual(
@@ -62,7 +62,7 @@ class BloomIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
     def test_deconstruction(self):
         index = BloomIndex(fields=["title"], name="test_bloom", length=80, columns=[4])
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.indexes.BloomIndex")
+        self.assertEqual(path, 'djorm.contrib.postgres.indexes.BloomIndex')
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -114,7 +114,7 @@ class BrinIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
             pages_per_range=16,
         )
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.indexes.BrinIndex")
+        self.assertEqual(path, 'djorm.contrib.postgres.indexes.BrinIndex')
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -142,7 +142,7 @@ class BTreeIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
     def test_deconstruction(self):
         index = BTreeIndex(fields=["title"], name="test_title_btree")
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.indexes.BTreeIndex")
+        self.assertEqual(path, 'djorm.contrib.postgres.indexes.BTreeIndex')
         self.assertEqual(args, ())
         self.assertEqual(kwargs, {"fields": ["title"], "name": "test_title_btree"})
 
@@ -153,7 +153,7 @@ class BTreeIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
             deduplicate_items=False,
         )
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.indexes.BTreeIndex")
+        self.assertEqual(path, 'djorm.contrib.postgres.indexes.BTreeIndex')
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -180,7 +180,7 @@ class GinIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
             gin_pending_list_limit=128,
         )
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.indexes.GinIndex")
+        self.assertEqual(path, 'djorm.contrib.postgres.indexes.GinIndex')
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -204,7 +204,7 @@ class GistIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
             fields=["title"], name="test_title_gist", buffering=False, fillfactor=80
         )
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.indexes.GistIndex")
+        self.assertEqual(path, 'djorm.contrib.postgres.indexes.GistIndex')
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -226,7 +226,7 @@ class HashIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
     def test_deconstruction(self):
         index = HashIndex(fields=["title"], name="test_title_hash", fillfactor=80)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.indexes.HashIndex")
+        self.assertEqual(path, 'djorm.contrib.postgres.indexes.HashIndex')
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs, {"fields": ["title"], "name": "test_title_hash", "fillfactor": 80}
@@ -242,7 +242,7 @@ class SpGistIndexTests(IndexTestMixin, PostgreSQLSimpleTestCase):
     def test_deconstruction(self):
         index = SpGistIndex(fields=["title"], name="test_title_spgist", fillfactor=80)
         path, args, kwargs = index.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.indexes.SpGistIndex")
+        self.assertEqual(path, 'djorm.contrib.postgres.indexes.SpGistIndex')
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs, {"fields": ["title"], "name": "test_title_spgist", "fillfactor": 80}

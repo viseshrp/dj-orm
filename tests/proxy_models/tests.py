@@ -1,12 +1,12 @@
-from django.contrib import admin
-from django.contrib.auth.models import User as AuthUser
-from django.contrib.contenttypes.models import ContentType
-from django.core import checks, management
-from django.db import DEFAULT_DB_ALIAS, models
-from django.db.models import signals
-from django.test import TestCase, override_settings
-from django.test.utils import isolate_apps
-from django.urls import reverse
+from djorm.contrib import admin
+from djorm.contrib.auth.models import User as AuthUser
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core import checks, management
+from djorm.db import DEFAULT_DB_ALIAS, models
+from djorm.db.models import signals
+from djorm.test import TestCase, override_settings
+from djorm.test.utils import isolate_apps
+from djorm.urls import reverse
 
 from .admin import admin as force_admin_model_registration  # NOQA
 from .models import (
@@ -216,7 +216,7 @@ class ProxyModelTests(TestCase):
         self.assertEqual(resp, ["barney", "wilma"])
 
     def test_permissions_created(self):
-        from django.contrib.auth.models import Permission
+        from djorm.contrib.auth.models import Permission
 
         Permission.objects.get(name="May display users information")
 

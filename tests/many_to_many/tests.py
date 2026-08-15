@@ -1,8 +1,8 @@
 from unittest import mock
 
-from django.db import connection, transaction
-from django.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.db import connection, transaction
+from djorm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from .models import (
     Article,

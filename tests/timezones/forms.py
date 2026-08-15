@@ -1,4 +1,4 @@
-from django import forms
+from djorm import forms
 
 from .models import Event
 

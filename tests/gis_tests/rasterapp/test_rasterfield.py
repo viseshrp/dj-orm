@@ -1,21 +1,21 @@
 import json
 from unittest import mock
 
-from django.contrib.gis.db.models.fields import BaseSpatialField
-from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.db.models.lookups import (
+from djorm.contrib.gis.db.models.fields import BaseSpatialField
+from djorm.contrib.gis.db.models.functions import Distance
+from djorm.contrib.gis.db.models.lookups import (
     DistanceLookupBase,
     GISLookup,
     RasterBandTransform,
 )
-from django.contrib.gis.gdal import GDALRaster
-from django.contrib.gis.geos import GEOSGeometry
-from django.contrib.gis.measure import D
-from django.contrib.gis.shortcuts import numpy
-from django.db import connection
-from django.db.models import F, Func, Q
-from django.test import TransactionTestCase, skipUnlessDBFeature
-from django.test.utils import CaptureQueriesContext
+from djorm.contrib.gis.gdal import GDALRaster
+from djorm.contrib.gis.geos import GEOSGeometry
+from djorm.contrib.gis.measure import D
+from djorm.contrib.gis.shortcuts import numpy
+from djorm.db import connection
+from djorm.db.models import F, Func, Q
+from djorm.test import TransactionTestCase, skipUnlessDBFeature
+from djorm.test.utils import CaptureQueriesContext
 
 from ..data.rasters.textrasters import JSON_RASTER
 from .models import RasterModel, RasterRelatedModel
@@ -175,7 +175,7 @@ class RasterFieldTest(TransactionTestCase):
         unprojected coordinate systems. This test just checks that the lookup
         can be called, but doesn't check if the result makes logical sense.
         """
-        from django.contrib.gis.db.backends.postgis.operations import PostGISOperations
+        from djorm.contrib.gis.db.backends.postgis.operations import PostGISOperations
 
         # Create test raster and geom.
         rast = GDALRaster(json.loads(JSON_RASTER))
@@ -288,7 +288,7 @@ class RasterFieldTest(TransactionTestCase):
         msg = "WKT contains too many possible GeometryCollections."
         # RasterField has no max_geom_collections, so the module default
         # (patched here) applies. Under the limit parses; over it is rejected.
-        with mock.patch("django.contrib.gis.db.models.fields.MAX_GEOM_COLLECTIONS", 5):
+        with mock.patch('djorm.contrib.gis.db.models.fields.MAX_GEOM_COLLECTIONS', 5):
             self.assertEqual(RasterModel.objects.filter(rast=make_geom(4)).count(), 0)
             with self.assertRaisesMessage(ValueError, msg):
                 RasterModel.objects.filter(rast=make_geom(6))
@@ -376,11 +376,7 @@ class RasterFieldTest(TransactionTestCase):
             qs.count()
 
     def test_lookup_invalid_band_lhs(self):
-        """
-        Typical left-hand side usage is protected against non-integers, but for
-        defense-in-depth purposes, construct custom lookups that evade the
-        `int()` and `+ 1` checks in the lookups shipped by django.contrib.gis.
-        """
+        '\n        Typical left-hand side usage is protected against non-integers, but for\n        defense-in-depth purposes, construct custom lookups that evade the\n        `int()` and `+ 1` checks in the lookups shipped by djorm.contrib.gis.\n        '
 
         # Evade the int() call in RasterField.get_transform().
         class MyRasterBandTransform(RasterBandTransform):

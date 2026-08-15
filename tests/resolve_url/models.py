@@ -2,7 +2,7 @@
 Regression tests for the resolve_url function.
 """
 
-from django.db import models
+from djorm.db import models
 
 
 class UnimportantThing(models.Model):

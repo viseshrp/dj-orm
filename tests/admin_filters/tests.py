@@ -2,7 +2,7 @@ import datetime
 import sys
 import unittest
 
-from django.contrib.admin import (
+from djorm.contrib.admin import (
     AllValuesFieldListFilter,
     BooleanFieldListFilter,
     EmptyFieldListFilter,
@@ -12,13 +12,13 @@ from django.contrib.admin import (
     SimpleListFilter,
     site,
 )
-from django.contrib.admin.filters import FacetsMixin
-from django.contrib.admin.options import IncorrectLookupParameters, ShowFacets
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-from django.core.exceptions import ImproperlyConfigured
-from django.db import connection, models
-from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from djorm.contrib.admin.filters import FacetsMixin
+from djorm.contrib.admin.options import IncorrectLookupParameters, ShowFacets
+from djorm.contrib.auth.admin import UserAdmin
+from djorm.contrib.auth.models import User
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.db import connection, models
+from djorm.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 
 from .models import Book, Bookmark, Department, Employee, ImprovedBook, TaggedItem
 

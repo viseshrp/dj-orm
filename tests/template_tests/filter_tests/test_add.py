@@ -1,8 +1,8 @@
 from datetime import date, timedelta
 
-from django.template.defaultfilters import add
-from django.test import SimpleTestCase
-from django.utils.translation import gettext_lazy
+from djorm.template.defaultfilters import add
+from djorm.test import SimpleTestCase
+from djorm.utils.translation import gettext_lazy
 
 from ..utils import setup
 

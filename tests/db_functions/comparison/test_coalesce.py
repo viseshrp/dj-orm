@@ -1,7 +1,7 @@
-from django.db.models import Subquery, TextField
-from django.db.models.functions import Coalesce, Lower
-from django.test import TestCase
-from django.utils import timezone
+from djorm.db.models import Subquery, TextField
+from djorm.db.models.functions import Coalesce, Lower
+from djorm.test import TestCase
+from djorm.utils import timezone
 
 from ..models import Article, Author
 

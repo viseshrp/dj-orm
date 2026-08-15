@@ -2,11 +2,11 @@ import decimal
 import json
 import re
 
-from django.core import serializers
-from django.core.serializers.base import DeserializationError
-from django.db import models
-from django.test import TestCase, TransactionTestCase
-from django.test.utils import isolate_apps
+from djorm.core import serializers
+from djorm.core.serializers.base import DeserializationError
+from djorm.db import models
+from djorm.test import TestCase, TransactionTestCase
+from djorm.test.utils import isolate_apps
 
 from .models import Score
 from .tests import SerializersTestBase, SerializersTransactionTestBase

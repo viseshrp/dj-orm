@@ -1,5 +1,5 @@
-from django.db import models
-from django.utils import timezone
+from djorm.db import models
+from djorm.utils import timezone
 
 
 class Article(models.Model):

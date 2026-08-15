@@ -1,5 +1,5 @@
-from django.db import connection, models
-from django.test import SimpleTestCase
+from djorm.db import connection, models
+from djorm.test import SimpleTestCase
 
 from .fields import CustomDescriptorField, CustomTypedField
 

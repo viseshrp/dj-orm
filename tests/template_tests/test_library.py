@@ -1,10 +1,10 @@
 import functools
 import unittest
 
-from django.template import Library
-from django.template.base import Node
-from django.test import SimpleTestCase
-from django.utils.version import PY314
+from djorm.template import Library
+from djorm.template.base import Node
+from djorm.test import SimpleTestCase
+from djorm.utils.version import PY314
 
 
 class FilterRegistrationTests(SimpleTestCase):

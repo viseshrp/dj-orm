@@ -1,4 +1,4 @@
-from django.urls import path
+from djorm.urls import path
 
 from . import views
 

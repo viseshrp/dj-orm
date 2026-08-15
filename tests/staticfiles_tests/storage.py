@@ -1,9 +1,9 @@
 import os
 from datetime import datetime, timedelta, timezone
 
-from django.conf import settings
-from django.contrib.staticfiles.storage import ManifestStaticFilesStorage
-from django.core.files import storage
+from djorm.conf import settings
+from djorm.contrib.staticfiles.storage import ManifestStaticFilesStorage
+from djorm.core.files import storage
 
 
 class DummyStorage(storage.Storage):

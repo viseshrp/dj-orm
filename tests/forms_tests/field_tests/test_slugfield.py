@@ -1,5 +1,5 @@
-from django.forms import SlugField
-from django.test import SimpleTestCase
+from djorm.forms import SlugField
+from djorm.test import SimpleTestCase
 
 
 class SlugFieldTest(SimpleTestCase):

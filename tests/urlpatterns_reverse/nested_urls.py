@@ -1,5 +1,5 @@
-from django.urls import include, path
-from django.views import View
+from djorm.urls import include, path
+from djorm.views import View
 
 
 def view1(request):

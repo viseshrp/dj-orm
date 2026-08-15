@@ -1,4 +1,4 @@
-from django.template import Engine, Library
+from djorm.template import Engine, Library
 
 engine = Engine(app_dirs=True)
 register = Library()

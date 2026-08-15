@@ -1,6 +1,6 @@
-from django.template.base import TemplateSyntaxError
-from django.test import SimpleTestCase
-from django.utils.lorem_ipsum import COMMON_P, WORDS
+from djorm.template.base import TemplateSyntaxError
+from djorm.test import SimpleTestCase
+from djorm.utils.lorem_ipsum import COMMON_P, WORDS
 
 from ..utils import setup
 

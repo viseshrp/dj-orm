@@ -1,4 +1,4 @@
-from django.contrib.sessions.backends.base import SessionBase
+from djorm.contrib.sessions.backends.base import SessionBase
 
 
 class SessionStore(SessionBase):

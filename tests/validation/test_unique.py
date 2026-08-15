@@ -1,10 +1,10 @@
 import datetime
 import unittest
 
-from django.apps.registry import Apps
-from django.core.exceptions import ValidationError
-from django.db import models
-from django.test import TestCase
+from djorm.apps.registry import Apps
+from djorm.core.exceptions import ValidationError
+from djorm.db import models
+from djorm.test import TestCase
 
 from .models import (
     CustomPKModel,

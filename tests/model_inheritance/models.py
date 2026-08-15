@@ -12,7 +12,7 @@ Model inheritance exists in two varieties:
 Both styles are demonstrated here.
 """
 
-from django.db import models
+from djorm.db import models
 
 #
 # Abstract base classes

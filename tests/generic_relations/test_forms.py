@@ -1,9 +1,9 @@
-from django import forms
-from django.contrib.contenttypes.forms import generic_inlineformset_factory
-from django.contrib.contenttypes.models import ContentType
-from django.db import models
-from django.test import TestCase
-from django.test.utils import isolate_apps
+from djorm import forms
+from djorm.contrib.contenttypes.forms import generic_inlineformset_factory
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.db import models
+from djorm.test import TestCase
+from djorm.test.utils import isolate_apps
 
 from .models import (
     Animal,

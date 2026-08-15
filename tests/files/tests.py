@@ -8,17 +8,17 @@ from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
 from unittest import mock
 
-from django.core.files import File, locks
-from django.core.files.base import ContentFile
-from django.core.files.move import file_move_safe
-from django.core.files.temp import NamedTemporaryFile
-from django.core.files.uploadedfile import (
+from djorm.core.files import File, locks
+from djorm.core.files.base import ContentFile
+from djorm.core.files.move import file_move_safe
+from djorm.core.files.temp import NamedTemporaryFile
+from djorm.core.files.uploadedfile import (
     InMemoryUploadedFile,
     SimpleUploadedFile,
     TemporaryUploadedFile,
     UploadedFile,
 )
-from django.test import override_settings
+from djorm.test import override_settings
 
 try:
     from PIL import Image, features
@@ -28,7 +28,7 @@ except ImportError:
     Image = None
     HAS_WEBP = False
 else:
-    from django.core.files import images
+    from djorm.core.files import images
 
 
 class FileTests(unittest.TestCase):
@@ -67,12 +67,7 @@ class FileTests(unittest.TestCase):
             os.unlink(file.name)
 
     def test_namedtemporaryfile_closes(self):
-        """
-        The symbol django.core.files.NamedTemporaryFile is assigned as
-        a different class on different operating systems. In
-        any case, the result should minimally mock some of the API of
-        tempfile.NamedTemporaryFile from the Python standard library.
-        """
+        '\n        The symbol djorm.core.files.NamedTemporaryFile is assigned as\n        a different class on different operating systems. In\n        any case, the result should minimally mock some of the API of\n        tempfile.NamedTemporaryFile from the Python standard library.\n        '
         tempfile = NamedTemporaryFile()
         self.assertTrue(hasattr(tempfile, "closed"))
         self.assertFalse(tempfile.closed)
@@ -456,20 +451,20 @@ class FileMoveSafeTests(unittest.TestCase):
         try:
             # This exception is required to reach the copystat() call in
             # file_safe_move().
-            with mock.patch("django.core.files.move.os.rename", side_effect=OSError()):
+            with mock.patch('djorm.core.files.move.os.rename', side_effect=OSError()):
                 # An error besides PermissionError isn't ignored.
                 with mock.patch(
-                    "django.core.files.move.copystat", side_effect=os_error
+                    'djorm.core.files.move.copystat', side_effect=os_error
                 ):
                     with self.assertRaises(OSError):
                         file_move_safe(self.file_a, self.file_b, allow_overwrite=True)
                 # When copystat() throws PermissionError, copymode() error besides
                 # PermissionError isn't ignored.
                 with mock.patch(
-                    "django.core.files.move.copystat", side_effect=permission_error
+                    'djorm.core.files.move.copystat', side_effect=permission_error
                 ):
                     with mock.patch(
-                        "django.core.files.move.copymode", side_effect=os_error
+                        'djorm.core.files.move.copymode', side_effect=os_error
                     ):
                         with self.assertRaises(OSError):
                             file_move_safe(
@@ -477,14 +472,14 @@ class FileMoveSafeTests(unittest.TestCase):
                             )
                 # PermissionError raised by copystat() is ignored.
                 with mock.patch(
-                    "django.core.files.move.copystat", side_effect=permission_error
+                    'djorm.core.files.move.copystat', side_effect=permission_error
                 ):
                     self.assertIsNone(
                         file_move_safe(self.file_a, self.file_b, allow_overwrite=True)
                     )
                     # PermissionError raised by copymode() is ignored too.
                     with mock.patch(
-                        "django.core.files.move.copymode", side_effect=permission_error
+                        'djorm.core.files.move.copymode', side_effect=permission_error
                     ):
                         self.assertIsNone(
                             file_move_safe(
@@ -509,7 +504,7 @@ class FileMoveSafeTests(unittest.TestCase):
             dest_name = dest.name
         self.addCleanup(os.remove, dest_name)
 
-        with mock.patch("django.core.files.move.os.rename", side_effect=OSError()):
+        with mock.patch('djorm.core.files.move.os.rename', side_effect=OSError()):
             file_move_safe(src_name, dest_name, allow_overwrite=True)
 
         with open(dest_name, "rb") as f:

@@ -1,7 +1,7 @@
 import pathlib
 import sys
 
-from django.test import SimpleTestCase
+from djorm.test import SimpleTestCase
 
 
 def last_n_parts(path, n):
@@ -51,7 +51,7 @@ class I:
         self.assertEqual(last_n_parts(path, 2), "django/__init__.py")
 
     def test_module_name_to_file_path_module(self):
-        path = github_links.module_name_to_file_path("django.shortcuts")
+        path = github_links.module_name_to_file_path('djorm.shortcuts')
 
         self.assertEqual(last_n_parts(path, 2), "django/shortcuts.py")
 

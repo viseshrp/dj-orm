@@ -5,11 +5,11 @@ import pickle
 import unittest
 import uuid
 
-from django.core.exceptions import DisallowedRedirect
-from django.core.serializers.json import DjangoJSONEncoder
-from django.core.signals import request_finished
-from django.db import close_old_connections
-from django.http import (
+from djorm.core.exceptions import DisallowedRedirect
+from djorm.core.serializers.json import DjangoJSONEncoder
+from djorm.core.signals import request_finished
+from djorm.db import close_old_connections
+from djorm.http import (
     BadHeaderError,
     HttpResponse,
     HttpResponseNotAllowed,
@@ -22,9 +22,9 @@ from django.http import (
     StreamingHttpResponse,
     parse_cookie,
 )
-from django.test import SimpleTestCase
-from django.utils.functional import lazystr
-from django.utils.http import MAX_URL_REDIRECT_LENGTH
+from djorm.test import SimpleTestCase
+from djorm.utils.functional import lazystr
+from djorm.utils.http import MAX_URL_REDIRECT_LENGTH
 
 
 class QueryDictTests(SimpleTestCase):

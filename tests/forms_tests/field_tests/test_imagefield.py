@@ -1,10 +1,10 @@
 import os
 import unittest
 
-from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import SimpleUploadedFile, TemporaryUploadedFile
-from django.forms import ClearableFileInput, FileInput, ImageField, Widget
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ValidationError
+from djorm.core.files.uploadedfile import SimpleUploadedFile, TemporaryUploadedFile
+from djorm.forms import ClearableFileInput, FileInput, ImageField, Widget
+from djorm.test import SimpleTestCase
 
 from . import FormFieldAssertionsMixin
 

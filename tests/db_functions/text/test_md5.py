@@ -1,8 +1,8 @@
-from django.db import connection
-from django.db.models import CharField
-from django.db.models.functions import MD5
-from django.test import TestCase
-from django.test.utils import register_lookup
+from djorm.db import connection
+from djorm.db.models import CharField
+from djorm.db.models.functions import MD5
+from djorm.test import TestCase
+from djorm.test.utils import register_lookup
 
 from ..models import Author
 

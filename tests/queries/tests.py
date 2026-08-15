@@ -5,15 +5,15 @@ import unittest
 from itertools import chain
 from operator import attrgetter
 
-from django.core.exceptions import EmptyResultSet, FieldError, FullResultSet
-from django.db import DEFAULT_DB_ALIAS, connection
-from django.db.models import CharField, Count, Exists, F, Max, OuterRef, Q
-from django.db.models.expressions import RawSQL
-from django.db.models.functions import ExtractYear, Length, LTrim
-from django.db.models.sql.constants import LOUTER
-from django.db.models.sql.where import AND, OR, NothingNode, WhereNode
-from django.test import SimpleTestCase, TestCase, skipUnlessDBFeature
-from django.test.utils import CaptureQueriesContext, register_lookup
+from djorm.core.exceptions import EmptyResultSet, FieldError, FullResultSet
+from djorm.db import DEFAULT_DB_ALIAS, connection
+from djorm.db.models import CharField, Count, Exists, F, Max, OuterRef, Q
+from djorm.db.models.expressions import RawSQL
+from djorm.db.models.functions import ExtractYear, Length, LTrim
+from djorm.db.models.sql.constants import LOUTER
+from djorm.db.models.sql.where import AND, OR, NothingNode, WhereNode
+from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djorm.test.utils import CaptureQueriesContext, register_lookup
 
 from .models import (
     FK1,

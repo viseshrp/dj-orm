@@ -5,37 +5,37 @@ from importlib import import_module
 from unittest import mock
 from urllib.parse import quote, urljoin
 
-from django.apps import apps
-from django.conf import settings
-from django.contrib.admin.models import LogEntry
-from django.contrib.auth import BACKEND_SESSION_KEY, REDIRECT_FIELD_NAME, SESSION_KEY
-from django.contrib.auth.forms import (
+from djorm.apps import apps
+from djorm.conf import settings
+from djorm.contrib.admin.models import LogEntry
+from djorm.contrib.auth import BACKEND_SESSION_KEY, REDIRECT_FIELD_NAME, SESSION_KEY
+from djorm.contrib.auth.forms import (
     AuthenticationForm,
     PasswordChangeForm,
     SetPasswordForm,
 )
-from django.contrib.auth.models import Permission, User
-from django.contrib.auth.views import (
+from djorm.contrib.auth.models import Permission, User
+from djorm.contrib.auth.views import (
     INTERNAL_RESET_SESSION_TOKEN,
     LoginView,
     RedirectURLMixin,
     logout_then_login,
     redirect_to_login,
 )
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.messages import Message
-from django.contrib.messages.test import MessagesTestMixin
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.contrib.sites.requests import RequestSite
-from django.core import mail
-from django.core.exceptions import ImproperlyConfigured
-from django.db import connection
-from django.http import HttpRequest, HttpResponse
-from django.middleware.csrf import CsrfViewMiddleware, get_token
-from django.test import Client, TestCase, modify_settings, override_settings
-from django.test.client import RedirectCycleError
-from django.urls import NoReverseMatch, reverse, reverse_lazy
-from django.utils.http import urlsafe_base64_encode
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.contrib.messages import Message
+from djorm.contrib.messages.test import MessagesTestMixin
+from djorm.contrib.sessions.middleware import SessionMiddleware
+from djorm.contrib.sites.requests import RequestSite
+from djorm.core import mail
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.db import connection
+from djorm.http import HttpRequest, HttpResponse
+from djorm.middleware.csrf import CsrfViewMiddleware, get_token
+from djorm.test import Client, TestCase, modify_settings, override_settings
+from djorm.test.client import RedirectCycleError
+from djorm.urls import NoReverseMatch, reverse, reverse_lazy
+from djorm.utils.http import urlsafe_base64_encode
 
 from .client import PasswordResetConfirmClient
 from .models import CustomUser, CustomUserCompositePrimaryKey, UUIDUser
@@ -98,7 +98,7 @@ class AuthViewsTestCase(TestCase):
         self.assertIn(str(error), form_errors)
 
 
-@override_settings(ROOT_URLCONF="django.contrib.auth.urls")
+@override_settings(ROOT_URLCONF='djorm.contrib.auth.urls')
 class AuthViewNamedURLTests(AuthViewsTestCase):
     def test_named_urls(self):
         "Named URLs should be reversible"
@@ -398,13 +398,13 @@ class PasswordResetTest(AuthViewsTestCase):
 
     @override_settings(
         AUTHENTICATION_BACKENDS=[
-            "django.contrib.auth.backends.ModelBackend",
-            "django.contrib.auth.backends.AllowAllUsersModelBackend",
+            'djorm.contrib.auth.backends.ModelBackend',
+            'djorm.contrib.auth.backends.AllowAllUsersModelBackend',
         ]
     )
     def test_confirm_login_post_reset_custom_backend(self):
         # This backend is specified in the URL pattern.
-        backend = "django.contrib.auth.backends.AllowAllUsersModelBackend"
+        backend = 'djorm.contrib.auth.backends.AllowAllUsersModelBackend'
         url, path = self._test_confirm_start()
         path = path.replace("/reset/", "/reset/post_reset_login_custom_backend/")
         response = self.client.post(
@@ -473,7 +473,7 @@ class PasswordResetTest(AuthViewsTestCase):
             self.client.get("/reset/missing_parameters/")
 
     @modify_settings(
-        MIDDLEWARE={"append": "django.contrib.auth.middleware.LoginRequiredMiddleware"}
+        MIDDLEWARE={"append": 'djorm.contrib.auth.middleware.LoginRequiredMiddleware'}
     )
     def test_access_under_login_required_middleware(self):
         reset_urls = [
@@ -697,7 +697,7 @@ class ChangePasswordTest(AuthViewsTestCase):
         )
 
     @modify_settings(
-        MIDDLEWARE={"append": "django.contrib.auth.middleware.LoginRequiredMiddleware"}
+        MIDDLEWARE={"append": 'djorm.contrib.auth.middleware.LoginRequiredMiddleware'}
     )
     def test_access_under_login_required_middleware(self):
         response = self.client.post(
@@ -755,7 +755,7 @@ class LoginTest(AuthViewsTestCase):
     def test_current_site_in_context_after_login(self):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)
-        if apps.is_installed("django.contrib.sites"):
+        if apps.is_installed('djorm.contrib.sites'):
             Site = apps.get_model("sites.Site")
             site = Site.objects.get_current()
             self.assertEqual(response.context["site"], site)
@@ -929,10 +929,7 @@ class LoginTest(AuthViewsTestCase):
         self.assertNotEqual(original_session_key, self.client.session.session_key)
 
     def test_login_session_without_hash_session_key(self):
-        """
-        Session without django.contrib.auth.HASH_SESSION_KEY should login
-        without an exception.
-        """
+        '\n        Session without djorm.contrib.auth.HASH_SESSION_KEY should login\n        without an exception.\n        '
         user = User.objects.get(username="testclient")
         engine = import_module(settings.SESSION_ENGINE)
         session = engine.SessionStore()
@@ -972,7 +969,7 @@ class LoginTest(AuthViewsTestCase):
         self.assertRedirects(response, "/test/", fetch_redirect_response=False)
 
     @modify_settings(
-        MIDDLEWARE={"append": "django.contrib.auth.middleware.LoginRequiredMiddleware"}
+        MIDDLEWARE={"append": 'djorm.contrib.auth.middleware.LoginRequiredMiddleware'}
     )
     def test_access_under_login_required_middleware(self):
         response = self.client.get(reverse("login"))
@@ -1430,7 +1427,7 @@ class LogoutTest(AuthViewsTestCase):
         self.confirm_logged_out()
 
     @modify_settings(
-        MIDDLEWARE={"append": "django.contrib.auth.middleware.LoginRequiredMiddleware"}
+        MIDDLEWARE={"append": 'djorm.contrib.auth.middleware.LoginRequiredMiddleware'}
     )
     def test_access_under_login_required_middleware(self):
         response = self.client.post("/logout/")
@@ -1455,7 +1452,7 @@ def get_perm(Model, perm):
 # isn't updated after password change (#21649)
 @override_settings(
     ROOT_URLCONF="auth_tests.urls_admin",
-    PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"],
+    PASSWORD_HASHERS=['djorm.contrib.auth.hashers.MD5PasswordHasher'],
 )
 class ChangelistTests(MessagesTestMixin, AuthViewsTestCase):
     @classmethod
@@ -1681,7 +1678,7 @@ class ChangelistTests(MessagesTestMixin, AuthViewsTestCase):
         )
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch("django.contrib.auth.admin.UserAdmin.has_change_permission")
+    @mock.patch('djorm.contrib.auth.admin.UserAdmin.has_change_permission')
     def test_user_change_password_passes_user_to_has_change_permission(
         self, has_change_permission
     ):

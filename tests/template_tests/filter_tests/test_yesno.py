@@ -1,5 +1,5 @@
-from django.template.defaultfilters import yesno
-from django.test import SimpleTestCase
+from djorm.template.defaultfilters import yesno
+from djorm.test import SimpleTestCase
 
 from ..utils import setup
 

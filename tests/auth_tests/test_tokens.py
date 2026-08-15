@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.core.exceptions import ImproperlyConfigured
-from django.test import TestCase
-from django.test.utils import override_settings
+from djorm.conf import settings
+from djorm.contrib.auth.models import User
+from djorm.contrib.auth.tokens import PasswordResetTokenGenerator
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.test import TestCase
+from djorm.test.utils import override_settings
 
 from .models import CustomEmailField
 

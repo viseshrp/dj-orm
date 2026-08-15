@@ -1,6 +1,6 @@
-from django.template.defaultfilters import force_escape
-from django.test import SimpleTestCase
-from django.utils.safestring import SafeData
+from djorm.template.defaultfilters import force_escape
+from djorm.test import SimpleTestCase
+from djorm.utils.safestring import SafeData
 
 from ..utils import setup
 

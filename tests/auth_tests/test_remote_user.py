@@ -1,25 +1,25 @@
 from datetime import datetime, timezone
 
-from django.conf import settings
-from django.contrib.auth import aauthenticate, authenticate
-from django.contrib.auth.backends import RemoteUserBackend
-from django.contrib.auth.middleware import RemoteUserMiddleware
-from django.contrib.auth.models import User
-from django.middleware.csrf import _get_new_csrf_string, _mask_cipher_secret
-from django.test import (
+from djorm.conf import settings
+from djorm.contrib.auth import aauthenticate, authenticate
+from djorm.contrib.auth.backends import RemoteUserBackend
+from djorm.contrib.auth.middleware import RemoteUserMiddleware
+from djorm.contrib.auth.models import User
+from djorm.middleware.csrf import _get_new_csrf_string, _mask_cipher_secret
+from djorm.test import (
     AsyncClient,
     Client,
     TestCase,
     modify_settings,
     override_settings,
 )
-from django.utils.deprecation import RemovedInDjango61Warning
+from djorm.utils.deprecation import RemovedInDjango61Warning
 
 
 @override_settings(ROOT_URLCONF="auth_tests.urls")
 class RemoteUserTest(TestCase):
-    middleware = "django.contrib.auth.middleware.RemoteUserMiddleware"
-    backend = "django.contrib.auth.backends.RemoteUserBackend"
+    middleware = 'djorm.contrib.auth.middleware.RemoteUserMiddleware'
+    backend = 'djorm.contrib.auth.backends.RemoteUserBackend'
     header = "REMOTE_USER"
     email_header = "REMOTE_EMAIL"
 
@@ -351,7 +351,7 @@ class RemoteUserNoCreateTest(RemoteUserTest):
 class AllowAllUsersRemoteUserBackendTest(RemoteUserTest):
     """Backend that allows inactive users."""
 
-    backend = "django.contrib.auth.backends.AllowAllUsersRemoteUserBackend"
+    backend = 'djorm.contrib.auth.backends.AllowAllUsersRemoteUserBackend'
 
     def test_inactive_user(self):
         user = User.objects.create(username="knownuser", is_active=False)
@@ -459,7 +459,7 @@ class PersistentRemoteUserTest(RemoteUserTest):
     subsequent calls do not contain the header value.
     """
 
-    middleware = "django.contrib.auth.middleware.PersistentRemoteUserMiddleware"
+    middleware = 'djorm.contrib.auth.middleware.PersistentRemoteUserMiddleware'
     require_header = False
 
     def test_header_disappears(self):

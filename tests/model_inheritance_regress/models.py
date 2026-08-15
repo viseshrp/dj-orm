@@ -1,6 +1,6 @@
 import datetime
 
-from django.db import models
+from djorm.db import models
 
 
 class Place(models.Model):

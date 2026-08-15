@@ -1,6 +1,6 @@
-from django.core.exceptions import ValidationError
-from django.forms import CharField, HiddenInput, PasswordInput, Textarea, TextInput
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ValidationError
+from djorm.forms import CharField, HiddenInput, PasswordInput, Textarea, TextInput
+from djorm.test import SimpleTestCase
 
 from . import FormFieldAssertionsMixin
 

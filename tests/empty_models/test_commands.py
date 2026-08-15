@@ -1,7 +1,7 @@
 import io
 
-from django.core.management import call_command
-from django.test import TestCase
+from djorm.core.management import call_command
+from djorm.test import TestCase
 
 
 class CoreCommandsNoOutputTests(TestCase):

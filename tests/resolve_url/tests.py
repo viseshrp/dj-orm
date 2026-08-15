@@ -1,6 +1,6 @@
-from django.shortcuts import resolve_url
-from django.test import SimpleTestCase, override_settings
-from django.urls import NoReverseMatch, reverse_lazy
+from djorm.shortcuts import resolve_url
+from djorm.test import SimpleTestCase, override_settings
+from djorm.urls import NoReverseMatch, reverse_lazy
 
 from .models import UnimportantThing
 from .urls import some_view

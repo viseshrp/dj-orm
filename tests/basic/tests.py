@@ -3,8 +3,8 @@ import threading
 from datetime import datetime, timedelta
 from unittest import mock
 
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.db import (
+from djorm.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from djorm.db import (
     DEFAULT_DB_ALIAS,
     DatabaseError,
     connection,
@@ -12,18 +12,18 @@ from django.db import (
     models,
     transaction,
 )
-from django.db.models.manager import BaseManager
-from django.db.models.query import MAX_GET_RESULTS, EmptyQuerySet
-from django.test import (
+from djorm.db.models.manager import BaseManager
+from djorm.db.models.query import MAX_GET_RESULTS, EmptyQuerySet
+from djorm.test import (
     SimpleTestCase,
     TestCase,
     TransactionTestCase,
     skipUnlessDBFeature,
 )
-from django.test.utils import CaptureQueriesContext, ignore_warnings
-from django.utils.connection import ConnectionDoesNotExist
-from django.utils.deprecation import RemovedInDjango60Warning
-from django.utils.translation import gettext_lazy
+from djorm.test.utils import CaptureQueriesContext, ignore_warnings
+from djorm.utils.connection import ConnectionDoesNotExist
+from djorm.utils.deprecation import RemovedInDjango60Warning
+from djorm.utils.translation import gettext_lazy
 
 from .models import (
     Article,

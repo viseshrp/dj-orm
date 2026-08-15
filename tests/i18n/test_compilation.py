@@ -7,12 +7,12 @@ from pathlib import Path
 from subprocess import run
 from unittest import mock
 
-from django.core.management import CommandError, call_command, execute_from_command_line
-from django.core.management.utils import find_command
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import captured_stderr, captured_stdout
-from django.utils import translation
-from django.utils.translation import gettext
+from djorm.core.management import CommandError, call_command, execute_from_command_line
+from djorm.core.management.utils import find_command
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import captured_stderr, captured_stdout
+from djorm.utils import translation
+from djorm.utils.translation import gettext
 
 from .utils import RunInTmpDirMixin, copytree
 
@@ -117,7 +117,7 @@ class ExcludedLocaleCompilationTests(MessageCompilationTests):
             # `call_command` bypasses the parser; by calling
             # `execute_from_command_line` with the help subcommand we
             # ensure that there are no issues with the parser itself.
-            execute_from_command_line(["django-admin", "help", "compilemessages"])
+            execute_from_command_line(['djorm', "help", "compilemessages"])
 
     def test_one_locale_excluded(self):
         call_command("compilemessages", exclude=["it"], verbosity=0)
@@ -219,7 +219,7 @@ class IgnoreDirectoryCompilationTests(MessageCompilationTests):
             [("exclude/somedir/locale/LC_MESSAGES", [], ["it.po"])],
         ]
 
-        module_path = "django.core.management.commands.compilemessages"
+        module_path = 'djorm.core.management.commands.compilemessages'
         with mock.patch(f"{module_path}.os.walk", side_effect=os_walk_results):
             with mock.patch(f"{module_path}.os.path.isdir", return_value=True):
                 with mock.patch(
@@ -268,7 +268,7 @@ class CompilationErrorHandling(MessageCompilationTests):
         env = os.environ.copy()
         env.update({"LC_ALL": "C"})
         with mock.patch(
-            "django.core.management.utils.run",
+            'djorm.core.management.utils.run',
             lambda *args, **kwargs: run(*args, env=env, **kwargs),
         ):
             stderr = StringIO()

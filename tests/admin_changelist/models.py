@@ -1,7 +1,7 @@
 import uuid
 
-from django.contrib.auth.models import User
-from django.db import models
+from djorm.contrib.auth.models import User
+from djorm.db import models
 
 
 class Event(models.Model):

@@ -1,27 +1,27 @@
 from datetime import date
 
-from django import forms
-from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
-from django.contrib.admin.options import (
+from djorm import forms
+from djorm.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
+from djorm.contrib.admin.options import (
     HORIZONTAL,
     VERTICAL,
     ModelAdmin,
     TabularInline,
     get_content_type_for_model,
 )
-from django.contrib.admin.sites import AdminSite
-from django.contrib.admin.widgets import (
+from djorm.contrib.admin.sites import AdminSite
+from djorm.contrib.admin.widgets import (
     AdminDateWidget,
     AdminRadioSelect,
     AutocompleteSelect,
     AutocompleteSelectMultiple,
 )
-from django.contrib.auth.models import User
-from django.db import models
-from django.forms.widgets import Select
-from django.test import RequestFactory, SimpleTestCase, TestCase
-from django.test.utils import isolate_apps
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.contrib.auth.models import User
+from djorm.db import models
+from djorm.forms.widgets import Select
+from djorm.test import RequestFactory, SimpleTestCase, TestCase
+from djorm.test.utils import isolate_apps
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from .models import Band, Concert, Song
 

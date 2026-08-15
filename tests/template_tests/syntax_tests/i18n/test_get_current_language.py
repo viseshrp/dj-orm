@@ -1,11 +1,11 @@
 from template_tests.utils import setup
 
-from django.template import TemplateSyntaxError
-from django.test import SimpleTestCase
+from djorm.template import TemplateSyntaxError
+from djorm.test import SimpleTestCase
 
 
 class I18nGetCurrentLanguageTagTests(SimpleTestCase):
-    libraries = {"i18n": "django.templatetags.i18n"}
+    libraries = {"i18n": 'djorm.templatetags.i18n'}
 
     @setup({"template": "{% load i18n %} {% get_current_language %}"})
     def test_no_as_var(self):

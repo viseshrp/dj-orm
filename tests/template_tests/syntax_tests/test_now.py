@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from django.template import TemplateSyntaxError
-from django.test import SimpleTestCase
-from django.utils.formats import date_format
+from djorm.template import TemplateSyntaxError
+from djorm.test import SimpleTestCase
+from djorm.utils.formats import date_format
 
 from ..utils import setup
 

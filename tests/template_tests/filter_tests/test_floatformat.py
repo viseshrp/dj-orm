@@ -1,10 +1,10 @@
 from decimal import Decimal, localcontext
 
-from django.template.defaultfilters import floatformat
-from django.test import SimpleTestCase
-from django.utils import translation
-from django.utils.safestring import mark_safe
-from django.utils.version import PYPY
+from djorm.template.defaultfilters import floatformat
+from djorm.test import SimpleTestCase
+from djorm.utils import translation
+from djorm.utils.safestring import mark_safe
+from djorm.utils.version import PYPY
 
 from ..utils import setup
 

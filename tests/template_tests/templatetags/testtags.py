@@ -1,4 +1,4 @@
-from django.template import Library, Node
+from djorm.template import Library, Node
 
 register = Library()
 

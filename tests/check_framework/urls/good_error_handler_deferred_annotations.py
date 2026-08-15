@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from django.http.request import HttpRequest
+    from djorm.http.request import HttpRequest
 
 urlpatterns = []
 

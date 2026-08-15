@@ -1,9 +1,9 @@
 from unittest import mock
 
-from django.contrib.auth.handlers.modwsgi import check_password, groups_for_user
-from django.contrib.auth.hashers import get_hasher
-from django.contrib.auth.models import Group, User
-from django.test import TransactionTestCase, override_settings
+from djorm.contrib.auth.handlers.modwsgi import check_password, groups_for_user
+from djorm.contrib.auth.hashers import get_hasher
+from djorm.contrib.auth.models import Group, User
+from djorm.test import TransactionTestCase, override_settings
 
 from .models import CustomUser
 
@@ -16,8 +16,8 @@ class ModWsgiHandlerTestCase(TransactionTestCase):
     """
 
     available_apps = [
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
+        'djorm.contrib.auth',
+        'djorm.contrib.contenttypes',
         "auth_tests",
     ]
 

@@ -1,4 +1,4 @@
-from django.forms import BooleanField, CheckboxInput, Form
+from djorm.forms import BooleanField, CheckboxInput, Form
 
 from .base import WidgetTest
 

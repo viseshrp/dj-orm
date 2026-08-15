@@ -4,11 +4,11 @@ from datetime import date, datetime, timedelta
 from threading import Event, Thread, Timer
 from unittest.mock import patch
 
-from django.core.exceptions import FieldError
-from django.db import DatabaseError, IntegrityError, connection
-from django.test import TestCase, TransactionTestCase, skipUnlessDBFeature
-from django.test.utils import CaptureQueriesContext
-from django.utils.functional import lazy
+from djorm.core.exceptions import FieldError
+from djorm.db import DatabaseError, IntegrityError, connection
+from djorm.test import TestCase, TransactionTestCase, skipUnlessDBFeature
+from djorm.test.utils import CaptureQueriesContext
+from djorm.utils.functional import lazy
 
 from .models import (
     Author,

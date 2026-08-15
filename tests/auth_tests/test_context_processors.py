@@ -1,9 +1,9 @@
-from django.contrib.auth import authenticate
-from django.contrib.auth.context_processors import PermLookupDict, PermWrapper
-from django.contrib.auth.models import Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
-from django.test import SimpleTestCase, TestCase, override_settings
+from djorm.contrib.auth import authenticate
+from djorm.contrib.auth.context_processors import PermLookupDict, PermWrapper
+from djorm.contrib.auth.models import Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.db.models import Q
+from djorm.test import SimpleTestCase, TestCase, override_settings
 
 from .settings import AUTH_MIDDLEWARE, AUTH_TEMPLATES
 
@@ -68,9 +68,7 @@ class PermWrapperTests(SimpleTestCase):
 
 @override_settings(ROOT_URLCONF="auth_tests.urls", TEMPLATES=AUTH_TEMPLATES)
 class AuthContextProcessorTests(TestCase):
-    """
-    Tests for the ``django.contrib.auth.context_processors.auth`` processor
-    """
+    '\n    Tests for the ``djorm.contrib.auth.context_processors.auth`` processor\n    '
 
     @classmethod
     def setUpTestData(cls):

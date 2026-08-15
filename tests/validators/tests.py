@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from unittest import TestCase, mock
 
-from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
-from django.core.validators import (
+from djorm.core.exceptions import ValidationError
+from djorm.core.files.base import ContentFile
+from djorm.core.validators import (
     BaseValidator,
     DecimalValidator,
     DomainNameValidator,
@@ -33,7 +33,7 @@ from django.core.validators import (
     validate_slug,
     validate_unicode_slug,
 )
-from django.test import SimpleTestCase
+from djorm.test import SimpleTestCase
 
 try:
     from PIL import Image  # noqa

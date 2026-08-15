@@ -1,6 +1,6 @@
 from unittest import skipIf
 
-from django.test import SimpleTestCase
+from djorm.test import SimpleTestCase
 
 from ..utils import setup
 

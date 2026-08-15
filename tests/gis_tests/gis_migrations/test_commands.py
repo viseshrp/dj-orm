@@ -1,6 +1,6 @@
-from django.core.management import call_command
-from django.db import connection
-from django.test import TransactionTestCase
+from djorm.core.management import call_command
+from djorm.db import connection
+from djorm.test import TransactionTestCase
 
 
 class MigrateTests(TransactionTestCase):

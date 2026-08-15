@@ -6,17 +6,17 @@ from importlib import import_module
 
 from user_commands.utils import AssertFormatterFailureCaughtContext
 
-from django.apps import apps
-from django.core.management import call_command
-from django.db import connection, connections, migrations, models
-from django.db.migrations.migration import Migration
-from django.db.migrations.optimizer import MigrationOptimizer
-from django.db.migrations.recorder import MigrationRecorder
-from django.db.migrations.serializer import serializer_factory
-from django.db.migrations.state import ProjectState
-from django.test import SimpleTestCase, TransactionTestCase
-from django.test.utils import extend_sys_path
-from django.utils.module_loading import module_dir
+from djorm.apps import apps
+from djorm.core.management import call_command
+from djorm.db import connection, connections, migrations, models
+from djorm.db.migrations.migration import Migration
+from djorm.db.migrations.optimizer import MigrationOptimizer
+from djorm.db.migrations.recorder import MigrationRecorder
+from djorm.db.migrations.serializer import serializer_factory
+from djorm.db.migrations.state import ProjectState
+from djorm.test import SimpleTestCase, TransactionTestCase
+from djorm.test.utils import extend_sys_path
+from djorm.utils.module_loading import module_dir
 
 
 class MigrationTestBase(TransactionTestCase):

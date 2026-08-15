@@ -1,7 +1,7 @@
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
-from django.template import engines
-from django.template.response import TemplateResponse
+from djorm.core.exceptions import PermissionDenied
+from djorm.http import HttpResponse
+from djorm.template import engines
+from djorm.template.response import TemplateResponse
 
 
 def normal_view(request):

@@ -1,7 +1,7 @@
-from django.template.defaultfilters import escape
-from django.test import SimpleTestCase
-from django.utils.functional import Promise, lazy
-from django.utils.safestring import mark_safe
+from djorm.template.defaultfilters import escape
+from djorm.test import SimpleTestCase
+from djorm.utils.functional import Promise, lazy
+from djorm.utils.safestring import mark_safe
 
 from ..utils import setup
 

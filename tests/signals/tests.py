@@ -3,13 +3,13 @@ from unittest import mock
 
 from asgiref.sync import markcoroutinefunction
 
-from django import dispatch
-from django.apps.registry import Apps
-from django.db import models
-from django.db.models import signals
-from django.dispatch import receiver
-from django.test import SimpleTestCase, TestCase
-from django.test.utils import isolate_apps
+from djorm import dispatch
+from djorm.apps.registry import Apps
+from djorm.db import models
+from djorm.db.models import signals
+from djorm.dispatch import receiver
+from djorm.test import SimpleTestCase, TestCase
+from djorm.test.utils import isolate_apps
 
 from .models import Author, Book, Car, Page, Person
 

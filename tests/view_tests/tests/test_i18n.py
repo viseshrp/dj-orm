@@ -3,25 +3,25 @@ import json
 from os import path
 from unittest import mock
 
-from django.conf import settings
-from django.test import (
+from djorm.conf import settings
+from djorm.test import (
     RequestFactory,
     SimpleTestCase,
     TestCase,
     modify_settings,
     override_settings,
 )
-from django.test.selenium import SeleniumTestCase
-from django.urls import reverse
-from django.utils.translation import get_language, override
-from django.views.i18n import JavaScriptCatalog, get_formats
+from djorm.test.selenium import SeleniumTestCase
+from djorm.urls import reverse
+from djorm.utils.translation import get_language, override
+from djorm.views.i18n import JavaScriptCatalog, get_formats
 
 from ..urls import locale_dir
 
 
 @override_settings(ROOT_URLCONF="view_tests.urls")
 class SetLanguageTests(TestCase):
-    """Test the django.views.i18n.set_language view."""
+    'Test the djorm.views.i18n.set_language view.'
 
     def _get_inactive_language_code(self):
         """Return language code for a language which is not activated."""
@@ -182,7 +182,7 @@ class SetLanguageTests(TestCase):
         # we force saving language to a cookie rather than a session
         # by excluding session middleware and those which do require it
         test_settings = {
-            "MIDDLEWARE": ["django.middleware.common.CommonMiddleware"],
+            "MIDDLEWARE": ['djorm.middleware.common.CommonMiddleware'],
             "LANGUAGE_COOKIE_NAME": "mylanguage",
             "LANGUAGE_COOKIE_AGE": 3600 * 7 * 2,
             "LANGUAGE_COOKIE_DOMAIN": ".example.com",
@@ -225,7 +225,7 @@ class SetLanguageTests(TestCase):
 
     @modify_settings(
         MIDDLEWARE={
-            "append": "django.middleware.locale.LocaleMiddleware",
+            "append": 'djorm.middleware.locale.LocaleMiddleware',
         }
     )
     def test_lang_from_translated_i18n_pattern(self):
@@ -249,7 +249,7 @@ class SetLanguageTests(TestCase):
 
 @override_settings(ROOT_URLCONF="view_tests.urls")
 class I18NViewTests(SimpleTestCase):
-    """Test django.views.i18n views other than set_language."""
+    'Test djorm.views.i18n views other than set_language.'
 
     @override_settings(LANGUAGE_CODE="de")
     def test_get_formats(self):
@@ -514,7 +514,7 @@ class I18NViewTests(SimpleTestCase):
         be opened as utf-8 charset as is the default specified on template
         engines.
         """
-        from django.views.i18n import Path
+        from djorm.views.i18n import Path
 
         view = JavaScriptCatalog.as_view()
         request = RequestFactory().get("/")
@@ -527,9 +527,9 @@ class I18NViewTests(SimpleTestCase):
 class I18nSeleniumTests(SeleniumTestCase):
     # The test cases use fixtures & translations from these apps.
     available_apps = [
-        "django.contrib.admin",
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
+        'djorm.contrib.admin',
+        'djorm.contrib.auth',
+        'djorm.contrib.contenttypes',
         "view_tests",
     ]
 

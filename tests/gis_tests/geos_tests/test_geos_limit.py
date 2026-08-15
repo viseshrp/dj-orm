@@ -1,9 +1,9 @@
 import struct
 
-from django.contrib.gis.geos import GEOSGeometry, WKTReader
-from django.contrib.gis.geos.error import GEOSException
-from django.contrib.gis.geos.prototypes.io import MAX_GEOM_COLLECTIONS
-from django.test import SimpleTestCase
+from djorm.contrib.gis.geos import GEOSGeometry, WKTReader
+from djorm.contrib.gis.geos.error import GEOSException
+from djorm.contrib.gis.geos.prototypes.io import MAX_GEOM_COLLECTIONS
+from djorm.test import SimpleTestCase
 
 
 class GEOSLimitTest(SimpleTestCase):

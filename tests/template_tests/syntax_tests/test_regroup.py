@@ -1,7 +1,7 @@
 from datetime import date
 
-from django.template import TemplateSyntaxError
-from django.test import SimpleTestCase
+from djorm.template import TemplateSyntaxError
+from djorm.test import SimpleTestCase
 
 from ..utils import setup
 

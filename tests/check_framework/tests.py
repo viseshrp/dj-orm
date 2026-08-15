@@ -3,16 +3,16 @@ import sys
 from io import StringIO
 from unittest import skipIf
 
-from django.apps import apps
-from django.core import checks
-from django.core.checks import Error, Warning
-from django.core.checks.messages import CheckMessage
-from django.core.checks.registry import CheckRegistry
-from django.core.management import call_command
-from django.core.management.base import CommandError
-from django.db import models
-from django.test import SimpleTestCase
-from django.test.utils import isolate_apps, override_settings, override_system_checks
+from djorm.apps import apps
+from djorm.core import checks
+from djorm.core.checks import Error, Warning
+from djorm.core.checks.messages import CheckMessage
+from djorm.core.checks.registry import CheckRegistry
+from djorm.core.management import call_command
+from djorm.core.management.base import CommandError
+from djorm.db import models
+from djorm.test import SimpleTestCase
+from djorm.test.utils import isolate_apps, override_settings, override_system_checks
 
 from .models import SimpleModel, my_check
 

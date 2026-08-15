@@ -1,8 +1,8 @@
 from xml.dom import minidom
 
-from django.core import serializers
-from django.core.serializers.xml_serializer import DTDForbidden
-from django.test import TestCase, TransactionTestCase
+from djorm.core import serializers
+from djorm.core.serializers.xml_serializer import DTDForbidden
+from djorm.test import TestCase, TransactionTestCase
 
 from .tests import SerializersTestBase, SerializersTransactionTestBase
 

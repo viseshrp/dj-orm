@@ -2,13 +2,13 @@ import datetime
 import json
 from decimal import Decimal
 
-from django import forms
-from django.core import exceptions, serializers
-from django.db.models import DateField, DateTimeField, F, Func, Value
-from django.http import QueryDict
-from django.test import override_settings
-from django.test.utils import isolate_apps
-from django.utils import timezone
+from djorm import forms
+from djorm.core import exceptions, serializers
+from djorm.db.models import DateField, DateTimeField, F, Func, Value
+from djorm.http import QueryDict
+from djorm.test import override_settings
+from djorm.test.utils import isolate_apps
+from djorm.utils import timezone
 
 from . import PostgreSQLSimpleTestCase, PostgreSQLTestCase
 from .models import (
@@ -20,13 +20,13 @@ from .models import (
 )
 
 try:
-    from django.contrib.postgres import fields as pg_fields
-    from django.contrib.postgres import forms as pg_forms
-    from django.contrib.postgres.validators import (
+    from djorm.contrib.postgres import fields as pg_fields
+    from djorm.contrib.postgres import forms as pg_forms
+    from djorm.contrib.postgres.validators import (
         RangeMaxValueValidator,
         RangeMinValueValidator,
     )
-    from django.db.backends.postgresql.psycopg_any import (
+    from djorm.db.backends.postgresql.psycopg_any import (
         DateRange,
         DateTimeTZRange,
         NumericRange,

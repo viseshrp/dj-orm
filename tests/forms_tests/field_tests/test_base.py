@@ -1,5 +1,5 @@
-from django.forms import ChoiceField, Field, Form, Select
-from django.test import SimpleTestCase
+from djorm.forms import ChoiceField, Field, Form, Select
+from djorm.test import SimpleTestCase
 
 
 class BasicFieldsTests(SimpleTestCase):

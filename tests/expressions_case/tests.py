@@ -4,9 +4,9 @@ from decimal import Decimal
 from operator import attrgetter, itemgetter
 from uuid import UUID
 
-from django.core.exceptions import FieldError
-from django.db import connection
-from django.db.models import (
+from djorm.core.exceptions import FieldError
+from djorm.db import connection
+from djorm.db.models import (
     BinaryField,
     BooleanField,
     Case,
@@ -23,7 +23,7 @@ from django.db.models import (
     Value,
     When,
 )
-from django.test import SimpleTestCase, TestCase
+from djorm.test import SimpleTestCase, TestCase
 
 from .models import CaseTestModel, Client, FKCaseTestModel, O2OCaseTestModel
 

@@ -1,8 +1,8 @@
 from datetime import datetime
 from operator import attrgetter
 
-from django.core.exceptions import FieldError
-from django.db.models import (
+from djorm.core.exceptions import FieldError
+from djorm.db.models import (
     CharField,
     Count,
     DateTimeField,
@@ -14,8 +14,8 @@ from django.db.models import (
     Subquery,
     Value,
 )
-from django.db.models.functions import Length, Upper
-from django.test import TestCase
+from djorm.db.models.functions import Length, Upper
+from djorm.test import TestCase
 
 from .models import (
     Article,

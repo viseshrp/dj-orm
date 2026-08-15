@@ -1,5 +1,5 @@
-from django.contrib import admin
-from django.urls import include, path
+from djorm.contrib import admin
+from djorm.urls import include, path
 
 from . import views
 
@@ -11,7 +11,7 @@ backend_urls = (
 )
 
 urlpatterns = [
-    path("admin/doc/", include("django.contrib.admindocs.urls")),
+    path("admin/doc/", include('djorm.contrib.admindocs.urls')),
     path("admin/", admin.site.urls),
     path("api/backend/", include(backend_urls, namespace="backend")),
 ]

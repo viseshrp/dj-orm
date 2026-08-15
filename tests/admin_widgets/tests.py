@@ -6,15 +6,15 @@ from datetime import datetime, timedelta
 from importlib import import_module
 from unittest import skipUnless
 
-from django import forms
-from django.conf import settings
-from django.contrib import admin
-from django.contrib.admin import widgets
-from django.contrib.admin.tests import AdminSeleniumTestCase
-from django.contrib.auth.models import User
-from django.core.files.storage import default_storage
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db.models import (
+from djorm import forms
+from djorm.conf import settings
+from djorm.contrib import admin
+from djorm.contrib.admin import widgets
+from djorm.contrib.admin.tests import AdminSeleniumTestCase
+from djorm.contrib.auth.models import User
+from djorm.core.files.storage import default_storage
+from djorm.core.files.uploadedfile import SimpleUploadedFile
+from djorm.db.models import (
     CharField,
     DateField,
     DateTimeField,
@@ -22,12 +22,12 @@ from django.db.models import (
     ManyToManyField,
     UUIDField,
 )
-from django.test import SimpleTestCase, TestCase, ignore_warnings, override_settings
-from django.test.selenium import screenshot_cases
-from django.test.utils import requires_tz_support
-from django.urls import reverse
-from django.utils import translation
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.test import SimpleTestCase, TestCase, ignore_warnings, override_settings
+from djorm.test.selenium import screenshot_cases
+from djorm.test.utils import requires_tz_support
+from djorm.urls import reverse
+from djorm.utils import translation
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from .models import (
     Advisor,
@@ -1151,7 +1151,7 @@ class DateTimePickerSeleniumTests(AdminWidgetSeleniumTestCase):
         # Get month name translations for every locale
         month_string = "May"
         path = os.path.join(
-            os.path.dirname(import_module("django.contrib.admin").__file__), "locale"
+            os.path.dirname(import_module('djorm.contrib.admin').__file__), "locale"
         )
         url = reverse("admin:admin_widgets_member_change", args=(member.pk,))
         with self.small_screen_size():

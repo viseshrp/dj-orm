@@ -1,11 +1,11 @@
 import unittest
 from typing import TYPE_CHECKING
 
-from django.utils import inspect
-from django.utils.version import PY314
+from djorm.utils import inspect
+from djorm.utils.version import PY314
 
 if TYPE_CHECKING:
-    from django.utils.safestring import SafeString
+    from djorm.utils.safestring import SafeString
 
 
 class Person:

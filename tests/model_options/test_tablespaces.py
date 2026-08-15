@@ -1,7 +1,7 @@
-from django.apps import apps
-from django.conf import settings
-from django.db import connection
-from django.test import TransactionTestCase, skipIfDBFeature, skipUnlessDBFeature
+from djorm.apps import apps
+from djorm.conf import settings
+from djorm.db import connection
+from djorm.test import TransactionTestCase, skipIfDBFeature, skipUnlessDBFeature
 
 from .models.tablespaces import (
     Article,

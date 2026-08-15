@@ -1,22 +1,22 @@
-from django.contrib import admin
-from django.contrib.auth import views
-from django.contrib.auth.decorators import (
+from djorm.contrib import admin
+from djorm.contrib.auth import views
+from djorm.contrib.auth.decorators import (
     login_not_required,
     login_required,
     permission_required,
 )
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.urls import urlpatterns as auth_urlpatterns
-from django.contrib.auth.views import LoginView
-from django.contrib.messages.api import info
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
-from django.template import RequestContext, Template
-from django.urls import path, re_path, reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.cache import never_cache
-from django.views.i18n import set_language
+from djorm.contrib.auth.forms import AuthenticationForm
+from djorm.contrib.auth.urls import urlpatterns as auth_urlpatterns
+from djorm.contrib.auth.views import LoginView
+from djorm.contrib.messages.api import info
+from djorm.http import HttpRequest, HttpResponse
+from djorm.shortcuts import render
+from djorm.template import RequestContext, Template
+from djorm.urls import path, re_path, reverse_lazy
+from djorm.utils.decorators import method_decorator
+from djorm.views import View
+from djorm.views.decorators.cache import never_cache
+from djorm.views.i18n import set_language
 
 
 class CustomRequestAuthenticationForm(AuthenticationForm):
@@ -191,7 +191,7 @@ urlpatterns = auth_urlpatterns + [
         views.PasswordResetConfirmView.as_view(
             post_reset_login=True,
             post_reset_login_backend=(
-                "django.contrib.auth.backends.AllowAllUsersModelBackend"
+                'djorm.contrib.auth.backends.AllowAllUsersModelBackend'
             ),
         ),
     ),

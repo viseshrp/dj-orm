@@ -7,16 +7,16 @@ import sys
 from pathlib import Path
 from unittest import mock
 
-from django.apps import apps
-from django.core.checks import Error, Tags, register
-from django.core.checks.registry import registry
-from django.core.management import CommandError, call_command
-from django.core.management.base import SystemCheckError
-from django.core.management.commands.makemigrations import (
+from djorm.apps import apps
+from djorm.core.checks import Error, Tags, register
+from djorm.core.checks.registry import registry
+from djorm.core.management import CommandError, call_command
+from djorm.core.management.base import SystemCheckError
+from djorm.core.management.commands.makemigrations import (
     Command as MakeMigrationsCommand,
 )
-from django.core.management.commands.migrate import Command as MigrateCommand
-from django.db import (
+from djorm.core.management.commands.migrate import Command as MigrateCommand
+from djorm.db import (
     ConnectionHandler,
     DatabaseError,
     OperationalError,
@@ -24,15 +24,15 @@ from django.db import (
     connections,
     models,
 )
-from django.db.backends.base.schema import BaseDatabaseSchemaEditor
-from django.db.backends.utils import truncate_name
-from django.db.migrations.autodetector import MigrationAutodetector
-from django.db.migrations.exceptions import InconsistentMigrationHistory
-from django.db.migrations.recorder import MigrationRecorder
-from django.test import TestCase, override_settings, skipUnlessDBFeature
-from django.test.utils import captured_stdout, extend_sys_path, isolate_apps
-from django.utils import timezone
-from django.utils.version import get_docs_version
+from djorm.db.backends.base.schema import BaseDatabaseSchemaEditor
+from djorm.db.backends.utils import truncate_name
+from djorm.db.migrations.autodetector import MigrationAutodetector
+from djorm.db.migrations.exceptions import InconsistentMigrationHistory
+from djorm.db.migrations.recorder import MigrationRecorder
+from djorm.test import TestCase, override_settings, skipUnlessDBFeature
+from djorm.test.utils import captured_stdout, extend_sys_path, isolate_apps
+from djorm.utils import timezone
+from djorm.utils.version import get_docs_version
 
 from .models import UnicodeModel, UnserializableModel
 from .routers import TestRouter
@@ -98,11 +98,11 @@ class MigrateTests(MigrationTestBase):
         self.assertTableNotExists("migrations_tribble")
         self.assertTableNotExists("migrations_book")
 
-    @mock.patch("django.core.management.base.BaseCommand.check")
+    @mock.patch('djorm.core.management.base.BaseCommand.check')
     @override_settings(
         INSTALLED_APPS=[
-            "django.contrib.auth",
-            "django.contrib.contenttypes",
+            'djorm.contrib.auth',
+            'djorm.contrib.contenttypes',
             "migrations.migrations_test_apps.migrated_app",
         ]
     )
@@ -236,7 +236,7 @@ class MigrateTests(MigrationTestBase):
             # Run initial migration with an explicit --fake-initial
             out = io.StringIO()
             with mock.patch(
-                "django.core.management.color.supports_color", lambda *args: False
+                'djorm.core.management.color.supports_color', lambda *args: False
             ):
                 call_command(
                     "migrate",
@@ -347,7 +347,7 @@ class MigrateTests(MigrationTestBase):
             call_command("migrate", "migrations", "zero", fake=True, verbosity=0)
             out = io.StringIO()
             with mock.patch(
-                "django.core.management.color.supports_color", lambda *args: False
+                'djorm.core.management.color.supports_color', lambda *args: False
             ):
                 call_command(
                     "migrate",
@@ -447,7 +447,7 @@ class MigrateTests(MigrationTestBase):
         """
         out = io.StringIO()
         with mock.patch(
-            "django.core.management.color.supports_color", lambda *args: True
+            'djorm.core.management.color.supports_color', lambda *args: True
         ):
             call_command(
                 "showmigrations", format="list", stdout=out, verbosity=0, no_color=False
@@ -1136,19 +1136,19 @@ class MigrateTests(MigrationTestBase):
     def test_sqlmigrate_transaction_keywords_not_colorized(self):
         out = io.StringIO()
         with mock.patch(
-            "django.core.management.color.supports_color", lambda *args: True
+            'djorm.core.management.color.supports_color', lambda *args: True
         ):
             call_command("sqlmigrate", "migrations", "0001", stdout=out, no_color=False)
         self.assertNotIn("\x1b", out.getvalue())
 
     @override_settings(
         MIGRATION_MODULES={"migrations": "migrations.test_migrations_no_operations"},
-        INSTALLED_APPS=["django.contrib.auth"],
+        INSTALLED_APPS=['djorm.contrib.auth'],
     )
     def test_sqlmigrate_system_checks_colorized(self):
         with (
             mock.patch(
-                "django.core.management.color.supports_color", lambda *args: True
+                'djorm.core.management.color.supports_color', lambda *args: True
             ),
             self.assertRaisesMessage(SystemCheckError, "\x1b"),
         ):
@@ -1600,7 +1600,7 @@ class MakeMigrationsTests(MigrationTestBase):
     def test_makemigrations_empty_connections(self):
         empty_connections = ConnectionHandler({"default": {}})
         with mock.patch(
-            "django.core.management.commands.makemigrations.connections",
+            'djorm.core.management.commands.makemigrations.connections',
             new=empty_connections,
         ):
             # with no apps
@@ -1904,7 +1904,7 @@ class MakeMigrationsTests(MigrationTestBase):
             self.assertIn(target_str, content)
         self.assertIn("Created new merge migration %s" % merge_file, out.getvalue())
 
-    @mock.patch("django.db.migrations.utils.datetime")
+    @mock.patch('djorm.db.migrations.utils.datetime')
     def test_makemigrations_auto_merge_name(self, mock_datetime):
         mock_datetime.datetime.now.return_value = datetime.datetime(2016, 1, 2, 3, 4)
         with mock.patch("builtins.input", mock.Mock(return_value="y")):
@@ -1984,7 +1984,7 @@ class MakeMigrationsTests(MigrationTestBase):
             self.assertIn(input_msg, output)
             self.assertIn("Please enter the default value as valid Python.", output)
             self.assertIn(
-                "The datetime and django.utils.timezone modules are "
+                'The datetime and djorm.utils.timezone modules are '
                 "available, so it is possible to provide e.g. timezone.now as "
                 "a value",
                 output,
@@ -2062,7 +2062,7 @@ class MakeMigrationsTests(MigrationTestBase):
             self.assertIn(input_msg, output)
             self.assertIn("Please enter the default value as valid Python.", output)
             self.assertIn(
-                "The datetime and django.utils.timezone modules are "
+                'The datetime and djorm.utils.timezone modules are '
                 "available, so it is possible to provide e.g. timezone.now as "
                 "a value",
                 output,
@@ -2451,7 +2451,7 @@ class MakeMigrationsTests(MigrationTestBase):
         with mock.patch("builtins.input", mock.Mock(return_value="N")):
             out = io.StringIO()
             with mock.patch(
-                "django.core.management.color.supports_color", lambda *args: False
+                'djorm.core.management.color.supports_color', lambda *args: False
             ):
                 call_command(
                     "makemigrations",
@@ -2613,7 +2613,7 @@ class MakeMigrationsTests(MigrationTestBase):
             "for database connection 'default': could not connect to server"
         )
         with mock.patch(
-            "django.db.migrations.loader.MigrationLoader.check_consistent_history",
+            'djorm.db.migrations.loader.MigrationLoader.check_consistent_history',
             side_effect=OperationalError("could not connect to server"),
         ):
             with self.temporary_migration_module():
@@ -2623,7 +2623,7 @@ class MakeMigrationsTests(MigrationTestBase):
 
     @mock.patch("builtins.input", return_value="1")
     @mock.patch(
-        "django.db.migrations.questioner.sys.stdin",
+        'djorm.db.migrations.questioner.sys.stdin',
         mock.MagicMock(encoding=sys.getdefaultencoding()),
     )
     def test_makemigrations_auto_now_add_interactive(self, *args):
@@ -3147,16 +3147,11 @@ class SquashMigrationsTests(MigrationTestBase):
 
 
 class AppLabelErrorTests(TestCase):
-    """
-    This class inherits TestCase because MigrationTestBase uses
-    `available_apps = ['migrations']` which means that it's the only installed
-    app. 'django.contrib.auth' must be in INSTALLED_APPS for some of these
-    tests.
-    """
+    "\n    This class inherits TestCase because MigrationTestBase uses\n    `available_apps = ['migrations']` which means that it's the only installed\n    app. 'djorm.contrib.auth' must be in INSTALLED_APPS for some of these\n    tests.\n    "
 
     nonexistent_app_error = "No installed app with label 'nonexistent_app'."
     did_you_mean_auth_error = (
-        "No installed app with label 'django.contrib.auth'. Did you mean 'auth'?"
+        "No installed app with label 'djorm.contrib.auth'. Did you mean 'auth'?"
     )
 
     def test_makemigrations_nonexistent_app_label(self):
@@ -3168,7 +3163,7 @@ class AppLabelErrorTests(TestCase):
     def test_makemigrations_app_name_specified_as_label(self):
         err = io.StringIO()
         with self.assertRaises(SystemExit):
-            call_command("makemigrations", "django.contrib.auth", stderr=err)
+            call_command("makemigrations", 'djorm.contrib.auth', stderr=err)
         self.assertIn(self.did_you_mean_auth_error, err.getvalue())
 
     def test_migrate_nonexistent_app_label(self):
@@ -3177,7 +3172,7 @@ class AppLabelErrorTests(TestCase):
 
     def test_migrate_app_name_specified_as_label(self):
         with self.assertRaisesMessage(CommandError, self.did_you_mean_auth_error):
-            call_command("migrate", "django.contrib.auth")
+            call_command("migrate", 'djorm.contrib.auth')
 
     def test_showmigrations_nonexistent_app_label(self):
         err = io.StringIO()
@@ -3188,7 +3183,7 @@ class AppLabelErrorTests(TestCase):
     def test_showmigrations_app_name_specified_as_label(self):
         err = io.StringIO()
         with self.assertRaises(SystemExit):
-            call_command("showmigrations", "django.contrib.auth", stderr=err)
+            call_command("showmigrations", 'djorm.contrib.auth', stderr=err)
         self.assertIn(self.did_you_mean_auth_error, err.getvalue())
 
     def test_sqlmigrate_nonexistent_app_label(self):
@@ -3197,7 +3192,7 @@ class AppLabelErrorTests(TestCase):
 
     def test_sqlmigrate_app_name_specified_as_label(self):
         with self.assertRaisesMessage(CommandError, self.did_you_mean_auth_error):
-            call_command("sqlmigrate", "django.contrib.auth", "0002")
+            call_command("sqlmigrate", 'djorm.contrib.auth', "0002")
 
     def test_squashmigrations_nonexistent_app_label(self):
         with self.assertRaisesMessage(CommandError, self.nonexistent_app_error):
@@ -3205,7 +3200,7 @@ class AppLabelErrorTests(TestCase):
 
     def test_squashmigrations_app_name_specified_as_label(self):
         with self.assertRaisesMessage(CommandError, self.did_you_mean_auth_error):
-            call_command("squashmigrations", "django.contrib.auth", "0002")
+            call_command("squashmigrations", 'djorm.contrib.auth', "0002")
 
     def test_optimizemigration_nonexistent_app_label(self):
         with self.assertRaisesMessage(CommandError, self.nonexistent_app_error):
@@ -3213,7 +3208,7 @@ class AppLabelErrorTests(TestCase):
 
     def test_optimizemigration_app_name_specified_as_label(self):
         with self.assertRaisesMessage(CommandError, self.did_you_mean_auth_error):
-            call_command("optimizemigration", "django.contrib.auth", "0002")
+            call_command("optimizemigration", 'djorm.contrib.auth', "0002")
 
 
 class OptimizeMigrationTests(MigrationTestBase):

@@ -5,8 +5,8 @@ These are *not* examples to be copied in user code.
 
 import unittest
 
-from django.template import Library, TemplateSyntaxError
-from django.template.base import (
+from djorm.template import Library, TemplateSyntaxError
+from djorm.template.base import (
     FilterExpression,
     Lexer,
     Parser,
@@ -14,9 +14,9 @@ from django.template.base import (
     TokenType,
     Variable,
 )
-from django.template.defaultfilters import register as filter_library
-from django.test import SimpleTestCase
-from django.utils.version import PY314
+from djorm.template.defaultfilters import register as filter_library
+from djorm.test import SimpleTestCase
+from djorm.utils.version import PY314
 
 
 class ParserTests(SimpleTestCase):

@@ -4,18 +4,18 @@ import logging
 import sys
 from pathlib import Path
 
-from django.core.exceptions import BadRequest, PermissionDenied, SuspiciousOperation
-from django.http import Http404, HttpResponse, JsonResponse
-from django.shortcuts import render
-from django.template import Context, Template, TemplateDoesNotExist
-from django.urls import get_resolver
-from django.views import View
-from django.views.debug import (
+from djorm.core.exceptions import BadRequest, PermissionDenied, SuspiciousOperation
+from djorm.http import Http404, HttpResponse, JsonResponse
+from djorm.shortcuts import render
+from djorm.template import Context, Template, TemplateDoesNotExist
+from djorm.urls import get_resolver
+from djorm.views import View
+from djorm.views.debug import (
     ExceptionReporter,
     SafeExceptionReporterFilter,
     technical_500_response,
 )
-from django.views.decorators.debug import sensitive_post_parameters, sensitive_variables
+from djorm.views.decorators.debug import sensitive_post_parameters, sensitive_variables
 
 TEMPLATES_PATH = Path(__file__).resolve().parent / "templates"
 

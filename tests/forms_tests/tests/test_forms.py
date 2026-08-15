@@ -3,10 +3,10 @@ import datetime
 import json
 import uuid
 
-from django.core.exceptions import NON_FIELD_ERRORS
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.validators import MaxValueValidator, RegexValidator
-from django.forms import (
+from djorm.core.exceptions import NON_FIELD_ERRORS
+from djorm.core.files.uploadedfile import SimpleUploadedFile
+from djorm.core.validators import MaxValueValidator, RegexValidator
+from djorm.forms import (
     BooleanField,
     BoundField,
     CharField,
@@ -38,14 +38,14 @@ from django.forms import (
     TimeField,
     ValidationError,
 )
-from django.forms.renderers import DjangoTemplates, get_default_renderer
-from django.forms.utils import ErrorDict, ErrorList
-from django.http import QueryDict
-from django.template import Context, Template
-from django.test import SimpleTestCase
-from django.test.utils import override_settings
-from django.utils.datastructures import MultiValueDict
-from django.utils.safestring import mark_safe
+from djorm.forms.renderers import DjangoTemplates, get_default_renderer
+from djorm.forms.utils import ErrorDict, ErrorList
+from djorm.http import QueryDict
+from djorm.template import Context, Template
+from djorm.test import SimpleTestCase
+from djorm.test.utils import override_settings
+from djorm.utils.datastructures import MultiValueDict
+from djorm.utils.safestring import mark_safe
 
 from . import jinja2_tests
 

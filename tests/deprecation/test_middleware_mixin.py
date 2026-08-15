@@ -2,33 +2,33 @@ import threading
 
 from asgiref.sync import async_to_sync, iscoroutinefunction
 
-from django.contrib.admindocs.middleware import XViewMiddleware
-from django.contrib.auth.middleware import (
+from djorm.contrib.admindocs.middleware import XViewMiddleware
+from djorm.contrib.auth.middleware import (
     AuthenticationMiddleware,
     LoginRequiredMiddleware,
 )
-from django.contrib.flatpages.middleware import FlatpageFallbackMiddleware
-from django.contrib.messages.middleware import MessageMiddleware
-from django.contrib.redirects.middleware import RedirectFallbackMiddleware
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.contrib.sites.middleware import CurrentSiteMiddleware
-from django.db import connection
-from django.http.request import HttpRequest
-from django.http.response import HttpResponse
-from django.middleware.cache import (
+from djorm.contrib.flatpages.middleware import FlatpageFallbackMiddleware
+from djorm.contrib.messages.middleware import MessageMiddleware
+from djorm.contrib.redirects.middleware import RedirectFallbackMiddleware
+from djorm.contrib.sessions.middleware import SessionMiddleware
+from djorm.contrib.sites.middleware import CurrentSiteMiddleware
+from djorm.db import connection
+from djorm.http.request import HttpRequest
+from djorm.http.response import HttpResponse
+from djorm.middleware.cache import (
     CacheMiddleware,
     FetchFromCacheMiddleware,
     UpdateCacheMiddleware,
 )
-from django.middleware.clickjacking import XFrameOptionsMiddleware
-from django.middleware.common import BrokenLinkEmailsMiddleware, CommonMiddleware
-from django.middleware.csrf import CsrfViewMiddleware
-from django.middleware.gzip import GZipMiddleware
-from django.middleware.http import ConditionalGetMiddleware
-from django.middleware.locale import LocaleMiddleware
-from django.middleware.security import SecurityMiddleware
-from django.test import SimpleTestCase
-from django.utils.deprecation import MiddlewareMixin
+from djorm.middleware.clickjacking import XFrameOptionsMiddleware
+from djorm.middleware.common import BrokenLinkEmailsMiddleware, CommonMiddleware
+from djorm.middleware.csrf import CsrfViewMiddleware
+from djorm.middleware.gzip import GZipMiddleware
+from djorm.middleware.http import ConditionalGetMiddleware
+from djorm.middleware.locale import LocaleMiddleware
+from djorm.middleware.security import SecurityMiddleware
+from djorm.test import SimpleTestCase
+from djorm.utils.deprecation import MiddlewareMixin
 
 
 class MiddlewareMixinTests(SimpleTestCase):

@@ -1,10 +1,10 @@
 import datetime
 from unittest import mock
 
-from django.test import SimpleTestCase
-from django.utils import feedgenerator
-from django.utils.functional import SimpleLazyObject
-from django.utils.timezone import get_fixed_timezone
+from djorm.test import SimpleTestCase
+from djorm.utils import feedgenerator
+from djorm.utils.functional import SimpleLazyObject
+from djorm.utils.timezone import get_fixed_timezone
 
 
 class FeedgeneratorTests(SimpleTestCase):

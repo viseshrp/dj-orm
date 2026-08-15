@@ -1,6 +1,6 @@
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
-from django.test import TestCase
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.exceptions import ValidationError
+from djorm.test import TestCase
 
 from .models import Comment, Tenant, Token, User
 

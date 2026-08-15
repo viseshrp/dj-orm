@@ -1,8 +1,8 @@
-from django.contrib.gis.db import models
-from django.db import connection
-from django.db.models import Index
-from django.test import TransactionTestCase
-from django.test.utils import isolate_apps
+from djorm.contrib.gis.db import models
+from djorm.db import connection
+from djorm.db.models import Index
+from djorm.test import TransactionTestCase
+from djorm.test.utils import isolate_apps
 
 from .models import City
 

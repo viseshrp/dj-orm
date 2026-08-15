@@ -7,27 +7,27 @@ from http import HTTPStatus
 from unittest import mock
 from urllib.parse import parse_qsl, urljoin, urlsplit
 
-from django import forms
-from django.contrib import admin
-from django.contrib.admin import AdminSite, ModelAdmin
-from django.contrib.admin.helpers import ACTION_CHECKBOX_NAME
-from django.contrib.admin.models import ADDITION, DELETION, LogEntry
-from django.contrib.admin.options import TO_FIELD_VAR
-from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
-from django.contrib.admin.tests import AdminSeleniumTestCase
-from django.contrib.admin.utils import quote
-from django.contrib.admin.views.main import IS_POPUP_VAR
-from django.contrib.auth import REDIRECT_FIELD_NAME, get_permission_codename
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.forms import AdminPasswordChangeForm
-from django.contrib.auth.models import Group, Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.core import mail
-from django.core.checks import Error
-from django.core.files import temp as tempfile
-from django.forms.utils import ErrorList
-from django.template.response import TemplateResponse
-from django.test import (
+from djorm import forms
+from djorm.contrib import admin
+from djorm.contrib.admin import AdminSite, ModelAdmin
+from djorm.contrib.admin.helpers import ACTION_CHECKBOX_NAME
+from djorm.contrib.admin.models import ADDITION, DELETION, LogEntry
+from djorm.contrib.admin.options import TO_FIELD_VAR
+from djorm.contrib.admin.templatetags.admin_urls import add_preserved_filters
+from djorm.contrib.admin.tests import AdminSeleniumTestCase
+from djorm.contrib.admin.utils import quote
+from djorm.contrib.admin.views.main import IS_POPUP_VAR
+from djorm.contrib.auth import REDIRECT_FIELD_NAME, get_permission_codename
+from djorm.contrib.auth.admin import UserAdmin
+from djorm.contrib.auth.forms import AdminPasswordChangeForm
+from djorm.contrib.auth.models import Group, Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core import mail
+from djorm.core.checks import Error
+from djorm.core.files import temp as tempfile
+from djorm.forms.utils import ErrorList
+from djorm.template.response import TemplateResponse
+from djorm.test import (
     RequestFactory,
     TestCase,
     ignore_warnings,
@@ -35,15 +35,15 @@ from django.test import (
     override_settings,
     skipUnlessDBFeature,
 )
-from django.test.selenium import screenshot_cases
-from django.test.utils import override_script_prefix
-from django.urls import NoReverseMatch, resolve, reverse
-from django.utils import formats, translation
-from django.utils.cache import get_max_age
-from django.utils.deprecation import RemovedInDjango60Warning
-from django.utils.encoding import iri_to_uri
-from django.utils.html import escape
-from django.utils.http import urlencode
+from djorm.test.selenium import screenshot_cases
+from djorm.test.utils import override_script_prefix
+from djorm.urls import NoReverseMatch, resolve, reverse
+from djorm.utils import formats, translation
+from djorm.utils.cache import get_max_age
+from djorm.utils.deprecation import RemovedInDjango60Warning
+from djorm.utils.encoding import iri_to_uri
+from djorm.utils.html import escape
+from djorm.utils.http import urlencode
 
 from . import customadmin
 from .admin import CityAdmin, site, site2
@@ -1567,10 +1567,10 @@ class AdminViewBasicTest(AdminViewBasicTestCase):
         ]
         for url in tests:
             with self.subTest(url=url):
-                with self.assertNoLogs("django.template", "DEBUG"):
+                with self.assertNoLogs('djorm.template', "DEBUG"):
                     self.client.get(url)
         # Login must be after logout.
-        with self.assertNoLogs("django.template", "DEBUG"):
+        with self.assertNoLogs('djorm.template', "DEBUG"):
             self.client.post(reverse("admin:logout"))
             self.client.get(reverse("admin:login"))
 
@@ -1581,20 +1581,20 @@ class AdminViewBasicTest(AdminViewBasicTestCase):
             "index": "0",
             "_selected_action": self.a1.pk,
         }
-        with self.assertNoLogs("django.template", "DEBUG"):
+        with self.assertNoLogs('djorm.template', "DEBUG"):
             self.client.post(reverse("admin:admin_views_article_changelist"), post_data)
 
     @override_settings(
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "NumericPasswordValidator"
                 )
             },
@@ -1662,19 +1662,19 @@ class AdminViewBasicTest(AdminViewBasicTestCase):
     AUTH_PASSWORD_VALIDATORS=[
         {
             "NAME": (
-                "django.contrib.auth.password_validation."
+                'djorm.contrib.auth.password_validation.'
                 "UserAttributeSimilarityValidator"
             )
         },
         {
             "NAME": (
-                "django.contrib.auth.password_validation." "NumericPasswordValidator"
+                'djorm.contrib.auth.password_validation.' "NumericPasswordValidator"
             )
         },
     ],
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             # Put this app's and the shared tests templates dirs in DIRS to
             # take precedence over the admin's templates dir.
             "DIRS": [
@@ -1684,9 +1684,9 @@ class AdminViewBasicTest(AdminViewBasicTestCase):
             "APP_DIRS": True,
             "OPTIONS": {
                 "context_processors": [
-                    "django.template.context_processors.request",
-                    "django.contrib.auth.context_processors.auth",
-                    "django.contrib.messages.context_processors.messages",
+                    'djorm.template.context_processors.request',
+                    'djorm.contrib.auth.context_processors.auth',
+                    'djorm.contrib.messages.context_processors.messages',
                 ],
             },
         }
@@ -2174,13 +2174,13 @@ def get_perm(Model, codename):
     # Test with the admin's documented list of required context processors.
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "APP_DIRS": True,
             "OPTIONS": {
                 "context_processors": [
-                    "django.template.context_processors.request",
-                    "django.contrib.auth.context_processors.auth",
-                    "django.contrib.messages.context_processors.messages",
+                    'djorm.template.context_processors.request',
+                    'djorm.contrib.auth.context_processors.auth',
+                    'djorm.contrib.messages.context_processors.messages',
                 ],
             },
         }
@@ -2618,7 +2618,7 @@ class AdminViewPermissionsTest(TestCase):
         # make sure the view removes test cookie
         self.assertIs(self.client.session.test_cookie_worked(), False)
 
-    @mock.patch("django.contrib.admin.options.InlineModelAdmin.has_change_permission")
+    @mock.patch('djorm.contrib.admin.options.InlineModelAdmin.has_change_permission')
     def test_add_view_with_view_only_inlines(self, has_change_permission):
         """User with add permission to a section but view-only for inlines."""
         self.viewuser.user_permissions.add(
@@ -3419,13 +3419,13 @@ class AdminViewPermissionsTest(TestCase):
     ROOT_URLCONF="admin_views.urls",
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "APP_DIRS": True,
             "OPTIONS": {
                 "context_processors": [
-                    "django.template.context_processors.request",
-                    "django.contrib.auth.context_processors.auth",
-                    "django.contrib.messages.context_processors.messages",
+                    'djorm.template.context_processors.request',
+                    'djorm.contrib.auth.context_processors.auth',
+                    'djorm.contrib.messages.context_processors.messages',
                 ],
             },
         }
@@ -7690,7 +7690,7 @@ except ImportError:
 @unittest.skipUnless(docutils, "no docutils installed.")
 @override_settings(ROOT_URLCONF="admin_views.urls")
 @modify_settings(
-    INSTALLED_APPS={"append": ["django.contrib.admindocs", "django.contrib.flatpages"]}
+    INSTALLED_APPS={"append": ['djorm.contrib.admindocs', 'djorm.contrib.flatpages']}
 )
 class AdminDocsTest(TestCase):
     @classmethod
@@ -7703,7 +7703,7 @@ class AdminDocsTest(TestCase):
         self.client.force_login(self.superuser)
 
     def test_tags(self):
-        response = self.client.get(reverse("django-admindocs-tags"))
+        response = self.client.get(reverse('djormdocs-tags'))
 
         # The builtin tag group exists
         self.assertContains(response, "<h2>Built-in tags</h2>", count=2, html=True)
@@ -7742,7 +7742,7 @@ class AdminDocsTest(TestCase):
         )
 
     def test_filters(self):
-        response = self.client.get(reverse("django-admindocs-filters"))
+        response = self.client.get(reverse('djormdocs-filters'))
 
         # The builtin filter group exists
         self.assertContains(response, "<h2>Built-in filters</h2>", count=2, html=True)
@@ -7754,7 +7754,7 @@ class AdminDocsTest(TestCase):
         )
 
     def test_index_headers(self):
-        response = self.client.get(reverse("django-admindocs-docroot"))
+        response = self.client.get(reverse('djormdocs-docroot'))
         self.assertContains(response, "<h1>Documentation</h1>")
         self.assertContains(response, '<h2><a href="tags/">Tags</a></h2>')
         self.assertContains(response, '<h2><a href="filters/">Filters</a></h2>')
@@ -7769,13 +7769,13 @@ class AdminDocsTest(TestCase):
     ROOT_URLCONF="admin_views.urls",
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "APP_DIRS": True,
             "OPTIONS": {
                 "context_processors": [
-                    "django.template.context_processors.request",
-                    "django.contrib.auth.context_processors.auth",
-                    "django.contrib.messages.context_processors.messages",
+                    'djorm.template.context_processors.request',
+                    'djorm.contrib.auth.context_processors.auth',
+                    'djorm.contrib.messages.context_processors.messages',
                 ],
             },
         }

@@ -1,6 +1,6 @@
-from django.db.models import IntegerField, Value
-from django.db.models.functions import Left, Lower
-from django.test import TestCase
+from djorm.db.models import IntegerField, Value
+from djorm.db.models.functions import Left, Lower
+from djorm.test import TestCase
 
 from ..models import Author
 

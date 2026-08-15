@@ -6,8 +6,8 @@ import datetime
 from operator import attrgetter
 from unittest import expectedFailure
 
-from django import forms
-from django.test import TestCase
+from djorm import forms
+from djorm.test import TestCase
 
 from .models import (
     ArticleWithAuthor,

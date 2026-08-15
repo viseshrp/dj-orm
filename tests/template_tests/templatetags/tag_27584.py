@@ -1,4 +1,4 @@
-from django import template
+from djorm import template
 
 register = template.Library()
 

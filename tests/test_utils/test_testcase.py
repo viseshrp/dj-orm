@@ -1,9 +1,9 @@
 import pickle
 from functools import wraps
 
-from django.db import IntegrityError, connections, transaction
-from django.test import TestCase, skipUnlessDBFeature
-from django.test.testcases import (
+from djorm.db import IntegrityError, connections, transaction
+from djorm.test import TestCase, skipUnlessDBFeature
+from djorm.test.testcases import (
     DatabaseOperationForbidden,
     SimpleTestCase,
     TestData,

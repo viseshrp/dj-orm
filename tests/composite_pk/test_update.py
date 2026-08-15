@@ -1,7 +1,7 @@
-from django.core.exceptions import FieldError
-from django.db import connection
-from django.db.models import F
-from django.test import TestCase
+from djorm.core.exceptions import FieldError
+from djorm.db import connection
+from djorm.db.models import F
+from djorm.test import TestCase
 
 from .models import Comment, Tenant, TimeStamped, Token, User
 

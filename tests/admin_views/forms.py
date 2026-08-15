@@ -1,6 +1,6 @@
-from django.contrib.admin.forms import AdminAuthenticationForm
-from django.contrib.admin.helpers import ActionForm
-from django.core.exceptions import ValidationError
+from djorm.contrib.admin.forms import AdminAuthenticationForm
+from djorm.contrib.admin.helpers import ActionForm
+from djorm.core.exceptions import ValidationError
 
 
 class CustomAdminAuthenticationForm(AdminAuthenticationForm):

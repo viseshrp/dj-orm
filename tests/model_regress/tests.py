@@ -2,12 +2,12 @@ import copy
 import datetime
 from operator import attrgetter
 
-from django.core.exceptions import ValidationError
-from django.db import models, router
-from django.db.models.sql import InsertQuery
-from django.test import TestCase, skipUnlessDBFeature
-from django.test.utils import isolate_apps
-from django.utils.timezone import get_fixed_timezone
+from djorm.core.exceptions import ValidationError
+from djorm.db import models, router
+from djorm.db.models.sql import InsertQuery
+from djorm.test import TestCase, skipUnlessDBFeature
+from djorm.test.utils import isolate_apps
+from djorm.utils.timezone import get_fixed_timezone
 
 from .models import (
     Article,

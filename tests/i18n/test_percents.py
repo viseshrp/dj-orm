@@ -1,8 +1,8 @@
 import os
 
-from django.template import Context, Template
-from django.test import SimpleTestCase, override_settings
-from django.utils.translation import activate, get_language, trans_real
+from djorm.template import Context, Template
+from djorm.test import SimpleTestCase, override_settings
+from djorm.utils.translation import activate, get_language, trans_real
 
 from .utils import POFileAssertionMixin
 

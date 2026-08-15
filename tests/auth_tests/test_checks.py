@@ -1,19 +1,19 @@
-from django.contrib.auth.checks import (
+from djorm.contrib.auth.checks import (
     check_middleware,
     check_models_permissions,
     check_user_model,
 )
-from django.contrib.auth.middleware import (
+from djorm.contrib.auth.middleware import (
     AuthenticationMiddleware,
     LoginRequiredMiddleware,
 )
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.core import checks
-from django.db import models
-from django.db.models import Q, UniqueConstraint
-from django.test import SimpleTestCase, override_settings, override_system_checks
-from django.test.utils import isolate_apps
+from djorm.contrib.auth.models import AbstractBaseUser
+from djorm.contrib.sessions.middleware import SessionMiddleware
+from djorm.core import checks
+from djorm.db import models
+from djorm.db.models import Q, UniqueConstraint
+from djorm.test import SimpleTestCase, override_settings, override_system_checks
+from djorm.test.utils import isolate_apps
 
 from .models import CustomUserNonUniqueUsername
 
@@ -393,10 +393,10 @@ class MiddlewareChecksTests(SimpleTestCase):
 
     @override_settings(
         MIDDLEWARE=[
-            "django.contrib.does.not.Exist",
-            "django.contrib.sessions.middleware.SessionMiddleware",
-            "django.contrib.auth.middleware.AuthenticationMiddleware",
-            "django.contrib.auth.middleware.LoginRequiredMiddleware",
+            'djorm.contrib.does.not.Exist',
+            'djorm.contrib.sessions.middleware.SessionMiddleware',
+            'djorm.contrib.auth.middleware.AuthenticationMiddleware',
+            'djorm.contrib.auth.middleware.LoginRequiredMiddleware',
         ]
     )
     def test_check_ignores_import_error_in_middleware(self):
@@ -405,9 +405,9 @@ class MiddlewareChecksTests(SimpleTestCase):
 
     @override_settings(
         MIDDLEWARE=[
-            "django.contrib.sessions.middleware.SessionMiddleware",
-            "django.contrib.auth.middleware.AuthenticationMiddleware",
-            "django.contrib.auth.middleware.LoginRequiredMiddleware",
+            'djorm.contrib.sessions.middleware.SessionMiddleware',
+            'djorm.contrib.auth.middleware.AuthenticationMiddleware',
+            'djorm.contrib.auth.middleware.LoginRequiredMiddleware',
         ]
     )
     def test_correct_order_with_login_required_middleware(self):
@@ -416,9 +416,9 @@ class MiddlewareChecksTests(SimpleTestCase):
 
     @override_settings(
         MIDDLEWARE=[
-            "django.contrib.auth.middleware.LoginRequiredMiddleware",
-            "django.contrib.auth.middleware.AuthenticationMiddleware",
-            "django.contrib.sessions.middleware.SessionMiddleware",
+            'djorm.contrib.auth.middleware.LoginRequiredMiddleware',
+            'djorm.contrib.auth.middleware.AuthenticationMiddleware',
+            'djorm.contrib.sessions.middleware.SessionMiddleware',
         ]
     )
     def test_incorrect_order_with_login_required_middleware(self):
@@ -427,8 +427,8 @@ class MiddlewareChecksTests(SimpleTestCase):
             errors,
             [
                 checks.Error(
-                    "In order to use django.contrib.auth.middleware."
-                    "LoginRequiredMiddleware, django.contrib.auth.middleware."
+                    'In order to use djorm.contrib.auth.middleware.'
+                    'LoginRequiredMiddleware, djorm.contrib.auth.middleware.'
                     "AuthenticationMiddleware must be defined before it in MIDDLEWARE.",
                     id="auth.E013",
                 )
@@ -437,7 +437,7 @@ class MiddlewareChecksTests(SimpleTestCase):
 
     @override_settings(
         MIDDLEWARE=[
-            "django.contrib.auth.middleware.LoginRequiredMiddleware",
+            'djorm.contrib.auth.middleware.LoginRequiredMiddleware',
         ]
     )
     def test_missing_authentication_with_login_required_middleware(self):
@@ -446,8 +446,8 @@ class MiddlewareChecksTests(SimpleTestCase):
             errors,
             [
                 checks.Error(
-                    "In order to use django.contrib.auth.middleware."
-                    "LoginRequiredMiddleware, django.contrib.auth.middleware."
+                    'In order to use djorm.contrib.auth.middleware.'
+                    'LoginRequiredMiddleware, djorm.contrib.auth.middleware.'
                     "AuthenticationMiddleware must be defined before it in MIDDLEWARE.",
                     id="auth.E013",
                 )

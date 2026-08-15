@@ -1,15 +1,15 @@
 import json
 
-from django.contrib.admin.helpers import ACTION_CHECKBOX_NAME
-from django.contrib.admin.views.main import IS_POPUP_VAR
-from django.contrib.auth.models import Permission, User
-from django.core import mail
-from django.db import connection
-from django.template.loader import render_to_string
-from django.template.response import TemplateResponse
-from django.test import TestCase, override_settings
-from django.test.utils import CaptureQueriesContext
-from django.urls import reverse
+from djorm.contrib.admin.helpers import ACTION_CHECKBOX_NAME
+from djorm.contrib.admin.views.main import IS_POPUP_VAR
+from djorm.contrib.auth.models import Permission, User
+from djorm.core import mail
+from djorm.db import connection
+from djorm.template.loader import render_to_string
+from djorm.template.response import TemplateResponse
+from djorm.test import TestCase, override_settings
+from djorm.test.utils import CaptureQueriesContext
+from djorm.urls import reverse
 
 from .admin import SubscriberAdmin
 from .forms import MediaActionForm

@@ -10,16 +10,16 @@ from unittest import mock, skipUnless
 
 from admin_scripts.tests import AdminScriptTestCase
 
-from django.core import management
-from django.core.management import execute_from_command_line
-from django.core.management.base import CommandError
-from django.core.management.commands.makemessages import Command as MakeMessagesCommand
-from django.core.management.commands.makemessages import write_pot_file
-from django.core.management.utils import find_command
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import captured_stderr, captured_stdout
-from django.utils._os import symlinks_supported
-from django.utils.translation import TranslatorCommentWarning
+from djorm.core import management
+from djorm.core.management import execute_from_command_line
+from djorm.core.management.base import CommandError
+from djorm.core.management.commands.makemessages import Command as MakeMessagesCommand
+from djorm.core.management.commands.makemessages import write_pot_file
+from djorm.core.management.utils import find_command
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import captured_stderr, captured_stdout
+from djorm.utils._os import symlinks_supported
+from djorm.utils.translation import TranslatorCommentWarning
 
 from .utils import POFileAssertionMixin, RunInTmpDirMixin, copytree
 
@@ -157,7 +157,7 @@ class BasicExtractorTests(ExtractorTests):
         # One of either the --locale, --exclude, or --all options is required.
         msg = "Type 'manage.py help makemessages' for usage information."
         with mock.patch(
-            "django.core.management.commands.makemessages.sys.argv",
+            'djorm.core.management.commands.makemessages.sys.argv',
             ["manage.py", "makemessages"],
         ):
             with self.assertRaisesRegex(CommandError, msg):
@@ -528,7 +528,7 @@ class BasicExtractorTests(ExtractorTests):
         found_exts = {os.path.splitext(tfile.file)[1] for tfile in found_files}
         self.assertEqual(found_exts.difference({".js"}), set())
 
-    @mock.patch("django.core.management.commands.makemessages.popen_wrapper")
+    @mock.patch('djorm.core.management.commands.makemessages.popen_wrapper')
     def test_makemessages_gettext_version(self, mocked_popen_wrapper):
         # "Normal" output:
         mocked_popen_wrapper.return_value = (
@@ -957,7 +957,7 @@ class ExcludedLocaleExtractionTests(ExtractorTests):
             # `call_command` bypasses the parser; by calling
             # `execute_from_command_line` with the help subcommand we
             # ensure that there are no issues with the parser itself.
-            execute_from_command_line(["django-admin", "help", "makemessages"])
+            execute_from_command_line(['djorm', "help", "makemessages"])
 
     def test_one_locale_excluded(self):
         management.call_command("makemessages", exclude=["it"], verbosity=0)

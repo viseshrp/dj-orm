@@ -1,10 +1,10 @@
 import uuid
 
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
-from django.db import models
-from django.db.models.query import ModelIterable
-from django.utils.functional import cached_property
+from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.db import models
+from djorm.db.models.query import ModelIterable
+from djorm.utils.functional import cached_property
 
 
 class Author(models.Model):

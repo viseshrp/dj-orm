@@ -1,9 +1,9 @@
 from datetime import timedelta
 
-from django.core import signing
-from django.http import HttpRequest, HttpResponse
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import freeze_time
+from djorm.core import signing
+from djorm.http import HttpRequest, HttpResponse
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import freeze_time
 
 
 @override_settings(SIGNED_COOKIE_LEGACY_SALT_FALLBACK=False)

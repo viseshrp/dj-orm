@@ -7,18 +7,18 @@ from contextlib import contextmanager
 from pathlib import Path
 from unittest import mock
 
-from django.core.exceptions import ImproperlyConfigured
-from django.db import (
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.db import (
     DEFAULT_DB_ALIAS,
     NotSupportedError,
     connection,
     connections,
     transaction,
 )
-from django.db.models import Aggregate, Avg, StdDev, Sum, Variance
-from django.db.utils import ConnectionHandler
-from django.test import SimpleTestCase, TestCase, TransactionTestCase, override_settings
-from django.test.utils import CaptureQueriesContext, isolate_apps
+from djorm.db.models import Aggregate, Avg, StdDev, Sum, Variance
+from djorm.db.utils import ConnectionHandler
+from djorm.test import SimpleTestCase, TestCase, TransactionTestCase, override_settings
+from djorm.test.utils import CaptureQueriesContext, isolate_apps
 
 from ..models import Item, Object, Square
 
@@ -67,7 +67,7 @@ class Tests(TestCase):
 
     def test_memory_db_test_name(self):
         """A named in-memory db should be allowed where supported."""
-        from django.db.backends.sqlite3.base import DatabaseWrapper
+        from djorm.db.backends.sqlite3.base import DatabaseWrapper
 
         settings_dict = {
             "TEST": {
@@ -100,7 +100,7 @@ class Tests(TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             settings_dict = {
                 "default": {
-                    "ENGINE": "django.db.backends.sqlite3",
+                    "ENGINE": 'djorm.db.backends.sqlite3',
                     "NAME": Path(tmp) / "test.db",
                 },
             }
@@ -119,7 +119,7 @@ class Tests(TestCase):
     def test_init_command(self):
         settings_dict = {
             "default": {
-                "ENGINE": "django.db.backends.sqlite3",
+                "ENGINE": 'djorm.db.backends.sqlite3',
                 "NAME": ":memory:",
                 "OPTIONS": {
                     "init_command": "PRAGMA synchronous=3; PRAGMA cache_size=2000;",

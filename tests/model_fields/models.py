@@ -2,16 +2,16 @@ import json
 import tempfile
 import uuid
 
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
-from django.core.files.storage import FileSystemStorage
-from django.core.serializers.json import DjangoJSONEncoder
-from django.db import connection, models
-from django.db.models import F, Value
-from django.db.models.fields.files import ImageFieldFile
-from django.db.models.functions import Lower
-from django.utils.functional import SimpleLazyObject
-from django.utils.translation import gettext_lazy as _
+from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.files.storage import FileSystemStorage
+from djorm.core.serializers.json import DjangoJSONEncoder
+from djorm.db import connection, models
+from djorm.db.models import F, Value
+from djorm.db.models.fields.files import ImageFieldFile
+from djorm.db.models.functions import Lower
+from djorm.utils.functional import SimpleLazyObject
+from djorm.utils.translation import gettext_lazy as _
 
 from .storage import NoReadFileSystemStorage
 

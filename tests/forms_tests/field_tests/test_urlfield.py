@@ -1,12 +1,12 @@
 import sys
 from types import ModuleType
 
-from django.conf import FORMS_URLFIELD_ASSUME_HTTPS_DEPRECATED_MSG, Settings, settings
-from django.core.exceptions import ValidationError
-from django.core.validators import URLValidator
-from django.forms import URLField
-from django.test import SimpleTestCase, ignore_warnings, override_settings
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.conf import FORMS_URLFIELD_ASSUME_HTTPS_DEPRECATED_MSG, Settings, settings
+from djorm.core.exceptions import ValidationError
+from djorm.core.validators import URLValidator
+from djorm.forms import URLField
+from djorm.test import SimpleTestCase, ignore_warnings, override_settings
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from . import FormFieldAssertionsMixin
 

@@ -1,5 +1,5 @@
-from django.contrib import admin
-from django.test import SimpleTestCase
+from djorm.contrib import admin
+from djorm.test import SimpleTestCase
 
 
 class AdminAutoDiscoverTests(SimpleTestCase):

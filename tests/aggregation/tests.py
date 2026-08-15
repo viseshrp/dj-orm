@@ -4,9 +4,9 @@ import re
 from decimal import Decimal
 from itertools import chain
 
-from django.core.exceptions import FieldError
-from django.db import connection
-from django.db.models import (
+from djorm.core.exceptions import FieldError
+from djorm.db import connection
+from djorm.db.models import (
     Avg,
     Case,
     Count,
@@ -32,8 +32,8 @@ from django.db.models import (
     When,
     Window,
 )
-from django.db.models.expressions import Func, RawSQL
-from django.db.models.functions import (
+from djorm.db.models.expressions import Func, RawSQL
+from djorm.db.models.functions import (
     Cast,
     Coalesce,
     Greatest,
@@ -45,10 +45,10 @@ from django.db.models.functions import (
     TruncDate,
     TruncHour,
 )
-from django.test import TestCase
-from django.test.testcases import skipUnlessDBFeature
-from django.test.utils import Approximate, CaptureQueriesContext
-from django.utils import timezone
+from djorm.test import TestCase
+from djorm.test.testcases import skipUnlessDBFeature
+from djorm.test.utils import Approximate, CaptureQueriesContext
+from djorm.utils import timezone
 
 from .models import Author, Book, Publisher, Store
 

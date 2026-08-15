@@ -12,9 +12,9 @@ field.
 from datetime import datetime
 from decimal import Decimal
 
-from django.db import models
-from django.db.models.functions import Coalesce, ExtractYear, Now, Pi
-from django.db.models.lookups import GreaterThan
+from djorm.db import models
+from djorm.db.models.functions import Coalesce, ExtractYear, Now, Pi
+from djorm.db.models.lookups import GreaterThan
 
 
 class Article(models.Model):

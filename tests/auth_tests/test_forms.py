@@ -4,8 +4,8 @@ import sys
 import urllib.parse
 from unittest import mock
 
-from django import forms
-from django.contrib.auth.forms import (
+from djorm import forms
+from djorm.contrib.auth.forms import (
     AdminPasswordChangeForm,
     AdminUserCreationForm,
     AuthenticationForm,
@@ -20,21 +20,21 @@ from django.contrib.auth.forms import (
     UserCreationForm,
     UsernameField,
 )
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
-from django.contrib.auth.signals import user_login_failed
-from django.contrib.sites.models import Site
-from django.core import mail
-from django.core.exceptions import ValidationError
-from django.core.mail import EmailMultiAlternatives
-from django.forms.fields import CharField, Field, IntegerField
-from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
-from django.urls import reverse
-from django.utils import translation
-from django.utils.text import capfirst
-from django.utils.translation import gettext as _
-from django.views.debug import technical_500_response
-from django.views.decorators.debug import sensitive_variables
+from djorm.contrib.auth.hashers import make_password
+from djorm.contrib.auth.models import User
+from djorm.contrib.auth.signals import user_login_failed
+from djorm.contrib.sites.models import Site
+from djorm.core import mail
+from djorm.core.exceptions import ValidationError
+from djorm.core.mail import EmailMultiAlternatives
+from djorm.forms.fields import CharField, Field, IntegerField
+from djorm.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from djorm.urls import reverse
+from djorm.utils import translation
+from djorm.utils.text import capfirst
+from djorm.utils.translation import gettext as _
+from djorm.views.debug import technical_500_response
+from djorm.views.decorators.debug import sensitive_variables
 
 from .models.custom_user import (
     CustomUser,
@@ -146,7 +146,7 @@ class BaseUserCreationFormTest(TestDataMixin, TestCase):
         self.assertEqual(form["password1"].errors, required_error)
         self.assertEqual(form["password2"].errors, [])
 
-    @mock.patch("django.contrib.auth.password_validation.password_changed")
+    @mock.patch('djorm.contrib.auth.password_validation.password_changed')
     def test_success(self, password_changed):
         # The success case.
         data = {
@@ -219,13 +219,13 @@ class BaseUserCreationFormTest(TestDataMixin, TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation.MinimumLengthValidator"
+                    'djorm.contrib.auth.password_validation.MinimumLengthValidator'
                 ),
                 "OPTIONS": {
                     "min_length": 12,
@@ -265,7 +265,7 @@ class BaseUserCreationFormTest(TestDataMixin, TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
@@ -300,7 +300,7 @@ class BaseUserCreationFormTest(TestDataMixin, TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
@@ -480,7 +480,7 @@ class UserCreationFormTest(BaseUserCreationFormTest):
 # To verify that the login form rejects inactive users, use an authentication
 # backend that allows them.
 @override_settings(
-    AUTHENTICATION_BACKENDS=["django.contrib.auth.backends.AllowAllUsersModelBackend"]
+    AUTHENTICATION_BACKENDS=['djorm.contrib.auth.backends.AllowAllUsersModelBackend']
 )
 class AuthenticationFormTest(TestDataMixin, TestCase):
     def test_invalid_username(self):
@@ -514,7 +514,7 @@ class AuthenticationFormTest(TestDataMixin, TestCase):
 
     # Use an authentication backend that rejects inactive users.
     @override_settings(
-        AUTHENTICATION_BACKENDS=["django.contrib.auth.backends.ModelBackend"]
+        AUTHENTICATION_BACKENDS=['djorm.contrib.auth.backends.ModelBackend']
     )
     def test_inactive_user_incorrect_password(self):
         """An invalid login doesn't leak the inactive status of a user."""
@@ -572,7 +572,7 @@ class AuthenticationFormTest(TestDataMixin, TestCase):
     # Use an authentication backend that allows inactive users.
     @override_settings(
         AUTHENTICATION_BACKENDS=[
-            "django.contrib.auth.backends.AllowAllUsersModelBackend"
+            'djorm.contrib.auth.backends.AllowAllUsersModelBackend'
         ]
     )
     def test_custom_login_allowed_policy(self):
@@ -759,7 +759,7 @@ class SetPasswordFormTest(TestDataMixin, TestCase):
             [str(form.error_messages["password_mismatch"])],
         )
 
-    @mock.patch("django.contrib.auth.password_validation.password_changed")
+    @mock.patch('djorm.contrib.auth.password_validation.password_changed')
     def test_success(self, password_changed):
         user = User.objects.get(username="testclient")
         data = {
@@ -777,13 +777,13 @@ class SetPasswordFormTest(TestDataMixin, TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation.MinimumLengthValidator"
+                    'djorm.contrib.auth.password_validation.MinimumLengthValidator'
                 ),
                 "OPTIONS": {
                     "min_length": 12,
@@ -857,13 +857,13 @@ class SetPasswordFormTest(TestDataMixin, TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation.MinimumLengthValidator"
+                    'djorm.contrib.auth.password_validation.MinimumLengthValidator'
                 ),
                 "OPTIONS": {
                     "min_length": 12,
@@ -947,7 +947,7 @@ class PasswordChangeFormTest(TestDataMixin, TestCase):
             [str(form.error_messages["password_mismatch"])],
         )
 
-    @mock.patch("django.contrib.auth.password_validation.password_changed")
+    @mock.patch('djorm.contrib.auth.password_validation.password_changed')
     def test_success(self, password_changed):
         # The success case.
         user = User.objects.get(username="testclient")
@@ -1380,7 +1380,7 @@ class PasswordResetFormTest(TestDataMixin, TestCase):
         form = PasswordResetForm({"email": email})
         self.assertTrue(form.is_valid())
 
-        with self.assertLogs("django.contrib.auth", level=0) as cm:
+        with self.assertLogs('djorm.contrib.auth', level=0) as cm:
             form.save()
 
         self.assertEqual(len(mail.outbox), 0)
@@ -1420,7 +1420,7 @@ class ReadOnlyPasswordHashTest(SimpleTestCase):
         self.assertIn(_("No password set."), html)
 
     @override_settings(
-        PASSWORD_HASHERS=["django.contrib.auth.hashers.PBKDF2PasswordHasher"]
+        PASSWORD_HASHERS=['djorm.contrib.auth.hashers.PBKDF2PasswordHasher']
     )
     def test_render(self):
         widget = ReadOnlyPasswordHashWidget()
@@ -1462,7 +1462,7 @@ class ReadOnlyPasswordHashTest(SimpleTestCase):
 
 
 class AdminPasswordChangeFormTest(TestDataMixin, TestCase):
-    @mock.patch("django.contrib.auth.password_validation.password_changed")
+    @mock.patch('djorm.contrib.auth.password_validation.password_changed')
     def test_success(self, password_changed):
         user = User.objects.get(username="testclient")
         data = {
@@ -1481,13 +1481,13 @@ class AdminPasswordChangeFormTest(TestDataMixin, TestCase):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation.MinimumLengthValidator"
+                    'djorm.contrib.auth.password_validation.MinimumLengthValidator'
                 ),
                 "OPTIONS": {
                     "min_length": 12,
@@ -1636,13 +1636,13 @@ class AdminUserCreationFormTest(BaseUserCreationFormTest):
         AUTH_PASSWORD_VALIDATORS=[
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation."
+                    'djorm.contrib.auth.password_validation.'
                     "UserAttributeSimilarityValidator"
                 )
             },
             {
                 "NAME": (
-                    "django.contrib.auth.password_validation.MinimumLengthValidator"
+                    'djorm.contrib.auth.password_validation.MinimumLengthValidator'
                 ),
                 "OPTIONS": {
                     "min_length": 12,

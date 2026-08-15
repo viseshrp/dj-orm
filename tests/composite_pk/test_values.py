@@ -1,7 +1,7 @@
 from collections import namedtuple
 from uuid import UUID
 
-from django.test import TestCase
+from djorm.test import TestCase
 
 from .models import Comment, Post, Tenant, User
 

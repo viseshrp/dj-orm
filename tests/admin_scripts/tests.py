@@ -18,28 +18,28 @@ from unittest import mock
 
 from user_commands.utils import AssertFormatterFailureCaughtContext
 
-from django import conf, get_version
-from django.conf import settings
-from django.core.checks import Error, Tags, register
-from django.core.checks.registry import registry
-from django.core.management import (
+from djorm import conf, get_version
+from djorm.conf import settings
+from djorm.core.checks import Error, Tags, register
+from djorm.core.checks.registry import registry
+from djorm.core.management import (
     BaseCommand,
     CommandError,
     call_command,
     color,
     execute_from_command_line,
 )
-from django.core.management.base import LabelCommand, SystemCheckError
-from django.core.management.commands.loaddata import Command as LoaddataCommand
-from django.core.management.commands.runserver import Command as RunserverCommand
-from django.core.management.commands.testserver import Command as TestserverCommand
-from django.db import ConnectionHandler, connection
-from django.db.migrations.recorder import MigrationRecorder
-from django.test import LiveServerTestCase, SimpleTestCase, TestCase, override_settings
-from django.test.utils import captured_stderr, captured_stdout
-from django.urls import path
-from django.utils.version import PY313, get_docs_version
-from django.views.static import serve
+from djorm.core.management.base import LabelCommand, SystemCheckError
+from djorm.core.management.commands.loaddata import Command as LoaddataCommand
+from djorm.core.management.commands.runserver import Command as RunserverCommand
+from djorm.core.management.commands.testserver import Command as TestserverCommand
+from djorm.db import ConnectionHandler, connection
+from djorm.db.migrations.recorder import MigrationRecorder
+from djorm.test import LiveServerTestCase, SimpleTestCase, TestCase, override_settings
+from djorm.test.utils import captured_stderr, captured_stdout
+from djorm.urls import path
+from djorm.utils.version import PY313, get_docs_version
+from djorm.views.static import serve
 
 from . import urls
 
@@ -89,8 +89,8 @@ class AdminScriptTestCase(SimpleTestCase):
 
             if apps is None:
                 apps = [
-                    "django.contrib.auth",
-                    "django.contrib.contenttypes",
+                    'djorm.contrib.auth',
+                    'djorm.contrib.contenttypes',
                     "admin_scripts",
                 ]
 
@@ -205,33 +205,24 @@ class AdminScriptTestCase(SimpleTestCase):
 
 
 class DjangoAdminNoSettings(AdminScriptTestCase):
-    "A series of tests for django-admin when there is no settings.py file."
+    'A series of tests for djorm when there is no settings.py file.'
 
     def test_builtin_command(self):
-        """
-        no settings: django-admin builtin commands fail with an error when no
-        settings provided.
-        """
+        '\n        no settings: djorm builtin commands fail with an error when no\n        settings provided.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "settings are not configured")
 
     def test_builtin_with_bad_settings(self):
-        """
-        no settings: django-admin builtin commands fail if settings file (from
-        argument) doesn't exist.
-        """
+        "\n        no settings: djorm builtin commands fail if settings file (from\n        argument) doesn't exist.\n        "
         args = ["check", "--settings=bad_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_builtin_with_bad_environment(self):
-        """
-        no settings: django-admin builtin commands fail if settings file (from
-        environment) doesn't exist.
-        """
+        "\n        no settings: djorm builtin commands fail if settings file (from\n        environment) doesn't exist.\n        "
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "bad_settings")
         self.assertNoOutput(out)
@@ -249,70 +240,49 @@ class DjangoAdminNoSettings(AdminScriptTestCase):
 
 
 class DjangoAdminDefaultSettings(AdminScriptTestCase):
-    """
-    A series of tests for django-admin when using a settings.py file that
-    contains the test application.
-    """
+    '\n    A series of tests for djorm when using a settings.py file that\n    contains the test application.\n    '
 
     def setUp(self):
         super().setUp()
         self.write_settings("settings.py")
 
     def test_builtin_command(self):
-        """
-        default: django-admin builtin commands fail with an error when no
-        settings provided.
-        """
+        '\n        default: djorm builtin commands fail with an error when no\n        settings provided.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "settings are not configured")
 
     def test_builtin_with_settings(self):
-        """
-        default: django-admin builtin commands succeed if settings are provided
-        as argument.
-        """
+        '\n        default: djorm builtin commands succeed if settings are provided\n        as argument.\n        '
         args = ["check", "--settings=test_project.settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_environment(self):
-        """
-        default: django-admin builtin commands succeed if settings are provided
-        in the environment.
-        """
+        '\n        default: djorm builtin commands succeed if settings are provided\n        in the environment.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "test_project.settings")
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_bad_settings(self):
-        """
-        default: django-admin builtin commands fail if settings file (from
-        argument) doesn't exist.
-        """
+        "\n        default: djorm builtin commands fail if settings file (from\n        argument) doesn't exist.\n        "
         args = ["check", "--settings=bad_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_builtin_with_bad_environment(self):
-        """
-        default: django-admin builtin commands fail if settings file (from
-        environment) doesn't exist.
-        """
+        "\n        default: djorm builtin commands fail if settings file (from\n        environment) doesn't exist.\n        "
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "bad_settings")
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_custom_command(self):
-        """
-        default: django-admin can't execute user commands if it isn't provided
-        settings.
-        """
+        "\n        default: djorm can't execute user commands if it isn't provided\n        settings.\n        "
         args = ["noargs_command"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
@@ -320,20 +290,14 @@ class DjangoAdminDefaultSettings(AdminScriptTestCase):
         self.assertOutput(err, "Unknown command: 'noargs_command'")
 
     def test_custom_command_with_settings(self):
-        """
-        default: django-admin can execute user commands if settings are
-        provided as argument.
-        """
+        '\n        default: djorm can execute user commands if settings are\n        provided as argument.\n        '
         args = ["noargs_command", "--settings=test_project.settings"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, "EXECUTE: noargs_command")
 
     def test_custom_command_with_environment(self):
-        """
-        default: django-admin can execute user commands if settings are
-        provided in environment.
-        """
+        '\n        default: djorm can execute user commands if settings are\n        provided in environment.\n        '
         args = ["noargs_command"]
         out, err = self.run_django_admin(args, "test_project.settings")
         self.assertNoOutput(err)
@@ -341,78 +305,57 @@ class DjangoAdminDefaultSettings(AdminScriptTestCase):
 
 
 class DjangoAdminFullPathDefaultSettings(AdminScriptTestCase):
-    """
-    A series of tests for django-admin when using a settings.py file that
-    contains the test application specified using a full path.
-    """
+    '\n    A series of tests for djorm when using a settings.py file that\n    contains the test application specified using a full path.\n    '
 
     def setUp(self):
         super().setUp()
         self.write_settings(
             "settings.py",
             [
-                "django.contrib.auth",
-                "django.contrib.contenttypes",
+                'djorm.contrib.auth',
+                'djorm.contrib.contenttypes',
                 "admin_scripts",
                 "admin_scripts.complex_app",
             ],
         )
 
     def test_builtin_command(self):
-        """
-        fulldefault: django-admin builtin commands fail with an error when no
-        settings provided.
-        """
+        '\n        fulldefault: djorm builtin commands fail with an error when no\n        settings provided.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "settings are not configured")
 
     def test_builtin_with_settings(self):
-        """
-        fulldefault: django-admin builtin commands succeed if a settings file
-        is provided.
-        """
+        '\n        fulldefault: djorm builtin commands succeed if a settings file\n        is provided.\n        '
         args = ["check", "--settings=test_project.settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_environment(self):
-        """
-        fulldefault: django-admin builtin commands succeed if the environment
-        contains settings.
-        """
+        '\n        fulldefault: djorm builtin commands succeed if the environment\n        contains settings.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "test_project.settings")
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_bad_settings(self):
-        """
-        fulldefault: django-admin builtin commands fail if settings file (from
-        argument) doesn't exist.
-        """
+        "\n        fulldefault: djorm builtin commands fail if settings file (from\n        argument) doesn't exist.\n        "
         args = ["check", "--settings=bad_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_builtin_with_bad_environment(self):
-        """
-        fulldefault: django-admin builtin commands fail if settings file (from
-        environment) doesn't exist.
-        """
+        "\n        fulldefault: djorm builtin commands fail if settings file (from\n        environment) doesn't exist.\n        "
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "bad_settings")
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_custom_command(self):
-        """
-        fulldefault: django-admin can't execute user commands unless settings
-        are provided.
-        """
+        "\n        fulldefault: djorm can't execute user commands unless settings\n        are provided.\n        "
         args = ["noargs_command"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
@@ -420,20 +363,14 @@ class DjangoAdminFullPathDefaultSettings(AdminScriptTestCase):
         self.assertOutput(err, "Unknown command: 'noargs_command'")
 
     def test_custom_command_with_settings(self):
-        """
-        fulldefault: django-admin can execute user commands if settings are
-        provided as argument.
-        """
+        '\n        fulldefault: djorm can execute user commands if settings are\n        provided as argument.\n        '
         args = ["noargs_command", "--settings=test_project.settings"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, "EXECUTE: noargs_command")
 
     def test_custom_command_with_environment(self):
-        """
-        fulldefault: django-admin can execute user commands if settings are
-        provided in environment.
-        """
+        '\n        fulldefault: djorm can execute user commands if settings are\n        provided in environment.\n        '
         args = ["noargs_command"]
         out, err = self.run_django_admin(args, "test_project.settings")
         self.assertNoOutput(err)
@@ -441,69 +378,51 @@ class DjangoAdminFullPathDefaultSettings(AdminScriptTestCase):
 
 
 class DjangoAdminMinimalSettings(AdminScriptTestCase):
-    """
-    A series of tests for django-admin when using a settings.py file that
-    doesn't contain the test application.
-    """
+    "\n    A series of tests for djorm when using a settings.py file that\n    doesn't contain the test application.\n    "
 
     def setUp(self):
         super().setUp()
         self.write_settings(
-            "settings.py", apps=["django.contrib.auth", "django.contrib.contenttypes"]
+            "settings.py", apps=['djorm.contrib.auth', 'djorm.contrib.contenttypes']
         )
 
     def test_builtin_command(self):
-        """
-        minimal: django-admin builtin commands fail with an error when no
-        settings provided.
-        """
+        '\n        minimal: djorm builtin commands fail with an error when no\n        settings provided.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "settings are not configured")
 
     def test_builtin_with_settings(self):
-        """
-        minimal: django-admin builtin commands fail if settings are provided as
-        argument.
-        """
+        '\n        minimal: djorm builtin commands fail if settings are provided as\n        argument.\n        '
         args = ["check", "--settings=test_project.settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "No installed app with label 'admin_scripts'.")
 
     def test_builtin_with_environment(self):
-        """
-        minimal: django-admin builtin commands fail if settings are provided in
-        the environment.
-        """
+        '\n        minimal: djorm builtin commands fail if settings are provided in\n        the environment.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "test_project.settings")
         self.assertNoOutput(out)
         self.assertOutput(err, "No installed app with label 'admin_scripts'.")
 
     def test_builtin_with_bad_settings(self):
-        """
-        minimal: django-admin builtin commands fail if settings file (from
-        argument) doesn't exist.
-        """
+        "\n        minimal: djorm builtin commands fail if settings file (from\n        argument) doesn't exist.\n        "
         args = ["check", "--settings=bad_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_builtin_with_bad_environment(self):
-        """
-        minimal: django-admin builtin commands fail if settings file (from
-        environment) doesn't exist.
-        """
+        "\n        minimal: djorm builtin commands fail if settings file (from\n        environment) doesn't exist.\n        "
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "bad_settings")
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_custom_command(self):
-        "minimal: django-admin can't execute user commands unless settings are provided"
+        "minimal: djorm can't execute user commands unless settings are provided"
         args = ["noargs_command"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
@@ -511,20 +430,14 @@ class DjangoAdminMinimalSettings(AdminScriptTestCase):
         self.assertOutput(err, "Unknown command: 'noargs_command'")
 
     def test_custom_command_with_settings(self):
-        """
-        minimal: django-admin can't execute user commands, even if settings are
-        provided as argument.
-        """
+        "\n        minimal: djorm can't execute user commands, even if settings are\n        provided as argument.\n        "
         args = ["noargs_command", "--settings=test_project.settings"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "Unknown command: 'noargs_command'")
 
     def test_custom_command_with_environment(self):
-        """
-        minimal: django-admin can't execute user commands, even if settings are
-        provided in environment.
-        """
+        "\n        minimal: djorm can't execute user commands, even if settings are\n        provided in environment.\n        "
         args = ["noargs_command"]
         out, err = self.run_django_admin(args, "test_project.settings")
         self.assertNoOutput(out)
@@ -532,70 +445,49 @@ class DjangoAdminMinimalSettings(AdminScriptTestCase):
 
 
 class DjangoAdminAlternateSettings(AdminScriptTestCase):
-    """
-    A series of tests for django-admin when using a settings file with a name
-    other than 'settings.py'.
-    """
+    "\n    A series of tests for djorm when using a settings file with a name\n    other than 'settings.py'.\n    "
 
     def setUp(self):
         super().setUp()
         self.write_settings("alternate_settings.py")
 
     def test_builtin_command(self):
-        """
-        alternate: django-admin builtin commands fail with an error when no
-        settings provided.
-        """
+        '\n        alternate: djorm builtin commands fail with an error when no\n        settings provided.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "settings are not configured")
 
     def test_builtin_with_settings(self):
-        """
-        alternate: django-admin builtin commands succeed if settings are
-        provided as argument.
-        """
+        '\n        alternate: djorm builtin commands succeed if settings are\n        provided as argument.\n        '
         args = ["check", "--settings=test_project.alternate_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_environment(self):
-        """
-        alternate: django-admin builtin commands succeed if settings are
-        provided in the environment.
-        """
+        '\n        alternate: djorm builtin commands succeed if settings are\n        provided in the environment.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "test_project.alternate_settings")
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_bad_settings(self):
-        """
-        alternate: django-admin builtin commands fail if settings file (from
-        argument) doesn't exist.
-        """
+        "\n        alternate: djorm builtin commands fail if settings file (from\n        argument) doesn't exist.\n        "
         args = ["check", "--settings=bad_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_builtin_with_bad_environment(self):
-        """
-        alternate: django-admin builtin commands fail if settings file (from
-        environment) doesn't exist.
-        """
+        "\n        alternate: djorm builtin commands fail if settings file (from\n        environment) doesn't exist.\n        "
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "bad_settings")
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_custom_command(self):
-        """
-        alternate: django-admin can't execute user commands unless settings
-        are provided.
-        """
+        "\n        alternate: djorm can't execute user commands unless settings\n        are provided.\n        "
         args = ["noargs_command"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
@@ -603,20 +495,14 @@ class DjangoAdminAlternateSettings(AdminScriptTestCase):
         self.assertOutput(err, "Unknown command: 'noargs_command'")
 
     def test_custom_command_with_settings(self):
-        """
-        alternate: django-admin can execute user commands if settings are
-        provided as argument.
-        """
+        '\n        alternate: djorm can execute user commands if settings are\n        provided as argument.\n        '
         args = ["noargs_command", "--settings=test_project.alternate_settings"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, "EXECUTE: noargs_command")
 
     def test_custom_command_with_environment(self):
-        """
-        alternate: django-admin can execute user commands if settings are
-        provided in environment.
-        """
+        '\n        alternate: djorm can execute user commands if settings are\n        provided in environment.\n        '
         args = ["noargs_command"]
         out, err = self.run_django_admin(args, "test_project.alternate_settings")
         self.assertNoOutput(err)
@@ -624,74 +510,51 @@ class DjangoAdminAlternateSettings(AdminScriptTestCase):
 
 
 class DjangoAdminMultipleSettings(AdminScriptTestCase):
-    """
-    A series of tests for django-admin when multiple settings files
-    (including the default 'settings.py') are available. The default settings
-    file is insufficient for performing the operations described, so the
-    alternate settings must be used by the running script.
-    """
+    "\n    A series of tests for djorm when multiple settings files\n    (including the default 'settings.py') are available. The default settings\n    file is insufficient for performing the operations described, so the\n    alternate settings must be used by the running script.\n    "
 
     def setUp(self):
         super().setUp()
         self.write_settings(
-            "settings.py", apps=["django.contrib.auth", "django.contrib.contenttypes"]
+            "settings.py", apps=['djorm.contrib.auth', 'djorm.contrib.contenttypes']
         )
         self.write_settings("alternate_settings.py")
 
     def test_builtin_command(self):
-        """
-        alternate: django-admin builtin commands fail with an error when no
-        settings provided.
-        """
+        '\n        alternate: djorm builtin commands fail with an error when no\n        settings provided.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "settings are not configured")
 
     def test_builtin_with_settings(self):
-        """
-        alternate: django-admin builtin commands succeed if settings are
-        provided as argument.
-        """
+        '\n        alternate: djorm builtin commands succeed if settings are\n        provided as argument.\n        '
         args = ["check", "--settings=test_project.alternate_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_environment(self):
-        """
-        alternate: django-admin builtin commands succeed if settings are
-        provided in the environment.
-        """
+        '\n        alternate: djorm builtin commands succeed if settings are\n        provided in the environment.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "test_project.alternate_settings")
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_bad_settings(self):
-        """
-        alternate: django-admin builtin commands fail if settings file (from
-        argument) doesn't exist.
-        """
+        "\n        alternate: djorm builtin commands fail if settings file (from\n        argument) doesn't exist.\n        "
         args = ["check", "--settings=bad_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_builtin_with_bad_environment(self):
-        """
-        alternate: django-admin builtin commands fail if settings file (from
-        environment) doesn't exist.
-        """
+        "\n        alternate: djorm builtin commands fail if settings file (from\n        environment) doesn't exist.\n        "
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "bad_settings")
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_custom_command(self):
-        """
-        alternate: django-admin can't execute user commands unless settings are
-        provided.
-        """
+        "\n        alternate: djorm can't execute user commands unless settings are\n        provided.\n        "
         args = ["noargs_command"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
@@ -699,20 +562,14 @@ class DjangoAdminMultipleSettings(AdminScriptTestCase):
         self.assertOutput(err, "Unknown command: 'noargs_command'")
 
     def test_custom_command_with_settings(self):
-        """
-        alternate: django-admin can execute user commands if settings are
-        provided as argument.
-        """
+        '\n        alternate: djorm can execute user commands if settings are\n        provided as argument.\n        '
         args = ["noargs_command", "--settings=test_project.alternate_settings"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, "EXECUTE: noargs_command")
 
     def test_custom_command_with_environment(self):
-        """
-        alternate: django-admin can execute user commands if settings are
-        provided in environment.
-        """
+        '\n        alternate: djorm can execute user commands if settings are\n        provided in environment.\n        '
         args = ["noargs_command"]
         out, err = self.run_django_admin(args, "test_project.alternate_settings")
         self.assertNoOutput(err)
@@ -720,10 +577,7 @@ class DjangoAdminMultipleSettings(AdminScriptTestCase):
 
 
 class DjangoAdminSettingsDirectory(AdminScriptTestCase):
-    """
-    A series of tests for django-admin when the settings file is in a
-    directory. (see #9751).
-    """
+    '\n    A series of tests for djorm when the settings file is in a\n    directory. (see #9751).\n    '
 
     def setUp(self):
         super().setUp()
@@ -769,39 +623,27 @@ class DjangoAdminSettingsDirectory(AdminScriptTestCase):
             )
 
     def test_builtin_command(self):
-        """
-        directory: django-admin builtin commands fail with an error when no
-        settings provided.
-        """
+        '\n        directory: djorm builtin commands fail with an error when no\n        settings provided.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
         self.assertOutput(err, "settings are not configured")
 
     def test_builtin_with_bad_settings(self):
-        """
-        directory: django-admin builtin commands fail if settings file (from
-        argument) doesn't exist.
-        """
+        "\n        directory: djorm builtin commands fail if settings file (from\n        argument) doesn't exist.\n        "
         args = ["check", "--settings=bad_settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_builtin_with_bad_environment(self):
-        """
-        directory: django-admin builtin commands fail if settings file (from
-        environment) doesn't exist.
-        """
+        "\n        directory: djorm builtin commands fail if settings file (from\n        environment) doesn't exist.\n        "
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "bad_settings")
         self.assertNoOutput(out)
         self.assertOutput(err, "No module named '?bad_settings'?", regex=True)
 
     def test_custom_command(self):
-        """
-        directory: django-admin can't execute user commands unless settings are
-        provided.
-        """
+        "\n        directory: djorm can't execute user commands unless settings are\n        provided.\n        "
         args = ["noargs_command"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(out)
@@ -809,20 +651,14 @@ class DjangoAdminSettingsDirectory(AdminScriptTestCase):
         self.assertOutput(err, "Unknown command: 'noargs_command'")
 
     def test_builtin_with_settings(self):
-        """
-        directory: django-admin builtin commands succeed if settings are
-        provided as argument.
-        """
+        '\n        directory: djorm builtin commands succeed if settings are\n        provided as argument.\n        '
         args = ["check", "--settings=test_project.settings", "admin_scripts"]
         out, err = self.run_django_admin(args)
         self.assertNoOutput(err)
         self.assertOutput(out, SYSTEM_CHECK_MSG)
 
     def test_builtin_with_environment(self):
-        """
-        directory: django-admin builtin commands succeed if settings are
-        provided in the environment.
-        """
+        '\n        directory: djorm builtin commands succeed if settings are\n        provided in the environment.\n        '
         args = ["check", "admin_scripts"]
         out, err = self.run_django_admin(args, "test_project.settings")
         self.assertNoOutput(err)
@@ -983,7 +819,7 @@ class ManageFullPathDefaultSettings(AdminScriptTestCase):
         super().setUp()
         self.write_settings(
             "settings.py",
-            ["django.contrib.auth", "django.contrib.contenttypes", "admin_scripts"],
+            ['djorm.contrib.auth', 'djorm.contrib.contenttypes', "admin_scripts"],
         )
 
     def test_builtin_command(self):
@@ -1075,7 +911,7 @@ class ManageMinimalSettings(AdminScriptTestCase):
     def setUp(self):
         super().setUp()
         self.write_settings(
-            "settings.py", apps=["django.contrib.auth", "django.contrib.contenttypes"]
+            "settings.py", apps=['djorm.contrib.auth', 'djorm.contrib.contenttypes']
         )
 
     def test_builtin_command(self):
@@ -1276,7 +1112,7 @@ class ManageMultipleSettings(AdminScriptTestCase):
     def setUp(self):
         super().setUp()
         self.write_settings(
-            "settings.py", apps=["django.contrib.auth", "django.contrib.contenttypes"]
+            "settings.py", apps=['djorm.contrib.auth', 'djorm.contrib.contenttypes']
         )
         self.write_settings("alternate_settings.py")
 
@@ -1411,7 +1247,7 @@ class ManageSettingsWithSettingsErrors(AdminScriptTestCase):
         """
         self.write_settings(
             "settings.py",
-            extra="from django.core.exceptions import ImproperlyConfigured\n"
+            extra='from djorm.core.exceptions import ImproperlyConfigured\n'
             "raise ImproperlyConfigured()",
         )
         args = ["help"]
@@ -1454,28 +1290,28 @@ class ManageCheck(AdminScriptTestCase):
             apps=[
                 "admin_scripts.complex_app",
                 "admin_scripts.simple_app",
-                "django.contrib.admin.apps.SimpleAdminConfig",
-                "django.contrib.auth",
-                "django.contrib.contenttypes",
-                "django.contrib.messages",
+                'djorm.contrib.admin.apps.SimpleAdminConfig',
+                'djorm.contrib.auth',
+                'djorm.contrib.contenttypes',
+                'djorm.contrib.messages',
             ],
             sdict={
                 "DEBUG": True,
                 "MIDDLEWARE": [
-                    "django.contrib.messages.middleware.MessageMiddleware",
-                    "django.contrib.auth.middleware.AuthenticationMiddleware",
-                    "django.contrib.sessions.middleware.SessionMiddleware",
+                    'djorm.contrib.messages.middleware.MessageMiddleware',
+                    'djorm.contrib.auth.middleware.AuthenticationMiddleware',
+                    'djorm.contrib.sessions.middleware.SessionMiddleware',
                 ],
                 "TEMPLATES": [
                     {
-                        "BACKEND": "django.template.backends.django.DjangoTemplates",
+                        "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                         "DIRS": [],
                         "APP_DIRS": True,
                         "OPTIONS": {
                             "context_processors": [
-                                "django.template.context_processors.request",
-                                "django.contrib.auth.context_processors.auth",
-                                "django.contrib.messages.context_processors.messages",
+                                'djorm.template.context_processors.request',
+                                'djorm.contrib.auth.context_processors.auth',
+                                'djorm.contrib.messages.context_processors.messages',
                             ],
                         },
                     },
@@ -1495,9 +1331,9 @@ class ManageCheck(AdminScriptTestCase):
             "settings.py",
             apps=[
                 "admin_scripts.app_with_import",
-                "django.contrib.auth",
-                "django.contrib.contenttypes",
-                "django.contrib.sites",
+                'djorm.contrib.auth',
+                'djorm.contrib.contenttypes',
+                'djorm.contrib.sites',
             ],
             sdict={"DEBUG": True},
         )
@@ -1513,8 +1349,8 @@ class ManageCheck(AdminScriptTestCase):
             "settings.py",
             apps=[
                 "admin_scripts.app_raising_messages",
-                "django.contrib.auth",
-                "django.contrib.contenttypes",
+                'djorm.contrib.auth',
+                'djorm.contrib.contenttypes',
             ],
             sdict={"DEBUG": True},
         )
@@ -1550,8 +1386,8 @@ class ManageCheck(AdminScriptTestCase):
             "settings.py",
             apps=[
                 "admin_scripts.app_raising_warning",
-                "django.contrib.auth",
-                "django.contrib.contenttypes",
+                'djorm.contrib.auth',
+                'djorm.contrib.contenttypes',
             ],
             sdict={"DEBUG": True},
         )
@@ -1701,7 +1537,7 @@ class ManageRunserver(SimpleTestCase):
         """
         tested_connections = ConnectionHandler({})
         with mock.patch(
-            "django.core.management.base.connections", new=tested_connections
+            'djorm.core.management.base.connections', new=tested_connections
         ):
             self.cmd.check_migrations()
 
@@ -1714,9 +1550,9 @@ class ManageRunserver(SimpleTestCase):
         # You have # ...
         self.assertIn("unapplied migration(s)", self.output.getvalue())
 
-    @mock.patch("django.core.management.commands.runserver.run")
-    @mock.patch("django.core.management.base.BaseCommand.check_migrations")
-    @mock.patch("django.core.management.base.BaseCommand.check")
+    @mock.patch('djorm.core.management.commands.runserver.run')
+    @mock.patch('djorm.core.management.base.BaseCommand.check_migrations')
+    @mock.patch('djorm.core.management.base.BaseCommand.check')
     def test_skip_checks(self, mocked_check, *mocked_objects):
         call_command(
             "runserver",
@@ -1861,7 +1697,7 @@ class ManageTestserver(SimpleTestCase):
             force_color=False,
         )
 
-    @mock.patch("django.db.connection.creation.create_test_db", return_value="test_db")
+    @mock.patch('djorm.db.connection.creation.create_test_db', return_value="test_db")
     @mock.patch.object(LoaddataCommand, "handle", return_value="")
     @mock.patch.object(RunserverCommand, "handle", return_value="")
     def test_params_to_runserver(
@@ -2219,7 +2055,7 @@ class CommandTypes(AdminScriptTestCase):
         command = BaseCommand()
         command.check = lambda: []
         command.handle = lambda *args, **kwargs: args
-        with mock.patch("django.core.management.base.connections") as mock_connections:
+        with mock.patch('djorm.core.management.base.connections') as mock_connections:
             command.run_from_argv(["", ""])
         # Test connections have been closed
         self.assertTrue(mock_connections.close_all.called)
@@ -2247,7 +2083,7 @@ class CommandTypes(AdminScriptTestCase):
         args = ["app_command", "auth"]
         out, err = self.run_manage(args)
         self.assertNoOutput(err)
-        self.assertOutput(out, "EXECUTE:AppCommand name=django.contrib.auth, options=")
+        self.assertOutput(out, 'EXECUTE:AppCommand name=djorm.contrib.auth, options=')
         self.assertOutput(
             out,
             ", options=[('force_color', False), ('no_color', False), "
@@ -2266,7 +2102,7 @@ class CommandTypes(AdminScriptTestCase):
         args = ["app_command", "auth", "contenttypes"]
         out, err = self.run_manage(args)
         self.assertNoOutput(err)
-        self.assertOutput(out, "EXECUTE:AppCommand name=django.contrib.auth, options=")
+        self.assertOutput(out, 'EXECUTE:AppCommand name=djorm.contrib.auth, options=')
         self.assertOutput(
             out,
             ", options=[('force_color', False), ('no_color', False), "
@@ -2274,7 +2110,7 @@ class CommandTypes(AdminScriptTestCase):
             "('verbosity', 1)]",
         )
         self.assertOutput(
-            out, "EXECUTE:AppCommand name=django.contrib.contenttypes, options="
+            out, 'EXECUTE:AppCommand name=djorm.contrib.contenttypes, options='
         )
         self.assertOutput(
             out,
@@ -2383,8 +2219,8 @@ class Discovery(SimpleTestCase):
             INSTALLED_APPS=[
                 "admin_scripts.complex_app",
                 "admin_scripts.simple_app",
-                "django.contrib.auth",
-                "django.contrib.contenttypes",
+                'djorm.contrib.auth',
+                'djorm.contrib.contenttypes',
             ]
         ):
             out = StringIO()
@@ -2394,8 +2230,8 @@ class Discovery(SimpleTestCase):
             INSTALLED_APPS=[
                 "admin_scripts.simple_app",
                 "admin_scripts.complex_app",
-                "django.contrib.auth",
-                "django.contrib.contenttypes",
+                'djorm.contrib.auth',
+                'djorm.contrib.contenttypes',
             ]
         ):
             out = StringIO()
@@ -2433,19 +2269,12 @@ class CommandDBOptionChoiceTests(SimpleTestCase):
 
 
 class ArgumentOrder(AdminScriptTestCase):
-    """Tests for 2-stage argument parsing scheme.
-
-    django-admin command arguments are parsed in 2 parts; the core arguments
-    (--settings, --traceback and --pythonpath) are parsed using a basic parser,
-    ignoring any unknown options. Then the full settings are
-    passed to the command parser, which extracts commands of interest to the
-    individual command.
-    """
+    'Tests for 2-stage argument parsing scheme.\n\n    djorm command arguments are parsed in 2 parts; the core arguments\n    (--settings, --traceback and --pythonpath) are parsed using a basic parser,\n    ignoring any unknown options. Then the full settings are\n    passed to the command parser, which extracts commands of interest to the\n    individual command.\n    '
 
     def setUp(self):
         super().setUp()
         self.write_settings(
-            "settings.py", apps=["django.contrib.auth", "django.contrib.contenttypes"]
+            "settings.py", apps=['djorm.contrib.auth', 'djorm.contrib.contenttypes']
         )
         self.write_settings("alternate_settings.py")
 
@@ -2513,8 +2342,8 @@ class ExecuteFromCommandLine(SimpleTestCase):
         args = ["help", "shell"]
         with captured_stdout() as out, captured_stderr() as err:
             with mock.patch("sys.argv", [None] + args):
-                execute_from_command_line(["django-admin"] + args)
-        self.assertIn("usage: django-admin shell", out.getvalue())
+                execute_from_command_line(['djorm'] + args)
+        self.assertIn('usage: djorm shell', out.getvalue())
         self.assertEqual(err.getvalue(), "")
 
 
@@ -2522,9 +2351,9 @@ class ExecuteFromCommandLine(SimpleTestCase):
 class StartProject(LiveServerTestCase, AdminScriptTestCase):
     available_apps = [
         "admin_scripts",
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
-        "django.contrib.sessions",
+        'djorm.contrib.auth',
+        'djorm.contrib.contenttypes',
+        'djorm.contrib.sessions',
     ]
 
     def test_wrong_args(self):
@@ -3090,9 +2919,9 @@ class StartApp(AdminScriptTestCase):
             content = f.read()
             self.assertIn("class NewAppConfig(AppConfig)", content)
             if HAS_BLACK:
-                test_str = 'default_auto_field = "django.db.models.BigAutoField"'
+                test_str = 'default_auto_field = "djorm.db.models.BigAutoField"'
             else:
-                test_str = "default_auto_field = 'django.db.models.BigAutoField'"
+                test_str = "default_auto_field = 'djorm.db.models.BigAutoField'"
             self.assertIn(test_str, content)
             self.assertIn(
                 'name = "new_app"' if HAS_BLACK else "name = 'new_app'",
@@ -3209,7 +3038,7 @@ class Dumpdata(AdminScriptTestCase):
 
 
 class MainModule(AdminScriptTestCase):
-    """python -m django works like django-admin."""
+    'python -m django works like djorm.'
 
     def test_program_name_in_help(self):
         out, err = self.run_test(["-m", "django", "help"])

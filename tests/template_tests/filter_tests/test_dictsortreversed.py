@@ -1,5 +1,5 @@
-from django.template.defaultfilters import dictsortreversed
-from django.test import SimpleTestCase
+from djorm.template.defaultfilters import dictsortreversed
+from djorm.test import SimpleTestCase
 
 
 class FunctionTests(SimpleTestCase):

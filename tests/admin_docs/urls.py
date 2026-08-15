@@ -1,5 +1,5 @@
-from django.contrib import admin
-from django.urls import include, path
+from djorm.contrib import admin
+from djorm.urls import include, path
 
 from . import views
 
@@ -12,7 +12,7 @@ ns_patterns = (
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("admindocs/", include("django.contrib.admindocs.urls")),
+    path("admindocs/", include('djorm.contrib.admindocs.urls')),
     path("", include(ns_patterns, namespace="test")),
     path("company/", views.CompanyView.as_view()),
     path("xview/func/", views.xview_dec(views.xview)),

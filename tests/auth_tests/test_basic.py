@@ -1,11 +1,11 @@
-from django.conf import settings
-from django.contrib.auth import aget_user, get_user, get_user_model
-from django.contrib.auth.models import AnonymousUser, User
-from django.core.exceptions import ImproperlyConfigured
-from django.db import IntegrityError
-from django.http import HttpRequest
-from django.test import TestCase, override_settings
-from django.utils import translation
+from djorm.conf import settings
+from djorm.contrib.auth import aget_user, get_user, get_user_model
+from djorm.contrib.auth.models import AnonymousUser, User
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.db import IntegrityError
+from djorm.http import HttpRequest
+from djorm.test import TestCase, override_settings
+from djorm.utils import translation
 
 from .models import CustomUser
 

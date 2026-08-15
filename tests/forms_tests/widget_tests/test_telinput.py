@@ -1,4 +1,4 @@
-from django.forms import TelInput
+from djorm.forms import TelInput
 
 from .base import WidgetTest
 

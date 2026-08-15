@@ -1,14 +1,14 @@
-from django.conf import settings
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.middleware import (
+from djorm.conf import settings
+from djorm.contrib.auth import REDIRECT_FIELD_NAME
+from djorm.contrib.auth.middleware import (
     AuthenticationMiddleware,
     LoginRequiredMiddleware,
 )
-from django.contrib.auth.models import User
-from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpRequest, HttpResponse
-from django.test import TestCase, modify_settings, override_settings
-from django.urls import reverse
+from djorm.contrib.auth.models import User
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.http import HttpRequest, HttpResponse
+from djorm.test import TestCase, modify_settings, override_settings
+from djorm.urls import reverse
 
 
 class TestAuthenticationMiddleware(TestCase):
@@ -44,8 +44,8 @@ class TestAuthenticationMiddleware(TestCase):
         msg = (
             "The Django authentication middleware requires session middleware "
             "to be installed. Edit your MIDDLEWARE setting to insert "
-            "'django.contrib.sessions.middleware.SessionMiddleware' before "
-            "'django.contrib.auth.middleware.AuthenticationMiddleware'."
+            "'djorm.contrib.sessions.middleware.SessionMiddleware' before "
+            "'djorm.contrib.auth.middleware.AuthenticationMiddleware'."
         )
         with self.assertRaisesMessage(ImproperlyConfigured, msg):
             self.middleware(HttpRequest())
@@ -60,7 +60,7 @@ class TestAuthenticationMiddleware(TestCase):
 
 @override_settings(ROOT_URLCONF="auth_tests.urls")
 @modify_settings(
-    MIDDLEWARE={"append": "django.contrib.auth.middleware.LoginRequiredMiddleware"}
+    MIDDLEWARE={"append": 'djorm.contrib.auth.middleware.LoginRequiredMiddleware'}
 )
 class TestLoginRequiredMiddleware(TestCase):
     @classmethod
@@ -146,7 +146,7 @@ class TestLoginRequiredMiddleware(TestCase):
         self.assertEqual(
             str(e.exception),
             "No login URL to redirect to. Define settings.LOGIN_URL or provide "
-            "a login_url via the 'django.contrib.auth.decorators.login_required' "
+            "a login_url via the 'djorm.contrib.auth.decorators.login_required' "
             "decorator.",
         )
 
@@ -160,8 +160,8 @@ class TestLoginRequiredMiddleware(TestCase):
 
     @override_settings(
         MIDDLEWARE=[
-            "django.contrib.sessions.middleware.SessionMiddleware",
-            "django.contrib.auth.middleware.AuthenticationMiddleware",
+            'djorm.contrib.sessions.middleware.SessionMiddleware',
+            'djorm.contrib.auth.middleware.AuthenticationMiddleware',
             "auth_tests.test_checks.LoginRequiredMiddlewareSubclass",
         ],
         LOGIN_URL="/settings_login/",

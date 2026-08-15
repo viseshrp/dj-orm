@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from django.http import HttpRequest
-from django.http.request import MediaType
+from djorm.http import HttpRequest
+from djorm.http.request import MediaType
 
 
 class MediaTypeTests(TestCase):

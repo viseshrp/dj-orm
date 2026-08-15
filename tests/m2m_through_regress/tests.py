@@ -1,8 +1,8 @@
 from io import StringIO
 
-from django.contrib.auth.models import User
-from django.core import management
-from django.test import TestCase
+from djorm.contrib.auth.models import User
+from djorm.core import management
+from djorm.test import TestCase
 
 from .models import Car, CarDriver, Driver, Group, Membership, Person, UserMembership
 

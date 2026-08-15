@@ -1,5 +1,5 @@
-from django.template import TemplateSyntaxError
-from django.test import SimpleTestCase
+from djorm.template import TemplateSyntaxError
+from djorm.test import SimpleTestCase
 
 from ..utils import SomeClass, SomeOtherException, UTF8Class, setup
 

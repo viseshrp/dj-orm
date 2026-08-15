@@ -2,11 +2,11 @@
 A second, custom AdminSite -- see tests.CustomAdminSiteTests.
 """
 
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-from django.http import HttpResponse
-from django.urls import path
+from djorm.contrib import admin
+from djorm.contrib.auth.admin import UserAdmin
+from djorm.contrib.auth.models import User
+from djorm.http import HttpResponse
+from djorm.urls import path
 
 from . import admin as base_admin
 from . import forms, models

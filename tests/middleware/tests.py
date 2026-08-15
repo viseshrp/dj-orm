@@ -6,10 +6,10 @@ from io import BytesIO
 from unittest import mock
 from urllib.parse import quote
 
-from django.conf import settings
-from django.core import mail
-from django.core.exceptions import PermissionDenied
-from django.http import (
+from djorm.conf import settings
+from djorm.core import mail
+from djorm.core.exceptions import PermissionDenied
+from djorm.http import (
     FileResponse,
     HttpRequest,
     HttpResponse,
@@ -18,11 +18,11 @@ from django.http import (
     HttpResponseRedirect,
     StreamingHttpResponse,
 )
-from django.middleware.clickjacking import XFrameOptionsMiddleware
-from django.middleware.common import BrokenLinkEmailsMiddleware, CommonMiddleware
-from django.middleware.gzip import GZipMiddleware
-from django.middleware.http import ConditionalGetMiddleware
-from django.test import RequestFactory, SimpleTestCase, override_settings
+from djorm.middleware.clickjacking import XFrameOptionsMiddleware
+from djorm.middleware.common import BrokenLinkEmailsMiddleware, CommonMiddleware
+from djorm.middleware.gzip import GZipMiddleware
+from djorm.middleware.http import ConditionalGetMiddleware
+from djorm.test import RequestFactory, SimpleTestCase, override_settings
 
 int2byte = struct.Struct(">B").pack
 
@@ -1015,7 +1015,7 @@ class GZipMiddlewareTest(SimpleTestCase):
     def test_random_bytes(self):
         """A random number of bytes is added to mitigate the BREACH attack."""
         with mock.patch(
-            "django.utils.text.secrets.randbelow", autospec=True, return_value=3
+            'djorm.utils.text.secrets.randbelow', autospec=True, return_value=3
         ):
             r = GZipMiddleware(self.get_response)(self.req)
         # The fourth byte of a gzip stream contains flags.
@@ -1033,7 +1033,7 @@ class GZipMiddlewareTest(SimpleTestCase):
             return resp
 
         with mock.patch(
-            "django.utils.text.secrets.randbelow", autospec=True, return_value=3
+            'djorm.utils.text.secrets.randbelow', autospec=True, return_value=3
         ):
             r = GZipMiddleware(get_stream_response)(self.req)
             content = b"".join(r)

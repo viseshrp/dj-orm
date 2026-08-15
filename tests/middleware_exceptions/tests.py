@@ -1,7 +1,7 @@
-from django.conf import settings
-from django.core.exceptions import MiddlewareNotUsed
-from django.http import HttpResponse
-from django.test import RequestFactory, SimpleTestCase, override_settings
+from djorm.conf import settings
+from djorm.core.exceptions import MiddlewareNotUsed
+from djorm.http import HttpResponse
+from djorm.test import RequestFactory, SimpleTestCase, override_settings
 
 from . import middleware as mw
 
@@ -169,7 +169,7 @@ class MyMiddlewareWithExceptionMessage:
 @override_settings(
     DEBUG=True,
     ROOT_URLCONF="middleware_exceptions.urls",
-    MIDDLEWARE=["django.middleware.common.CommonMiddleware"],
+    MIDDLEWARE=['djorm.middleware.common.CommonMiddleware'],
 )
 class MiddlewareNotUsedTests(SimpleTestCase):
     rf = RequestFactory()

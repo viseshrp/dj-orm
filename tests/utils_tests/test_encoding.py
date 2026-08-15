@@ -6,8 +6,8 @@ from pathlib import Path
 from unittest import mock
 from urllib.parse import quote, quote_plus
 
-from django.test import SimpleTestCase
-from django.utils.encoding import (
+from djorm.test import SimpleTestCase
+from djorm.utils.encoding import (
     DjangoUnicodeDecodeError,
     escape_uri_path,
     filepath_to_uri,
@@ -20,9 +20,9 @@ from django.utils.encoding import (
     smart_str,
     uri_to_iri,
 )
-from django.utils.functional import SimpleLazyObject
-from django.utils.translation import gettext_lazy
-from django.utils.version import PYPY
+from djorm.utils.functional import SimpleLazyObject
+from djorm.utils.translation import gettext_lazy
+from djorm.utils.version import PYPY
 
 
 class TestEncodingUtils(SimpleTestCase):
@@ -132,7 +132,7 @@ class TestEncodingUtils(SimpleTestCase):
             decoded_paths.append(inspect.currentframe().f_back.f_locals["path"])
             return quote(*args, **kwargs)
 
-        with mock.patch("django.utils.encoding.quote", mock_quote):
+        with mock.patch('djorm.utils.encoding.quote', mock_quote):
             self.assertEqual(repercent_broken_unicode(data), b"test%FCtest%FCtest%FC")
 
         # decode() is called on smaller fragment of the path each time.

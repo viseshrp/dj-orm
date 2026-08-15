@@ -4,11 +4,11 @@ import traceback
 import unittest
 from unittest import mock
 
-from django.conf import settings
-from django.contrib.messages import Message, add_message, constants
-from django.contrib.messages.storage import base
-from django.contrib.messages.test import MessagesTestMixin
-from django.test import RequestFactory, SimpleTestCase, override_settings
+from djorm.conf import settings
+from djorm.contrib.messages import Message, add_message, constants
+from djorm.contrib.messages.storage import base
+from djorm.contrib.messages.test import MessagesTestMixin
+from djorm.test import RequestFactory, SimpleTestCase, override_settings
 
 from .utils import DummyStorage
 
@@ -69,7 +69,7 @@ class TestLevelTags(SimpleTestCase):
         self.assertEqual(base.LEVEL_TAGS, self.message_tags)
 
     def test_lazy(self):
-        storage_base_import_path = "django.contrib.messages.storage.base"
+        storage_base_import_path = 'djorm.contrib.messages.storage.base'
         in_use_base = sys.modules.pop(storage_base_import_path)
         self.addCleanup(sys.modules.__setitem__, storage_base_import_path, in_use_base)
         # Don't use @override_settings to avoid calling the setting_changed

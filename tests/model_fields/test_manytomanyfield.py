@@ -1,7 +1,7 @@
-from django.apps import apps
-from django.db import models
-from django.test import SimpleTestCase, TestCase
-from django.test.utils import isolate_apps
+from djorm.apps import apps
+from djorm.db import models
+from djorm.test import SimpleTestCase, TestCase
+from djorm.test.utils import isolate_apps
 
 from .models import ManyToMany
 

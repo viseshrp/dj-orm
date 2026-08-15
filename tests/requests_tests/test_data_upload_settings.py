@@ -1,13 +1,13 @@
 from io import BytesIO
 
-from django.core.exceptions import (
+from djorm.core.exceptions import (
     RequestDataTooBig,
     TooManyFieldsSent,
     TooManyFilesSent,
 )
-from django.core.handlers.wsgi import WSGIRequest
-from django.test import SimpleTestCase
-from django.test.client import FakePayload
+from djorm.core.handlers.wsgi import WSGIRequest
+from djorm.test import SimpleTestCase
+from djorm.test.client import FakePayload
 
 TOO_MANY_FIELDS_MSG = (
     "The number of GET/POST parameters exceeded settings.DATA_UPLOAD_MAX_NUMBER_FIELDS."

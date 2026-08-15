@@ -1,17 +1,17 @@
 from asgiref.sync import iscoroutinefunction
 
-from django.conf import settings
-from django.contrib.auth import models
-from django.contrib.auth.decorators import (
+from djorm.conf import settings
+from djorm.contrib.auth import models
+from djorm.contrib.auth.decorators import (
     login_not_required,
     login_required,
     permission_required,
     user_passes_test,
 )
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
-from django.test import TestCase, override_settings
-from django.test.client import RequestFactory
+from djorm.core.exceptions import PermissionDenied
+from djorm.http import HttpResponse
+from djorm.test import TestCase, override_settings
+from djorm.test.client import RequestFactory
 
 from .test_views import AuthViewsTestCase
 

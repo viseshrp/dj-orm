@@ -1,9 +1,9 @@
 import datetime
 
-from django.core import signing
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import freeze_time
-from django.utils.crypto import InvalidAlgorithm
+from djorm.core import signing
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import freeze_time
+from djorm.utils.crypto import InvalidAlgorithm
 
 
 class TestSigner(SimpleTestCase):

@@ -1,7 +1,7 @@
 import os
 
-from django.core.management.commands.makemessages import TranslatableFile
-from django.test import SimpleTestCase
+from djorm.core.management.commands.makemessages import TranslatableFile
+from djorm.test import SimpleTestCase
 
 
 class TranslatableFileTests(SimpleTestCase):

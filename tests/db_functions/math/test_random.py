@@ -1,5 +1,5 @@
-from django.db.models.functions import Random
-from django.test import TestCase
+from djorm.db.models.functions import Random
+from djorm.test import TestCase
 
 from ..models import FloatModel
 

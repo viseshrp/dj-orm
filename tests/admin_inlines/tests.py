@@ -1,12 +1,12 @@
-from django.contrib.admin import ModelAdmin, TabularInline
-from django.contrib.admin.helpers import InlineAdminForm
-from django.contrib.admin.tests import AdminSeleniumTestCase
-from django.contrib.auth.models import Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.test import RequestFactory, TestCase, override_settings
-from django.test.selenium import screenshot_cases
-from django.urls import reverse
-from django.utils.translation import gettext
+from djorm.contrib.admin import ModelAdmin, TabularInline
+from djorm.contrib.admin.helpers import InlineAdminForm
+from djorm.contrib.admin.tests import AdminSeleniumTestCase
+from djorm.contrib.auth.models import Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.test import RequestFactory, TestCase, override_settings
+from djorm.test.selenium import screenshot_cases
+from djorm.urls import reverse
+from djorm.utils.translation import gettext
 
 from .admin import InnerInline
 from .admin import site as admin_site
@@ -1789,7 +1789,7 @@ class TestInlineWithFieldsets(TestDataMixin, TestCase):
     def test_fieldset_context_fully_set(self):
         url = reverse("admin:admin_inlines_photographer_add")
         with self.assertRaisesMessage(AssertionError, "no logs"):
-            with self.assertLogs("django.template", "DEBUG"):
+            with self.assertLogs('djorm.template', "DEBUG"):
                 self.client.get(url)
 
     def test_inline_headings(self):

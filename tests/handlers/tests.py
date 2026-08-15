@@ -1,8 +1,8 @@
-from django.core.exceptions import ImproperlyConfigured
-from django.core.handlers.wsgi import WSGIHandler, WSGIRequest, get_script_name
-from django.core.signals import request_finished, request_started
-from django.db import close_old_connections, connection
-from django.test import (
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.core.handlers.wsgi import WSGIHandler, WSGIRequest, get_script_name
+from djorm.core.signals import request_finished, request_started
+from djorm.db import close_old_connections, connection
+from djorm.test import (
     AsyncRequestFactory,
     RequestFactory,
     SimpleTestCase,

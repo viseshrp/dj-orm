@@ -1,35 +1,32 @@
 import unittest
 from typing import TYPE_CHECKING
 
-from django.conf import settings
-from django.core.checks.messages import Error, Warning
-from django.core.checks.security import base, csrf, sessions
-from django.core.management.utils import get_random_secret_key
-from django.test import SimpleTestCase
-from django.test.utils import override_settings
-from django.utils.version import PY314
-from django.views.generic import View
+from djorm.conf import settings
+from djorm.core.checks.messages import Error, Warning
+from djorm.core.checks.security import base, csrf, sessions
+from djorm.core.management.utils import get_random_secret_key
+from djorm.test import SimpleTestCase
+from djorm.test.utils import override_settings
+from djorm.utils.version import PY314
+from djorm.views.generic import View
 
 if TYPE_CHECKING:
-    from django.http.request import HttpRequest
+    from djorm.http.request import HttpRequest
 
 
 class CheckSessionCookieSecureTest(SimpleTestCase):
     @override_settings(
         SESSION_COOKIE_SECURE=False,
-        INSTALLED_APPS=["django.contrib.sessions"],
+        INSTALLED_APPS=['djorm.contrib.sessions'],
         MIDDLEWARE=[],
     )
     def test_session_cookie_secure_with_installed_app(self):
-        """
-        Warn if SESSION_COOKIE_SECURE is off and "django.contrib.sessions" is
-        in INSTALLED_APPS.
-        """
+        '\n        Warn if SESSION_COOKIE_SECURE is off and "djorm.contrib.sessions" is\n        in INSTALLED_APPS.\n        '
         self.assertEqual(sessions.check_session_cookie_secure(None), [sessions.W010])
 
     @override_settings(
         SESSION_COOKIE_SECURE="1",
-        INSTALLED_APPS=["django.contrib.sessions"],
+        INSTALLED_APPS=['djorm.contrib.sessions'],
         MIDDLEWARE=[],
     )
     def test_session_cookie_secure_with_installed_app_truthy(self):
@@ -39,20 +36,16 @@ class CheckSessionCookieSecureTest(SimpleTestCase):
     @override_settings(
         SESSION_COOKIE_SECURE=False,
         INSTALLED_APPS=[],
-        MIDDLEWARE=["django.contrib.sessions.middleware.SessionMiddleware"],
+        MIDDLEWARE=['djorm.contrib.sessions.middleware.SessionMiddleware'],
     )
     def test_session_cookie_secure_with_middleware(self):
-        """
-        Warn if SESSION_COOKIE_SECURE is off and
-        "django.contrib.sessions.middleware.SessionMiddleware" is in
-        MIDDLEWARE.
-        """
+        '\n        Warn if SESSION_COOKIE_SECURE is off and\n        "djorm.contrib.sessions.middleware.SessionMiddleware" is in\n        MIDDLEWARE.\n        '
         self.assertEqual(sessions.check_session_cookie_secure(None), [sessions.W011])
 
     @override_settings(
         SESSION_COOKIE_SECURE=False,
-        INSTALLED_APPS=["django.contrib.sessions"],
-        MIDDLEWARE=["django.contrib.sessions.middleware.SessionMiddleware"],
+        INSTALLED_APPS=['djorm.contrib.sessions'],
+        MIDDLEWARE=['djorm.contrib.sessions.middleware.SessionMiddleware'],
     )
     def test_session_cookie_secure_both(self):
         """
@@ -63,8 +56,8 @@ class CheckSessionCookieSecureTest(SimpleTestCase):
 
     @override_settings(
         SESSION_COOKIE_SECURE=True,
-        INSTALLED_APPS=["django.contrib.sessions"],
-        MIDDLEWARE=["django.contrib.sessions.middleware.SessionMiddleware"],
+        INSTALLED_APPS=['djorm.contrib.sessions'],
+        MIDDLEWARE=['djorm.contrib.sessions.middleware.SessionMiddleware'],
     )
     def test_session_cookie_secure_true(self):
         """
@@ -76,19 +69,16 @@ class CheckSessionCookieSecureTest(SimpleTestCase):
 class CheckSessionCookieHttpOnlyTest(SimpleTestCase):
     @override_settings(
         SESSION_COOKIE_HTTPONLY=False,
-        INSTALLED_APPS=["django.contrib.sessions"],
+        INSTALLED_APPS=['djorm.contrib.sessions'],
         MIDDLEWARE=[],
     )
     def test_session_cookie_httponly_with_installed_app(self):
-        """
-        Warn if SESSION_COOKIE_HTTPONLY is off and "django.contrib.sessions"
-        is in INSTALLED_APPS.
-        """
+        '\n        Warn if SESSION_COOKIE_HTTPONLY is off and "djorm.contrib.sessions"\n        is in INSTALLED_APPS.\n        '
         self.assertEqual(sessions.check_session_cookie_httponly(None), [sessions.W013])
 
     @override_settings(
         SESSION_COOKIE_HTTPONLY="1",
-        INSTALLED_APPS=["django.contrib.sessions"],
+        INSTALLED_APPS=['djorm.contrib.sessions'],
         MIDDLEWARE=[],
     )
     def test_session_cookie_httponly_with_installed_app_truthy(self):
@@ -98,20 +88,16 @@ class CheckSessionCookieHttpOnlyTest(SimpleTestCase):
     @override_settings(
         SESSION_COOKIE_HTTPONLY=False,
         INSTALLED_APPS=[],
-        MIDDLEWARE=["django.contrib.sessions.middleware.SessionMiddleware"],
+        MIDDLEWARE=['djorm.contrib.sessions.middleware.SessionMiddleware'],
     )
     def test_session_cookie_httponly_with_middleware(self):
-        """
-        Warn if SESSION_COOKIE_HTTPONLY is off and
-        "django.contrib.sessions.middleware.SessionMiddleware" is in
-        MIDDLEWARE.
-        """
+        '\n        Warn if SESSION_COOKIE_HTTPONLY is off and\n        "djorm.contrib.sessions.middleware.SessionMiddleware" is in\n        MIDDLEWARE.\n        '
         self.assertEqual(sessions.check_session_cookie_httponly(None), [sessions.W014])
 
     @override_settings(
         SESSION_COOKIE_HTTPONLY=False,
-        INSTALLED_APPS=["django.contrib.sessions"],
-        MIDDLEWARE=["django.contrib.sessions.middleware.SessionMiddleware"],
+        INSTALLED_APPS=['djorm.contrib.sessions'],
+        MIDDLEWARE=['djorm.contrib.sessions.middleware.SessionMiddleware'],
     )
     def test_session_cookie_httponly_both(self):
         """
@@ -122,8 +108,8 @@ class CheckSessionCookieHttpOnlyTest(SimpleTestCase):
 
     @override_settings(
         SESSION_COOKIE_HTTPONLY=True,
-        INSTALLED_APPS=["django.contrib.sessions"],
-        MIDDLEWARE=["django.contrib.sessions.middleware.SessionMiddleware"],
+        INSTALLED_APPS=['djorm.contrib.sessions'],
+        MIDDLEWARE=['djorm.contrib.sessions.middleware.SessionMiddleware'],
     )
     def test_session_cookie_httponly_true(self):
         """
@@ -140,14 +126,14 @@ class CheckCSRFMiddlewareTest(SimpleTestCase):
         """
         self.assertEqual(csrf.check_csrf_middleware(None), [csrf.W003])
 
-    @override_settings(MIDDLEWARE=["django.middleware.csrf.CsrfViewMiddleware"])
+    @override_settings(MIDDLEWARE=['djorm.middleware.csrf.CsrfViewMiddleware'])
     def test_with_csrf_middleware(self):
         self.assertEqual(csrf.check_csrf_middleware(None), [])
 
 
 class CheckCSRFCookieSecureTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.csrf.CsrfViewMiddleware"],
+        MIDDLEWARE=['djorm.middleware.csrf.CsrfViewMiddleware'],
         CSRF_COOKIE_SECURE=False,
     )
     def test_with_csrf_cookie_secure_false(self):
@@ -158,7 +144,7 @@ class CheckCSRFCookieSecureTest(SimpleTestCase):
         self.assertEqual(csrf.check_csrf_cookie_secure(None), [csrf.W016])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.csrf.CsrfViewMiddleware"],
+        MIDDLEWARE=['djorm.middleware.csrf.CsrfViewMiddleware'],
         CSRF_COOKIE_SECURE="1",
     )
     def test_with_csrf_cookie_secure_truthy(self):
@@ -166,7 +152,7 @@ class CheckCSRFCookieSecureTest(SimpleTestCase):
         self.assertEqual(csrf.check_csrf_cookie_secure(None), [csrf.W016])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.csrf.CsrfViewMiddleware"],
+        MIDDLEWARE=['djorm.middleware.csrf.CsrfViewMiddleware'],
         CSRF_USE_SESSIONS=True,
         CSRF_COOKIE_SECURE=False,
     )
@@ -186,7 +172,7 @@ class CheckCSRFCookieSecureTest(SimpleTestCase):
         self.assertEqual(csrf.check_csrf_cookie_secure(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.csrf.CsrfViewMiddleware"],
+        MIDDLEWARE=['djorm.middleware.csrf.CsrfViewMiddleware'],
         CSRF_COOKIE_SECURE=True,
     )
     def test_with_csrf_cookie_secure_true(self):
@@ -201,14 +187,14 @@ class CheckSecurityMiddlewareTest(SimpleTestCase):
         """
         self.assertEqual(base.check_security_middleware(None), [base.W001])
 
-    @override_settings(MIDDLEWARE=["django.middleware.security.SecurityMiddleware"])
+    @override_settings(MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'])
     def test_with_security_middleware(self):
         self.assertEqual(base.check_security_middleware(None), [])
 
 
 class CheckStrictTransportSecurityTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_HSTS_SECONDS=0,
     )
     def test_no_sts(self):
@@ -226,7 +212,7 @@ class CheckStrictTransportSecurityTest(SimpleTestCase):
         self.assertEqual(base.check_sts(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_HSTS_SECONDS=3600,
     )
     def test_with_sts(self):
@@ -235,7 +221,7 @@ class CheckStrictTransportSecurityTest(SimpleTestCase):
 
 class CheckStrictTransportSecuritySubdomainsTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_HSTS_INCLUDE_SUBDOMAINS=False,
         SECURE_HSTS_SECONDS=3600,
     )
@@ -257,7 +243,7 @@ class CheckStrictTransportSecuritySubdomainsTest(SimpleTestCase):
         self.assertEqual(base.check_sts_include_subdomains(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_SSL_REDIRECT=False,
         SECURE_HSTS_SECONDS=None,
     )
@@ -268,7 +254,7 @@ class CheckStrictTransportSecuritySubdomainsTest(SimpleTestCase):
         self.assertEqual(base.check_sts_include_subdomains(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_HSTS_INCLUDE_SUBDOMAINS=True,
         SECURE_HSTS_SECONDS=3600,
     )
@@ -278,7 +264,7 @@ class CheckStrictTransportSecuritySubdomainsTest(SimpleTestCase):
 
 class CheckStrictTransportSecurityPreloadTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_HSTS_PRELOAD=False,
         SECURE_HSTS_SECONDS=3600,
     )
@@ -298,7 +284,7 @@ class CheckStrictTransportSecurityPreloadTest(SimpleTestCase):
         self.assertEqual(base.check_sts_preload(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_SSL_REDIRECT=False,
         SECURE_HSTS_SECONDS=None,
     )
@@ -309,7 +295,7 @@ class CheckStrictTransportSecurityPreloadTest(SimpleTestCase):
         self.assertEqual(base.check_sts_preload(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_HSTS_PRELOAD=True,
         SECURE_HSTS_SECONDS=3600,
     )
@@ -326,7 +312,7 @@ class CheckXFrameOptionsMiddlewareTest(SimpleTestCase):
         self.assertEqual(base.check_xframe_options_middleware(None), [base.W002])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.clickjacking.XFrameOptionsMiddleware"]
+        MIDDLEWARE=['djorm.middleware.clickjacking.XFrameOptionsMiddleware']
     )
     def test_middleware_installed(self):
         self.assertEqual(base.check_xframe_options_middleware(None), [])
@@ -334,7 +320,7 @@ class CheckXFrameOptionsMiddlewareTest(SimpleTestCase):
 
 class CheckXFrameOptionsDenyTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.clickjacking.XFrameOptionsMiddleware"],
+        MIDDLEWARE=['djorm.middleware.clickjacking.XFrameOptionsMiddleware'],
         X_FRAME_OPTIONS="SAMEORIGIN",
     )
     def test_x_frame_options_not_deny(self):
@@ -353,7 +339,7 @@ class CheckXFrameOptionsDenyTest(SimpleTestCase):
         self.assertEqual(base.check_xframe_deny(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.clickjacking.XFrameOptionsMiddleware"],
+        MIDDLEWARE=['djorm.middleware.clickjacking.XFrameOptionsMiddleware'],
         X_FRAME_OPTIONS="DENY",
     )
     def test_xframe_deny(self):
@@ -362,7 +348,7 @@ class CheckXFrameOptionsDenyTest(SimpleTestCase):
 
 class CheckContentTypeNosniffTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_CONTENT_TYPE_NOSNIFF=False,
     )
     def test_no_content_type_nosniff(self):
@@ -380,7 +366,7 @@ class CheckContentTypeNosniffTest(SimpleTestCase):
         self.assertEqual(base.check_content_type_nosniff(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_CONTENT_TYPE_NOSNIFF=True,
     )
     def test_with_content_type_nosniff(self):
@@ -389,7 +375,7 @@ class CheckContentTypeNosniffTest(SimpleTestCase):
 
 class CheckSSLRedirectTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_SSL_REDIRECT=False,
     )
     def test_no_ssl_redirect(self):
@@ -407,7 +393,7 @@ class CheckSSLRedirectTest(SimpleTestCase):
         self.assertEqual(base.check_ssl_redirect(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_SSL_REDIRECT=True,
     )
     def test_with_ssl_redirect(self):
@@ -576,7 +562,7 @@ class CheckAllowedHostsTest(SimpleTestCase):
 
 class CheckReferrerPolicyTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_REFERRER_POLICY=None,
     )
     def test_no_referrer_policy(self):
@@ -590,7 +576,7 @@ class CheckReferrerPolicyTest(SimpleTestCase):
         """
         self.assertEqual(base.check_referrer_policy(None), [])
 
-    @override_settings(MIDDLEWARE=["django.middleware.security.SecurityMiddleware"])
+    @override_settings(MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'])
     def test_with_referrer_policy(self):
         tests = (
             "strict-origin",
@@ -607,7 +593,7 @@ class CheckReferrerPolicyTest(SimpleTestCase):
                 self.assertEqual(base.check_referrer_policy(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_REFERRER_POLICY="invalid-value",
     )
     def test_with_invalid_referrer_policy(self):
@@ -676,13 +662,13 @@ class CSRFFailureViewTest(SimpleTestCase):
 
 class CheckCrossOriginOpenerPolicyTest(SimpleTestCase):
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_CROSS_ORIGIN_OPENER_POLICY=None,
     )
     def test_no_coop(self):
         self.assertEqual(base.check_cross_origin_opener_policy(None), [])
 
-    @override_settings(MIDDLEWARE=["django.middleware.security.SecurityMiddleware"])
+    @override_settings(MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'])
     def test_with_coop(self):
         tests = ["same-origin", "same-origin-allow-popups", "unsafe-none"]
         for value in tests:
@@ -695,7 +681,7 @@ class CheckCrossOriginOpenerPolicyTest(SimpleTestCase):
                 self.assertEqual(base.check_cross_origin_opener_policy(None), [])
 
     @override_settings(
-        MIDDLEWARE=["django.middleware.security.SecurityMiddleware"],
+        MIDDLEWARE=['djorm.middleware.security.SecurityMiddleware'],
         SECURE_CROSS_ORIGIN_OPENER_POLICY="invalid-value",
     )
     def test_with_invalid_coop(self):

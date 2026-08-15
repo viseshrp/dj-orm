@@ -1,6 +1,6 @@
-from django.contrib.flatpages.models import FlatPage
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import override_script_prefix
+from djorm.contrib.flatpages.models import FlatPage
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import override_script_prefix
 
 
 class FlatpageModelTests(SimpleTestCase):

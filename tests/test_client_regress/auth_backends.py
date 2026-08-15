@@ -1,4 +1,4 @@
-from django.contrib.auth.backends import ModelBackend
+from djorm.contrib.auth.backends import ModelBackend
 
 from .models import CustomUser
 

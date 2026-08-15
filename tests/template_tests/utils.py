@@ -1,9 +1,9 @@
 import os
 from functools import wraps
 
-from django.template.engine import Engine
-from django.test.utils import override_settings
-from django.utils.safestring import mark_safe
+from djorm.template.engine import Engine
+from djorm.test.utils import override_settings
+from djorm.utils.safestring import mark_safe
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(ROOT, "templates")
@@ -35,9 +35,9 @@ def setup(templates, *args, test_once=False):
 
     loaders = [
         (
-            "django.template.loaders.cached.Loader",
+            'djorm.template.loaders.cached.Loader',
             [
-                ("django.template.loaders.locmem.Loader", templates),
+                ('djorm.template.loaders.locmem.Loader', templates),
             ],
         ),
     ]

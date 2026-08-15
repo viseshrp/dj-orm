@@ -4,17 +4,17 @@ import json
 import unittest
 import uuid
 
-from django import forms
-from django.contrib.admin.utils import display_for_field
-from django.core import checks, exceptions, serializers, validators
-from django.core.exceptions import FieldError
-from django.core.management import call_command
-from django.db import IntegrityError, connection, models
-from django.db.models.expressions import Exists, F, OuterRef, RawSQL, Value
-from django.db.models.functions import Cast, JSONObject, Upper
-from django.test import TransactionTestCase, override_settings, skipUnlessDBFeature
-from django.test.utils import isolate_apps
-from django.utils import timezone
+from djorm import forms
+from djorm.contrib.admin.utils import display_for_field
+from djorm.core import checks, exceptions, serializers, validators
+from djorm.core.exceptions import FieldError
+from djorm.core.management import call_command
+from djorm.db import IntegrityError, connection, models
+from djorm.db.models.expressions import Exists, F, OuterRef, RawSQL, Value
+from djorm.db.models.functions import Cast, JSONObject, Upper
+from djorm.test import TransactionTestCase, override_settings, skipUnlessDBFeature
+from djorm.test.utils import isolate_apps
+from djorm.utils import timezone
 
 from . import PostgreSQLSimpleTestCase, PostgreSQLTestCase, PostgreSQLWidgetTestCase
 from .models import (
@@ -32,16 +32,16 @@ from .models import (
 )
 
 try:
-    from django.contrib.postgres.aggregates import ArrayAgg
-    from django.contrib.postgres.expressions import ArraySubquery
-    from django.contrib.postgres.fields import ArrayField
-    from django.contrib.postgres.fields.array import IndexTransform, SliceTransform
-    from django.contrib.postgres.forms import (
+    from djorm.contrib.postgres.aggregates import ArrayAgg
+    from djorm.contrib.postgres.expressions import ArraySubquery
+    from djorm.contrib.postgres.fields import ArrayField
+    from djorm.contrib.postgres.fields.array import IndexTransform, SliceTransform
+    from djorm.contrib.postgres.forms import (
         SimpleArrayField,
         SplitArrayField,
         SplitArrayWidget,
     )
-    from django.db.backends.postgresql.psycopg_any import NumericRange
+    from djorm.db.backends.postgresql.psycopg_any import NumericRange
 except ImportError:
     pass
 
@@ -942,7 +942,7 @@ class TestMigrations(TransactionTestCase):
     def test_subclass_deconstruct(self):
         field = ArrayField(models.IntegerField())
         name, path, args, kwargs = field.deconstruct()
-        self.assertEqual(path, "django.contrib.postgres.fields.ArrayField")
+        self.assertEqual(path, 'djorm.contrib.postgres.fields.ArrayField')
 
         field = ArrayFieldSubclass()
         name, path, args, kwargs = field.deconstruct()

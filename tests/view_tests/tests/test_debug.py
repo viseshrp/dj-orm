@@ -11,34 +11,34 @@ from unittest import mock, skipIf, skipUnless
 
 from asgiref.sync import async_to_sync, iscoroutinefunction
 
-from django.core import mail
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db import DatabaseError, connection
-from django.http import Http404, HttpRequest, HttpResponse
-from django.shortcuts import render
-from django.template import TemplateDoesNotExist
-from django.test import RequestFactory, SimpleTestCase, override_settings
-from django.test.utils import LoggingCaptureMixin
-from django.urls import path, reverse
-from django.urls.converters import IntConverter
-from django.utils.functional import SimpleLazyObject
-from django.utils.regex_helper import _lazy_re_compile
-from django.utils.safestring import mark_safe
-from django.utils.version import PY311
-from django.views.debug import (
+from djorm.core import mail
+from djorm.core.files.uploadedfile import SimpleUploadedFile
+from djorm.db import DatabaseError, connection
+from djorm.http import Http404, HttpRequest, HttpResponse
+from djorm.shortcuts import render
+from djorm.template import TemplateDoesNotExist
+from djorm.test import RequestFactory, SimpleTestCase, override_settings
+from djorm.test.utils import LoggingCaptureMixin
+from djorm.urls import path, reverse
+from djorm.urls.converters import IntConverter
+from djorm.utils.functional import SimpleLazyObject
+from djorm.utils.regex_helper import _lazy_re_compile
+from djorm.utils.safestring import mark_safe
+from djorm.utils.version import PY311
+from djorm.views.debug import (
     CallableSettingWrapper,
     ExceptionCycleWarning,
     ExceptionReporter,
 )
-from django.views.debug import Path as DebugPath
-from django.views.debug import (
+from djorm.views.debug import Path as DebugPath
+from djorm.views.debug import (
     SafeExceptionReporterFilter,
     default_urlconf,
     get_default_exception_reporter_filter,
     technical_404_response,
     technical_500_response,
 )
-from django.views.decorators.debug import sensitive_post_parameters, sensitive_variables
+from djorm.views.decorators.debug import sensitive_post_parameters, sensitive_variables
 
 from ..views import (
     async_sensitive_method_view,
@@ -116,7 +116,7 @@ class DebugViewTests(SimpleTestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             }
         ]
     )
@@ -128,11 +128,11 @@ class DebugViewTests(SimpleTestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "OPTIONS": {
                     "loaders": [
                         (
-                            "django.template.loaders.locmem.Loader",
+                            'djorm.template.loaders.locmem.Loader',
                             {
                                 "403.html": (
                                     "This is a test template for a 403 error "
@@ -350,7 +350,7 @@ class DebugViewTests(SimpleTestCase):
                     TEMPLATES=[
                         {
                             "BACKEND": (
-                                "django.template.backends.django.DjangoTemplates"
+                                'djorm.template.backends.django.DjangoTemplates'
                             ),
                             "DIRS": [tempdir],
                         }
@@ -372,7 +372,7 @@ class DebugViewTests(SimpleTestCase):
             # Assert as HTML.
             self.assertContains(
                 response,
-                "<li><code>django.template.loaders.filesystem.Loader</code>: "
+                '<li><code>djorm.template.loaders.filesystem.Loader</code>: '
                 "%s (Source does not exist)</li>"
                 % os.path.join(tempdir, "notfound.html"),
                 status_code=500,
@@ -497,7 +497,7 @@ class DebugViewQueriesAllowedTests(SimpleTestCase):
     # No template directories are configured, so no templates will be found.
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.dummy.TemplateStrings",
+            "BACKEND": 'djorm.template.backends.dummy.TemplateStrings',
         }
     ],
 )
@@ -918,7 +918,7 @@ class ExceptionReporterTests(SimpleTestCase):
         except Exception:
             exc_type, exc_value, tb = sys.exc_info()
         with mock.patch(
-            "django.views.debug.ExceptionReporter._get_source",
+            'djorm.views.debug.ExceptionReporter._get_source',
             return_value=["wrong source"],
         ):
             request = self.rf.get("/test_view/")

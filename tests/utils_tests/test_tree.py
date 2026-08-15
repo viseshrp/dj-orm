@@ -1,8 +1,8 @@
 import copy
 import unittest
 
-from django.db.models.sql import AND, OR
-from django.utils.tree import Node
+from djorm.db.models.sql import AND, OR
+from djorm.utils.tree import Node
 
 
 class NodeTests(unittest.TestCase):

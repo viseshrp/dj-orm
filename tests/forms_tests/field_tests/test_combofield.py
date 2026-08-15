@@ -1,6 +1,6 @@
-from django.core.exceptions import ValidationError
-from django.forms import CharField, ComboField, EmailField
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ValidationError
+from djorm.forms import CharField, ComboField, EmailField
+from djorm.test import SimpleTestCase
 
 
 class ComboFieldTest(SimpleTestCase):

@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from django.db import connection
-from django.db.models import (
+from djorm.db import connection
+from djorm.db.models import (
     Case,
     F,
     FilteredRelation,
@@ -12,9 +12,9 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.functions import Cast
-from django.db.models.lookups import Exact
-from django.test import TestCase, skipUnlessDBFeature
+from djorm.db.models.functions import Cast
+from djorm.db.models.lookups import Exact
+from djorm.test import TestCase, skipUnlessDBFeature
 
 from .models import Comment, Tenant, User
 

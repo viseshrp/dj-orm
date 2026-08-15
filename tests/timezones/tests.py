@@ -6,20 +6,20 @@ from contextlib import contextmanager
 from unittest import SkipTest, skipIf
 from xml.dom.minidom import parseString
 
-from django.contrib.auth.models import User
-from django.core import serializers
-from django.db import connection
-from django.db.models import F, Max, Min
-from django.db.models.functions import Now
-from django.http import HttpRequest
-from django.template import (
+from djorm.contrib.auth.models import User
+from djorm.core import serializers
+from djorm.db import connection
+from djorm.db.models import F, Max, Min
+from djorm.db.models.functions import Now
+from djorm.http import HttpRequest
+from djorm.template import (
     Context,
     RequestContext,
     Template,
     TemplateSyntaxError,
     context_processors,
 )
-from django.test import (
+from djorm.test import (
     SimpleTestCase,
     TestCase,
     TransactionTestCase,
@@ -27,10 +27,10 @@ from django.test import (
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from django.test.utils import requires_tz_support
-from django.urls import reverse
-from django.utils import timezone, translation
-from django.utils.timezone import timedelta
+from djorm.test.utils import requires_tz_support
+from djorm.urls import reverse
+from djorm.utils import timezone, translation
+from djorm.utils.timezone import timedelta
 
 from .forms import (
     EventForm,
@@ -1164,9 +1164,7 @@ class TemplateTests(SimpleTestCase):
 
     @skipIf(sys.platform == "win32", "Windows uses non-standard time zone names")
     def test_tz_template_context_processor(self):
-        """
-        Test the django.template.context_processors.tz template context processor.
-        """
+        '\n        Test the djorm.template.context_processors.tz template context processor.\n        '
         tpl = Template("{{ TIME_ZONE }}")
         context = Context()
         self.assertEqual(tpl.render(context), "")

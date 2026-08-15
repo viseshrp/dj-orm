@@ -1,10 +1,10 @@
 from unittest import mock
 
-from django.template.defaultfilters import urlize
-from django.test import SimpleTestCase
-from django.utils.functional import lazy
-from django.utils.html import Urlizer
-from django.utils.safestring import mark_safe
+from djorm.template.defaultfilters import urlize
+from djorm.test import SimpleTestCase
+from djorm.utils.functional import lazy
+from djorm.utils.html import Urlizer
+from djorm.utils.safestring import mark_safe
 
 from ..utils import setup
 

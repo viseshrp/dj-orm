@@ -12,9 +12,9 @@ import decimal
 import uuid
 from collections import namedtuple
 
-from django.core import serializers
-from django.db import connection, models
-from django.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djorm.core import serializers
+from djorm.db import connection, models
+from djorm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
 
 from .models import (
     Anchor,

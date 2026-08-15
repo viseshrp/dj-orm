@@ -1,10 +1,10 @@
 import unittest
 from datetime import date
 
-from django.db import connection
-from django.db.models.expressions import RawSQL
-from django.db.utils import DataError
-from django.test import TestCase
+from djorm.db import connection
+from djorm.db.models.expressions import RawSQL
+from djorm.db.utils import DataError
+from djorm.test import TestCase
 
 from ..models import Article, Reporter, Square
 

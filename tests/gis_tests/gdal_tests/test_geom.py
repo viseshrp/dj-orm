@@ -1,19 +1,19 @@
 import json
 import pickle
 
-from django.contrib.gis.gdal import (
+from djorm.contrib.gis.gdal import (
     CoordTransform,
     GDALException,
     OGRGeometry,
     OGRGeomType,
     SpatialReference,
 )
-from django.contrib.gis.gdal.geometries import CircularString, CurvePolygon
-from django.contrib.gis.geos import GEOSException
-from django.template import Context
-from django.template.engine import Engine
-from django.test import SimpleTestCase
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.contrib.gis.gdal.geometries import CircularString, CurvePolygon
+from djorm.contrib.gis.geos import GEOSException
+from djorm.template import Context
+from djorm.template.engine import Engine
+from djorm.test import SimpleTestCase
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from ..test_data import TestDataMixin
 

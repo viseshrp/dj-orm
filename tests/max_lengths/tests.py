@@ -1,6 +1,6 @@
 import unittest
 
-from django.test import TestCase
+from djorm.test import TestCase
 
 from .models import PersonWithCustomMaxLengths, PersonWithDefaultMaxLengths
 

@@ -1,4 +1,4 @@
-from django.views.generic import View
+from djorm.views.generic import View
 
 urlpatterns = []
 

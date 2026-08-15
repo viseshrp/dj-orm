@@ -2,11 +2,11 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from unittest import skipUnless
 
-from django.db import connection
-from django.db.models.expressions import RawSQL
-from django.db.models.functions import Coalesce, Least
-from django.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
-from django.utils import timezone
+from djorm.db import connection
+from djorm.db.models.expressions import RawSQL
+from djorm.db.models.functions import Coalesce, Least
+from djorm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djorm.utils import timezone
 
 from ..models import Article, Author, DecimalModel, Fan
 

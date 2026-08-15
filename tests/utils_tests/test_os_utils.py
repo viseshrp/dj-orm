@@ -5,8 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from django.core.exceptions import SuspiciousFileOperation
-from django.utils._os import safe_join, safe_makedirs, to_path
+from djorm.core.exceptions import SuspiciousFileOperation
+from djorm.utils._os import safe_join, safe_makedirs, to_path
 
 
 class SafeMakeDirsTests(unittest.TestCase):

@@ -2,12 +2,12 @@ import os
 import shutil
 from unittest import skipIf
 
-from django.core.exceptions import ImproperlyConfigured
-from django.core.files import File
-from django.core.files.images import ImageFile
-from django.db.models import signals
-from django.test import TestCase
-from django.test.testcases import SerializeMixin
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.core.files import File
+from djorm.core.files.images import ImageFile
+from djorm.db.models import signals
+from djorm.test import TestCase
+from djorm.test.testcases import SerializeMixin
 
 try:
     from .models import Image

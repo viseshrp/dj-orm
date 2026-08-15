@@ -1,6 +1,6 @@
-from django.core.exceptions import ImproperlyConfigured
-from django.template import engines
-from django.test import SimpleTestCase, override_settings
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.template import engines
+from djorm.test import SimpleTestCase, override_settings
 
 
 class TemplateUtilsTests(SimpleTestCase):
@@ -18,7 +18,7 @@ class TemplateUtilsTests(SimpleTestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 # Incorrect: APP_DIRS and loaders are mutually incompatible.
                 "APP_DIRS": True,
                 "OPTIONS": {"loaders": []},
@@ -39,10 +39,10 @@ class TemplateUtilsTests(SimpleTestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             },
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             },
         ]
     )

@@ -5,9 +5,9 @@ import tempfile
 import unittest
 import zipfile
 
-from django.core.exceptions import SuspiciousOperation
-from django.test import SimpleTestCase
-from django.utils import archive
+from djorm.core.exceptions import SuspiciousOperation
+from djorm.test import SimpleTestCase
+from djorm.utils import archive
 
 try:
     import bz2  # NOQA

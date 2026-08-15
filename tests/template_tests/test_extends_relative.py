@@ -1,7 +1,7 @@
 import os
 
-from django.template import Context, Engine, TemplateSyntaxError
-from django.test import SimpleTestCase
+from djorm.template import Context, Engine, TemplateSyntaxError
+from djorm.test import SimpleTestCase
 
 from .utils import ROOT
 

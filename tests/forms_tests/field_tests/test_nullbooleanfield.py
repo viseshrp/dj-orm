@@ -1,5 +1,5 @@
-from django.forms import Form, HiddenInput, NullBooleanField, RadioSelect
-from django.test import SimpleTestCase
+from djorm.forms import Form, HiddenInput, NullBooleanField, RadioSelect
+from djorm.test import SimpleTestCase
 
 from . import FormFieldAssertionsMixin
 

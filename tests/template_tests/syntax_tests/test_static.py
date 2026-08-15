@@ -1,16 +1,16 @@
 from urllib.parse import urljoin
 
-from django.conf import settings
-from django.template import TemplateSyntaxError
-from django.templatetags.static import StaticNode
-from django.test import SimpleTestCase, override_settings
+from djorm.conf import settings
+from djorm.template import TemplateSyntaxError
+from djorm.templatetags.static import StaticNode
+from djorm.test import SimpleTestCase, override_settings
 
 from ..utils import setup
 
 
 @override_settings(INSTALLED_APPS=[], MEDIA_URL="media/", STATIC_URL="static/")
 class StaticTagTests(SimpleTestCase):
-    libraries = {"static": "django.templatetags.static"}
+    libraries = {"static": 'djorm.templatetags.static'}
 
     @setup({"static-prefixtag01": "{% load static %}{% get_static_prefix %}"})
     def test_static_prefixtag01(self):

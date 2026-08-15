@@ -1,7 +1,7 @@
-from django.template.base import TemplateSyntaxError
-from django.template.context import Context
-from django.template.loader_tags import BlockContext, BlockNode
-from django.test import SimpleTestCase
+from djorm.template.base import TemplateSyntaxError
+from djorm.template.context import Context
+from djorm.template.loader_tags import BlockContext, BlockNode
+from djorm.test import SimpleTestCase
 
 from ..utils import SilentAttrClass, SilentGetItemClass, SomeClass, setup
 

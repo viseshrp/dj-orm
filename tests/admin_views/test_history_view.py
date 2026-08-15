@@ -1,9 +1,9 @@
-from django.contrib.admin.models import CHANGE, LogEntry
-from django.contrib.admin.tests import AdminSeleniumTestCase
-from django.contrib.auth.models import User
-from django.core.paginator import Paginator
-from django.test import TestCase, override_settings
-from django.urls import reverse
+from djorm.contrib.admin.models import CHANGE, LogEntry
+from djorm.contrib.admin.tests import AdminSeleniumTestCase
+from djorm.contrib.auth.models import User
+from djorm.core.paginator import Paginator
+from djorm.test import TestCase, override_settings
+from djorm.urls import reverse
 
 from .models import City, State
 

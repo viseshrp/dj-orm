@@ -1,6 +1,6 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.template import Context, Template
+from djorm.http import HttpResponse
+from djorm.shortcuts import get_object_or_404
+from djorm.template import Context, Template
 
 from .models import Person
 

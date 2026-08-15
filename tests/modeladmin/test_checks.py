@@ -1,15 +1,15 @@
-from django import forms
-from django.contrib import admin
-from django.contrib.admin import BooleanFieldListFilter, SimpleListFilter
-from django.contrib.admin.options import VERTICAL, ModelAdmin, TabularInline
-from django.contrib.admin.sites import AdminSite
-from django.core.checks import Error
-from django.db import models
-from django.db.models import CASCADE, F, Field, ForeignKey, ManyToManyField, Model
-from django.db.models.functions import Upper
-from django.forms.models import BaseModelFormSet
-from django.test import TestCase, skipUnlessDBFeature
-from django.test.utils import isolate_apps
+from djorm import forms
+from djorm.contrib import admin
+from djorm.contrib.admin import BooleanFieldListFilter, SimpleListFilter
+from djorm.contrib.admin.options import VERTICAL, ModelAdmin, TabularInline
+from djorm.contrib.admin.sites import AdminSite
+from djorm.core.checks import Error
+from djorm.db import models
+from djorm.db.models import CASCADE, F, Field, ForeignKey, ManyToManyField, Model
+from djorm.db.models.functions import Upper
+from djorm.forms.models import BaseModelFormSet
+from djorm.test import TestCase, skipUnlessDBFeature
+from djorm.test.utils import isolate_apps
 
 from .models import Band, Song, User, ValidationTestInlineModel, ValidationTestModel
 

@@ -16,18 +16,18 @@ from unittest import mock
 import custom_migration_operations.more_operations
 import custom_migration_operations.operations
 
-from django import get_version
-from django.conf import SettingsReference, settings
-from django.core.validators import EmailValidator, RegexValidator
-from django.db import migrations, models
-from django.db.migrations.serializer import BaseSerializer
-from django.db.migrations.writer import MigrationWriter, OperationWriter
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import extend_sys_path
-from django.utils.deconstruct import deconstructible
-from django.utils.functional import SimpleLazyObject
-from django.utils.timezone import get_default_timezone, get_fixed_timezone
-from django.utils.translation import gettext_lazy as _
+from djorm import get_version
+from djorm.conf import SettingsReference, settings
+from djorm.core.validators import EmailValidator, RegexValidator
+from djorm.db import migrations, models
+from djorm.db.migrations.serializer import BaseSerializer
+from djorm.db.migrations.writer import MigrationWriter, OperationWriter
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import extend_sys_path
+from djorm.utils.deconstruct import deconstructible
+from djorm.utils.functional import SimpleLazyObject
+from djorm.utils.timezone import get_default_timezone, get_fixed_timezone
+from djorm.utils.translation import gettext_lazy as _
 
 from .models import FoodManager, FoodQuerySet
 
@@ -664,14 +664,14 @@ class WriterTests(SimpleTestCase):
         self.assertSerializedFieldEqual(models.CharField(max_length=255))
         self.assertSerializedResultEqual(
             models.CharField(max_length=255),
-            ("models.CharField(max_length=255)", {"from django.db import models"}),
+            ("models.CharField(max_length=255)", {'from djorm.db import models'}),
         )
         self.assertSerializedFieldEqual(models.TextField(null=True, blank=True))
         self.assertSerializedResultEqual(
             models.TextField(null=True, blank=True),
             (
                 "models.TextField(blank=True, null=True)",
-                {"from django.db import models"},
+                {'from djorm.db import models'},
             ),
         )
 
@@ -681,7 +681,7 @@ class WriterTests(SimpleTestCase):
         )
         self.assertSerializedResultEqual(
             SettingsReference("someapp.model", "AUTH_USER_MODEL"),
-            ("settings.AUTH_USER_MODEL", {"from django.conf import settings"}),
+            ("settings.AUTH_USER_MODEL", {'from djorm.conf import settings'}),
         )
 
     def test_serialize_iterators(self):
@@ -704,7 +704,7 @@ class WriterTests(SimpleTestCase):
         validator = RegexValidator(message="hello")
         string = MigrationWriter.serialize(validator)[0]
         self.assertEqual(
-            string, "django.core.validators.RegexValidator(message='hello')"
+            string, "djorm.core.validators.RegexValidator(message='hello')"
         )
         self.serialize_round_trip(validator)
 
@@ -713,7 +713,7 @@ class WriterTests(SimpleTestCase):
         string = MigrationWriter.serialize(validator)[0]
         self.assertEqual(
             string,
-            "django.core.validators.RegexValidator(regex=re.compile('^\\\\w+$'))",
+            "djorm.core.validators.RegexValidator(regex=re.compile('^\\\\w+$'))",
         )
         self.serialize_round_trip(validator)
 
@@ -722,7 +722,7 @@ class WriterTests(SimpleTestCase):
         string = MigrationWriter.serialize(validator)[0]
         self.assertEqual(
             string,
-            "django.core.validators.RegexValidator('^[0-9]+$', "
+            "djorm.core.validators.RegexValidator('^[0-9]+$', "
             "flags=re.RegexFlag['DOTALL'])",
         )
         self.serialize_round_trip(validator)
@@ -732,7 +732,7 @@ class WriterTests(SimpleTestCase):
         string = MigrationWriter.serialize(validator)[0]
         self.assertEqual(
             string,
-            "django.core.validators.RegexValidator('^[-a-zA-Z0-9_]+$', 'Invalid', "
+            "djorm.core.validators.RegexValidator('^[-a-zA-Z0-9_]+$', 'Invalid', "
             "'invalid')",
         )
         self.serialize_round_trip(validator)
@@ -741,7 +741,7 @@ class WriterTests(SimpleTestCase):
         validator = EmailValidator(message="hello")
         string = MigrationWriter.serialize(validator)[0]
         self.assertEqual(
-            string, "django.core.validators.EmailValidator(message='hello')"
+            string, "djorm.core.validators.EmailValidator(message='hello')"
         )
         self.serialize_round_trip(validator)
 
@@ -759,12 +759,12 @@ class WriterTests(SimpleTestCase):
         with self.assertRaisesMessage(ImportError, "No module named 'custom'"):
             MigrationWriter.serialize(validator)
 
-        validator = deconstructible(path="django.core.validators.EmailValidator2")(
+        validator = deconstructible(path='djorm.core.validators.EmailValidator2')(
             EmailValidator
         )(message="hello")
         with self.assertRaisesMessage(
             ValueError,
-            "Could not find object EmailValidator2 in django.core.validators.",
+            'Could not find object EmailValidator2 in djorm.core.validators.',
         ):
             MigrationWriter.serialize(validator)
 
@@ -793,7 +793,7 @@ class WriterTests(SimpleTestCase):
             "models.OrderBy(models.OrderBy(models.F('name'), descending=True)), "
             "name='complex_func_index')",
         )
-        self.assertEqual(imports, {"from django.db import models"})
+        self.assertEqual(imports, {'from djorm.db import models'})
 
     def test_serialize_empty_nonempty_tuple(self):
         """
@@ -888,7 +888,7 @@ class WriterTests(SimpleTestCase):
         self.assertSerializedEqual(models.Model)
         self.assertSerializedResultEqual(
             MigrationWriter.serialize(models.Model),
-            ("('models.Model', {'from django.db import models'})", set()),
+            ("('models.Model', {'from djorm.db import models'})", set()),
         )
 
     def test_simple_migration(self):
@@ -1057,7 +1057,7 @@ class WriterTests(SimpleTestCase):
         writer = MigrationWriter(migration)
         output = writer.as_string()
         self.assertIn(
-            "import datetime\nimport time\nfrom django.db import migrations, models\n",
+            'import datetime\nimport time\nfrom djorm.db import migrations, models\n',
             output,
         )
 
@@ -1067,7 +1067,7 @@ class WriterTests(SimpleTestCase):
         """
         migration = type("Migration", (migrations.Migration,), {"operations": []})
         dt = datetime.datetime(2015, 7, 31, 4, 40, 0, 0, tzinfo=datetime.timezone.utc)
-        with mock.patch("django.db.migrations.writer.now", lambda: dt):
+        with mock.patch('djorm.db.migrations.writer.now', lambda: dt):
             for include_header in (True, False):
                 with self.subTest(include_header=include_header):
                     writer = MigrationWriter(migration, include_header)
@@ -1088,9 +1088,7 @@ class WriterTests(SimpleTestCase):
                         )
 
     def test_models_import_omitted(self):
-        """
-        django.db.models shouldn't be imported if unused.
-        """
+        "\n        djorm.db.models shouldn't be imported if unused.\n        "
         migration = type(
             "Migration",
             (migrations.Migration,),
@@ -1108,7 +1106,7 @@ class WriterTests(SimpleTestCase):
         )
         writer = MigrationWriter(migration)
         output = writer.as_string()
-        self.assertIn("from django.db import migrations\n", output)
+        self.assertIn('from djorm.db import migrations\n', output)
 
     def test_deconstruct_class_arguments(self):
         # Yes, it doesn't make sense to use a class as a default for a
@@ -1156,4 +1154,4 @@ class WriterTests(SimpleTestCase):
         writer = MigrationWriter(migration)
         output = writer.as_string()
         self.assertEqual(output.count("import"), 1)
-        self.assertIn("from django.db import migrations, models", output)
+        self.assertIn('from djorm.db import migrations, models', output)

@@ -19,8 +19,8 @@ from ssl import SSLError
 from textwrap import dedent
 from unittest import mock, skipUnless
 
-from django.core import mail
-from django.core.mail import (
+from djorm.core import mail
+from djorm.core.mail import (
     DNS_NAME,
     BadHeaderError,
     EmailAlternative,
@@ -32,11 +32,11 @@ from django.core.mail import (
     send_mail,
     send_mass_mail,
 )
-from django.core.mail.backends import console, dummy, filebased, locmem, smtp
-from django.core.mail.message import sanitize_address
-from django.test import SimpleTestCase, override_settings
-from django.test.utils import requires_tz_support
-from django.utils.translation import gettext_lazy
+from djorm.core.mail.backends import console, dummy, filebased, locmem, smtp
+from djorm.core.mail.message import sanitize_address
+from djorm.test import SimpleTestCase, override_settings
+from djorm.test.utils import requires_tz_support
+from djorm.utils.translation import gettext_lazy
 
 try:
     from aiosmtpd.controller import Controller
@@ -180,7 +180,7 @@ class MailTests(MailTestsMixin, SimpleTestCase):
         self.assertEqual(message["From"], "from@example.com")
         self.assertEqual(message["To"], "to@example.com")
 
-    @mock.patch("django.core.mail.message.MIMEText.set_payload")
+    @mock.patch('djorm.core.mail.message.MIMEText.set_payload')
     def test_nonascii_as_string_with_ascii_charset(self, mock_set_payload):
         """Line length check should encode the payload supporting `surrogateescape`.
 
@@ -988,10 +988,7 @@ class MailTests(MailTestsMixin, SimpleTestCase):
         self.assertEqual(image_att.get_filename(), "test.png")
 
     def test_attach_rfc822_message(self):
-        """
-        EmailMessage.attach() docs: "If you specify a mimetype of message/rfc822,
-        it will also accept django.core.mail.EmailMessage and email.message.Message."
-        """
+        '\n        EmailMessage.attach() docs: "If you specify a mimetype of message/rfc822,\n        it will also accept djorm.core.mail.EmailMessage and email.message.Message."\n        '
         # django.core.mail.EmailMessage
         django_email = EmailMessage("child subject", "child body")
         # email.message.Message
@@ -1089,25 +1086,25 @@ class MailTests(MailTestsMixin, SimpleTestCase):
     def test_backend_arg(self):
         """Test backend argument of mail.get_connection()"""
         self.assertIsInstance(
-            mail.get_connection("django.core.mail.backends.smtp.EmailBackend"),
+            mail.get_connection('djorm.core.mail.backends.smtp.EmailBackend'),
             smtp.EmailBackend,
         )
         self.assertIsInstance(
-            mail.get_connection("django.core.mail.backends.locmem.EmailBackend"),
+            mail.get_connection('djorm.core.mail.backends.locmem.EmailBackend'),
             locmem.EmailBackend,
         )
         self.assertIsInstance(
-            mail.get_connection("django.core.mail.backends.dummy.EmailBackend"),
+            mail.get_connection('djorm.core.mail.backends.dummy.EmailBackend'),
             dummy.EmailBackend,
         )
         self.assertIsInstance(
-            mail.get_connection("django.core.mail.backends.console.EmailBackend"),
+            mail.get_connection('djorm.core.mail.backends.console.EmailBackend'),
             console.EmailBackend,
         )
         with tempfile.TemporaryDirectory() as tmp_dir:
             self.assertIsInstance(
                 mail.get_connection(
-                    "django.core.mail.backends.filebased.EmailBackend",
+                    'djorm.core.mail.backends.filebased.EmailBackend',
                     file_path=tmp_dir,
                 ),
                 filebased.EmailBackend,
@@ -1116,12 +1113,12 @@ class MailTests(MailTestsMixin, SimpleTestCase):
         msg = " not object"
         with self.assertRaisesMessage(TypeError, msg):
             mail.get_connection(
-                "django.core.mail.backends.filebased.EmailBackend", file_path=object()
+                'djorm.core.mail.backends.filebased.EmailBackend', file_path=object()
             )
         self.assertIsInstance(mail.get_connection(), locmem.EmailBackend)
 
     @override_settings(
-        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        EMAIL_BACKEND='djorm.core.mail.backends.locmem.EmailBackend',
         ADMINS=[("nobody", "nobody@example.com")],
         MANAGERS=[("nobody", "nobody@example.com")],
     )
@@ -1973,7 +1970,7 @@ class BaseEmailBackendTests(MailTestsMixin):
 
 
 class LocmemBackendTests(BaseEmailBackendTests, SimpleTestCase):
-    email_backend = "django.core.mail.backends.locmem.EmailBackend"
+    email_backend = 'djorm.core.mail.backends.locmem.EmailBackend'
 
     def get_mailbox_content(self):
         # Reparse as modern messages to work with shared BaseEmailBackendTests.
@@ -2019,7 +2016,7 @@ class LocmemBackendTests(BaseEmailBackendTests, SimpleTestCase):
 
 
 class FileBackendTests(BaseEmailBackendTests, SimpleTestCase):
-    email_backend = "django.core.mail.backends.filebased.EmailBackend"
+    email_backend = 'djorm.core.mail.backends.filebased.EmailBackend'
 
     def setUp(self):
         super().setUp()
@@ -2088,7 +2085,7 @@ class FileBackendPathLibTests(FileBackendTests):
 
 
 class ConsoleBackendTests(BaseEmailBackendTests, SimpleTestCase):
-    email_backend = "django.core.mail.backends.console.EmailBackend"
+    email_backend = 'djorm.core.mail.backends.console.EmailBackend'
 
     def setUp(self):
         super().setUp()
@@ -2114,7 +2111,7 @@ class ConsoleBackendTests(BaseEmailBackendTests, SimpleTestCase):
         """
         s = StringIO()
         connection = mail.get_connection(
-            "django.core.mail.backends.console.EmailBackend", stream=s
+            'djorm.core.mail.backends.console.EmailBackend', stream=s
         )
         send_mail(
             "Subject",
@@ -2200,7 +2197,7 @@ class SMTPBackendTestsBase(SimpleTestCase):
 
 @skipUnless(HAS_AIOSMTPD, "No aiosmtpd library detected.")
 class SMTPBackendTests(BaseEmailBackendTests, SMTPBackendTestsBase):
-    email_backend = "django.core.mail.backends.smtp.EmailBackend"
+    email_backend = 'djorm.core.mail.backends.smtp.EmailBackend'
 
     def setUp(self):
         super().setUp()
@@ -2382,7 +2379,7 @@ class SMTPBackendTests(BaseEmailBackendTests, SMTPBackendTestsBase):
 
     def test_connection_timeout_default(self):
         """The connection's timeout value is None by default."""
-        connection = mail.get_connection("django.core.mail.backends.smtp.EmailBackend")
+        connection = mail.get_connection('djorm.core.mail.backends.smtp.EmailBackend')
         self.assertIsNone(connection.timeout)
 
     def test_connection_timeout_custom(self):

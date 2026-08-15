@@ -1,9 +1,9 @@
 from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 
-from django.http import Http404, HttpResponse
-from django.template import engines
-from django.template.response import TemplateResponse
-from django.utils.decorators import (
+from djorm.http import Http404, HttpResponse
+from djorm.template import engines
+from djorm.template.response import TemplateResponse
+from djorm.utils.decorators import (
     async_only_middleware,
     sync_and_async_middleware,
     sync_only_middleware,

@@ -1,5 +1,5 @@
-from django.template.defaultfilters import divisibleby
-from django.test import SimpleTestCase
+from djorm.template.defaultfilters import divisibleby
+from djorm.test import SimpleTestCase
 
 
 class FunctionTests(SimpleTestCase):

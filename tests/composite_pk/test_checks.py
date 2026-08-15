@@ -1,8 +1,8 @@
-from django.core import checks
-from django.db import connection, models
-from django.db.models import F
-from django.test import TestCase, skipUnlessAnyDBFeature
-from django.test.utils import isolate_apps
+from djorm.core import checks
+from djorm.db import connection, models
+from djorm.db.models import F
+from djorm.test import TestCase, skipUnlessAnyDBFeature
+from djorm.test.utils import isolate_apps
 
 
 @isolate_apps("composite_pk")

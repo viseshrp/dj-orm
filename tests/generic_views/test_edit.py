@@ -1,10 +1,10 @@
-from django import forms
-from django.core.exceptions import ImproperlyConfigured
-from django.test import SimpleTestCase, TestCase, override_settings
-from django.test.client import RequestFactory
-from django.urls import reverse
-from django.views.generic.base import View
-from django.views.generic.edit import CreateView, FormMixin, ModelFormMixin
+from djorm import forms
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.test import SimpleTestCase, TestCase, override_settings
+from djorm.test.client import RequestFactory
+from djorm.urls import reverse
+from djorm.views.generic.base import View
+from djorm.views.generic.edit import CreateView, FormMixin, ModelFormMixin
 
 from . import views
 from .forms import AuthorForm

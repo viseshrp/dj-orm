@@ -1,13 +1,8 @@
-"""
-Serialization
-
-``django.core.serializers`` provides interfaces to converting Django
-``QuerySet`` objects to and from "flat" data (i.e. strings).
-"""
+'\nSerialization\n\n``djorm.core.serializers`` provides interfaces to converting Django\n``QuerySet`` objects to and from "flat" data (i.e. strings).\n'
 
 from decimal import Decimal
 
-from django.db import models
+from djorm.db import models
 
 
 class CategoryMetaDataManager(models.Manager):

@@ -1,6 +1,6 @@
-from django.db.models.query_utils import PathInfo
-from django.db.models.sql import Query
-from django.test import TestCase
+from djorm.db.models.query_utils import PathInfo
+from djorm.db.models.sql import Query
+from djorm.test import TestCase
 
 from .models import Comment, Tenant, User
 

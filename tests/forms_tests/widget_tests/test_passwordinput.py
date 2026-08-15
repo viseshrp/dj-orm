@@ -1,4 +1,4 @@
-from django.forms import CharField, Form, PasswordInput
+from djorm.forms import CharField, Form, PasswordInput
 
 from .base import WidgetTest
 

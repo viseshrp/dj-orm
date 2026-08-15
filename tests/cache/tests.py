@@ -14,9 +14,9 @@ from functools import wraps
 from pathlib import Path
 from unittest import mock, skipIf
 
-from django.conf import settings
-from django.core import management, signals
-from django.core.cache import (
+from djorm.conf import settings
+from djorm.core import management, signals
+from djorm.core.cache import (
     DEFAULT_CACHE_ALIAS,
     CacheHandler,
     CacheKeyWarning,
@@ -24,37 +24,37 @@ from django.core.cache import (
     cache,
     caches,
 )
-from django.core.cache.backends.base import InvalidCacheBackendError
-from django.core.cache.backends.redis import RedisCacheClient
-from django.core.cache.utils import make_template_fragment_key
-from django.db import close_old_connections, connection, connections
-from django.db.backends.utils import CursorWrapper
-from django.http import (
+from djorm.core.cache.backends.base import InvalidCacheBackendError
+from djorm.core.cache.backends.redis import RedisCacheClient
+from djorm.core.cache.utils import make_template_fragment_key
+from djorm.db import close_old_connections, connection, connections
+from djorm.db.backends.utils import CursorWrapper
+from djorm.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseNotModified,
     StreamingHttpResponse,
 )
-from django.middleware.cache import (
+from djorm.middleware.cache import (
     CacheMiddleware,
     FetchFromCacheMiddleware,
     UpdateCacheMiddleware,
 )
-from django.middleware.csrf import CsrfViewMiddleware
-from django.template import engines
-from django.template.context_processors import csrf
-from django.template.response import TemplateResponse
-from django.test import (
+from djorm.middleware.csrf import CsrfViewMiddleware
+from djorm.template import engines
+from djorm.template.context_processors import csrf
+from djorm.template.response import TemplateResponse
+from djorm.test import (
     RequestFactory,
     SimpleTestCase,
     TestCase,
     TransactionTestCase,
     override_settings,
 )
-from django.test.signals import setting_changed
-from django.test.utils import CaptureQueriesContext
-from django.utils import timezone, translation
-from django.utils.cache import (
+from djorm.test.signals import setting_changed
+from djorm.test.utils import CaptureQueriesContext
+from djorm.utils import timezone, translation
+from djorm.utils.cache import (
     cc_delim_re,
     get_cache_key,
     has_vary_header,
@@ -62,7 +62,7 @@ from django.utils.cache import (
     patch_cache_control,
     patch_vary_headers,
 )
-from django.views.decorators.cache import cache_control, cache_page
+from djorm.views.decorators.cache import cache_control, cache_page
 
 from .models import Poll, expensive_calculation
 
@@ -113,7 +113,7 @@ def retry(retries=3, delay=1):
 @override_settings(
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+            "BACKEND": 'djorm.core.cache.backends.dummy.DummyCache',
         }
     }
 )
@@ -1166,7 +1166,7 @@ class BaseCacheTests:
 
 @override_settings(
     CACHES=caches_setting_for_tests(
-        BACKEND="django.core.cache.backends.db.DatabaseCache",
+        BACKEND='djorm.core.cache.backends.db.DatabaseCache',
         # Spaces are used in the table name to ensure quoting/escaping is working
         LOCATION="test cache table",
     )
@@ -1240,7 +1240,7 @@ class DBCacheTests(BaseCacheTests, TransactionTestCase):
                 return self.cursor.rowcount
 
         cache.set_many({"a": 1, "b": 2})
-        with mock.patch("django.db.backends.utils.CursorWrapper", MockedCursorWrapper):
+        with mock.patch('djorm.db.backends.utils.CursorWrapper', MockedCursorWrapper):
             self.assertIs(cache.delete("a"), True)
 
     def test_zero_cull(self):
@@ -1256,7 +1256,7 @@ class DBCacheTests(BaseCacheTests, TransactionTestCase):
 
     @override_settings(
         CACHES=caches_setting_for_tests(
-            BACKEND="django.core.cache.backends.db.DatabaseCache",
+            BACKEND='djorm.core.cache.backends.db.DatabaseCache',
             # Use another table name to avoid the 'table already exists' message.
             LOCATION="createcachetable_dry_run_mode",
         )
@@ -1319,7 +1319,7 @@ class DBCacheRouter:
 @override_settings(
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "BACKEND": 'djorm.core.cache.backends.db.DatabaseCache',
             "LOCATION": "my_cache_table",
         },
     },
@@ -1356,7 +1356,7 @@ class PicklingSideEffect:
 
 limit_locmem_entries = override_settings(
     CACHES=caches_setting_for_tests(
-        BACKEND="django.core.cache.backends.locmem.LocMemCache",
+        BACKEND='djorm.core.cache.backends.locmem.LocMemCache',
         OPTIONS={"MAX_ENTRIES": 9},
     )
 )
@@ -1364,7 +1364,7 @@ limit_locmem_entries = override_settings(
 
 @override_settings(
     CACHES=caches_setting_for_tests(
-        BACKEND="django.core.cache.backends.locmem.LocMemCache",
+        BACKEND='djorm.core.cache.backends.locmem.LocMemCache',
     )
 )
 class LocMemCacheTests(BaseCacheTests, TestCase):
@@ -1387,9 +1387,9 @@ class LocMemCacheTests(BaseCacheTests, TestCase):
 
     @override_settings(
         CACHES={
-            "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+            "default": {"BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache'},
             "other": {
-                "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
                 "LOCATION": "other",
             },
         }
@@ -1472,16 +1472,16 @@ for _cache_params in settings.CACHES.values():
     configured_caches[_cache_params["BACKEND"]] = _cache_params
 
 PyLibMCCache_params = configured_caches.get(
-    "django.core.cache.backends.memcached.PyLibMCCache"
+    'djorm.core.cache.backends.memcached.PyLibMCCache'
 )
 PyMemcacheCache_params = configured_caches.get(
-    "django.core.cache.backends.memcached.PyMemcacheCache"
+    'djorm.core.cache.backends.memcached.PyMemcacheCache'
 )
 
 # The memcached backends don't support cull-related options like `MAX_ENTRIES`.
 memcached_excluded_caches = {"cull", "zero_cull"}
 
-RedisCache_params = configured_caches.get("django.core.cache.backends.redis.RedisCache")
+RedisCache_params = configured_caches.get('djorm.core.cache.backends.redis.RedisCache')
 
 # The redis backend does not support cull-related options like `MAX_ENTRIES`.
 redis_excluded_caches = {"cull", "zero_cull"}
@@ -1694,7 +1694,7 @@ class PyMemcacheCacheTests(BaseMemcachedTests, TestCase):
 
 @override_settings(
     CACHES=caches_setting_for_tests(
-        BACKEND="django.core.cache.backends.filebased.FileBasedCache",
+        BACKEND='djorm.core.cache.backends.filebased.FileBasedCache',
     )
 )
 class FileBasedCacheTests(BaseCacheTests, TestCase):
@@ -1803,8 +1803,8 @@ class FileBasedCacheTests(BaseCacheTests, TestCase):
 
         mocked_time = ManualTickingTime()
         with (
-            mock.patch("django.core.cache.backends.filebased.time", new=mocked_time),
-            mock.patch("django.core.cache.backends.base.time", new=mocked_time),
+            mock.patch('djorm.core.cache.backends.filebased.time', new=mocked_time),
+            mock.patch('djorm.core.cache.backends.base.time', new=mocked_time),
             mock.patch("cache.tests.time", new=mocked_time),
         ):
             super().test_touch()
@@ -1831,7 +1831,7 @@ class RedisCacheTests(BaseCacheTests, TestCase):
     def test_incr_write_connection(self):
         cache.set("number", 42)
         with mock.patch(
-            "django.core.cache.backends.redis.RedisCacheClient.get_client"
+            'djorm.core.cache.backends.redis.RedisCacheClient.get_client'
         ) as mocked_get_client:
             cache.incr("number")
             self.assertEqual(mocked_get_client.call_args.kwargs, {"write": True})
@@ -1955,7 +1955,7 @@ class CacheClosingTests(SimpleTestCase):
 
 DEFAULT_MEMORY_CACHES_SETTINGS = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
         "LOCATION": "unique-snowflake",
     }
 }
@@ -1979,11 +1979,7 @@ class DefaultNonExpiringCacheKeyTests(SimpleTestCase):
         del self.DEFAULT_TIMEOUT
 
     def test_default_expiration_time_for_keys_is_5_minutes(self):
-        """The default expiration time of a cache key is 5 minutes.
-
-        This value is defined in
-        django.core.cache.backends.base.BaseCache.__init__().
-        """
+        'The default expiration time of a cache key is 5 minutes.\n\n        This value is defined in\n        djorm.core.cache.backends.base.BaseCache.__init__().\n        '
         self.assertEqual(300, self.DEFAULT_TIMEOUT)
 
     def test_caches_with_unset_timeout_has_correct_default_timeout(self):
@@ -2034,14 +2030,14 @@ class DefaultNonExpiringCacheKeyTests(SimpleTestCase):
     CACHE_MIDDLEWARE_SECONDS=1,
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
         },
     },
     USE_I18N=False,
     ALLOWED_HOSTS=[".example.com"],
 )
 class CacheUtils(SimpleTestCase):
-    """TestCase for django.utils.cache functions."""
+    'TestCase for djorm.utils.cache functions.'
 
     host = "www.example.com"
     path = "/cache/test/"
@@ -2236,7 +2232,7 @@ class CacheUtils(SimpleTestCase):
 @override_settings(
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
             "KEY_PREFIX": "cacheprefix",
         },
     },
@@ -2250,7 +2246,7 @@ class PrefixedCacheUtils(CacheUtils):
     CACHE_MIDDLEWARE_KEY_PREFIX="test",
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
         },
     },
 )
@@ -2298,7 +2294,7 @@ class CacheHEADTest(SimpleTestCase):
     CACHE_MIDDLEWARE_KEY_PREFIX="settingsprefix",
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
         },
     },
     LANGUAGES=[
@@ -2516,7 +2512,7 @@ class CacheI18nTest(SimpleTestCase):
 @override_settings(
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
             "KEY_PREFIX": "cacheprefix",
         },
     },
@@ -2557,10 +2553,10 @@ def csrf_view(request):
     CACHE_MIDDLEWARE_SECONDS=30,
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
         },
         "other": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
             "LOCATION": "other",
             "TIMEOUT": "1",
         },
@@ -2927,7 +2923,7 @@ class CacheMiddlewareTest(SimpleTestCase):
     CACHE_MIDDLEWARE_SECONDS=1,
     CACHES={
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": 'djorm.core.cache.backends.locmem.LocMemCache',
         },
     },
     USE_I18N=False,
@@ -3108,10 +3104,10 @@ class CacheHandlerTest(SimpleTestCase):
         test_caches = CacheHandler(
             {
                 "cache_1": {
-                    "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+                    "BACKEND": 'djorm.core.cache.backends.dummy.DummyCache',
                 },
                 "cache_2": {
-                    "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+                    "BACKEND": 'djorm.core.cache.backends.dummy.DummyCache',
                 },
             }
         )

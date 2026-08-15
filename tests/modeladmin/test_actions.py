@@ -1,7 +1,7 @@
-from django.contrib import admin
-from django.contrib.auth.models import Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.test import TestCase
+from djorm.contrib import admin
+from djorm.contrib.auth.models import Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.test import TestCase
 
 from .models import Band
 

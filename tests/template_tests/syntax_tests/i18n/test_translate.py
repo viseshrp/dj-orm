@@ -3,12 +3,12 @@ from functools import partial, wraps
 
 from asgiref.local import Local
 
-from django.template import Context, Template, TemplateSyntaxError
-from django.templatetags.l10n import LocalizeNode
-from django.test import SimpleTestCase, override_settings
-from django.utils import translation
-from django.utils.safestring import mark_safe
-from django.utils.translation import trans_real
+from djorm.template import Context, Template, TemplateSyntaxError
+from djorm.templatetags.l10n import LocalizeNode
+from djorm.test import SimpleTestCase, override_settings
+from djorm.utils import translation
+from djorm.utils.safestring import mark_safe
+from djorm.utils.translation import trans_real
 
 from ...utils import setup as base_setup
 from .base import MultipleLocaleActivationTestCase, extended_locale_paths
@@ -44,7 +44,7 @@ def setup(templates, *args, **kwargs):
 
 
 class I18nTransTagTests(SimpleTestCase):
-    libraries = {"i18n": "django.templatetags.i18n"}
+    libraries = {"i18n": 'djorm.templatetags.i18n'}
 
     @setup({"i18n01": "{% load i18n %}{% translate 'xxxyyyxxx' %}"})
     def test_i18n01(self):

@@ -1,7 +1,7 @@
-from django import forms
-from django.http import HttpResponse
-from django.template import Context, Template
-from django.views.generic.edit import UpdateView
+from djorm import forms
+from djorm.http import HttpResponse
+from djorm.template import Context, Template
+from djorm.views.generic.edit import UpdateView
 
 from .models import Article
 

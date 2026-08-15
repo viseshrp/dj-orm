@@ -1,5 +1,5 @@
-from django.test import SimpleTestCase
-from django.test.client import FakePayload
+from djorm.test import SimpleTestCase
+from djorm.test.client import FakePayload
 
 
 class FakePayloadTests(SimpleTestCase):

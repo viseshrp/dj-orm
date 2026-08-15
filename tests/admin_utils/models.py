@@ -1,7 +1,7 @@
-from django.contrib import admin
-from django.contrib.admin.models import LogEntry, LogEntryManager
-from django.db import models
-from django.utils.translation import gettext_lazy as _
+from djorm.contrib import admin
+from djorm.contrib.admin.models import LogEntry, LogEntryManager
+from djorm.db import models
+from djorm.utils.translation import gettext_lazy as _
 
 
 class Site(models.Model):

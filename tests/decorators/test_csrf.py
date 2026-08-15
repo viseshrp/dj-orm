@@ -1,9 +1,9 @@
 from asgiref.sync import iscoroutinefunction
 
-from django.conf import settings
-from django.http import HttpRequest, HttpResponse
-from django.test import SimpleTestCase
-from django.views.decorators.csrf import (
+from djorm.conf import settings
+from djorm.http import HttpRequest, HttpResponse
+from djorm.test import SimpleTestCase
+from djorm.views.decorators.csrf import (
     csrf_exempt,
     csrf_protect,
     ensure_csrf_cookie,

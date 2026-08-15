@@ -1,15 +1,15 @@
 import datetime
 from xml.dom import minidom
 
-from django.contrib.sites.models import Site
-from django.contrib.syndication import views
-from django.core.exceptions import ImproperlyConfigured
-from django.templatetags.static import static
-from django.test import TestCase, override_settings
-from django.test.utils import requires_tz_support
-from django.urls import reverse, reverse_lazy
-from django.utils import timezone
-from django.utils.feedgenerator import (
+from djorm.contrib.sites.models import Site
+from djorm.contrib.syndication import views
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.templatetags.static import static
+from djorm.test import TestCase, override_settings
+from djorm.test.utils import requires_tz_support
+from djorm.urls import reverse, reverse_lazy
+from djorm.utils import timezone
+from djorm.utils.feedgenerator import (
     Atom1Feed,
     Rss201rev2Feed,
     Stylesheet,
@@ -655,7 +655,7 @@ class SyndicationFeedTest(FeedTestCase):
             (
                 Stylesheet("/stylesheet.xsl"),
                 "stylesheets should be a list, "
-                "not <class 'django.utils.feedgenerator.Stylesheet'>",
+                "not <class 'djorm.utils.feedgenerator.Stylesheet'>",
             ),
         ]:
             args = ("title", "/link", "description")

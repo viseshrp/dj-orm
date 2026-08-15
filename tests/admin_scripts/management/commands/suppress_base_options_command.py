@@ -1,4 +1,4 @@
-from django.core.management import BaseCommand
+from djorm.core.management import BaseCommand
 
 
 class Command(BaseCommand):

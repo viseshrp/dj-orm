@@ -1,4 +1,4 @@
-from django.urls import include, path
+from djorm.urls import include, path
 
 common_url_patterns = (
     [

@@ -1,10 +1,10 @@
 import copy
 from unittest import mock
 
-from django.contrib.gis.db.models import GeometryField
-from django.contrib.gis.db.models.fields import BaseSpatialField
-from django.contrib.gis.db.models.sql import AreaField, DistanceField
-from django.test import SimpleTestCase
+from djorm.contrib.gis.db.models import GeometryField
+from djorm.contrib.gis.db.models.fields import BaseSpatialField
+from djorm.contrib.gis.db.models.sql import AreaField, DistanceField
+from djorm.test import SimpleTestCase
 
 
 class FieldsTests(SimpleTestCase):
@@ -83,7 +83,7 @@ class GeometryFieldTests(SimpleTestCase):
             geom = f"GEOMETRYCOLLECTION({geom})"
         msg = "WKT contains too many possible GeometryCollections."
         with (
-            mock.patch("django.contrib.gis.db.models.fields.MAX_GEOM_COLLECTIONS", 5),
+            mock.patch('djorm.contrib.gis.db.models.fields.MAX_GEOM_COLLECTIONS', 5),
             self.assertRaisesMessage(ValueError, msg),
         ):
             field.get_prep_value(geom)

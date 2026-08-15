@@ -1,9 +1,7 @@
-"""
-Models for testing various aspects of the django.contrib.admindocs app.
-"""
+'\nModels for testing various aspects of the djorm.contrib.admindocs app.\n'
 
-from django.db import models
-from django.utils.functional import cached_property
+from djorm.db import models
+from djorm.utils.functional import cached_property
 
 
 class Company(models.Model):

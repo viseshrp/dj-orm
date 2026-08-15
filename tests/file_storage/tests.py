@@ -11,32 +11,32 @@ from io import StringIO
 from pathlib import Path
 from urllib.request import urlopen
 
-from django.conf import DEFAULT_STORAGE_ALIAS, STATICFILES_STORAGE_ALIAS
-from django.core.cache import cache
-from django.core.exceptions import SuspiciousFileOperation
-from django.core.files.base import ContentFile, File
-from django.core.files.storage import FileSystemStorage, InvalidStorageError
-from django.core.files.storage import Storage as BaseStorage
-from django.core.files.storage import StorageHandler, default_storage, storages
-from django.core.files.uploadedfile import (
+from djorm.conf import DEFAULT_STORAGE_ALIAS, STATICFILES_STORAGE_ALIAS
+from djorm.core.cache import cache
+from djorm.core.exceptions import SuspiciousFileOperation
+from djorm.core.files.base import ContentFile, File
+from djorm.core.files.storage import FileSystemStorage, InvalidStorageError
+from djorm.core.files.storage import Storage as BaseStorage
+from djorm.core.files.storage import StorageHandler, default_storage, storages
+from djorm.core.files.uploadedfile import (
     InMemoryUploadedFile,
     SimpleUploadedFile,
     TemporaryUploadedFile,
 )
-from django.db.models import FileField
-from django.db.models.fields.files import FileDescriptor
-from django.test import (
+from djorm.db.models import FileField
+from djorm.db.models.fields.files import FileDescriptor
+from djorm.test import (
     LiveServerTestCase,
     SimpleTestCase,
     TestCase,
     ignore_warnings,
     override_settings,
 )
-from django.test.utils import requires_tz_support
-from django.urls import NoReverseMatch, reverse_lazy
-from django.utils import timezone
-from django.utils._os import symlinks_supported
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.test.utils import requires_tz_support
+from djorm.urls import NoReverseMatch, reverse_lazy
+from djorm.utils import timezone
+from djorm.utils._os import symlinks_supported
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 from .models import (
     Storage,
@@ -52,7 +52,7 @@ FILE_SUFFIX_REGEX = "[A-Za-z0-9]{7}"
 class FileSystemStorageTests(unittest.TestCase):
     def test_deconstruction(self):
         path, args, kwargs = temp_storage.deconstruct()
-        self.assertEqual(path, "django.core.files.storage.FileSystemStorage")
+        self.assertEqual(path, 'djorm.core.files.storage.FileSystemStorage')
         self.assertEqual(args, ())
         self.assertEqual(kwargs, {"location": temp_storage_location})
 
@@ -1043,7 +1043,7 @@ class FileFieldStorageTests(TestCase):
     @override_settings(
         STORAGES={
             DEFAULT_STORAGE_ALIAS: {
-                "BACKEND": "django.core.files.storage.InMemoryStorage"
+                "BACKEND": 'djorm.core.files.storage.InMemoryStorage'
             }
         }
     )
@@ -1071,7 +1071,7 @@ class FieldCallableFileStorageTests(SimpleTestCase):
 
         msg = (
             "FileField.storage must be a subclass/instance of "
-            "django.core.files.storage.base.Storage"
+            'djorm.core.files.storage.base.Storage'
         )
         for invalid_type in (NotStorage, str, list, set, tuple):
             with self.subTest(invalid_type=invalid_type):
@@ -1277,7 +1277,7 @@ class StorageHandlerTests(SimpleTestCase):
     @override_settings(
         STORAGES={
             "custom_storage": {
-                "BACKEND": "django.core.files.storage.FileSystemStorage",
+                "BACKEND": 'djorm.core.files.storage.FileSystemStorage',
             },
         }
     )
@@ -1292,10 +1292,10 @@ class StorageHandlerTests(SimpleTestCase):
             storages.backends,
             {
                 DEFAULT_STORAGE_ALIAS: {
-                    "BACKEND": "django.core.files.storage.FileSystemStorage",
+                    "BACKEND": 'djorm.core.files.storage.FileSystemStorage',
                 },
                 STATICFILES_STORAGE_ALIAS: {
-                    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+                    "BACKEND": 'djorm.contrib.staticfiles.storage.StaticFilesStorage',
                 },
             },
         )

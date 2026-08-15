@@ -1,6 +1,4 @@
-"""
-Tests for django.core.servers.
-"""
+'\nTests for djorm.core.servers.\n'
 
 import errno
 import os
@@ -12,11 +10,11 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
-from django.conf import settings
-from django.core.servers.basehttp import ThreadedWSGIServer, WSGIServer
-from django.db import DEFAULT_DB_ALIAS, connection, connections
-from django.test import LiveServerTestCase, override_settings
-from django.test.testcases import LiveServerThread, QuietWSGIRequestHandler
+from djorm.conf import settings
+from djorm.core.servers.basehttp import ThreadedWSGIServer, WSGIServer
+from djorm.db import DEFAULT_DB_ALIAS, connection, connections
+from djorm.test import LiveServerTestCase, override_settings
+from djorm.test.testcases import LiveServerThread, QuietWSGIRequestHandler
 
 from .models import Person
 
@@ -33,9 +31,9 @@ TEST_SETTINGS = {
 class LiveServerBase(LiveServerTestCase):
     available_apps = [
         "servers",
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
-        "django.contrib.sessions",
+        'djorm.contrib.auth',
+        'djorm.contrib.contenttypes',
+        'djorm.contrib.sessions',
     ]
     fixtures = ["testdata.json"]
 

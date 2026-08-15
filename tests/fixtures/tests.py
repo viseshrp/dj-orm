@@ -7,15 +7,15 @@ import warnings
 from io import StringIO
 from unittest import mock
 
-from django.apps import apps
-from django.contrib.sites.models import Site
-from django.core import management
-from django.core.files.temp import NamedTemporaryFile
-from django.core.management import CommandError
-from django.core.management.commands.dumpdata import ProxyModelWarning
-from django.core.serializers.base import ProgressBar
-from django.db import IntegrityError, connection
-from django.test import TestCase, TransactionTestCase, skipUnlessDBFeature
+from djorm.apps import apps
+from djorm.contrib.sites.models import Site
+from djorm.core import management
+from djorm.core.files.temp import NamedTemporaryFile
+from djorm.core.management import CommandError
+from djorm.core.management.commands.dumpdata import ProxyModelWarning
+from djorm.core.serializers.base import ProgressBar
+from djorm.db import IntegrityError, connection
+from djorm.test import TestCase, TransactionTestCase, skipUnlessDBFeature
 
 from .models import (
     Article,
@@ -1127,7 +1127,7 @@ class FixtureLoadingTests(DumpDataAssertMixin, TestCase):
         fixture_xml = os.path.join(tests_dir, "fixtures", "fixture3.xml")
 
         with mock.patch(
-            "django.core.management.commands.loaddata.sys.stdin", open(fixture_json)
+            'djorm.core.management.commands.loaddata.sys.stdin', open(fixture_json)
         ):
             management.call_command("loaddata", "--format=json", "-", verbosity=0)
             self.assertSequenceEqual(
@@ -1136,7 +1136,7 @@ class FixtureLoadingTests(DumpDataAssertMixin, TestCase):
             )
 
         with mock.patch(
-            "django.core.management.commands.loaddata.sys.stdin", open(fixture_xml)
+            'djorm.core.management.commands.loaddata.sys.stdin', open(fixture_xml)
         ):
             management.call_command("loaddata", "--format=xml", "-", verbosity=0)
             self.assertSequenceEqual(
@@ -1163,8 +1163,8 @@ class NonexistentFixtureTests(TestCase):
                 "loaddata", "this_fixture_doesnt_exist", stdout=stdout_output
             )
 
-    @mock.patch("django.db.connection.enable_constraint_checking")
-    @mock.patch("django.db.connection.disable_constraint_checking")
+    @mock.patch('djorm.db.connection.enable_constraint_checking')
+    @mock.patch('djorm.db.connection.disable_constraint_checking')
     def test_nonexistent_fixture_no_constraint_checking(
         self, disable_constraint_checking, enable_constraint_checking
     ):
@@ -1185,7 +1185,7 @@ class NonexistentFixtureTests(TestCase):
 class FixtureTransactionTests(DumpDataAssertMixin, TransactionTestCase):
     available_apps = [
         "fixtures",
-        "django.contrib.sites",
+        'djorm.contrib.sites',
     ]
 
     @skipUnlessDBFeature("supports_forward_references")

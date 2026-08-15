@@ -1,8 +1,8 @@
 import re
 import unittest
 
-from django.test import SimpleTestCase
-from django.utils import regex_helper
+from djorm.test import SimpleTestCase
+from djorm.utils import regex_helper
 
 
 class NormalizeTests(unittest.TestCase):

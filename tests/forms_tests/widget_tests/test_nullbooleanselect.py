@@ -1,5 +1,5 @@
-from django.forms import Form, NullBooleanField, NullBooleanSelect
-from django.utils import translation
+from djorm.forms import Form, NullBooleanField, NullBooleanSelect
+from djorm.utils import translation
 
 from .base import WidgetTest
 

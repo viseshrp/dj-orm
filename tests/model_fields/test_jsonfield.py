@@ -2,11 +2,11 @@ import operator
 import uuid
 from unittest import mock
 
-from django import forms
-from django.core import serializers
-from django.core.exceptions import ValidationError
-from django.core.serializers.json import DjangoJSONEncoder
-from django.db import (
+from djorm import forms
+from djorm.core import serializers
+from djorm.core.exceptions import ValidationError
+from djorm.core.serializers.json import DjangoJSONEncoder
+from djorm.db import (
     DataError,
     IntegrityError,
     NotSupportedError,
@@ -15,7 +15,7 @@ from django.db import (
     models,
     transaction,
 )
-from django.db.models import (
+from djorm.db.models import (
     Count,
     ExpressionWrapper,
     F,
@@ -27,8 +27,8 @@ from django.db.models import (
     Transform,
     Value,
 )
-from django.db.models.expressions import RawSQL
-from django.db.models.fields.json import (
+from djorm.db.models.expressions import RawSQL
+from djorm.db.models.fields.json import (
     KT,
     HasKey,
     KeyTextTransform,
@@ -36,9 +36,9 @@ from django.db.models.fields.json import (
     KeyTransformFactory,
     KeyTransformTextLookupMixin,
 )
-from django.db.models.functions import Cast
-from django.test import SimpleTestCase, TestCase, skipIfDBFeature, skipUnlessDBFeature
-from django.test.utils import CaptureQueriesContext
+from djorm.db.models.functions import Cast
+from djorm.test import SimpleTestCase, TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djorm.test.utils import CaptureQueriesContext
 
 from .models import (
     CustomJSONDecoder,
@@ -79,7 +79,7 @@ class TestMethods(SimpleTestCase):
     def test_deconstruct(self):
         field = models.JSONField()
         name, path, args, kwargs = field.deconstruct()
-        self.assertEqual(path, "django.db.models.JSONField")
+        self.assertEqual(path, 'djorm.db.models.JSONField')
         self.assertEqual(args, [])
         self.assertEqual(kwargs, {})
 

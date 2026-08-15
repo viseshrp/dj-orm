@@ -1,8 +1,8 @@
 import re
 
-from django.core.exceptions import ValidationError
-from django.forms import RegexField
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ValidationError
+from djorm.forms import RegexField
+from djorm.test import SimpleTestCase
 
 
 class RegexFieldTest(SimpleTestCase):

@@ -1,4 +1,4 @@
-from django.forms import SearchInput
+from djorm.forms import SearchInput
 
 from .base import WidgetTest
 

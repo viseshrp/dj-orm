@@ -1,7 +1,7 @@
-from django.db import connection
-from django.db.models import Value
-from django.db.models.functions import Length, Repeat
-from django.test import TestCase
+from djorm.db import connection
+from djorm.db.models import Value
+from djorm.db.models.functions import Length, Repeat
+from djorm.test import TestCase
 
 from ..models import Author
 

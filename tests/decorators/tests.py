@@ -4,26 +4,26 @@ from unittest import TestCase
 
 from asgiref.sync import iscoroutinefunction
 
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import (
+from djorm.contrib.admin.views.decorators import staff_member_required
+from djorm.contrib.auth.decorators import (
     login_required,
     permission_required,
     user_passes_test,
 )
-from django.http import HttpResponse
-from django.test import SimpleTestCase
-from django.utils.decorators import method_decorator
-from django.utils.functional import keep_lazy, keep_lazy_text, lazy
-from django.utils.safestring import mark_safe
-from django.views.decorators.cache import cache_control, cache_page, never_cache
-from django.views.decorators.http import (
+from djorm.http import HttpResponse
+from djorm.test import SimpleTestCase
+from djorm.utils.decorators import method_decorator
+from djorm.utils.functional import keep_lazy, keep_lazy_text, lazy
+from djorm.utils.safestring import mark_safe
+from djorm.views.decorators.cache import cache_control, cache_page, never_cache
+from djorm.views.decorators.http import (
     condition,
     require_GET,
     require_http_methods,
     require_POST,
     require_safe,
 )
-from django.views.decorators.vary import vary_on_cookie, vary_on_headers
+from djorm.views.decorators.vary import vary_on_cookie, vary_on_headers
 
 
 def fully_decorated(request):

@@ -3,12 +3,12 @@ import math
 import re
 from decimal import Decimal
 
-from django.contrib.gis.db.models import GeometryField, PolygonField, functions
-from django.contrib.gis.geos import GEOSGeometry, LineString, Point, Polygon, fromstr
-from django.contrib.gis.measure import Area
-from django.db import NotSupportedError, connection
-from django.db.models import IntegerField, Sum, Value
-from django.test import TestCase, skipUnlessDBFeature
+from djorm.contrib.gis.db.models import GeometryField, PolygonField, functions
+from djorm.contrib.gis.geos import GEOSGeometry, LineString, Point, Polygon, fromstr
+from djorm.contrib.gis.measure import Area
+from djorm.db import NotSupportedError, connection
+from djorm.db.models import IntegerField, Sum, Value
+from djorm.test import TestCase, skipUnlessDBFeature
 
 from ..utils import FuncTestMixin
 from .models import City, Country, CountryWebMercator, ManyPointModel, State, Track

@@ -3,13 +3,13 @@ import decimal
 import ipaddress
 import uuid
 
-from django.db import models
-from django.template import Context, Template
-from django.test import SimpleTestCase
-from django.utils.deprecation import RemovedInDjango60Warning
-from django.utils.functional import Promise
-from django.utils.translation import gettext_lazy as _
-from django.utils.version import PY311
+from djorm.db import models
+from djorm.template import Context, Template
+from djorm.test import SimpleTestCase
+from djorm.utils.deprecation import RemovedInDjango60Warning
+from djorm.utils.functional import Promise
+from djorm.utils.translation import gettext_lazy as _
+from djorm.utils.version import PY311
 
 
 class Suit(models.IntegerChoices):
@@ -325,7 +325,7 @@ class CustomChoicesTests(SimpleTestCase):
 
 class ChoicesMetaDeprecationTests(SimpleTestCase):
     def test_deprecation_warning(self):
-        from django.db.models import enums
+        from djorm.db.models import enums
 
         msg = "ChoicesMeta is deprecated in favor of ChoicesType."
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:

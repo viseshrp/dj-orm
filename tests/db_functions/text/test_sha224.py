@@ -1,10 +1,10 @@
 import unittest
 
-from django.db import NotSupportedError, connection
-from django.db.models import CharField
-from django.db.models.functions import SHA224
-from django.test import TestCase
-from django.test.utils import register_lookup
+from djorm.db import NotSupportedError, connection
+from djorm.db.models import CharField
+from djorm.db.models.functions import SHA224
+from djorm.test import TestCase
+from djorm.test.utils import register_lookup
 
 from ..models import Author
 

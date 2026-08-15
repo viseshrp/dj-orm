@@ -1,7 +1,7 @@
 from unittest import mock
 
-from django.test import SimpleTestCase
-from django.test.runner import Shuffler
+from djorm.test import SimpleTestCase
+from djorm.test.runner import Shuffler
 
 
 class ShufflerTests(SimpleTestCase):

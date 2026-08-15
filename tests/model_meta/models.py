@@ -1,7 +1,7 @@
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
-from django.db import models
-from django.utils.translation import gettext_lazy as _
+from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.db import models
+from djorm.utils.translation import gettext_lazy as _
 
 
 class Relation(models.Model):

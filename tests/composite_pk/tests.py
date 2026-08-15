@@ -9,13 +9,13 @@ try:
 except ImportError:
     HAS_YAML = False
 
-from django import forms
-from django.core import serializers
-from django.core.exceptions import FieldError
-from django.db import IntegrityError, connection
-from django.db.models import CompositePrimaryKey
-from django.forms import modelform_factory
-from django.test import TestCase
+from djorm import forms
+from djorm.core import serializers
+from djorm.core.exceptions import FieldError
+from djorm.db import IntegrityError, connection
+from djorm.db.models import CompositePrimaryKey
+from djorm.forms import modelform_factory
+from djorm.test import TestCase
 
 from .models import Comment, Post, Tenant, TimeStamped, User
 

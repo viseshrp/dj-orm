@@ -1,19 +1,19 @@
 import sys
 import unittest
 
-from django.conf import settings
-from django.contrib import admin
-from django.contrib.admindocs import utils, views
-from django.contrib.admindocs.views import get_return_data_type, simplify_regex
-from django.contrib.auth.models import Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
-from django.db import models
-from django.db.models import fields
-from django.test import SimpleTestCase, modify_settings, override_settings
-from django.test.utils import captured_stderr
-from django.urls import include, path, reverse
-from django.utils.functional import SimpleLazyObject
+from djorm.conf import settings
+from djorm.contrib import admin
+from djorm.contrib.admindocs import utils, views
+from djorm.contrib.admindocs.views import get_return_data_type, simplify_regex
+from djorm.contrib.auth.models import Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.contrib.sites.models import Site
+from djorm.db import models
+from djorm.db.models import fields
+from djorm.test import SimpleTestCase, modify_settings, override_settings
+from djorm.test.utils import captured_stderr
+from djorm.urls import include, path, reverse
+from djorm.utils.functional import SimpleLazyObject
 
 from .models import Company, Person
 from .tests import AdminDocsTestCase, TestDataMixin
@@ -25,38 +25,38 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
         self.client.force_login(self.superuser)
 
     def test_index(self):
-        response = self.client.get(reverse("django-admindocs-docroot"))
+        response = self.client.get(reverse('djormdocs-docroot'))
         self.assertContains(response, "<h1>Documentation</h1>", html=True)
         self.assertContains(
             response,
             '<div id="site-name"><a href="/admin/">Django administration</a></div>',
         )
         self.client.logout()
-        response = self.client.get(reverse("django-admindocs-docroot"), follow=True)
+        response = self.client.get(reverse('djormdocs-docroot'), follow=True)
         # Should display the login screen
         self.assertContains(
             response, '<input type="hidden" name="next" value="/admindocs/">', html=True
         )
 
     def test_bookmarklets(self):
-        response = self.client.get(reverse("django-admindocs-bookmarklets"))
+        response = self.client.get(reverse('djormdocs-bookmarklets'))
         self.assertContains(response, "/admindocs/views/")
 
     def test_templatetag_index(self):
-        response = self.client.get(reverse("django-admindocs-tags"))
+        response = self.client.get(reverse('djormdocs-tags'))
         self.assertContains(
             response, '<h3 id="built_in-extends">extends</h3>', html=True
         )
 
     def test_templatefilter_index(self):
-        response = self.client.get(reverse("django-admindocs-filters"))
+        response = self.client.get(reverse('djormdocs-filters'))
         self.assertContains(response, '<h3 id="built_in-first">first</h3>', html=True)
 
     def test_view_index(self):
-        response = self.client.get(reverse("django-admindocs-views-index"))
+        response = self.client.get(reverse('djormdocs-views-index'))
         self.assertContains(
             response,
-            '<h3><a href="/admindocs/views/django.contrib.admindocs.views.'
+            '<h3><a href="/admindocs/views/djorm.contrib.admindocs.views.'
             'BaseAdminDocsView/">/admindocs/</a></h3>',
             html=True,
         )
@@ -73,19 +73,19 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
         """
         Views that are methods are listed correctly.
         """
-        response = self.client.get(reverse("django-admindocs-views-index"))
+        response = self.client.get(reverse('djormdocs-views-index'))
         self.assertContains(
             response,
             "<h3>"
-            '<a href="/admindocs/views/django.contrib.admin.sites.AdminSite.index/">'
+            '<a href="/admindocs/views/djorm.contrib.admin.sites.AdminSite.index/">'
             "/admin/</a></h3>",
             html=True,
         )
 
     def test_view_detail(self):
         url = reverse(
-            "django-admindocs-views-detail",
-            args=["django.contrib.admindocs.views.BaseAdminDocsView"],
+            'djormdocs-views-detail',
+            args=['djorm.contrib.admindocs.views.BaseAdminDocsView'],
         )
         response = self.client.get(url)
         # View docstring
@@ -98,7 +98,7 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
             "myapp.Company</a></h2>"
         )
         url = reverse(
-            "django-admindocs-views-detail", args=["admin_docs.views.CompanyView"]
+            'djormdocs-views-detail', args=["admin_docs.views.CompanyView"]
         )
         response = self.client.get(url)
         self.assertContains(response, summary, html=True)
@@ -106,14 +106,14 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
     @override_settings(ROOT_URLCONF="admin_docs.namespace_urls")
     def test_namespaced_view_detail(self):
         url = reverse(
-            "django-admindocs-views-detail", args=["admin_docs.views.XViewClass"]
+            'djormdocs-views-detail', args=["admin_docs.views.XViewClass"]
         )
         response = self.client.get(url)
         self.assertContains(response, "<h1>admin_docs.views.XViewClass</h1>")
 
     def test_view_detail_illegal_import(self):
         url = reverse(
-            "django-admindocs-views-detail",
+            'djormdocs-views-detail',
             args=["urlpatterns_reverse.nonimported_module.view"],
         )
         response = self.client.get(url)
@@ -125,17 +125,17 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
         Views that are methods can be displayed.
         """
         url = reverse(
-            "django-admindocs-views-detail",
-            args=["django.contrib.admin.sites.AdminSite.index"],
+            'djormdocs-views-detail',
+            args=['djorm.contrib.admin.sites.AdminSite.index'],
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_model_index(self):
-        response = self.client.get(reverse("django-admindocs-models-index"))
+        response = self.client.get(reverse('djormdocs-models-index'))
         self.assertContains(
             response,
-            '<h2 id="app-auth">Authentication and Authorization (django.contrib.auth)'
+            '<h2 id="app-auth">Authentication and Authorization (djorm.contrib.auth)'
             "</h2>",
             html=True,
         )
@@ -143,7 +143,7 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
     def test_template_detail(self):
         response = self.client.get(
             reverse(
-                "django-admindocs-templates", args=["admin_doc/template_detail.html"]
+                'djormdocs-templates', args=["admin_doc/template_detail.html"]
             )
         )
         self.assertContains(
@@ -154,14 +154,14 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
 
     def test_template_detail_loader(self):
         response = self.client.get(
-            reverse("django-admindocs-templates", args=["view_for_loader_test.html"])
+            reverse('djormdocs-templates', args=["view_for_loader_test.html"])
         )
         self.assertContains(response, "view_for_loader_test.html</code></li>")
 
     def test_missing_docutils(self):
         utils.docutils_is_available = False
         try:
-            response = self.client.get(reverse("django-admindocs-docroot"))
+            response = self.client.get(reverse('djormdocs-docroot'))
             self.assertContains(
                 response,
                 "<h3>The admin documentation system requires Python’s "
@@ -178,7 +178,7 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
         finally:
             utils.docutils_is_available = True
 
-    @modify_settings(INSTALLED_APPS={"remove": "django.contrib.sites"})
+    @modify_settings(INSTALLED_APPS={"remove": 'djorm.contrib.sites'})
     @override_settings(SITE_ID=None)  # will restore SITE_ID after the test
     def test_no_sites_framework(self):
         """
@@ -187,7 +187,7 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
         """
         Site.objects.all().delete()
         del settings.SITE_ID
-        response = self.client.get(reverse("django-admindocs-views-index"))
+        response = self.client.get(reverse('djormdocs-views-index'))
         self.assertContains(response, "View documentation")
 
     def test_callable_urlconf(self):
@@ -198,12 +198,12 @@ class AdminDocViewTests(TestDataMixin, AdminDocsTestCase):
 
         def urlpatterns():
             return (
-                path("admin/doc/", include("django.contrib.admindocs.urls")),
+                path("admin/doc/", include('djorm.contrib.admindocs.urls')),
                 path("admin/", admin.site.urls),
             )
 
         with self.settings(ROOT_URLCONF=SimpleLazyObject(urlpatterns)):
-            response = self.client.get(reverse("django-admindocs-views-index"))
+            response = self.client.get(reverse('djormdocs-views-index'))
             self.assertEqual(response.status_code, 200)
 
 
@@ -217,7 +217,7 @@ class AdminDocViewDefaultEngineOnly(TestDataMixin, AdminDocsTestCase):
         for fpath in cases:
             with self.subTest(path=fpath):
                 response = self.client.get(
-                    reverse("django-admindocs-templates", args=[fpath]),
+                    reverse('djormdocs-templates', args=[fpath]),
                 )
                 self.assertEqual(response.status_code, 400)
 
@@ -226,12 +226,12 @@ class AdminDocViewDefaultEngineOnly(TestDataMixin, AdminDocsTestCase):
     TEMPLATES=[
         {
             "NAME": "ONE",
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "APP_DIRS": True,
         },
         {
             "NAME": "TWO",
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "APP_DIRS": True,
         },
     ]
@@ -241,13 +241,13 @@ class AdminDocViewWithMultipleEngines(AdminDocViewTests):
     def test_templatefilter_index(self):
         # Overridden because non-trivial TEMPLATES settings aren't supported
         # but the page shouldn't crash (#24125).
-        response = self.client.get(reverse("django-admindocs-filters"))
+        response = self.client.get(reverse('djormdocs-filters'))
         self.assertContains(response, "<title>Template filters</title>", html=True)
 
     def test_templatetag_index(self):
         # Overridden because non-trivial TEMPLATES settings aren't supported
         # but the page shouldn't crash (#24125).
-        response = self.client.get(reverse("django-admindocs-tags"))
+        response = self.client.get(reverse('djormdocs-tags'))
         self.assertContains(response, "<title>Template tags</title>", html=True)
 
 
@@ -257,7 +257,7 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
         self.client.force_login(self.superuser)
         with captured_stderr() as self.docutils_stderr:
             self.response = self.client.get(
-                reverse("django-admindocs-models-detail", args=["admin_docs", "Person"])
+                reverse('djormdocs-models-detail', args=["admin_docs", "Person"])
             )
 
     def test_table_headers(self):
@@ -275,11 +275,7 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
             )
 
     def test_method_excludes(self):
-        """
-        Methods that begin with strings defined in
-        ``django.contrib.admindocs.views.MODEL_METHODS_EXCLUDE``
-        shouldn't be displayed in the admin docs.
-        """
+        "\n        Methods that begin with strings defined in\n        ``djorm.contrib.admindocs.views.MODEL_METHODS_EXCLUDE``\n        shouldn't be displayed in the admin docs.\n        "
         self.assertContains(self.response, "<td>get_full_name</td>")
         self.assertNotContains(self.response, "<td>_get_full_name</td>")
         self.assertNotContains(self.response, "<td>add_image</td>")
@@ -396,7 +392,7 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
     def test_model_with_many_to_one(self):
         link = '<a class="reference external" href="/admindocs/models/%s/">%s</a>'
         response = self.client.get(
-            reverse("django-admindocs-models-detail", args=["admin_docs", "company"])
+            reverse('djormdocs-models-detail', args=["admin_docs", "company"])
         )
         self.assertContains(
             response,
@@ -415,7 +411,7 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
         relationship links.
         """
         response = self.client.get(
-            reverse("django-admindocs-models-detail", args=["admin_docs", "family"])
+            reverse('djormdocs-models-detail', args=["admin_docs", "family"])
         )
         fields = response.context_data.get("fields")
         self.assertEqual(len(fields), 2)
@@ -457,7 +453,7 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
             'This is a line with filter <a class="reference external" '
             'href="/admindocs/filters/#filtername">example filter</a></p>'
         )
-        url = reverse("django-admindocs-models-detail", args=["admin_docs", "family"])
+        url = reverse('djormdocs-models-detail', args=["admin_docs", "family"])
         response = self.client.get(url)
         self.assertContains(response, summary, html=True)
         self.assertContains(response, body, html=True)
@@ -467,7 +463,7 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
 
     def test_app_not_found(self):
         response = self.client.get(
-            reverse("django-admindocs-models-detail", args=["doesnotexist", "Person"])
+            reverse('djormdocs-models-detail', args=["doesnotexist", "Person"])
         )
         self.assertEqual(response.context["exception"], "App 'doesnotexist' not found")
         self.assertEqual(response.status_code, 404)
@@ -475,7 +471,7 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
     def test_model_not_found(self):
         response = self.client.get(
             reverse(
-                "django-admindocs-models-detail", args=["admin_docs", "doesnotexist"]
+                'djormdocs-models-detail', args=["admin_docs", "doesnotexist"]
             )
         )
         self.assertEqual(
@@ -486,10 +482,10 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
 
     def test_model_permission_denied(self):
         person_url = reverse(
-            "django-admindocs-models-detail", args=["admin_docs", "person"]
+            'djormdocs-models-detail', args=["admin_docs", "person"]
         )
         company_url = reverse(
-            "django-admindocs-models-detail", args=["admin_docs", "company"]
+            'djormdocs-models-detail', args=["admin_docs", "company"]
         )
         staff_user = User.objects.create_user(
             username="staff", password="secret", is_staff=True
@@ -521,7 +517,7 @@ class TestModelDetailView(TestDataMixin, AdminDocsTestCase):
 class TestModelIndexView(TestDataMixin, AdminDocsTestCase):
     def test_model_index_superuser(self):
         self.client.force_login(self.superuser)
-        index_url = reverse("django-admindocs-models-index")
+        index_url = reverse('djormdocs-models-index')
         response = self.client.get(index_url)
         self.assertContains(
             response,
@@ -544,7 +540,7 @@ class TestModelIndexView(TestDataMixin, AdminDocsTestCase):
             username="staff", password="secret", is_staff=True
         )
         self.client.force_login(staff_user)
-        index_url = reverse("django-admindocs-models-index")
+        index_url = reverse('djormdocs-models-index')
         response = self.client.get(index_url)
         # Models are not listed without permissions.
         self.assertNotContains(

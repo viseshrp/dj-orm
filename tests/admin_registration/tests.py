@@ -1,9 +1,9 @@
-from django.contrib import admin
-from django.contrib.admin.decorators import register
-from django.contrib.admin.exceptions import AlreadyRegistered, NotRegistered
-from django.contrib.admin.sites import site
-from django.core.exceptions import ImproperlyConfigured
-from django.test import SimpleTestCase
+from djorm.contrib import admin
+from djorm.contrib.admin.decorators import register
+from djorm.contrib.admin.exceptions import AlreadyRegistered, NotRegistered
+from djorm.contrib.admin.sites import site
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.test import SimpleTestCase
 
 from .models import Guest, Location, Person, Place, Traveler
 

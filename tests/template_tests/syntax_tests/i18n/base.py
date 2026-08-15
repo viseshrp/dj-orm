@@ -1,8 +1,8 @@
 import os
 
-from django.conf import settings
-from django.test import SimpleTestCase
-from django.utils.translation import activate, get_language
+from djorm.conf import settings
+from djorm.test import SimpleTestCase
+from djorm.utils.translation import activate, get_language
 
 here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 pdir = os.path.split(os.path.split(os.path.abspath(here))[0])[0]

@@ -4,12 +4,12 @@ from os import path
 from unittest import mock
 from urllib.parse import quote
 
-from django.conf.urls.static import static
-from django.core.exceptions import ImproperlyConfigured
-from django.http import FileResponse, HttpResponseNotModified
-from django.test import SimpleTestCase, override_settings
-from django.utils.http import http_date
-from django.views.static import directory_index, was_modified_since
+from djorm.conf.urls.static import static
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.http import FileResponse, HttpResponseNotModified
+from djorm.test import SimpleTestCase, override_settings
+from djorm.utils.http import http_date
+from djorm.views.static import directory_index, was_modified_since
 
 from .. import urls
 from ..urls import media_dir
@@ -136,11 +136,11 @@ class StaticTests(SimpleTestCase):
     @override_settings(
         TEMPLATES=[
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "OPTIONS": {
                     "loaders": [
                         (
-                            "django.template.loaders.locmem.Loader",
+                            'djorm.template.loaders.locmem.Loader',
                             {
                                 "static/directory_index.html": "Test index",
                             },
@@ -160,7 +160,7 @@ class StaticTests(SimpleTestCase):
         be opened as utf-8 charset as is the default specified on template
         engines.
         """
-        from django.views.static import Path
+        from djorm.views.static import Path
 
         with mock.patch.object(Path, "open") as m:
             directory_index(mock.MagicMock(), mock.MagicMock())

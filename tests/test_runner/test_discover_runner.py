@@ -7,16 +7,16 @@ from contextlib import contextmanager
 from importlib import import_module
 from unittest import TestSuite, TextTestRunner, defaultTestLoader, mock
 
-from django.db import connections
-from django.test import SimpleTestCase
-from django.test.runner import DiscoverRunner, get_max_test_processes
-from django.test.utils import (
+from djorm.db import connections
+from djorm.test import SimpleTestCase
+from djorm.test.runner import DiscoverRunner, get_max_test_processes
+from djorm.test.utils import (
     NullTimeKeeper,
     TimeKeeper,
     captured_stderr,
     captured_stdout,
 )
-from django.utils.version import PY312
+from djorm.utils.version import PY312
 
 
 @contextmanager

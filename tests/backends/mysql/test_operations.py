@@ -1,8 +1,8 @@
 import unittest
 
-from django.core.management.color import no_style
-from django.db import connection
-from django.test import SimpleTestCase
+from djorm.core.management.color import no_style
+from djorm.db import connection
+from djorm.test import SimpleTestCase
 
 from ..models import Person, Tag
 

@@ -1,8 +1,8 @@
-from django import template
-from django.template.base import TextNode
-from django.template.defaultfilters import stringfilter
-from django.utils.html import escape, format_html
-from django.utils.safestring import mark_safe
+from djorm import template
+from djorm.template.base import TextNode
+from djorm.template.defaultfilters import stringfilter
+from djorm.utils.html import escape, format_html
+from djorm.utils.safestring import mark_safe
 
 register = template.Library()
 

@@ -1,11 +1,11 @@
 import sys
 from datetime import date
 
-from django.forms import DateField, Form, SelectDateWidget
-from django.test import override_settings
-from django.utils import translation
-from django.utils.dates import MONTHS_AP
-from django.utils.version import PYPY
+from djorm.forms import DateField, Form, SelectDateWidget
+from djorm.test import override_settings
+from djorm.utils import translation
+from djorm.utils.dates import MONTHS_AP
+from djorm.utils.version import PYPY
 
 from .base import WidgetTest
 

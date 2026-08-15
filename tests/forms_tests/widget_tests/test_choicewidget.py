@@ -1,6 +1,6 @@
 import copy
 
-from django.forms.widgets import ChoiceWidget
+from djorm.forms.widgets import ChoiceWidget
 
 from .base import WidgetTest
 

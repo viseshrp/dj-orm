@@ -1,5 +1,5 @@
-from django.test import SimpleTestCase
-from django.utils.hashable import make_hashable
+from djorm.test import SimpleTestCase
+from djorm.utils.hashable import make_hashable
 
 
 class TestHashable(SimpleTestCase):

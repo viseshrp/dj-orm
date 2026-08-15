@@ -2,18 +2,18 @@ import json
 import random
 from unittest import TestCase
 
-from django.conf import settings
-from django.contrib.messages import Message, constants
-from django.contrib.messages.storage.cookie import (
+from djorm.conf import settings
+from djorm.contrib.messages import Message, constants
+from djorm.contrib.messages.storage.cookie import (
     CookieStorage,
     MessageDecoder,
     MessageEncoder,
     bisect_keep_left,
     bisect_keep_right,
 )
-from django.test import SimpleTestCase, override_settings
-from django.utils.crypto import get_random_string
-from django.utils.safestring import SafeData, mark_safe
+from djorm.test import SimpleTestCase, override_settings
+from djorm.utils.crypto import get_random_string
+from djorm.utils.safestring import SafeData, mark_safe
 
 from .base import BaseTests
 

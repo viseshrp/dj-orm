@@ -1,5 +1,5 @@
-from django.core.exceptions import FieldError
-from django.test import TestCase
+from djorm.core.exceptions import FieldError
+from djorm.test import TestCase
 
 from .models import Article, Author
 

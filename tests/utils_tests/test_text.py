@@ -1,12 +1,12 @@
 import json
 import sys
 
-from django.core.exceptions import SuspiciousFileOperation
-from django.test import SimpleTestCase
-from django.utils import text
-from django.utils.functional import lazystr
-from django.utils.text import format_lazy
-from django.utils.translation import gettext_lazy, override
+from djorm.core.exceptions import SuspiciousFileOperation
+from djorm.test import SimpleTestCase
+from djorm.utils import text
+from djorm.utils.functional import lazystr
+from djorm.utils.text import format_lazy
+from djorm.utils.translation import gettext_lazy, override
 
 IS_WIDE_BUILD = len("\U0001f4a9") == 1
 

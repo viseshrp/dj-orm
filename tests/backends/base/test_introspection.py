@@ -1,6 +1,6 @@
-from django.db import connection
-from django.db.backends.base.introspection import BaseDatabaseIntrospection
-from django.test import SimpleTestCase
+from djorm.db import connection
+from djorm.db.backends.base.introspection import BaseDatabaseIntrospection
+from djorm.test import SimpleTestCase
 
 
 class SimpleDatabaseIntrospectionTests(SimpleTestCase):

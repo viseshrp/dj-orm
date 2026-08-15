@@ -1,9 +1,9 @@
 import os
 from unittest import mock
 
-from django.core.exceptions import SuspiciousFileOperation
-from django.core.files.storage import Storage
-from django.test import SimpleTestCase
+from djorm.core.exceptions import SuspiciousFileOperation
+from djorm.core.files.storage import Storage
+from djorm.test import SimpleTestCase
 
 
 class CustomStorage(Storage):

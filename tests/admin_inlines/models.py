@@ -5,10 +5,10 @@ Testing of admin inline formsets.
 import random
 import uuid
 
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
-from django.db import models
+from djorm.contrib.contenttypes.fields import GenericForeignKey
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.exceptions import ValidationError
+from djorm.db import models
 
 
 class Parent(models.Model):

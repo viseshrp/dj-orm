@@ -8,19 +8,19 @@ import threading
 
 from admin_scripts.tests import AdminScriptTestCase
 
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.exceptions import ImproperlyConfigured, ViewDoesNotExist
-from django.http import (
+from djorm.conf import settings
+from djorm.contrib.auth.models import User
+from djorm.core.exceptions import ImproperlyConfigured, ViewDoesNotExist
+from djorm.http import (
     HttpRequest,
     HttpResponsePermanentRedirect,
     HttpResponseRedirect,
     QueryDict,
 )
-from django.shortcuts import redirect
-from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
-from django.test.utils import override_script_prefix
-from django.urls import (
+from djorm.shortcuts import redirect
+from djorm.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from djorm.test.utils import override_script_prefix
+from djorm.urls import (
     NoReverseMatch,
     Resolver404,
     ResolverMatch,
@@ -36,7 +36,7 @@ from django.urls import (
     reverse,
     reverse_lazy,
 )
-from django.urls.resolvers import RegexPattern
+from djorm.urls.resolvers import RegexPattern
 
 from . import middleware, urlconf_outer, views
 from .utils import URLObject
@@ -807,7 +807,7 @@ class ReverseLazySettingsTest(AdminScriptTestCase):
         self.write_settings(
             "settings.py",
             extra=(
-                "from django.urls import reverse_lazy\n"
+                'from djorm.urls import reverse_lazy\n'
                 "LOGIN_URL = reverse_lazy('login')"
             ),
         )
@@ -1717,7 +1717,7 @@ class ViewLoadingTests(SimpleTestCase):
             get_callable("urlpatterns_reverse.views.i_should_not_exist")
 
     def test_attributeerror_not_hidden(self):
-        msg = "I am here to confuse django.urls.get_callable"
+        msg = 'I am here to confuse djorm.urls.get_callable'
         with self.assertRaisesMessage(AttributeError, msg):
             get_callable("urlpatterns_reverse.views_broken.i_am_broken")
 

@@ -14,27 +14,27 @@ import warnings
 from pathlib import Path
 
 try:
-    import django
+    import djorm
 except ImportError as e:
     raise RuntimeError(
         "Django module not found, reference tests/README.rst for instructions."
     ) from e
 else:
-    from django.apps import apps
-    from django.conf import settings
-    from django.core.exceptions import ImproperlyConfigured
-    from django.db import connection, connections
-    from django.test import TestCase, TransactionTestCase
-    from django.test.runner import get_max_test_processes, parallel_type
-    from django.test.selenium import SeleniumTestCase, SeleniumTestCaseBase
-    from django.test.utils import NullTimeKeeper, TimeKeeper, get_runner
-    from django.utils.deprecation import (
+    from djorm.apps import apps
+    from djorm.conf import settings
+    from djorm.core.exceptions import ImproperlyConfigured
+    from djorm.db import connection, connections
+    from djorm.test import TestCase, TransactionTestCase
+    from djorm.test.runner import get_max_test_processes, parallel_type
+    from djorm.test.selenium import SeleniumTestCase, SeleniumTestCaseBase
+    from djorm.test.utils import NullTimeKeeper, TimeKeeper, get_runner
+    from djorm.utils.deprecation import (
         RemovedInDjango60Warning,
         RemovedInDjango61Warning,
     )
-    from django.utils.functional import classproperty
-    from django.utils.log import DEFAULT_LOGGING
-    from django.utils.version import PY312, PYPY
+    from djorm.utils.functional import classproperty
+    from djorm.utils.log import DEFAULT_LOGGING
+    from djorm.utils.version import PY312, PYPY
 
 
 try:
@@ -78,30 +78,30 @@ SUBDIRS_TO_SKIP = {
 }
 
 ALWAYS_INSTALLED_APPS = [
-    "django.contrib.contenttypes",
-    "django.contrib.auth",
-    "django.contrib.sites",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.admin.apps.SimpleAdminConfig",
-    "django.contrib.staticfiles",
+    'djorm.contrib.contenttypes',
+    'djorm.contrib.auth',
+    'djorm.contrib.sites',
+    'djorm.contrib.sessions',
+    'djorm.contrib.messages',
+    'djorm.contrib.admin.apps.SimpleAdminConfig',
+    'djorm.contrib.staticfiles',
 ]
 
 ALWAYS_MIDDLEWARE = [
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
+    'djorm.contrib.sessions.middleware.SessionMiddleware',
+    'djorm.middleware.common.CommonMiddleware',
+    'djorm.middleware.csrf.CsrfViewMiddleware',
+    'djorm.contrib.auth.middleware.AuthenticationMiddleware',
+    'djorm.contrib.messages.middleware.MessageMiddleware',
 ]
 
 # Need to add the associated contrib app to INSTALLED_APPS in some cases to
 # avoid "RuntimeError: Model class X doesn't declare an explicit app_label
 # and isn't in an application in INSTALLED_APPS."
 CONTRIB_TESTS_TO_APPS = {
-    "deprecation": ["django.contrib.flatpages", "django.contrib.redirects"],
-    "flatpages_tests": ["django.contrib.flatpages"],
-    "redirects_tests": ["django.contrib.redirects"],
+    "deprecation": ['djorm.contrib.flatpages', 'djorm.contrib.redirects'],
+    "flatpages_tests": ['djorm.contrib.flatpages'],
+    "redirects_tests": ['djorm.contrib.redirects'],
 }
 
 
@@ -210,14 +210,14 @@ def setup_collect_tests(start_at, start_after, test_labels=None):
     settings.STATIC_ROOT = os.path.join(TMPDIR, "static")
     settings.TEMPLATES = [
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "DIRS": [TEMPLATE_DIR],
             "APP_DIRS": True,
             "OPTIONS": {
                 "context_processors": [
-                    "django.template.context_processors.request",
-                    "django.contrib.auth.context_processors.auth",
-                    "django.contrib.messages.context_processors.messages",
+                    'djorm.template.context_processors.request',
+                    'djorm.contrib.auth.context_processors.auth',
+                    'djorm.contrib.messages.context_processors.messages',
                 ],
             },
         }
@@ -242,7 +242,7 @@ def setup_collect_tests(start_at, start_after, test_labels=None):
     ]
 
     # Load all the ALWAYS_INSTALLED_APPS.
-    django.setup()
+    djorm.setup()
 
     # This flag must be evaluated after django.setup() because otherwise it can
     # raise AppRegistryNotReady when running gis_tests in isolation on some
@@ -281,7 +281,7 @@ def get_apps_to_install(test_modules):
     # Add contrib.gis to INSTALLED_APPS if needed (rather than requiring
     # @override_settings(INSTALLED_APPS=...) on all test cases.
     if connection.features.gis_enabled:
-        yield "django.contrib.gis"
+        yield 'djorm.contrib.gis'
 
 
 def setup_run_tests(verbosity, start_at, start_after, test_labels=None):
@@ -370,7 +370,7 @@ def django_tests(
 
     if verbosity >= 1:
         msg = "Testing against Django installed in '%s'" % os.path.dirname(
-            django.__file__
+            djorm.__file__
         )
         if max_parallel > 1:
             msg += " with up to %d processes" % max_parallel
@@ -380,7 +380,7 @@ def django_tests(
     test_labels, state = setup_run_tests(*process_setup_args)
     # Run the test suite, including the extra validation tests.
     if not hasattr(settings, "TEST_RUNNER"):
-        settings.TEST_RUNNER = "django.test.runner.DiscoverRunner"
+        settings.TEST_RUNNER = 'djorm.test.runner.DiscoverRunner'
 
     if parallel in {0, "auto"}:
         # This doesn't work before django.setup() on some databases.

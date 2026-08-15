@@ -1,7 +1,7 @@
-from django.conf.urls.i18n import i18n_patterns
-from django.http import HttpResponse, StreamingHttpResponse
-from django.urls import path
-from django.utils.translation import gettext_lazy as _
+from djorm.conf.urls.i18n import i18n_patterns
+from djorm.http import HttpResponse, StreamingHttpResponse
+from djorm.urls import path
+from djorm.utils.translation import gettext_lazy as _
 
 urlpatterns = i18n_patterns(
     path("simple/", lambda r: HttpResponse()),

@@ -1,11 +1,11 @@
 import datetime
 import zoneinfo
 
-from django.test import TestCase
-from django.test.utils import override_settings, requires_tz_support
-from django.utils import timezone, translation
-from django.utils.timesince import timesince, timeuntil
-from django.utils.translation import npgettext_lazy
+from djorm.test import TestCase
+from djorm.test.utils import override_settings, requires_tz_support
+from djorm.utils import timezone, translation
+from djorm.utils.timesince import timesince, timeuntil
+from djorm.utils.translation import npgettext_lazy
 
 
 class TimesinceTests(TestCase):

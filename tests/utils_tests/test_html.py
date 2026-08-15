@@ -3,12 +3,12 @@ import os
 import sys
 from datetime import datetime
 
-from django.core.exceptions import SuspiciousOperation
-from django.core.serializers.json import DjangoJSONEncoder
-from django.test import SimpleTestCase
-from django.utils.deprecation import RemovedInDjango60Warning
-from django.utils.functional import lazystr
-from django.utils.html import (
+from djorm.core.exceptions import SuspiciousOperation
+from djorm.core.serializers.json import DjangoJSONEncoder
+from djorm.test import SimpleTestCase
+from djorm.utils.deprecation import RemovedInDjango60Warning
+from djorm.utils.functional import lazystr
+from djorm.utils.html import (
     conditional_escape,
     escape,
     escapejs,
@@ -22,7 +22,7 @@ from django.utils.html import (
     strip_tags,
     urlize,
 )
-from django.utils.safestring import mark_safe
+from djorm.utils.safestring import mark_safe
 
 
 class TestUtilsHtml(SimpleTestCase):

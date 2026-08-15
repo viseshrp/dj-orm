@@ -1,0 +1,50 @@
+from djorm.contrib.admindocs import views
+from djorm.urls import path, re_path
+
+urlpatterns = [
+    path(
+        "",
+        views.BaseAdminDocsView.as_view(template_name="admin_doc/index.html"),
+        name='djormdocs-docroot',
+    ),
+    path(
+        "bookmarklets/",
+        views.BookmarkletsView.as_view(),
+        name='djormdocs-bookmarklets',
+    ),
+    path(
+        "tags/",
+        views.TemplateTagIndexView.as_view(),
+        name='djormdocs-tags',
+    ),
+    path(
+        "filters/",
+        views.TemplateFilterIndexView.as_view(),
+        name='djormdocs-filters',
+    ),
+    path(
+        "views/",
+        views.ViewIndexView.as_view(),
+        name='djormdocs-views-index',
+    ),
+    path(
+        "views/<view>/",
+        views.ViewDetailView.as_view(),
+        name='djormdocs-views-detail',
+    ),
+    path(
+        "models/",
+        views.ModelIndexView.as_view(),
+        name='djormdocs-models-index',
+    ),
+    re_path(
+        r"^models/(?P<app_label>[^.]+)\.(?P<model_name>[^/]+)/$",
+        views.ModelDetailView.as_view(),
+        name='djormdocs-models-detail',
+    ),
+    path(
+        "templates/<path:template>/",
+        views.TemplateDetailView.as_view(),
+        name='djormdocs-templates',
+    ),
+]

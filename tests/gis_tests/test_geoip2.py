@@ -3,16 +3,16 @@ import itertools
 import pathlib
 from unittest import mock, skipUnless
 
-from django.conf import settings
-from django.contrib.gis.geoip2 import HAS_GEOIP2
-from django.contrib.gis.geos import GEOSGeometry
-from django.test import SimpleTestCase, override_settings
-from django.utils.deprecation import RemovedInDjango60Warning
+from djorm.conf import settings
+from djorm.contrib.gis.geoip2 import HAS_GEOIP2
+from djorm.contrib.gis.geos import GEOSGeometry
+from djorm.test import SimpleTestCase, override_settings
+from djorm.utils.deprecation import RemovedInDjango60Warning
 
 if HAS_GEOIP2:
     import geoip2
 
-    from django.contrib.gis.geoip2 import GeoIP2, GeoIP2Exception
+    from djorm.contrib.gis.geoip2 import GeoIP2, GeoIP2Exception
 
 
 def build_geoip_path(*parts):

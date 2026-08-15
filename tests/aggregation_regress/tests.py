@@ -4,10 +4,10 @@ from decimal import Decimal
 from operator import attrgetter
 from unittest import mock
 
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import FieldError
-from django.db import connection
-from django.db.models import (
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.exceptions import FieldError
+from djorm.db import connection
+from djorm.db.models import (
     Aggregate,
     Avg,
     Case,
@@ -24,9 +24,9 @@ from django.db.models import (
     Variance,
     When,
 )
-from django.db.models.functions import Cast, Concat
-from django.test import TestCase, skipUnlessDBFeature
-from django.test.utils import Approximate
+from djorm.db.models.functions import Cast, Concat
+from djorm.test import TestCase, skipUnlessDBFeature
+from djorm.test.utils import Approximate
 
 from .models import (
     Alfa,
@@ -1561,7 +1561,7 @@ class AggregationTests(TestCase):
         )
         # Force treating unmanaged models as tables.
         with mock.patch(
-            "django.db.connection.features.allows_group_by_selected_pks_on_model",
+            'djorm.db.connection.features.allows_group_by_selected_pks_on_model',
             return_value=True,
         ):
             with (

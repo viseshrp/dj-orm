@@ -1,5 +1,5 @@
-from django.forms import CharField, Form, NumberInput
-from django.test import override_settings
+from djorm.forms import CharField, Form, NumberInput
+from djorm.test import override_settings
 
 from .base import WidgetTest
 

@@ -1,6 +1,6 @@
-from django.test import SimpleTestCase
-from django.utils.deconstruct import deconstructible
-from django.utils.version import get_docs_version
+from djorm.test import SimpleTestCase
+from djorm.utils.deconstruct import deconstructible
+from djorm.utils.version import get_docs_version
 
 
 @deconstructible()

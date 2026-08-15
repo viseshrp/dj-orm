@@ -2,10 +2,10 @@ from datetime import datetime
 from decimal import Decimal
 from math import pi
 
-from django.core.exceptions import ValidationError
-from django.db import connection
-from django.db.models import Case, F, FloatField, Value, When
-from django.db.models.expressions import (
+from djorm.core.exceptions import ValidationError
+from djorm.db import connection
+from djorm.db.models import Case, F, FloatField, Value, When
+from djorm.db.models.expressions import (
     Expression,
     ExpressionList,
     ExpressionWrapper,
@@ -13,16 +13,16 @@ from django.db.models.expressions import (
     OrderByList,
     RawSQL,
 )
-from django.db.models.functions import Collate
-from django.db.models.lookups import GreaterThan
-from django.test import (
+from djorm.db.models.functions import Collate
+from djorm.db.models.lookups import GreaterThan
+from djorm.test import (
     SimpleTestCase,
     TestCase,
     override_settings,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from django.utils import timezone
+from djorm.utils import timezone
 
 from .models import (
     Article,

@@ -1,14 +1,14 @@
-from django.contrib.auth import (
+from djorm.contrib.auth import (
     aauthenticate,
     aget_user,
     alogin,
     alogout,
     aupdate_session_auth_hash,
 )
-from django.contrib.auth.models import AnonymousUser, User
-from django.http import HttpRequest
-from django.test import TestCase, override_settings
-from django.utils.deprecation import RemovedInDjango61Warning
+from djorm.contrib.auth.models import AnonymousUser, User
+from djorm.http import HttpRequest
+from djorm.test import TestCase, override_settings
+from djorm.utils.deprecation import RemovedInDjango61Warning
 
 
 class AsyncAuthTest(TestCase):
@@ -162,8 +162,8 @@ class AsyncAuthTest(TestCase):
 
     @override_settings(
         AUTHENTICATION_BACKENDS=[
-            "django.contrib.auth.backends.ModelBackend",
-            "django.contrib.auth.backends.AllowAllUsersModelBackend",
+            'djorm.contrib.auth.backends.ModelBackend',
+            'djorm.contrib.auth.backends.AllowAllUsersModelBackend',
         ]
     )
     async def test_client_aforce_login_backend(self):
@@ -171,7 +171,7 @@ class AsyncAuthTest(TestCase):
         await self.test_user.asave()
         await self.client.aforce_login(
             self.test_user,
-            backend="django.contrib.auth.backends.AllowAllUsersModelBackend",
+            backend='djorm.contrib.auth.backends.AllowAllUsersModelBackend',
         )
         request = HttpRequest()
         request.session = await self.client.asession()

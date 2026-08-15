@@ -1,7 +1,7 @@
 import unittest
 
-from django.db import connection
-from django.test import TestCase
+from djorm.db import connection
+from djorm.test import TestCase
 
 from ..models import Person
 

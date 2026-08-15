@@ -1,8 +1,8 @@
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.prefetch import GenericPrefetch
-from django.core.exceptions import FieldError
-from django.db.models import Q, prefetch_related_objects
-from django.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.contrib.contenttypes.prefetch import GenericPrefetch
+from djorm.core.exceptions import FieldError
+from djorm.db.models import Q, prefetch_related_objects
+from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
 
 from .models import (
     AllowsNullGFK,

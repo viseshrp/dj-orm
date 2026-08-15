@@ -1,18 +1,18 @@
 import datetime
 from unittest import skipUnless
 
-from django.conf import settings
-from django.db import connection
-from django.db.models import CASCADE, CharField, ForeignKey, Index, Q
-from django.db.models.functions import Lower
-from django.test import (
+from djorm.conf import settings
+from djorm.db import connection
+from djorm.db.models import CASCADE, CharField, ForeignKey, Index, Q
+from djorm.db.models.functions import Lower
+from djorm.test import (
     TestCase,
     TransactionTestCase,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from django.test.utils import override_settings
-from django.utils import timezone
+from djorm.test.utils import override_settings
+from djorm.utils import timezone
 
 from .models import Article, ArticleTranslation, IndexedArticle2
 

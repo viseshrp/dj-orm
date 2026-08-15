@@ -4,15 +4,15 @@ import sys
 import unittest
 from unittest import mock
 
-from django import __version__
-from django.contrib.auth.models import Group, Permission, User
-from django.contrib.contenttypes.models import ContentType
-from django.core.management import CommandError, call_command
-from django.core.management.commands import shell
-from django.db import connection
-from django.test import SimpleTestCase
-from django.test.utils import captured_stdin, captured_stdout, override_settings
-from django.urls import resolve, reverse
+from djorm import __version__
+from djorm.contrib.auth.models import Group, Permission, User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.core.management import CommandError, call_command
+from djorm.core.management.commands import shell
+from djorm.db import connection
+from djorm.test import SimpleTestCase
+from djorm.test.utils import captured_stdin, captured_stdout, override_settings
+from djorm.urls import resolve, reverse
 
 from .models import Marker, Phone
 
@@ -20,7 +20,7 @@ from .models import Marker, Phone
 class ShellCommandTestCase(SimpleTestCase):
     script_globals = 'print("__name__" in globals() and "Phone" in globals())'
     script_with_inline_function = (
-        "import django\ndef f():\n    print(django.__version__)\nf()"
+        'import djorm\ndef f():\n    print(django.__version__)\nf()'
     )
 
     def test_command_option(self):
@@ -29,7 +29,7 @@ class ShellCommandTestCase(SimpleTestCase):
                 call_command(
                     "shell",
                     command=(
-                        "import django; from logging import getLogger; "
+                        'import djorm; from logging import getLogger; '
                         'getLogger("test").info(django.__version__)'
                     ),
                 )
@@ -82,8 +82,8 @@ class ShellCommandTestCase(SimpleTestCase):
 
             with self.subTest(verbosity=verbosity, get_auto_imports="without-models"):
                 with mock.patch(
-                    "django.core.management.commands.shell.Command.get_auto_imports",
-                    return_value=["django.urls.resolve"],
+                    'djorm.core.management.commands.shell.Command.get_auto_imports',
+                    return_value=['djorm.urls.resolve'],
                 ):
                     p = subprocess.run(
                         [
@@ -107,7 +107,7 @@ class ShellCommandTestCase(SimpleTestCase):
     @unittest.skipIf(
         sys.platform == "win32", "Windows select() doesn't support file descriptors."
     )
-    @mock.patch("django.core.management.commands.shell.select")
+    @mock.patch('djorm.core.management.commands.shell.select')
     def test_stdin_read(self, select):
         with captured_stdin() as stdin, captured_stdout() as stdout:
             stdin.write("print(100)\n")
@@ -119,7 +119,7 @@ class ShellCommandTestCase(SimpleTestCase):
         sys.platform == "win32",
         "Windows select() doesn't support file descriptors.",
     )
-    @mock.patch("django.core.management.commands.shell.select")  # [1]
+    @mock.patch('djorm.core.management.commands.shell.select')  # [1]
     def test_stdin_read_globals(self, select):
         with captured_stdin() as stdin, captured_stdout() as stdout:
             stdin.write(self.script_globals)
@@ -131,7 +131,7 @@ class ShellCommandTestCase(SimpleTestCase):
         sys.platform == "win32",
         "Windows select() doesn't support file descriptors.",
     )
-    @mock.patch("django.core.management.commands.shell.select")  # [1]
+    @mock.patch('djorm.core.management.commands.shell.select')  # [1]
     def test_stdin_read_inline_function_call(self, select):
         with captured_stdin() as stdin, captured_stdout() as stdout:
             stdin.write(self.script_with_inline_function)
@@ -152,7 +152,7 @@ class ShellCommandTestCase(SimpleTestCase):
             [mock.call(argv=[], user_ns=cmd.get_namespace(**options))],
         )
 
-    @mock.patch("django.core.management.commands.shell.select.select")  # [1]
+    @mock.patch('djorm.core.management.commands.shell.select.select')  # [1]
     @mock.patch.dict("sys.modules", {"IPython": None})
     def test_shell_with_ipython_not_installed(self, select):
         select.return_value = ([], [], [])
@@ -173,7 +173,7 @@ class ShellCommandTestCase(SimpleTestCase):
             mock_bpython.embed.mock_calls, [mock.call(cmd.get_namespace(**options))]
         )
 
-    @mock.patch("django.core.management.commands.shell.select.select")  # [1]
+    @mock.patch('djorm.core.management.commands.shell.select.select')  # [1]
     @mock.patch.dict("sys.modules", {"bpython": None})
     def test_shell_with_bpython_not_installed(self, select):
         select.return_value = ([], [], [])
@@ -206,7 +206,7 @@ class ShellCommandTestCase(SimpleTestCase):
 class ShellCommandAutoImportsTestCase(SimpleTestCase):
 
     @override_settings(
-        INSTALLED_APPS=["shell", "django.contrib.auth", "django.contrib.contenttypes"]
+        INSTALLED_APPS=["shell", 'djorm.contrib.auth', 'djorm.contrib.contenttypes']
     )
     def test_get_namespace(self):
         namespace = shell.Command().get_namespace()
@@ -235,15 +235,15 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
         self.assertIs(namespace.get("Article"), model_forms.models.Article)
 
     @override_settings(
-        INSTALLED_APPS=["shell", "django.contrib.auth", "django.contrib.contenttypes"]
+        INSTALLED_APPS=["shell", 'djorm.contrib.auth', 'djorm.contrib.contenttypes']
     )
     def test_get_namespace_overridden(self):
         class TestCommand(shell.Command):
             def get_auto_imports(self):
                 return super().get_auto_imports() + [
-                    "django.urls.reverse",
-                    "django.urls.resolve",
-                    "django.db.connection",
+                    'djorm.urls.reverse',
+                    'djorm.urls.resolve',
+                    'djorm.db.connection',
                 ]
 
         namespace = TestCommand().get_namespace()
@@ -264,7 +264,7 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
         )
 
     @override_settings(
-        INSTALLED_APPS=["shell", "django.contrib.auth", "django.contrib.contenttypes"]
+        INSTALLED_APPS=["shell", 'djorm.contrib.auth', 'djorm.contrib.contenttypes']
     )
     def test_no_imports_flag(self):
         for verbosity in (0, 1, 2, 3):
@@ -276,7 +276,7 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
             self.assertEqual(stdout.getvalue().strip(), "")
 
     @override_settings(
-        INSTALLED_APPS=["shell", "django.contrib.auth", "django.contrib.contenttypes"]
+        INSTALLED_APPS=["shell", 'djorm.contrib.auth', 'djorm.contrib.contenttypes']
     )
     def test_verbosity_zero(self):
         with captured_stdout() as stdout:
@@ -286,7 +286,7 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
         self.assertEqual(stdout.getvalue().strip(), "")
 
     @override_settings(
-        INSTALLED_APPS=["shell", "django.contrib.auth", "django.contrib.contenttypes"]
+        INSTALLED_APPS=["shell", 'djorm.contrib.auth', 'djorm.contrib.contenttypes']
     )
     def test_verbosity_one(self):
         with captured_stdout() as stdout:
@@ -298,7 +298,7 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
             "6 objects imported automatically (use -v 2 for details).",
         )
 
-    @override_settings(INSTALLED_APPS=["shell", "django.contrib.contenttypes"])
+    @override_settings(INSTALLED_APPS=["shell", 'djorm.contrib.contenttypes'])
     @mock.patch.dict(sys.modules, {"isort": None})
     def test_message_with_stdout_listing_objects_with_isort_not_installed(self):
         class TestCommand(shell.Command):
@@ -306,11 +306,11 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
                 # Include duplicate import strings to ensure proper handling,
                 # independent of isort's deduplication (#36252).
                 return super().get_auto_imports() + [
-                    "django.urls.reverse",
-                    "django.urls.resolve",
+                    'djorm.urls.reverse',
+                    'djorm.urls.resolve',
                     "shell",
                     "django",
-                    "django.urls.reverse",
+                    'djorm.urls.reverse',
                     "shell",
                     "django",
                 ]
@@ -322,16 +322,16 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
             stdout.getvalue().strip(),
             "7 objects imported automatically:\n\n"
             "  import shell\n"
-            "  import django\n"
-            "  from django.contrib.contenttypes.models import ContentType\n"
+            '  import djorm\n'
+            '  from djorm.contrib.contenttypes.models import ContentType\n'
             "  from shell.models import Phone, Marker\n"
-            "  from django.urls import reverse, resolve",
+            '  from djorm.urls import reverse, resolve',
         )
 
     def test_message_with_stdout_one_object(self):
         class TestCommand(shell.Command):
             def get_auto_imports(self):
-                return ["django.db.connection"]
+                return ['djorm.db.connection']
 
         with captured_stdout() as stdout:
             TestCommand().get_namespace(verbosity=2)
@@ -341,7 +341,7 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
             1: "1 object imported automatically (use -v 2 for details).",
             2: (
                 "1 object imported automatically:\n\n"
-                "  from django.db import connection"
+                '  from djorm.db import connection'
             ),
         }
         for verbosity, expected in cases.items():
@@ -375,19 +375,19 @@ class ShellCommandAutoImportsTestCase(SimpleTestCase):
                     self.assertEqual(result, {})
                     self.assertEqual(stdout.getvalue().strip(), "")
 
-    @override_settings(INSTALLED_APPS=["shell", "django.contrib.contenttypes"])
+    @override_settings(INSTALLED_APPS=["shell", 'djorm.contrib.contenttypes'])
     def test_message_with_stdout_listing_objects_with_isort(self):
         sorted_imports = (
             "  from shell.models import Marker, Phone\n\n"
-            "  from django.contrib.contenttypes.models import ContentType"
+            '  from djorm.contrib.contenttypes.models import ContentType'
         )
         mock_isort_code = mock.Mock(code=mock.MagicMock(return_value=sorted_imports))
 
         class TestCommand(shell.Command):
             def get_auto_imports(self):
                 return super().get_auto_imports() + [
-                    "django.urls.reverse",
-                    "django.urls.resolve",
+                    'djorm.urls.reverse',
+                    'djorm.urls.resolve',
                     "django",
                 ]
 

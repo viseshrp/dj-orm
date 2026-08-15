@@ -1,4 +1,4 @@
-from django.db import models
+from djorm.db import models
 
 from .fields import (
     ArrayField,

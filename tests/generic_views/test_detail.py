@@ -1,11 +1,11 @@
 import datetime
 
-from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.test import TestCase, override_settings
-from django.test.client import RequestFactory
-from django.views.generic.base import View
-from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from django.views.generic.edit import ModelFormMixin
+from djorm.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from djorm.test import TestCase, override_settings
+from djorm.test.client import RequestFactory
+from djorm.views.generic.base import View
+from djorm.views.generic.detail import SingleObjectTemplateResponseMixin
+from djorm.views.generic.edit import ModelFormMixin
 
 from .models import Artist, Author, Book, Page
 

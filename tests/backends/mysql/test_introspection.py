@@ -1,7 +1,7 @@
 from unittest import skipUnless
 
-from django.db import connection, connections
-from django.test import TestCase
+from djorm.db import connection, connections
+from djorm.test import TestCase
 
 
 @skipUnless(connection.vendor == "mysql", "MySQL tests")

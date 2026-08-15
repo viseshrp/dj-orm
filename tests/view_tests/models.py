@@ -2,7 +2,7 @@
 Regression tests for Django built-in views.
 """
 
-from django.db import models
+from djorm.db import models
 
 
 class Author(models.Model):

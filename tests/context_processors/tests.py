@@ -2,27 +2,25 @@
 Tests for Django's bundled context processors.
 """
 
-from django.test import SimpleTestCase, TestCase, override_settings
+from djorm.test import SimpleTestCase, TestCase, override_settings
 
 
 @override_settings(
     ROOT_URLCONF="context_processors.urls",
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "APP_DIRS": True,
             "OPTIONS": {
                 "context_processors": [
-                    "django.template.context_processors.request",
+                    'djorm.template.context_processors.request',
                 ],
             },
         }
     ],
 )
 class RequestContextProcessorTests(SimpleTestCase):
-    """
-    Tests for the ``django.template.context_processors.request`` processor.
-    """
+    '\n    Tests for the ``djorm.template.context_processors.request`` processor.\n    '
 
     def test_request_attributes(self):
         """
@@ -55,20 +53,18 @@ class RequestContextProcessorTests(SimpleTestCase):
     ROOT_URLCONF="context_processors.urls",
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "APP_DIRS": True,
             "OPTIONS": {
                 "context_processors": [
-                    "django.template.context_processors.debug",
+                    'djorm.template.context_processors.debug',
                 ],
             },
         }
     ],
 )
 class DebugContextProcessorTests(TestCase):
-    """
-    Tests for the ``django.template.context_processors.debug`` processor.
-    """
+    '\n    Tests for the ``djorm.template.context_processors.debug`` processor.\n    '
 
     databases = {"default", "other"}
 

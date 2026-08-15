@@ -4,12 +4,12 @@ from unittest import mock
 
 from asgiref.sync import async_to_sync, iscoroutinefunction
 
-from django.core.cache import DEFAULT_CACHE_ALIAS, caches
-from django.core.exceptions import ImproperlyConfigured, SynchronousOnlyOperation
-from django.http import HttpResponse, HttpResponseNotAllowed
-from django.test import RequestFactory, SimpleTestCase
-from django.utils.asyncio import async_unsafe
-from django.views.generic.base import View
+from djorm.core.cache import DEFAULT_CACHE_ALIAS, caches
+from djorm.core.exceptions import ImproperlyConfigured, SynchronousOnlyOperation
+from djorm.http import HttpResponse, HttpResponseNotAllowed
+from djorm.test import RequestFactory, SimpleTestCase
+from djorm.utils.asyncio import async_unsafe
+from djorm.views.generic.base import View
 
 from .models import SimpleModel
 

@@ -1,7 +1,4 @@
-"""
-The tests are shared with contenttypes_tests and so shouldn't import or
-reference any models directly. Subclasses should inherit django.test.TestCase.
-"""
+"\nThe tests are shared with contenttypes_tests and so shouldn't import or\nreference any models directly. Subclasses should inherit djorm.test.TestCase.\n"
 
 from operator import attrgetter
 

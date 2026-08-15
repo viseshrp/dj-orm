@@ -1,10 +1,10 @@
 import string
 import uuid
 
-from django.core.exceptions import ImproperlyConfigured
-from django.test import SimpleTestCase
-from django.test.utils import override_settings
-from django.urls import (
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.test import SimpleTestCase
+from djorm.test.utils import override_settings
+from djorm.urls import (
     NoReverseMatch,
     Resolver404,
     path,
@@ -13,9 +13,9 @@ from django.urls import (
     resolve,
     reverse,
 )
-from django.urls.converters import REGISTERED_CONVERTERS, IntConverter
-from django.utils.deprecation import RemovedInDjango60Warning
-from django.views import View
+from djorm.urls.converters import REGISTERED_CONVERTERS, IntConverter
+from djorm.utils.deprecation import RemovedInDjango60Warning
+from djorm.views import View
 
 from .converters import Base64Converter, DynamicConverter
 from .views import empty_view

@@ -3,17 +3,17 @@ from contextlib import contextmanager
 from io import StringIO
 from unittest import mock
 
-from django.core.exceptions import ImproperlyConfigured
-from django.db import DatabaseError, connection
-from django.db.backends.base.creation import BaseDatabaseCreation
-from django.test import SimpleTestCase
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.db import DatabaseError, connection
+from djorm.db.backends.base.creation import BaseDatabaseCreation
+from djorm.test import SimpleTestCase
 
 try:
-    from django.db.backends.postgresql.psycopg_any import errors
+    from djorm.db.backends.postgresql.psycopg_any import errors
 except ImportError:
     pass
 else:
-    from django.db.backends.postgresql.creation import DatabaseCreation
+    from djorm.db.backends.postgresql.creation import DatabaseCreation
 
 
 @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL tests")

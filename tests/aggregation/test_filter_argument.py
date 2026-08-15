@@ -1,7 +1,7 @@
 import datetime
 from decimal import Decimal
 
-from django.db.models import (
+from djorm.db.models import (
     Avg,
     Case,
     Count,
@@ -16,8 +16,8 @@ from django.db.models import (
     Variance,
     When,
 )
-from django.test import TestCase
-from django.test.utils import Approximate
+from djorm.test import TestCase
+from djorm.test.utils import Approximate
 
 from .models import Author, Book, Publisher
 

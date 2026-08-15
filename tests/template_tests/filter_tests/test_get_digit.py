@@ -1,5 +1,5 @@
-from django.template.defaultfilters import get_digit
-from django.test import SimpleTestCase
+from djorm.template.defaultfilters import get_digit
+from djorm.test import SimpleTestCase
 
 
 class FunctionTests(SimpleTestCase):

@@ -8,25 +8,25 @@ from pathlib import Path
 from asgiref.sync import sync_to_async
 from asgiref.testing import ApplicationCommunicator
 
-from django.contrib.staticfiles.handlers import ASGIStaticFilesHandler
-from django.core.asgi import get_asgi_application
-from django.core.exceptions import RequestDataTooBig
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.core.handlers.asgi import ASGIHandler, ASGIRequest
-from django.core.signals import request_finished, request_started
-from django.db import close_old_connections
-from django.http import HttpResponse, StreamingHttpResponse
-from django.test import (
+from djorm.contrib.staticfiles.handlers import ASGIStaticFilesHandler
+from djorm.core.asgi import get_asgi_application
+from djorm.core.exceptions import RequestDataTooBig
+from djorm.core.files.uploadedfile import InMemoryUploadedFile
+from djorm.core.handlers.asgi import ASGIHandler, ASGIRequest
+from djorm.core.signals import request_finished, request_started
+from djorm.db import close_old_connections
+from djorm.http import HttpResponse, StreamingHttpResponse
+from djorm.test import (
     AsyncRequestFactory,
     SimpleTestCase,
     ignore_warnings,
     modify_settings,
     override_settings,
 )
-from django.test.utils import captured_stderr
-from django.urls import path
-from django.utils.http import http_date
-from django.views.decorators.csrf import csrf_exempt
+from djorm.test.utils import captured_stderr
+from djorm.urls import path
+from djorm.utils.http import http_date
+from djorm.views.decorators.csrf import csrf_exempt
 
 from .urls import sync_waiter, test_filename
 
@@ -85,7 +85,7 @@ class ASGITest(SimpleTestCase):
     # StreamingHTTPResponse triggers a warning when iterating the file.
     # assertWarnsMessage is not async compatible, so ignore_warnings for the
     # test.
-    @ignore_warnings(module="django.http.response")
+    @ignore_warnings(module='djorm.http.response')
     async def test_file_response(self):
         """
         Makes sure that FileResponse works over ASGI.
@@ -128,13 +128,13 @@ class ASGITest(SimpleTestCase):
         # Allow response.close() to finish.
         await communicator.wait()
 
-    @modify_settings(INSTALLED_APPS={"append": "django.contrib.staticfiles"})
+    @modify_settings(INSTALLED_APPS={"append": 'djorm.contrib.staticfiles'})
     @override_settings(
         STATIC_URL="static/",
         STATIC_ROOT=TEST_STATIC_ROOT,
         STATICFILES_DIRS=[TEST_STATIC_ROOT],
         STATICFILES_FINDERS=[
-            "django.contrib.staticfiles.finders.FileSystemFinder",
+            'djorm.contrib.staticfiles.finders.FileSystemFinder',
         ],
     )
     async def test_static_file_response(self):

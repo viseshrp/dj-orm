@@ -1,11 +1,11 @@
 import logging
 import re
 
-from django.conf import settings
-from django.contrib.sessions.backends.cache import SessionStore
-from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpRequest, HttpResponse, UnreadablePostError
-from django.middleware.csrf import (
+from djorm.conf import settings
+from djorm.contrib.sessions.backends.cache import SessionStore
+from djorm.core.exceptions import ImproperlyConfigured
+from djorm.http import HttpRequest, HttpResponse, UnreadablePostError
+from djorm.middleware.csrf import (
     CSRF_ALLOWED_CHARS,
     CSRF_SECRET_LENGTH,
     CSRF_SESSION_KEY,
@@ -23,8 +23,8 @@ from django.middleware.csrf import (
     get_token,
     rotate_token,
 )
-from django.test import SimpleTestCase, override_settings
-from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
+from djorm.test import SimpleTestCase, override_settings
+from djorm.views.decorators.csrf import csrf_exempt, requires_csrf_token
 
 from .views import (
     ensure_csrf_cookie_view,

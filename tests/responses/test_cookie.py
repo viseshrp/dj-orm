@@ -3,10 +3,10 @@ from datetime import date, datetime, timedelta, timezone
 from email.utils import format_datetime as format_datetime_rfc5322
 from http import cookies
 
-from django.http import HttpResponse
-from django.test import SimpleTestCase
-from django.test.utils import freeze_time
-from django.utils.http import http_date
+from djorm.http import HttpResponse
+from djorm.test import SimpleTestCase
+from djorm.test.utils import freeze_time
+from djorm.utils.http import http_date
 
 
 class SetCookieTests(SimpleTestCase):

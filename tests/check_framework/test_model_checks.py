@@ -1,10 +1,10 @@
 from unittest import mock
 
-from django.core import checks
-from django.core.checks import Error, Warning
-from django.db import models
-from django.test import SimpleTestCase, TestCase, skipUnlessDBFeature
-from django.test.utils import (
+from djorm.core import checks
+from djorm.core.checks import Error, Warning
+from djorm.db import models
+from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djorm.test.utils import (
     isolate_apps,
     modify_settings,
     override_settings,
@@ -418,23 +418,23 @@ def mocked_is_overridden(self, setting):
     # overridden setting.
     return (
         setting != "DEFAULT_AUTO_FIELD"
-        or self.DEFAULT_AUTO_FIELD != "django.db.models.AutoField"
+        or self.DEFAULT_AUTO_FIELD != 'djorm.db.models.AutoField'
     )
 
 
-@mock.patch("django.conf.UserSettingsHolder.is_overridden", mocked_is_overridden)
-@override_settings(DEFAULT_AUTO_FIELD="django.db.models.AutoField")
+@mock.patch('djorm.conf.UserSettingsHolder.is_overridden', mocked_is_overridden)
+@override_settings(DEFAULT_AUTO_FIELD='djorm.db.models.AutoField')
 @isolate_apps("check_framework.apps.CheckDefaultPKConfig", attr_name="apps")
 @override_system_checks([checks.model_checks.check_all_models])
 class ModelDefaultAutoFieldTests(SimpleTestCase):
     msg = (
         "Auto-created primary key used when not defining a primary key type, "
-        "by default 'django.db.models.AutoField'."
+        "by default 'djorm.db.models.AutoField'."
     )
     hint = (
         "Configure the DEFAULT_AUTO_FIELD setting or the "
         "CheckDefaultPKConfig.default_auto_field attribute to point to a "
-        "subclass of AutoField, e.g. 'django.db.models.BigAutoField'."
+        "subclass of AutoField, e.g. 'djorm.db.models.BigAutoField'."
     )
 
     def test_auto_created_pk(self):
@@ -524,7 +524,7 @@ class ModelDefaultAutoFieldTests(SimpleTestCase):
             ],
         )
 
-    @override_settings(DEFAULT_AUTO_FIELD="django.db.models.BigAutoField")
+    @override_settings(DEFAULT_AUTO_FIELD='djorm.db.models.BigAutoField')
     def test_default_auto_field_setting(self):
         class Model(models.Model):
             pass

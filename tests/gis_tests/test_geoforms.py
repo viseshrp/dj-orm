@@ -1,12 +1,12 @@
 import re
 
-from django.contrib.gis import forms
-from django.contrib.gis.forms import BaseGeometryWidget, OpenLayersWidget
-from django.contrib.gis.geos import GEOSGeometry
-from django.contrib.gis.geos.prototypes.io import MAX_GEOM_COLLECTIONS
-from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase, override_settings
-from django.utils.html import escape
+from djorm.contrib.gis import forms
+from djorm.contrib.gis.forms import BaseGeometryWidget, OpenLayersWidget
+from djorm.contrib.gis.geos import GEOSGeometry
+from djorm.contrib.gis.geos.prototypes.io import MAX_GEOM_COLLECTIONS
+from djorm.core.exceptions import ValidationError
+from djorm.test import SimpleTestCase, override_settings
+from djorm.utils.html import escape
 
 from .data.rasters.textrasters import JSON_RASTER
 
@@ -219,7 +219,7 @@ class GeometryFieldTest(SimpleTestCase):
             }
         )
 
-        with self.assertLogs("django.contrib.gis", "ERROR") as logger_calls:
+        with self.assertLogs('djorm.contrib.gis', "ERROR") as logger_calls:
             output = str(form)
 
         # The first point can't use assertInHTML() due to non-deterministic

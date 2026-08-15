@@ -1,6 +1,6 @@
-from django.contrib.auth.models import User
-from django.test import TestCase, override_settings
-from django.urls import reverse
+from djorm.contrib.auth.models import User
+from djorm.test import TestCase, override_settings
+from djorm.urls import reverse
 
 
 @override_settings(ROOT_URLCONF="admin_views.urls")

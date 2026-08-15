@@ -1,5 +1,5 @@
-from django.forms.renderers import DjangoTemplates, Jinja2
-from django.test import SimpleTestCase
+from djorm.forms.renderers import DjangoTemplates, Jinja2
+from djorm.test import SimpleTestCase
 
 try:
     import jinja2

@@ -1,8 +1,8 @@
-from django.contrib import auth
-from django.contrib.auth.models import AnonymousUser, User
-from django.http import HttpRequest
-from django.test import TestCase
-from django.utils.deprecation import RemovedInDjango61Warning
+from djorm.contrib import auth
+from djorm.contrib.auth.models import AnonymousUser, User
+from djorm.http import HttpRequest
+from djorm.test import TestCase
+from djorm.utils.deprecation import RemovedInDjango61Warning
 
 
 class TestLogin(TestCase):

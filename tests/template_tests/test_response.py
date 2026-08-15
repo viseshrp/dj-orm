@@ -2,19 +2,19 @@ import pickle
 import time
 from datetime import datetime
 
-from django.template import engines
-from django.template.response import (
+from djorm.template import engines
+from djorm.template.response import (
     ContentNotRenderedError,
     SimpleTemplateResponse,
     TemplateResponse,
 )
-from django.test import (
+from djorm.test import (
     RequestFactory,
     SimpleTestCase,
     modify_settings,
     override_settings,
 )
-from django.test.utils import require_jinja2
+from djorm.test.utils import require_jinja2
 
 from .utils import TEMPLATE_DIR
 
@@ -249,7 +249,7 @@ class SimpleTemplateResponseTest(SimpleTestCase):
 @override_settings(
     TEMPLATES=[
         {
-            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             "DIRS": [TEMPLATE_DIR],
             "OPTIONS": {
                 "context_processors": [test_processor_name],
@@ -386,8 +386,8 @@ class CustomURLConfTest(SimpleTestCase):
 @modify_settings(
     MIDDLEWARE={
         "append": [
-            "django.middleware.cache.FetchFromCacheMiddleware",
-            "django.middleware.cache.UpdateCacheMiddleware",
+            'djorm.middleware.cache.FetchFromCacheMiddleware',
+            'djorm.middleware.cache.UpdateCacheMiddleware',
         ],
     },
 )

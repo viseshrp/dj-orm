@@ -1,8 +1,8 @@
 from functools import wraps
 
-from django.contrib.syndication import views
-from django.utils import feedgenerator
-from django.utils.timezone import get_fixed_timezone
+from djorm.contrib.syndication import views
+from djorm.utils import feedgenerator
+from djorm.utils.timezone import get_fixed_timezone
 
 from .models import Article, Entry
 

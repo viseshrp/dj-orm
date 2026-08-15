@@ -1,11 +1,11 @@
-from django.core.checks import Error
-from django.core.checks.translation import (
+from djorm.core.checks import Error
+from djorm.core.checks.translation import (
     check_language_settings_consistent,
     check_setting_language_code,
     check_setting_languages,
     check_setting_languages_bidi,
 )
-from django.test import SimpleTestCase, override_settings
+from djorm.test import SimpleTestCase, override_settings
 
 
 class TranslationCheckTests(SimpleTestCase):

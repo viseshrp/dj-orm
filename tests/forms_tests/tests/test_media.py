@@ -1,8 +1,8 @@
-from django.forms import CharField, Form, Media, MultiWidget, TextInput
-from django.forms.widgets import MediaAsset, Script
-from django.template import Context, Template
-from django.test import SimpleTestCase, override_settings
-from django.utils.html import html_safe
+from djorm.forms import CharField, Form, Media, MultiWidget, TextInput
+from djorm.forms.widgets import MediaAsset, Script
+from djorm.template import Context, Template
+from djorm.test import SimpleTestCase, override_settings
+from djorm.utils.html import html_safe
 
 
 class CSS(MediaAsset):

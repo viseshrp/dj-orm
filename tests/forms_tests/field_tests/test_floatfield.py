@@ -1,10 +1,10 @@
-from django.core.exceptions import ValidationError
-from django.forms import FloatField, NumberInput
-from django.test import SimpleTestCase
-from django.test.selenium import SeleniumTestCase
-from django.test.utils import override_settings
-from django.urls import reverse
-from django.utils import formats, translation
+from djorm.core.exceptions import ValidationError
+from djorm.forms import FloatField, NumberInput
+from djorm.test import SimpleTestCase
+from djorm.test.selenium import SeleniumTestCase
+from djorm.test.utils import override_settings
+from djorm.urls import reverse
+from djorm.utils import formats, translation
 
 from . import FormFieldAssertionsMixin
 

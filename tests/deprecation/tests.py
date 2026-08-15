@@ -1,7 +1,7 @@
 import warnings
 
-from django.test import SimpleTestCase
-from django.utils.deprecation import RemovedAfterNextVersionWarning, RenameMethodsBase
+from djorm.test import SimpleTestCase
+from djorm.utils.deprecation import RemovedAfterNextVersionWarning, RenameMethodsBase
 
 
 class RenameManagerMethods(RenameMethodsBase):

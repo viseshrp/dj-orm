@@ -2,9 +2,9 @@ import importlib
 import unittest
 from io import StringIO
 
-from django.core import management, serializers
-from django.core.serializers.base import DeserializationError
-from django.test import SimpleTestCase, TestCase, TransactionTestCase
+from djorm.core import management, serializers
+from djorm.core.serializers.base import DeserializationError
+from djorm.test import SimpleTestCase, TestCase, TransactionTestCase
 
 from .models import Author
 from .tests import SerializersTestBase, SerializersTransactionTestBase

@@ -1,4 +1,4 @@
-from django.contrib.gis.gdal import (
+from djorm.contrib.gis.gdal import (
     GDAL_VERSION,
     AxisOrder,
     CoordTransform,
@@ -6,8 +6,8 @@ from django.contrib.gis.gdal import (
     SpatialReference,
     SRSException,
 )
-from django.contrib.gis.geos import GEOSGeometry
-from django.test import SimpleTestCase
+from djorm.contrib.gis.geos import GEOSGeometry
+from djorm.test import SimpleTestCase
 
 
 class TestSRS:

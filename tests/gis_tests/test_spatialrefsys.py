@@ -1,8 +1,8 @@
 import re
 
-from django.db import connection
-from django.test import TestCase, skipUnlessDBFeature
-from django.utils.functional import cached_property
+from djorm.db import connection
+from djorm.test import TestCase, skipUnlessDBFeature
+from djorm.utils.functional import cached_property
 
 test_srs = (
     {
@@ -139,7 +139,7 @@ class SpatialRefSysTest(TestCase):
         Test adding a new entry in the SpatialRefSys model using the
         add_srs_entry utility.
         """
-        from django.contrib.gis.utils import add_srs_entry
+        from djorm.contrib.gis.utils import add_srs_entry
 
         add_srs_entry(3857)
         self.assertTrue(self.SpatialRefSys.objects.filter(srid=3857).exists())

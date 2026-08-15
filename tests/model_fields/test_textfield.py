@@ -1,6 +1,6 @@
-from django import forms
-from django.db import models
-from django.test import SimpleTestCase, TestCase
+from djorm import forms
+from djorm.db import models
+from djorm.test import SimpleTestCase, TestCase
 
 from .models import Post
 

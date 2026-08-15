@@ -1,9 +1,9 @@
-from django.contrib.admin.utils import quote
-from django.contrib.admin.views.main import IS_POPUP_VAR
-from django.contrib.auth.models import User
-from django.template.response import TemplateResponse
-from django.test import TestCase, override_settings
-from django.urls import reverse
+from djorm.contrib.admin.utils import quote
+from djorm.contrib.admin.views.main import IS_POPUP_VAR
+from djorm.contrib.auth.models import User
+from djorm.template.response import TemplateResponse
+from djorm.test import TestCase, override_settings
+from djorm.urls import reverse
 
 from .models import Action, Car, Person
 

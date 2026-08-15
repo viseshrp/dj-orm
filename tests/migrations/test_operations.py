@@ -1,23 +1,23 @@
 import math
 from decimal import Decimal
 
-from django.core.exceptions import FieldDoesNotExist
-from django.db import IntegrityError, connection, migrations, models, transaction
-from django.db.migrations.migration import Migration
-from django.db.migrations.operations.base import Operation
-from django.db.migrations.operations.fields import FieldOperation
-from django.db.migrations.state import ModelState, ProjectState
-from django.db.models import F
-from django.db.models.expressions import Value
-from django.db.models.functions import Abs, Concat, Pi
-from django.db.transaction import atomic
-from django.test import (
+from djorm.core.exceptions import FieldDoesNotExist
+from djorm.db import IntegrityError, connection, migrations, models, transaction
+from djorm.db.migrations.migration import Migration
+from djorm.db.migrations.operations.base import Operation
+from djorm.db.migrations.operations.fields import FieldOperation
+from djorm.db.migrations.state import ModelState, ProjectState
+from djorm.db.models import F
+from djorm.db.models.expressions import Value
+from djorm.db.models.functions import Abs, Concat, Pi
+from djorm.db.transaction import atomic
+from djorm.test import (
     SimpleTestCase,
     override_settings,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from django.test.utils import CaptureQueriesContext
+from djorm.test.utils import CaptureQueriesContext
 
 from .models import FoodManager, FoodQuerySet, UnicodeModel
 from .test_base import OperationTestBase
@@ -142,7 +142,7 @@ class OperationTests(OperationTestBase):
                 ),
             )
         message = (
-            "Found duplicate value <class 'django.db.models.base.Model'> in "
+            "Found duplicate value <class 'djorm.db.models.base.Model'> in "
             "CreateModel bases argument."
         )
         with self.assertRaisesMessage(ValueError, message):

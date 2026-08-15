@@ -1,10 +1,10 @@
-from django.conf import settings
-from django.contrib.sites.managers import CurrentSiteManager
-from django.contrib.sites.models import Site
-from django.core import checks
-from django.db import models
-from django.test import SimpleTestCase, TestCase
-from django.test.utils import isolate_apps
+from djorm.conf import settings
+from djorm.contrib.sites.managers import CurrentSiteManager
+from djorm.contrib.sites.models import Site
+from djorm.core import checks
+from djorm.db import models
+from djorm.test import SimpleTestCase, TestCase
+from djorm.test.utils import isolate_apps
 
 from .models import CustomArticle, ExclusiveArticle, SyndicatedArticle
 

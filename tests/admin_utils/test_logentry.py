@@ -1,16 +1,16 @@
 import json
 from datetime import datetime
 
-from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
-from django.contrib.admin.utils import quote
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import post_save, pre_save
-from django.test import TestCase, override_settings
-from django.urls import reverse
-from django.utils import translation
-from django.utils.deprecation import RemovedInDjango60Warning
-from django.utils.html import escape
+from djorm.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
+from djorm.contrib.admin.utils import quote
+from djorm.contrib.auth.models import User
+from djorm.contrib.contenttypes.models import ContentType
+from djorm.db.models.signals import post_save, pre_save
+from djorm.test import TestCase, override_settings
+from djorm.urls import reverse
+from djorm.utils import translation
+from djorm.utils.deprecation import RemovedInDjango60Warning
+from djorm.utils.html import escape
 
 from .models import Article, ArticleProxy, Car, InheritedLogEntryManager, Site
 

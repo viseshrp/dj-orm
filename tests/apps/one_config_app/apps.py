@@ -1,4 +1,4 @@
-from django.apps import AppConfig
+from djorm.apps import AppConfig
 
 
 class OneConfig(AppConfig):

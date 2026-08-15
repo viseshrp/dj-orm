@@ -3,13 +3,13 @@ import decimal
 import json
 import re
 
-from django.core import serializers
-from django.core.serializers.base import DeserializationError
-from django.core.serializers.json import DjangoJSONEncoder
-from django.db import models
-from django.test import SimpleTestCase, TestCase, TransactionTestCase
-from django.test.utils import isolate_apps
-from django.utils.translation import gettext_lazy, override
+from djorm.core import serializers
+from djorm.core.serializers.base import DeserializationError
+from djorm.core.serializers.json import DjangoJSONEncoder
+from djorm.db import models
+from djorm.test import SimpleTestCase, TestCase, TransactionTestCase
+from djorm.test.utils import isolate_apps
+from djorm.utils.translation import gettext_lazy, override
 
 from .models import Score
 from .tests import SerializersTestBase, SerializersTransactionTestBase

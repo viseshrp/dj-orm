@@ -2,10 +2,10 @@ from pathlib import Path
 
 from template_tests.test_response import test_processor_name
 
-from django.template import Context, EngineHandler, RequestContext
-from django.template.backends.django import DjangoTemplates
-from django.template.library import InvalidTemplateLibrary
-from django.test import RequestFactory, override_settings
+from djorm.template import Context, EngineHandler, RequestContext
+from djorm.template.backends.django import DjangoTemplates
+from djorm.template.library import InvalidTemplateLibrary
+from djorm.test import RequestFactory, override_settings
 
 from .test_dummy import TemplateStringsTests
 
@@ -91,7 +91,7 @@ class DjangoTemplatesTests(TemplateStringsTests):
         # libraries are discovered from django.templatetags
         self.assertEqual(
             engine.engine.libraries["static"],
-            "django.templatetags.static",
+            'djorm.templatetags.static',
         )
         # libraries passed in OPTIONS are registered
         self.assertEqual(
@@ -139,9 +139,9 @@ class DjangoTemplatesTests(TemplateStringsTests):
         self.assertEqual(
             engine.engine.builtins,
             [
-                "django.template.defaulttags",
-                "django.template.defaultfilters",
-                "django.template.loader_tags",
+                'djorm.template.defaulttags',
+                'djorm.template.defaultfilters',
+                'djorm.template.loader_tags',
                 "template_backends.apps.good.templatetags.good_tags",
             ],
         )
@@ -149,7 +149,7 @@ class DjangoTemplatesTests(TemplateStringsTests):
     def test_autoescape_off(self):
         templates = [
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
                 "OPTIONS": {"autoescape": False},
             }
         ]
@@ -164,7 +164,7 @@ class DjangoTemplatesTests(TemplateStringsTests):
     def test_autoescape_default(self):
         templates = [
             {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "BACKEND": 'djorm.template.backends.django.DjangoTemplates',
             }
         ]
         engines = EngineHandler(templates=templates)
@@ -186,10 +186,10 @@ class DjangoTemplatesTests(TemplateStringsTests):
                     engine.engine.loaders,
                     [
                         (
-                            "django.template.loaders.cached.Loader",
+                            'djorm.template.loaders.cached.Loader',
                             [
-                                "django.template.loaders.filesystem.Loader",
-                                "django.template.loaders.app_directories.Loader",
+                                'djorm.template.loaders.filesystem.Loader',
+                                'djorm.template.loaders.app_directories.Loader',
                             ],
                         )
                     ],
