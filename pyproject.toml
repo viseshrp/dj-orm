@@ -196,7 +196,7 @@ unused-type-ignore-comment = "error"
 [tool.codespell]
 ignore-words = "codespell.txt"
 quiet-level = 3
-skip = "*.mo,*.po,AUTHORS,docs,js_tests,tests/*"
+skip = "*.mo,*.po,AUTHORS,tests/*"
 
 [tool.bandit]
 targets = ["djorm/_ext", "scripts"]

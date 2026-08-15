@@ -19,7 +19,7 @@ try:
     import djorm
 except ImportError as e:
     raise RuntimeError(
-        "Django module not found, reference tests/README.rst for instructions."
+        "Djorm is not installed. Follow the setup instructions in CONTRIBUTING.md."
     ) from e
 else:
     from djorm.apps import apps

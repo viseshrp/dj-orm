@@ -18,3 +18,5 @@ upstream release notes for the exact tag named by each Djorm release.
 
 - The public distribution name is `dj-orm`; imports and the CLI remain `djorm`.
 - Release versions map the exact Django tag plus a Djorm rebuild revision.
+- Removed inherited Django documentation, browser tooling, maintainer scripts,
+  and other files outside the standalone ORM project.

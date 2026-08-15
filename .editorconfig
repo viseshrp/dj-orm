@@ -23,15 +23,6 @@ indent_size = 2
 indent_size = 2
 insert_final_newline = ignore
 
-[**/admin/js/vendor/**]
-indent_style = ignore
-indent_size = ignore
-
-# Minified JavaScript files shouldn't be changed
-[**.min.js]
-indent_style = ignore
-insert_final_newline = ignore
-
 # Makefiles always use tabs for indentation
 [Makefile]
 indent_style = tab
@@ -39,9 +30,6 @@ indent_style = tab
 # Batch files use tabs for indentation
 [*.bat]
 indent_style = tab
-
-[docs/**.txt]
-max_line_length = 79
 
 [*.yml]
 indent_size = 2

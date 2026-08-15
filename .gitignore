@@ -26,8 +26,3 @@ MANIFEST
 tests/coverage_html/
 tests/report/
 tests/screenshots/
-
-# Upstream documentation and JavaScript builds
-docs/_build/
-docs/locale/
-node_modules/
