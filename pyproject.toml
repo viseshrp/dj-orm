@@ -1,23 +1,28 @@
 [build-system]
-requires = ["setuptools>=77.0.3"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
 
 [project]
-name = "djo"
+name = "dj-orm"
 dynamic = ["version"]
-requires-python = ">= 3.10"
+description = "Django ORM, migrations, and database backends as a standalone library."
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+license = "BSD-3-Clause"
+license-files = ["LICENSE", "LICENSE.python", "AUTHORS"]
+authors = [
+    { name = "Django Software Foundation and contributors" },
+    { name = "Djo contributors" },
+]
+maintainers = [
+    { name = "Visesh Prasad", email = "viseshrprasad@gmail.com" },
+]
+keywords = ["database", "django", "migrations", "orm"]
 dependencies = [
     "asgiref>=3.8.1",
     "sqlparse>=0.3.1",
     "tzdata; sys_platform == 'win32'",
 ]
-authors = [
-  {name = "djo contributors"},
-]
-description = "Django ORM, migrations, and database backends as a standalone library."
-readme = "README.rst"
-license = "BSD-3-Clause"
-license-files = ["LICENSE", "LICENSE.python", "AUTHORS"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -35,27 +40,165 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-postgresql = ["psycopg>=3.1.8; python_version >= '3.10'", "psycopg2>=2.9"]
-mysql = ["mysqlclient>=2.1"]
+images = ["Pillow>=9.1.0"]
+mysql = ["mysqlclient>=2.1.1"]
+oracle = ["oracledb>=1.3.2"]
+postgresql = ["psycopg>=3.1.8"]
+postgresql-legacy = ["psycopg2>=2.9.9"]
+yaml = ["PyYAML>=5.1"]
 
 [project.scripts]
 djo = "djo.core.management:execute_from_command_line"
 
 [project.urls]
-Source = "https://github.com/django/django"
-Tracker = "https://github.com/django/django/issues"
+Homepage = "https://github.com/viseshrp/djo"
+Repository = "https://github.com/viseshrp/djo"
+Documentation = "https://github.com/viseshrp/djo/blob/djo/5.2-lts/README.md"
+Changelog = "https://github.com/viseshrp/djo/blob/djo/5.2-lts/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/viseshrp/djo/issues"
+CI = "https://github.com/viseshrp/djo/actions"
+"Django upstream" = "https://github.com/django/django"
 
-[tool.black]
-target-version = ["py310"]
-force-exclude = "tests/test_runner_apps/tagged/tests_syntax_error.py"
+[dependency-groups]
+dev = [
+    "bandit[toml]>=1.8.6",
+    "codespell>=2.4.1",
+    "coverage>=7.10.0",
+    "hatch>=1.15.0",
+    "pip-audit>=2.9.0",
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.0",
+    "ruff>=0.12.0",
+    "tomli>=2.0; python_version < '3.11'",
+    "twine>=6.1.0",
+    "ty>=0.0.1a20",
+    "uv",
+    "tox>=4.28.0",
+    "tox-gh-actions>=3.3.0",
+    "tox-uv>=1.28.0",
+]
 
-[tool.isort]
-profile = "black"
-default_section = "THIRDPARTY"
-known_first_party = "djo"
+[tool.hatch.version]
+path = "djo/_version.py"
 
-[tool.setuptools.dynamic]
-version = {attr = "djo.__version__"}
+[tool.hatch.build]
+include = [
+    "djo/**",
+    "AUTHORS",
+    "CHANGELOG.md",
+    "LICENSE",
+    "LICENSE.python",
+    "README.md",
+]
 
-[tool.setuptools.packages.find]
-include = ["djo*"]
+[tool.hatch.build.targets.wheel]
+packages = ["djo"]
+
+[tool.hatch.build.targets.editable]
+packages = ["djo"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    ".djo-maintenance.toml",
+    ".github/**",
+    ".gitattributes",
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    "AUTHORS",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "IMPLEMENTATION_PLAN.md",
+    "LICENSE",
+    "LICENSE.python",
+    "MAINTENANCE.md",
+    "Makefile",
+    "README.md",
+    "SPEC.md",
+    "codecov.yml",
+    "codespell.txt",
+    "djo/**",
+    "pyproject.toml",
+    "scripts/apply_django_lts.py",
+    "scripts/check_release.py",
+    "scripts/inspect_dist.py",
+    "scripts/rename_namespace.py",
+    "scripts/tag_release.sh",
+    "tests/djo_smoke/**",
+    "tox.ini",
+    "uv.lock",
+]
+
+[tool.hatch.envs.default]
+path = ".venv"
+
+[tool.uv]
+default-groups = "all"
+
+[tool.pytest.ini_options]
+testpaths = ["tests/djo_smoke"]
+addopts = "--capture=tee-sys --tb=native -ra"
+tmp_path_retention_policy = "failed"
+markers = [
+    "integration: package integration tests",
+    "smoke: installed-package smoke tests",
+    "unit: isolated maintenance-tool tests",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["djo"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "SIM", "UP"]
+ignore = ["SIM108"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/djo_smoke/*" = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["djo", "scripts", "tests"]
+force-sort-within-sections = true
+
+[tool.ty.src]
+include = [
+    "djo/_ext",
+    "scripts/apply_django_lts.py",
+    "scripts/check_release.py",
+    "scripts/inspect_dist.py",
+    "tests/djo_smoke",
+]
+
+[tool.ty.environment]
+python-version = "3.10"
+
+[tool.ty.analysis]
+allowed-unresolved-imports = ["djo.urls", "tomllib"]
+
+[tool.ty.rules]
+unused-type-ignore-comment = "error"
+
+[tool.codespell]
+ignore-words = "codespell.txt"
+quiet-level = 3
+skip = "*.mo,*.po,AUTHORS,docs,js_tests,tests/*"
+
+[tool.bandit]
+targets = ["djo/_ext", "scripts"]
+exclude_dirs = ["tests"]
+skips = ["B404", "B603", "B607"]
