@@ -6,7 +6,6 @@ import datetime
 from operator import attrgetter 
 from unittest import expectedFailure 
 
-from djo import forms 
 from djo .test import TestCase 
 
 from .models import (
