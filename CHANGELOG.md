@@ -24,3 +24,5 @@ upstream release notes for the exact tag named by each Djorm release.
   intentionally pruned by Djorm.
 - Removed gettext source catalogs from the package while retaining compiled
   runtime translations.
+- Removed orphaned test apps, fixtures, and web-only runner options left after
+  the original ORM test-suite pruning.

@@ -3,15 +3,13 @@ import argparse
 import atexit
 import copy
 import gc
-import multiprocessing
 import os
+from pathlib import Path
 import shutil
-import socket
 import subprocess
 import sys
 import tempfile
 import warnings
-from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -24,7 +22,6 @@ except ImportError as e:
 else:
     from djorm.apps import apps
     from djorm.conf import settings
-    from djorm.core.exceptions import ImproperlyConfigured
     from djorm.db import connection, connections
     from djorm.test import TestCase, TransactionTestCase
     from djorm.test.runner import get_max_test_processes, parallel_type
@@ -36,24 +33,6 @@ else:
     from djorm.utils.functional import classproperty
     from djorm.utils.log import DEFAULT_LOGGING
     from djorm.utils.version import PY312, PYPY
-
-try:
-    from djorm.test.selenium import SeleniumTestCase, SeleniumTestCaseBase
-except ImportError:
-
-    class SeleniumTestCase:
-        screenshots = False
-
-    class SeleniumTestCaseBase:
-        selenium_hub = None
-        external_host = None
-        headless = False
-        browsers = []
-
-        @staticmethod
-        def import_webdriver(browser):
-            raise ImproperlyConfigured("Selenium support is not available in this fork.")
-
 
 try:
     import MySQLdb
@@ -86,57 +65,24 @@ os.environ["RUNTESTS_DIR"] = RUNTESTS_DIR
 os.environ["COVERAGE_PROCESS_START"] = os.path.join(RUNTESTS_DIR, ".coveragerc")
 
 
-# This is a dict mapping RUNTESTS_DIR subdirectory to subdirectories of that
-# directory to skip when searching for test modules.
-SUBDIRS_TO_SKIP = {
-    "": {"import_error_package", "test_runner_apps"},
-    "gis_tests": {"data"},
-}
-
 ALWAYS_INSTALLED_APPS = [
     "djorm.contrib.contenttypes",
 ]
 
-ALWAYS_MIDDLEWARE = []
 
-# Need to add the associated contrib app to INSTALLED_APPS in some cases to
-# avoid "RuntimeError: Model class X doesn't declare an explicit app_label
-# and isn't in an application in INSTALLED_APPS."
-CONTRIB_TESTS_TO_APPS = {}
-
-
-def get_test_modules(gis_enabled):
-    """
-    Scan the tests directory and yield the names of all test modules.
-
-    The yielded names have either one dotted part like "test_runner" or, in
-    the case of GIS tests, two dotted parts like "gis_tests.gdal_tests".
-    """
-    discovery_dirs = [""]
-    if gis_enabled:
-        # GIS tests are in nested apps
-        discovery_dirs.append("gis_tests")
-    else:
-        SUBDIRS_TO_SKIP[""].add("gis_tests")
-
-    for dirname in discovery_dirs:
-        dirpath = os.path.join(RUNTESTS_DIR, dirname)
-        subdirs_to_skip = SUBDIRS_TO_SKIP[dirname]
-        with os.scandir(dirpath) as entries:
-            for f in entries:
-                if (
-                    "." in f.name
-                    or os.path.basename(f.name) in subdirs_to_skip
-                    or f.is_file()
-                    or not os.path.exists(os.path.join(f.path, "__init__.py"))
-                ):
-                    continue
-                test_module = f.name
-                if test_module == "postgres_tests" and connection.vendor != "postgresql":
-                    continue
-                if dirname:
-                    test_module = dirname + "." + test_module
-                yield test_module
+def get_test_modules():
+    """Scan the tests directory and yield top-level test modules."""
+    with os.scandir(RUNTESTS_DIR) as entries:
+        for entry in entries:
+            if (
+                "." in entry.name
+                or entry.is_file()
+                or not os.path.exists(os.path.join(entry.path, "__init__.py"))
+            ):
+                continue
+            if entry.name == "postgres_tests" and connection.vendor != "postgresql":
+                continue
+            yield entry.name
 
 
 def get_label_module(label):
@@ -155,7 +101,7 @@ def get_label_module(label):
     return rel_path.parts[0]
 
 
-def get_filtered_test_modules(start_at, start_after, gis_enabled, test_labels=None):
+def get_filtered_test_modules(start_at, start_after, test_labels=None):
     if test_labels is None:
         test_labels = []
         # Reduce each test label to just the top-level module part.
@@ -164,18 +110,12 @@ def get_filtered_test_modules(start_at, start_after, gis_enabled, test_labels=No
         test_module = get_label_module(label)
         label_modules.add(test_module)
 
-        # It would be nice to put this validation earlier but it must come after
-        # django.setup() so that connection.features.gis_enabled can be accessed.
-    if "gis_tests" in label_modules and not gis_enabled:
-        print("Aborting: A GIS database backend is required to run gis_tests.")
-        sys.exit(1)
-
     def _module_match_label(module_name, label):
         # Exact or ancestor match.
         return module_name == label or module_name.startswith(label + ".")
 
     start_label = start_at or start_after
-    for test_module in get_test_modules(gis_enabled):
+    for test_module in get_test_modules():
         if start_label:
             if not _module_match_label(test_module, start_label):
                 continue
@@ -193,7 +133,6 @@ def get_filtered_test_modules(start_at, start_after, gis_enabled, test_labels=No
 
 
 def setup_collect_tests(start_at, start_after, test_labels=None):
-    TMPDIR = os.environ["TMPDIR"]
     state = {
         "INSTALLED_APPS": settings.INSTALLED_APPS,
         "LANGUAGE_CODE": settings.LANGUAGE_CODE,
@@ -203,7 +142,7 @@ def setup_collect_tests(start_at, start_after, test_labels=None):
     # Redirect some settings for the duration of these tests.
     settings.INSTALLED_APPS = ALWAYS_INSTALLED_APPS
     settings.LANGUAGE_CODE = "en"
-    settings.MIDDLEWARE = ALWAYS_MIDDLEWARE
+    settings.MIDDLEWARE = []
     settings.MIGRATION_MODULES = {
         # This lets us skip creating migrations for the test models as many of
         # them depend on one of the following contrib applications.
@@ -221,16 +160,10 @@ def setup_collect_tests(start_at, start_after, test_labels=None):
     # Load all the ALWAYS_INSTALLED_APPS.
     djorm.setup()
 
-    # This flag must be evaluated after django.setup() because otherwise it can
-    # raise AppRegistryNotReady when running gis_tests in isolation on some
-    # backends (e.g. PostGIS).
-    gis_enabled = connection.features.gis_enabled
-
     test_modules = list(
         get_filtered_test_modules(
             start_at,
             start_after,
-            gis_enabled,
             test_labels=test_labels,
         )
     )
@@ -246,27 +179,12 @@ def teardown_collect_tests(state):
 def get_installed():
     return [app_config.name for app_config in apps.get_app_configs()]
 
-    # This function should be called only after calling django.setup(),
-    # since it calls connection.features.gis_enabled.
-
-
-def get_apps_to_install(test_modules):
-    for test_module in test_modules:
-        if test_module in CONTRIB_TESTS_TO_APPS:
-            yield from CONTRIB_TESTS_TO_APPS[test_module]
-        yield test_module
-
-        # Add contrib.gis to INSTALLED_APPS if needed (rather than requiring
-        # @override_settings(INSTALLED_APPS=...) on all test cases.
-    if connection.features.gis_enabled:
-        yield "djorm.contrib.gis"
-
 
 def setup_run_tests(verbosity, start_at, start_after, test_labels=None):
     test_modules, state = setup_collect_tests(start_at, start_after, test_labels=test_labels)
 
     installed_apps = set(get_installed())
-    for app in get_apps_to_install(test_modules):
+    for app in test_modules:
         if app in installed_apps:
             continue
         if verbosity >= 2:
@@ -294,27 +212,6 @@ def setup_run_tests(verbosity, start_at, start_after, test_labels=None):
 def teardown_run_tests(state):
     teardown_collect_tests(state)
     del os.environ["RUNNING_DJANGOS_TEST_SUITE"]
-
-
-class ActionSelenium(argparse.Action):
-    """
-    Validate the comma-separated list of requested browsers.
-    """
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        try:
-            import selenium  # NOQA
-        except ImportError as e:
-            raise ImproperlyConfigured(f"Error loading selenium module: {e}")
-        browsers = values.split(",")
-        for browser in browsers:
-            try:
-                SeleniumTestCaseBase.import_webdriver(browser)
-            except ImportError:
-                raise argparse.ArgumentError(
-                    self, "Selenium browser specification '%s' is not valid." % browser
-                )
-        setattr(namespace, self.dest, browsers)
 
 
 def django_tests(
@@ -558,34 +455,6 @@ if __name__ == "__main__":
         "test side effects not apparent with normal execution lineup.",
     )
     parser.add_argument(
-        "--selenium",
-        action=ActionSelenium,
-        metavar="BROWSERS",
-        help="A comma-separated list of browsers to run the Selenium tests against.",
-    )
-    parser.add_argument(
-        "--screenshots",
-        action="store_true",
-        help="Take screenshots during selenium tests to capture the user interface.",
-    )
-    parser.add_argument(
-        "--headless",
-        action="store_true",
-        help="Run selenium tests in headless mode, if the browser supports the option.",
-    )
-    parser.add_argument(
-        "--selenium-hub",
-        help="A URL for a selenium hub instance to use in combination with --selenium.",
-    )
-    parser.add_argument(
-        "--external-host",
-        default=socket.gethostname(),
-        help=(
-            "The external host that can be reached by the selenium hub instance when "
-            "running Selenium tests via Selenium Hub."
-        ),
-    )
-    parser.add_argument(
         "--debug-sql",
         action="store_true",
         help="Turn on the SQL query logger within tests.",
@@ -662,17 +531,7 @@ if __name__ == "__main__":
 
     options = parser.parse_args()
 
-    using_selenium_hub = options.selenium and options.selenium_hub
-    if options.selenium_hub and not options.selenium:
-        parser.error("--selenium-hub and --external-host require --selenium to be used.")
-    if using_selenium_hub and not options.external_host:
-        parser.error("--selenium-hub and --external-host must be used together.")
-    if options.screenshots and not options.selenium:
-        parser.error("--screenshots require --selenium to be used.")
-    if options.screenshots and options.tags:
-        parser.error("--screenshots and --tag are mutually exclusive.")
-
-        # Allow including a trailing slash on app_labels for tab completion convenience
+    # Allow including a trailing slash on app_labels for tab completion convenience.
     options.modules = [os.path.normpath(labels) for labels in options.modules]
 
     mutually_exclusive_options = [
@@ -696,28 +555,6 @@ if __name__ == "__main__":
     else:
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "test_sqlite")
         options.settings = os.environ["DJANGO_SETTINGS_MODULE"]
-
-    if options.selenium:
-        if (
-            multiprocessing.get_start_method() in {"spawn", "forkserver"}
-            and options.parallel != 1
-        ):
-            parser.error(
-                "You cannot use --selenium with parallel tests on this system. "
-                "Pass --parallel=1 to use --selenium."
-            )
-        if not options.tags:
-            options.tags = ["selenium"]
-        elif "selenium" not in options.tags:
-            options.tags.append("selenium")
-        if options.selenium_hub:
-            SeleniumTestCaseBase.selenium_hub = options.selenium_hub
-            SeleniumTestCaseBase.external_host = options.external_host
-        SeleniumTestCaseBase.headless = options.headless
-        SeleniumTestCaseBase.browsers = options.selenium
-        if options.screenshots:
-            options.tags = ["screenshot"]
-            SeleniumTestCase.screenshots = options.screenshots
 
     if options.bisect:
         bisect_tests(
