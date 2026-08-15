@@ -61,7 +61,7 @@ CI = "https://github.com/viseshrp/djo/actions"
 
 [dependency-groups]
 dev = [
-    "bandit[toml]>=1.8.6",
+    "bandit[toml]>=1.9.4",
     "codespell>=2.4.1",
     "coverage>=7.10.0",
     "hatch>=1.15.0",
