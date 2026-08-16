@@ -8,6 +8,7 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - Python 3.10
     import tomli as tomllib
 
+from djorm._version import __version__ as package_version
 from scripts.apply_django_lts import (
     ApplyError,
     ApplyState,
@@ -315,7 +316,7 @@ def test_maintenance_config_records_distribution_and_template() -> None:
     assert config["application"] == "tree-delta"
     assert len(config["yapc_commit"]) == 40
     assert config["lts_version_majors"] == LTS_VERSION_MAJORS
-    assert config["release_version"] == "0.1.0"
+    assert config["release_version"] == package_version
     assert "namespace_commit" not in config
 
 
