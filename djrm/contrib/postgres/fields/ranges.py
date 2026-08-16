@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from djrm.contrib.postgres import forms, lookups
+from djrm.contrib.postgres import lookups
 from djrm.db import models
 from djrm.db.backends.postgresql.psycopg_any import (
     DateRange,
@@ -11,6 +11,7 @@ from djrm.db.backends.postgresql.psycopg_any import (
 )
 from djrm.db.models.functions import Cast
 from djrm.db.models.lookups import PostgresOperatorLookup
+from djrm._ext.forms import forms_unavailable
 
 from .utils import AttributeSetter
 
@@ -125,8 +126,7 @@ class RangeField(models.Field):
         return json.dumps(result)
 
     def formfield(self, **kwargs):
-        kwargs.setdefault("form_class", self.form_field)
-        return super().formfield(**kwargs)
+        forms_unavailable()
 
 
 CANONICAL_RANGE_BOUNDS = "[)"
@@ -163,7 +163,6 @@ class ContinuousRangeField(RangeField):
 class IntegerRangeField(RangeField):
     base_field = models.IntegerField
     range_type = NumericRange
-    form_field = forms.IntegerRangeField
 
     def db_type(self, connection):
         return "int4range"
@@ -172,7 +171,6 @@ class IntegerRangeField(RangeField):
 class BigIntegerRangeField(RangeField):
     base_field = models.BigIntegerField
     range_type = NumericRange
-    form_field = forms.IntegerRangeField
 
     def db_type(self, connection):
         return "int8range"
@@ -181,7 +179,6 @@ class BigIntegerRangeField(RangeField):
 class DecimalRangeField(ContinuousRangeField):
     base_field = models.DecimalField
     range_type = NumericRange
-    form_field = forms.DecimalRangeField
 
     def db_type(self, connection):
         return "numrange"
@@ -190,7 +187,6 @@ class DecimalRangeField(ContinuousRangeField):
 class DateTimeRangeField(ContinuousRangeField):
     base_field = models.DateTimeField
     range_type = DateTimeTZRange
-    form_field = forms.DateTimeRangeField
 
     def db_type(self, connection):
         return "tstzrange"
@@ -199,7 +195,6 @@ class DateTimeRangeField(ContinuousRangeField):
 class DateRangeField(RangeField):
     base_field = models.DateField
     range_type = DateRange
-    form_field = forms.DateRangeField
 
     def db_type(self, connection):
         return "daterange"

@@ -5,6 +5,12 @@ upstream release notes for the exact tag named by each djrm release.
 
 ## Unreleased
 
+### Fixed
+
+- PostgreSQL aggregate and field imports no longer fail because the web-only
+  `contrib.postgres.forms` package is absent. PostgreSQL fields now raise the
+  documented forms-unavailable error only when `formfield()` is requested.
+
 ## [0.1.0] - 2026-08-15
 
 ### Added

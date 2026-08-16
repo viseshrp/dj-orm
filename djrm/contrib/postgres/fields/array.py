@@ -1,11 +1,11 @@
 import json
 
 from djrm.contrib.postgres import lookups
-from djrm.contrib.postgres.forms import SimpleArrayField
 from djrm.contrib.postgres.validators import ArrayMaxLengthValidator
 from djrm.core import checks, exceptions
 from djrm.db.models import Field, Func, IntegerField, Transform, Value
 from djrm.db.models.fields.mixins import CheckFieldDefaultMixin
+from djrm._ext.forms import forms_unavailable
 from djrm.db.models.lookups import Exact, In
 from djrm.utils.translation import gettext_lazy as _
 
@@ -215,14 +215,7 @@ class ArrayField(CheckFieldDefaultMixin, Field):
                 )
 
     def formfield(self, **kwargs):
-        return super().formfield(
-            **{
-                "form_class": SimpleArrayField,
-                "base_field": self.base_field.formfield(),
-                "max_length": self.size,
-                **kwargs,
-            }
-        )
+        forms_unavailable()
 
     def slice_expression(self, expression, start, length):
         # If length is not provided, don't specify an end to slice to the end

@@ -1,10 +1,11 @@
 import json
 
-from djrm.contrib.postgres import forms, lookups
+from djrm.contrib.postgres import lookups
 from djrm.contrib.postgres.fields.array import ArrayField
 from djrm.core import exceptions
 from djrm.db.models import Field, TextField, Transform
 from djrm.db.models.fields.mixins import CheckFieldDefaultMixin
+from djrm._ext.forms import forms_unavailable
 from djrm.utils.translation import gettext_lazy as _
 
 __all__ = ["HStoreField"]
@@ -46,12 +47,7 @@ class HStoreField(CheckFieldDefaultMixin, Field):
         return json.dumps(self.value_from_object(obj), ensure_ascii=False)
 
     def formfield(self, **kwargs):
-        return super().formfield(
-            **{
-                "form_class": forms.HStoreField,
-                **kwargs,
-            }
-        )
+        forms_unavailable()
 
     def get_prep_value(self, value):
         value = super().get_prep_value(value)

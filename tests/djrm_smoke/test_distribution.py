@@ -39,6 +39,26 @@ def test_removed_forms_fail_only_when_formfield_is_requested() -> None:
         models.JSONField().formfield()
 
 
+def test_postgres_orm_imports_do_not_require_removed_forms() -> None:
+    from djrm.contrib.postgres.aggregates import ArrayAgg
+    from djrm.contrib.postgres.fields import (
+        ArrayField,
+        HStoreField,
+        IntegerRangeField,
+    )
+    from djrm.db import models
+
+    assert ArrayAgg("value") is not None
+    fields = [
+        ArrayField(models.IntegerField()),
+        HStoreField(),
+        IntegerRangeField(),
+    ]
+    for field in fields:
+        with pytest.raises(ImportError, match="djrm.forms is not available"):
+            field.formfield()
+
+
 def test_module_cli_help() -> None:
     result = subprocess.run(
         [sys.executable, "-m", "djrm", "--help"],
