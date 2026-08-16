@@ -56,11 +56,18 @@ def inspect_sdist(sdist: Path) -> None:
         raise InspectionError("Source archive contains gettext source catalogs.")
     if not any(name.endswith("/LC_MESSAGES/django.mo") for name in names):
         raise InspectionError("Source archive does not contain compiled translation catalogs.")
+    if any(name.endswith("/.github/PULL_REQUEST_TEMPLATE.md") for name in names):
+        raise InspectionError("Source archive contains incorrectly cased PR template.")
     suffixes = {
+        ".github/pull_request_template.md",
         "README.md",
         "MAINTENANCE.md",
         "scripts/apply_django_lts.py",
+        "scripts/check_path_case.py",
         "scripts/test_external_databases.py",
+        "tests/runtests.py",
+        "tests/test_sqlite.py",
+        "tests/basic/tests.py",
         "tests/djrm_smoke/test_distribution.py",
         "tests/e2e/compose.yaml",
     }

@@ -43,6 +43,7 @@ FORK_OWNED_PATHS = {
     "codespell.txt",
     "pyproject.toml",
     "scripts/apply_django_lts.py",
+    "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",
     "scripts/rename_namespace.py",

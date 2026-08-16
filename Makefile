@@ -13,6 +13,7 @@ install: ## Install the locked development environment
 check: ## Check the lockfile and maintained project files
 	uv lock --check
 	uv run pre-commit run --all-files
+	uv run python scripts/check_path_case.py
 
 .PHONY: test-smoke
 test-smoke: install ## Run package and maintenance-tool smoke tests
@@ -39,8 +40,12 @@ coverage: ## Run the retained suite with coverage data
 test-matrix: ## Run tox across supported Python versions
 	uv run tox
 
+.PHONY: clean-dist
+clean-dist: ## Remove only built distribution artifacts
+	rm -rf dist
+
 .PHONY: build
-build: ## Build wheel and source archive
+build: clean-dist ## Build wheel and source archive from an empty artifact directory
 	uv build
 
 .PHONY: check-dist

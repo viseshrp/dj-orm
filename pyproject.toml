@@ -119,13 +119,13 @@ include = [
     "djrm/**",
     "pyproject.toml",
     "scripts/apply_django_lts.py",
+    "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",
     "scripts/rename_namespace.py",
     "scripts/tag_release.sh",
     "scripts/test_external_databases.py",
-    "tests/djrm_smoke/**",
-    "tests/e2e/**",
+    "tests/**",
     "tox.ini",
     "uv.lock",
 ]
@@ -182,6 +182,7 @@ force-sort-within-sections = true
 include = [
     "djrm/_ext",
     "scripts/apply_django_lts.py",
+    "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",
     "tests/djrm_smoke",
