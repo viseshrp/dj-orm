@@ -1,18 +1,49 @@
 name: Release
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.release.tag_name }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
+  publish-test:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/dj-orm/
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Python and environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Verify and build artifacts
+        run: |
+          make check
+          make test
+          make build
+          make check-dist
+          make inspect-dist
+
+      - name: Publish to TestPyPI
+        run: make publish-test
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
+
   publish:
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -48,6 +79,6 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
 
       - name: Publish to PyPI
-        run: make publish PYPI_TOKEN="$PYPI_TOKEN"
+        run: make publish
         env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}

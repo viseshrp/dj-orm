@@ -12,6 +12,8 @@ upstream release notes for the exact tag named by each Djorm release.
 - A `dj-orm` distribution with wheel and source-archive builds.
 - The first release, based on the exact Django `5.2.17` tag.
 - A scripted Django LTS application workflow with resumable conflict handling.
+- A manual, `main`-only TestPyPI publishing job; production publishing remains
+  gated by a published GitHub release and the protected `pypi` environment.
 - CI, release, dependency, contribution, and package verification files derived
   from the sibling `yapc` Cookiecutter.
 

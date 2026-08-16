@@ -192,9 +192,13 @@ Before the first release:
 1. Confirm `dj-orm` is still available on PyPI.
 2. Add a project-scoped PyPI token as the GitHub environment secret
    `PYPI_TOKEN` in the `pypi` environment.
-3. Add a TestPyPI token as `TEST_PYPI_TOKEN` only when an explicit dry run is
-   needed. Normal branch pushes do not publish.
+3. Add a TestPyPI token as the GitHub environment secret `TEST_PYPI_TOKEN` in
+   the `testpypi` environment.
 4. Protect the `pypi` environment with a required reviewer.
+
+Run the `Release` workflow manually from `main` for an explicit TestPyPI dry
+run. Publishing a draft GitHub release triggers nothing. Publishing that GitHub
+release runs the production job through the protected `pypi` environment.
 
 PyPI publication is intentionally separate from ordinary CI. A push to `main`
 builds and checks artifacts but cannot publish them.

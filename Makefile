@@ -57,11 +57,11 @@ tag: ## Create and push a verified release tag
 
 .PHONY: publish
 publish: ## Publish verified artifacts to PyPI
-	UV_PUBLISH_TOKEN="$(PYPI_TOKEN)" uv publish --publish-url=https://upload.pypi.org/legacy/ --no-cache
+	uv publish --publish-url=https://upload.pypi.org/legacy/ --no-cache
 
 .PHONY: publish-test
 publish-test: ## Publish verified artifacts to TestPyPI
-	UV_PUBLISH_TOKEN="$(TEST_PYPI_TOKEN)" uv publish --publish-url=https://test.pypi.org/legacy/ --no-cache
+	uv publish --publish-url=https://test.pypi.org/legacy/ --no-cache
 
 .PHONY: clean
 clean: ## Remove generated build and test artifacts
