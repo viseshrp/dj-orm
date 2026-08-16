@@ -215,8 +215,9 @@ release runs the production job through the protected `pypi` environment.
 PyPI publication is intentionally separate from ordinary CI. A push to `main`
 builds and checks artifacts but cannot publish them.
 
-## Current branch status
+## Current provenance
 
-`main` is based on the exact Django `5.2.17` tag and is prepared as djrm
-`0.1.0`. It remains unreleased until `v0.1.0` is created, its draft GitHub
-release passes review, and a maintainer publishes that release.
+The exact upstream tag and candidate package version are recorded in
+`.djrm-maintenance.toml`. A candidate becomes a release only when a matching
+tag exists, the tag workflow has attached verified artifacts to its GitHub
+release, and the protected production workflow has published those artifacts.

@@ -5,6 +5,15 @@ upstream release notes for the exact tag named by each djrm release.
 
 ## Unreleased
 
+## [0.1.1] - 2026-08-16
+
+### Added
+
+- A repeatable Docker end-to-end gate for SQLite, PostgreSQL, MySQL, and Oracle,
+  including complex ORM queries and each backend's real `dbshell` client.
+- An explicit package and runtime check that keeps the unsupported GIS namespace
+  absent.
+
 ### Removed
 
 - Residual SpatiaLite, PostGIS adapter, and Oracle Spatial compatibility hooks
