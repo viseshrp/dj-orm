@@ -17,10 +17,14 @@ from scripts.apply_django_lts import (
     fully_deleted_directory_prefixes,
     is_fork_owned,
     is_pruned_path,
+    lts_version_majors,
     normalize_upstream_version,
+    parse_distribution_version,
     release_series,
 )
 from scripts.rename_namespace import rewrite_python
+
+LTS_VERSION_MAJORS = {"5.2": 0, "6.2": 1}
 
 
 def run_git(repo: Path, *args: str) -> str:
@@ -60,22 +64,117 @@ def test_release_series(django_ref: str, expected: str) -> None:
 
 @pytest.mark.parametrize("django_ref", ["5.2.17", "6.2"])
 def test_accept_reviewed_lts_series(django_ref: str) -> None:
-    assert_configured_lts(django_ref, {"lts_series": ["5.2", "6.2"]})
+    assert_configured_lts(django_ref, {"lts_version_majors": LTS_VERSION_MAJORS})
 
 
 @pytest.mark.parametrize("django_ref", ["5.1", "6.0.8", "2028.3"])
 def test_reject_unreviewed_series(django_ref: str) -> None:
     with pytest.raises(ApplyError):
-        assert_configured_lts(django_ref, {"lts_series": ["5.2", "6.2"]})
+        assert_configured_lts(django_ref, {"lts_version_majors": LTS_VERSION_MAJORS})
 
 
-def test_distribution_version_records_rebuild_revision() -> None:
-    assert distribution_version("5.2.17", 3) == "5.2.17.3"
+@pytest.mark.parametrize(
+    ("version", "expected"),
+    [
+        ("0.1.0", (0, 1, 0)),
+        ("1.0.0", (1, 0, 0)),
+        ("12.34.56", (12, 34, 56)),
+    ],
+)
+def test_parse_distribution_version(version: str, expected: tuple[int, int, int]) -> None:
+    assert parse_distribution_version(version) == expected
 
 
-def test_reject_negative_revision() -> None:
+@pytest.mark.parametrize("version", ["5.2.17.0", "0.01.0", "v0.1.0", "0.1"])
+def test_reject_non_semver_distribution_versions(version: str) -> None:
     with pytest.raises(ApplyError):
-        distribution_version("5.2.17", -1)
+        parse_distribution_version(version)
+
+
+def test_distribution_version_increments_patch_for_same_django_tag() -> None:
+    assert (
+        distribution_version(
+            "5.2.17",
+            1,
+            current_django_ref="5.2.17",
+            current_version="0.1.0",
+            version_majors=LTS_VERSION_MAJORS,
+        )
+        == "0.1.1"
+    )
+
+
+def test_distribution_version_increments_minor_for_new_django_patch() -> None:
+    assert (
+        distribution_version(
+            "5.2.18",
+            0,
+            current_django_ref="5.2.17",
+            current_version="0.1.2",
+            version_majors=LTS_VERSION_MAJORS,
+        )
+        == "0.2.0"
+    )
+
+
+def test_distribution_version_increments_major_for_new_lts() -> None:
+    assert (
+        distribution_version(
+            "6.2",
+            0,
+            current_django_ref="5.2.17",
+            current_version="0.1.2",
+            version_majors=LTS_VERSION_MAJORS,
+        )
+        == "1.0.0"
+    )
+
+
+def test_reject_negative_patch() -> None:
+    with pytest.raises(ApplyError):
+        distribution_version(
+            "5.2.17",
+            -1,
+            current_django_ref="5.2.17",
+            current_version="0.1.0",
+            version_majors=LTS_VERSION_MAJORS,
+        )
+
+
+def test_reject_nonincrementing_rebuild_patch() -> None:
+    with pytest.raises(ApplyError, match="greater than 2"):
+        distribution_version(
+            "5.2.17",
+            2,
+            current_django_ref="5.2.17",
+            current_version="0.1.2",
+            version_majors=LTS_VERSION_MAJORS,
+        )
+
+
+def test_reject_patch_for_first_release_from_new_django_tag() -> None:
+    with pytest.raises(ApplyError, match="must use --patch 0"):
+        distribution_version(
+            "5.2.18",
+            1,
+            current_django_ref="5.2.17",
+            current_version="0.1.2",
+            version_majors=LTS_VERSION_MAJORS,
+        )
+
+
+@pytest.mark.parametrize(
+    "mapping",
+    [
+        {},
+        {"5.2": 1},
+        {"5.2": 0, "6.2": 2},
+        {"5.2": True},
+    ],
+)
+def test_reject_invalid_lts_version_major_mappings(mapping: dict[str, int]) -> None:
+    with pytest.raises(ApplyError):
+        lts_version_majors({"lts_version_majors": mapping})
 
 
 @pytest.mark.parametrize(
@@ -196,7 +295,7 @@ def test_lts_application_removes_new_upstream_files_from_pruned_directory(
         branch="test",
         django_ref="5.2.18",
         django_commit=target_head,
-        revision=0,
+        release_version="0.2.0",
         baseline_tree=baseline_tree,
     )
 
@@ -211,11 +310,12 @@ def test_maintenance_config_records_distribution_and_template() -> None:
     root = Path(__file__).resolve().parents[2]
     with (root / ".djorm-maintenance.toml").open("rb") as config_file:
         config = tomllib.load(config_file)
-    assert config["schema"] == 2
+    assert config["schema"] == 3
     assert config["distribution"] == "dj-orm"
     assert config["application"] == "tree-delta"
     assert len(config["yapc_commit"]) == 40
-    assert config["lts_series"] == ["5.2", "6.2"]
+    assert config["lts_version_majors"] == LTS_VERSION_MAJORS
+    assert config["release_version"] == "0.1.0"
     assert "namespace_commit" not in config
 
 

@@ -443,9 +443,16 @@ packages = ["djorm"]
 
 ### 8.2 Version strategy
 
-- The `dj-orm` distribution version tracks the exact upstream Django tag with
-  an additional Djorm rebuild component.
-- Example: Django 5.2.17 → `dj-orm` 5.2.17.0, then 5.2.17.1 for a Djorm-only rebuild.
+- The `dj-orm` distribution uses SemVer. Major `0` maps to Django 5.2 LTS,
+  major `1` maps to Django 6.2 LTS, and each later reviewed LTS gets the next
+  major.
+- Within one LTS line, a newer upstream Django tag increments the Djorm minor
+  and resets the patch to zero. A Djorm-only release from the same Django tag
+  increments the patch.
+- Example: Django 5.2.17 → `dj-orm` 0.1.0, a Djorm-only fix → 0.1.1, and the
+  next Django 5.2 patch tag → 0.2.0.
+- The exact upstream Django tag is recorded in `.djorm-maintenance.toml` and
+  release notes rather than encoded in the distribution version.
 - `VERSION` tuple in `djorm/__init__.py` remains the Django format: `(5, 2, X, 'final'/'alpha', N)`.
 - Distribution metadata reads `djorm/_version.py`; the retained
   `djorm.__version__` remains the upstream API version.

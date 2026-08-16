@@ -15,17 +15,24 @@ line. The automation creates an isolated candidate branch named
 `release/django-<tag>` in a separate local worktree. After the full gate passes,
 the candidate tree is merged into `main`; release tags are cut from `main`.
 
-Release tags and distribution versions have four numeric components:
+Release tags and distribution versions use SemVer. Each Djorm major is assigned
+to one reviewed Django LTS series:
 
 | Django tag | Djorm version | Meaning |
 | --- | --- | --- |
-| `5.2.17` | `5.2.17.0` | First Djorm build from this exact Django tag |
-| `5.2.17` | `5.2.17.1` | Djorm-only rebuild from the same Django tag |
-| `6.2` | `6.2.0.0` | First Djorm build from the next LTS feature tag |
+| `5.2.17` | `0.1.0` | First release in the Django 5.2 LTS line |
+| `5.2.17` | `0.1.1` | Djorm-only fix from the same Django tag |
+| `5.2.18` | `0.2.0` | First release from the next Django 5.2 patch tag |
+| `6.2` | `1.0.0` | First release in the Django 6.2 LTS line |
 
-The first three components identify the upstream Django source. The fourth is
-the Djorm rebuild revision. Pre-release Django tags are never production Djorm
-releases.
+The mapping is append-only and recorded in `lts_version_majors` in
+`.djorm-maintenance.toml`: Djorm `0.x` corresponds to Django 5.2 LTS, `1.x`
+corresponds to Django 6.2 LTS, and each later reviewed LTS gets the next Djorm
+major. Within one LTS line, the Djorm minor increments when the upstream Django
+tag advances. The patch increments only for a Djorm-only release from the same
+Django tag. The exact upstream tag remains in the maintenance metadata instead
+of being encoded in the package version. Pre-release Django tags are never
+production Djorm releases.
 
 ### Distribution identity
 
@@ -87,7 +94,7 @@ uv run python scripts/apply_django_lts.py \
 The command performs these bounded operations:
 
 1. Fetches the exact tag from the official `upstream` remote and verifies that
-   the ref is a final release in the reviewed `lts_series` list in
+   the ref is a final release in the reviewed `lts_version_majors` mapping in
    `.djorm-maintenance.toml`.
 2. Creates `release/django-<tag>` in a separate Git worktree.
 3. Regenerates a canonical `djorm` tree for both the recorded upstream base and
@@ -99,8 +106,8 @@ The command performs these bounded operations:
    runtime catalogs are retained. Reviewed packaging and CI files stay
    fork-owned; incompatible changes in retained Django runtime code remain as
    conflicts for human review.
-5. Writes the new upstream provenance and `A.B.C.N` package version, then runs
-   the namespace, package, and retained-suite checks.
+5. Computes the next SemVer package version, writes the exact upstream
+   provenance, then runs the namespace, package, and retained-suite checks.
 
 The source checkout is never switched or rewritten. The tool refuses a dirty
 source or output directory that already exists. This tree-delta design keeps
@@ -129,10 +136,25 @@ dependency.
 Use the same command with the final LTS tag, for example `6.2`. The first run is
 expected to stop where Django changed retained modules. Resolve those files,
 finish the gate, and merge the generated candidate tree into `main`. Before any
-later series, add its officially announced series identifier to `lts_series` in
-`.djorm-maintenance.toml`; the tool never guesses future LTS numbering. Update
-`SPEC.md` only when the retained module contract or supported Python versions
-changed.
+later series, append its officially announced series identifier and the next
+Djorm major to `lts_version_majors` in `.djorm-maintenance.toml`; the tool never
+guesses future LTS numbering. Never reorder or renumber an existing mapping.
+Update `SPEC.md` only when the retained module contract or supported Python
+versions changed.
+
+For a Djorm-only fix without a newer Django tag, pass a patch number greater
+than the current one:
+
+```console
+uv run python scripts/apply_django_lts.py \
+  --django-ref 5.2.17 \
+  --patch 1 \
+  --output ../djorm-0.1.1
+```
+
+The first application of a newer Django tag must use patch `0`. The updater
+increments the minor within the current LTS line or resets to `<next-major>.0.0`
+for the next configured LTS line.
 
 ## Release gate
 
@@ -144,13 +166,15 @@ make test
 make build
 make check-dist
 make inspect-dist
-make release-check RELEASE_TAG=v5.2.17.0
+make release-check RELEASE_TAG=v0.1.0
 ```
 
 `make release-check` verifies:
 
 - the Git tag and package version match;
-- the version maps to the recorded final Django tag;
+- the SemVer major maps to the recorded final Django LTS series;
+- the package and maintenance metadata record the same version and exact Django
+  tag;
 - the source is clean and contains no `django` package;
 - `dj-orm` is the configured distribution;
 - the changelog has a dated entry for the release.
@@ -177,8 +201,6 @@ builds and checks artifacts but cannot publish them.
 
 ## Current branch status
 
-`main` was originally forked from a development snapshot nine commits after
-Django `5.2.11`, where upstream had already bumped its internal version toward
-`5.2.12`. Its package version is therefore a development version and it must not
-be tagged as a production build. Generate the first candidate from the latest
-final `5.2.x` tag before publishing.
+`main` is based on the exact Django `5.2.17` tag and is prepared as Djorm
+`0.1.0`. It remains unreleased until `v0.1.0` is created, its draft GitHub
+release passes review, and a maintainer publishes that release.

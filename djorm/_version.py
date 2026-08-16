@@ -4,4 +4,4 @@
 This value identifies the independently distributed Djorm build.
 """
 
-__version__ = "5.2.17.0"
+__version__ = "0.1.0"

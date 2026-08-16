@@ -84,16 +84,20 @@ make check-dist
 ## Maintenance and releases
 
 `main` carries the currently supported Django LTS line. Production builds start
-from an exact official Django release tag and use a four-part version:
+from an exact official Django release tag and use SemVer:
 
 ```text
-Django 5.2.17 -> dj-orm 5.2.17.0
+Django 5.2.17 -> dj-orm 0.1.0
+Django 6.2    -> dj-orm 1.0.0
 ```
 
-The final component increments only for a Djorm-only rebuild of the same Django
-tag. The update tool creates a separate worktree, performs the namespace
-conversion, applies the reviewed fork tree delta with a three-way merge, and
-stops for human review when upstream changed retained code incompatibly.
+Djorm `0.x` corresponds to Django 5.2 LTS, `1.x` corresponds to Django 6.2 LTS,
+and each later LTS gets the next major. Within an LTS line, a newer Django patch
+tag increments the Djorm minor; a Djorm-only fix from the same tag increments
+the patch. The exact Django tag is recorded as release provenance. The update
+tool creates a separate worktree, performs the namespace conversion, applies
+the reviewed fork tree delta with a three-way merge, and stops for human review
+when upstream changed retained code incompatibly.
 
 ```console
 uv run python scripts/apply_django_lts.py \

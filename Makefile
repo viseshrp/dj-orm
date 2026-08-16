@@ -3,7 +3,11 @@ SHELL := bash
 
 .PHONY: install
 install: ## Install the locked development environment
-	@if [ -f uv.lock ]; then uv sync --frozen; else uv sync; fi
+	@if [ -f uv.lock ]; then \
+		uv sync --frozen --reinstall-package dj-orm; \
+	else \
+		uv sync --reinstall-package dj-orm; \
+	fi
 
 .PHONY: check
 check: ## Check the lockfile and maintained project files
@@ -11,7 +15,7 @@ check: ## Check the lockfile and maintained project files
 	uv run pre-commit run --all-files
 
 .PHONY: test-smoke
-test-smoke: ## Run package and maintenance-tool smoke tests
+test-smoke: install ## Run package and maintenance-tool smoke tests
 	uv run python -m pytest tests/djorm_smoke
 
 .PHONY: test-upstream

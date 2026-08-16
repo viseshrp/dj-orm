@@ -15,7 +15,12 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10
     import tomli as tomllib
 
 
-RELEASE_RE = re.compile(r"^(?P<upstream>\d+\.\d+\.\d+)\.(?P<revision>\d+)$")
+FINAL_TAG_RE = re.compile(r"^\d+(?:\.\d+){0,2}$")
+SEMVER_RE = re.compile(
+    r"^(?P<major>0|[1-9]\d*)\."
+    r"(?P<minor>0|[1-9]\d*)\."
+    r"(?P<patch>0|[1-9]\d*)$"
+)
 
 
 def read_toml(path: Path) -> dict:
@@ -41,34 +46,66 @@ def git(root: Path, *args: str) -> str:
     ).stdout.strip()
 
 
+def release_series(django_ref: str) -> str | None:
+    if FINAL_TAG_RE.fullmatch(django_ref) is None:
+        return None
+    parts = django_ref.split(".")
+    return ".".join(parts[:2]) if len(parts) > 1 else parts[0]
+
+
+def read_lts_version_majors(maintenance: dict) -> dict[str, int] | None:
+    mapping = maintenance.get("lts_version_majors")
+    if not isinstance(mapping, dict) or not mapping:
+        return None
+    if not all(
+        isinstance(series, str)
+        and isinstance(major, int)
+        and not isinstance(major, bool)
+        and major >= 0
+        for series, major in mapping.items()
+    ):
+        return None
+    if list(mapping.values()) != list(range(len(mapping))):
+        return None
+    return mapping
+
+
 def validate(root: Path, tag: str) -> list[str]:
     errors: list[str] = []
     project = read_toml(root / "pyproject.toml")
     maintenance = read_toml(root / ".djorm-maintenance.toml")
     version = read_distribution_version(root)
-    match = RELEASE_RE.fullmatch(version)
+    match = SEMVER_RE.fullmatch(version)
 
     if project["project"]["name"] != "dj-orm":
         errors.append("pyproject.toml must publish the dj-orm distribution")
     if maintenance.get("distribution") != "dj-orm":
         errors.append("maintenance metadata must name the dj-orm distribution")
+    if maintenance.get("schema") != 3:
+        errors.append("maintenance metadata must use schema 3")
     if tag != f"v{version}":
         errors.append(f"tag {tag!r} does not match package version {version!r}")
     if match is None:
-        errors.append("package version must contain Django A.B.C plus a Djorm revision")
+        errors.append("package version must be semantic version X.Y.Z")
     else:
         recorded_ref = str(maintenance.get("upstream_ref", ""))
-        upstream_parts = match.group("upstream")
-        recorded_parts = [int(part) for part in recorded_ref.split(".")] if recorded_ref else []
-        recorded_parts.extend([0] * (3 - len(recorded_parts)))
-        recorded_normalized = ".".join(str(part) for part in recorded_parts[:3])
-        if recorded_normalized != upstream_parts:
+        recorded_series = release_series(recorded_ref)
+        configured_series = maintenance.get("upstream_series")
+        version_majors = read_lts_version_majors(maintenance)
+        if recorded_series is None:
+            errors.append("maintenance metadata must record a final numeric Django tag")
+        elif configured_series != recorded_series:
+            errors.append("upstream_series does not match the recorded Django tag")
+        if version_majors is None:
+            errors.append("maintenance metadata must define contiguous LTS SemVer majors")
+        elif recorded_series not in version_majors:
+            errors.append(f"Django {recorded_series} has no configured SemVer major")
+        elif int(match.group("major")) != version_majors[recorded_series]:
             errors.append(
-                f"package version maps to Django {upstream_parts}, "
-                f"but provenance records {recorded_ref}"
+                f"package major does not map to the recorded Django {recorded_series} LTS"
             )
-        if int(match.group("revision")) != int(maintenance.get("release_revision", -1)):
-            errors.append("package revision does not match maintenance metadata")
+        if maintenance.get("release_version") != version:
+            errors.append("package version does not match maintenance metadata")
 
     if (root / "django").exists():
         errors.append("a top-level django package is present")

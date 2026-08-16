@@ -24,6 +24,11 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10
 CONFIG_NAME = ".djorm-maintenance.toml"
 STATE_NAME = "djorm-apply-state.json"
 FINAL_TAG_RE = re.compile(r"^(?P<parts>\d+(?:\.\d+){0,2})$")
+SEMVER_RE = re.compile(
+    r"^(?P<major>0|[1-9]\d*)\."
+    r"(?P<minor>0|[1-9]\d*)\."
+    r"(?P<patch>0|[1-9]\d*)$"
+)
 FORK_OWNED_PATHS = {
     CONFIG_NAME,
     ".gitignore",
@@ -65,7 +70,7 @@ class ApplyState:
     branch: str
     django_ref: str
     django_commit: str
-    revision: int
+    release_version: str
     baseline_tree: str
     phase: str = "namespace"
     generated_namespace_commit: str = ""
@@ -107,15 +112,18 @@ def read_config(source_repo: Path) -> dict[str, Any]:
         raise ApplyError(f"Missing maintenance configuration: {config_path}")
     with config_path.open("rb") as config_file:
         config = tomllib.load(config_file)
-    if config.get("schema") != 2:
+    if config.get("schema") != 3:
         raise ApplyError(f"Unsupported {CONFIG_NAME} schema: {config.get('schema')!r}")
     required = {
         "distribution",
         "yapc_commit",
         "upstream_remote",
         "upstream_url",
+        "upstream_ref",
+        "upstream_series",
         "upstream_base_commit",
-        "lts_series",
+        "lts_version_majors",
+        "release_version",
         "application",
     }
     missing = sorted(required - config.keys())
@@ -125,13 +133,41 @@ def read_config(source_repo: Path) -> dict[str, Any]:
         raise ApplyError(f"{CONFIG_NAME} must configure the dj-orm distribution.")
     if config["application"] != "tree-delta":
         raise ApplyError(f"{CONFIG_NAME} must configure tree-delta application.")
-    if (
-        not config["lts_series"]
-        or not isinstance(config["lts_series"], list)
-        or not all(isinstance(series, str) for series in config["lts_series"])
-    ):
-        raise ApplyError(f"{CONFIG_NAME} lts_series must be a non-empty array of strings.")
+    lts_version_majors(config)
+    recorded_ref = str(config["upstream_ref"])
+    recorded_series = release_series(recorded_ref)
+    if config["upstream_series"] != recorded_series:
+        raise ApplyError(
+            f"{CONFIG_NAME} upstream_series must match upstream_ref ({recorded_series})."
+        )
+    release_major, _, _ = parse_distribution_version(str(config["release_version"]))
+    expected_major = config["lts_version_majors"].get(recorded_series)
+    if release_major != expected_major:
+        raise ApplyError(
+            f"{CONFIG_NAME} release_version major must map to Django {recorded_series}."
+        )
     return config
+
+
+def lts_version_majors(config: dict[str, Any]) -> dict[str, int]:
+    mapping = config.get("lts_version_majors")
+    if not isinstance(mapping, dict) or not mapping:
+        raise ApplyError(f"{CONFIG_NAME} lts_version_majors must be a non-empty table.")
+    if not all(
+        isinstance(series, str)
+        and isinstance(major, int)
+        and not isinstance(major, bool)
+        and major >= 0
+        for series, major in mapping.items()
+    ):
+        raise ApplyError(
+            f"{CONFIG_NAME} lts_version_majors must map series strings to non-negative integers."
+        )
+    if list(mapping.values()) != list(range(len(mapping))):
+        raise ApplyError(
+            f"{CONFIG_NAME} lts_version_majors must be ordered and contiguous from zero."
+        )
+    return mapping
 
 
 def normalize_upstream_version(django_ref: str) -> tuple[int, int, int]:
@@ -154,18 +190,84 @@ def release_series(django_ref: str) -> str:
 def assert_configured_lts(django_ref: str, config: dict[str, Any]) -> None:
     normalize_upstream_version(django_ref)
     series = release_series(django_ref)
-    if series not in config["lts_series"]:
-        configured = ", ".join(config["lts_series"])
+    configured_majors = lts_version_majors(config)
+    if series not in configured_majors:
+        configured = ", ".join(configured_majors)
         raise ApplyError(
             f"Django {django_ref} is not in the reviewed LTS series list ({configured})."
         )
 
 
-def distribution_version(django_ref: str, revision: int) -> str:
-    if revision < 0:
-        raise ApplyError("The Djorm release revision must be zero or greater.")
-    major, minor, patch = normalize_upstream_version(django_ref)
-    return f"{major}.{minor}.{patch}.{revision}"
+def parse_distribution_version(version: str) -> tuple[int, int, int]:
+    match = SEMVER_RE.fullmatch(version)
+    if match is None:
+        raise ApplyError("The Djorm distribution version must be SemVer such as 0.1.0.")
+    return (
+        int(match.group("major")),
+        int(match.group("minor")),
+        int(match.group("patch")),
+    )
+
+
+def read_distribution_version(source_repo: Path) -> str:
+    version_path = source_repo / "djorm" / "_version.py"
+    version_text = version_path.read_text(encoding="utf-8")
+    match = re.search(
+        r'^__version__\s*=\s*["\']([^"\']+)["\']$',
+        version_text,
+        re.MULTILINE,
+    )
+    if match is None:
+        raise ApplyError(f"{version_path} must define one literal __version__ value.")
+    parse_distribution_version(match.group(1))
+    return match.group(1)
+
+
+def distribution_version(
+    django_ref: str,
+    patch: int,
+    *,
+    current_django_ref: str,
+    current_version: str,
+    version_majors: dict[str, int],
+) -> str:
+    if patch < 0:
+        raise ApplyError("The Djorm SemVer patch must be zero or greater.")
+
+    current_upstream = normalize_upstream_version(current_django_ref)
+    target_upstream = normalize_upstream_version(django_ref)
+    current_series = release_series(current_django_ref)
+    target_series = release_series(django_ref)
+    current_major, current_minor, current_patch = parse_distribution_version(current_version)
+
+    if current_series not in version_majors or target_series not in version_majors:
+        raise ApplyError("Both current and target Django series must have SemVer major mappings.")
+    if current_major != version_majors[current_series]:
+        raise ApplyError(
+            f"Djorm {current_version} does not map to Django {current_series} "
+            "in maintenance metadata."
+        )
+    if target_upstream < current_upstream:
+        raise ApplyError("The target Django tag cannot be older than the recorded upstream tag.")
+
+    if target_upstream == current_upstream:
+        target_minor = current_minor
+        if patch <= current_patch:
+            raise ApplyError(
+                f"A rebuild of Django {django_ref} must use --patch greater than {current_patch}."
+            )
+    else:
+        if patch != 0:
+            raise ApplyError("The first release from a new Django tag must use --patch 0.")
+        if target_series == current_series:
+            target_minor = current_minor + 1
+        else:
+            target_major = version_majors[target_series]
+            if target_major != current_major + 1:
+                raise ApplyError("A new Django LTS must use the next configured SemVer major.")
+            target_minor = 0
+
+    return f"{version_majors[target_series]}.{target_minor}.{patch}"
 
 
 def assert_source_ready(source_repo: Path, config: dict[str, Any]) -> str:
@@ -263,13 +365,25 @@ def create_candidate(
     source_repo: Path,
     output: Path,
     django_ref: str,
-    revision: int,
+    patch: int,
 ) -> ApplyState:
     if output.exists():
         raise ApplyError(f"Output path already exists: {output}")
     config = read_config(source_repo)
     source_head = assert_source_ready(source_repo, config)
     assert_configured_lts(django_ref, config)
+    current_version = read_distribution_version(source_repo)
+    if current_version != config["release_version"]:
+        raise ApplyError(
+            f"djorm/_version.py and {CONFIG_NAME} must record the same release version."
+        )
+    release_version = distribution_version(
+        django_ref,
+        patch,
+        current_django_ref=str(config["upstream_ref"]),
+        current_version=current_version,
+        version_majors=lts_version_majors(config),
+    )
     django_commit = fetch_exact_tag(source_repo, str(config["upstream_remote"]), django_ref)
     base_commit = str(config["upstream_base_commit"])
     assert_base_commit(source_repo, base_commit, source_head)
@@ -291,7 +405,7 @@ def create_candidate(
         branch=branch,
         django_ref=django_ref,
         django_commit=django_commit,
-        revision=revision,
+        release_version=release_version,
         baseline_tree=baseline_tree,
     )
     save_state(output, state)
@@ -501,10 +615,13 @@ def update_version_file(output: Path, version: str) -> None:
 def write_generated_config(output: Path, state: ApplyState) -> None:
     series = release_series(state.django_ref)
     source_config = read_config(Path(state.source_repo))
-    lts_series = ", ".join(f'"{series}"' for series in source_config["lts_series"])
+    version_majors = ", ".join(
+        f'"{mapped_series}" = {major}'
+        for mapped_series, major in lts_version_majors(source_config).items()
+    )
     text = "\n".join(
         [
-            "schema = 2",
+            "schema = 3",
             'distribution = "dj-orm"',
             'application = "tree-delta"',
             f'yapc_commit = "{source_config["yapc_commit"]}"',
@@ -512,9 +629,9 @@ def write_generated_config(output: Path, state: ApplyState) -> None:
             'upstream_url = "https://github.com/django/django.git"',
             f'upstream_ref = "{state.django_ref}"',
             f'upstream_series = "{series}"',
-            f"lts_series = [{lts_series}]",
+            f"lts_version_majors = {{ {version_majors} }}",
             f'upstream_base_commit = "{state.django_commit}"',
-            f"release_revision = {state.revision}",
+            f'release_version = "{state.release_version}"',
             "",
         ]
     )
@@ -522,7 +639,7 @@ def write_generated_config(output: Path, state: ApplyState) -> None:
 
 
 def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
-    version = distribution_version(state.django_ref, state.revision)
+    version = state.release_version
     update_version_file(output, version)
     write_generated_config(output, state)
 
@@ -620,7 +737,14 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--django-ref", help="Exact final Django LTS tag, for example 5.2.17")
     parser.add_argument("--output", required=True, type=Path, help="New candidate worktree path")
-    parser.add_argument("--revision", type=int, default=0, help="Djorm-only rebuild revision")
+    parser.add_argument(
+        "--patch",
+        "--revision",
+        dest="patch",
+        type=int,
+        default=0,
+        help="SemVer patch for a Djorm-only rebuild (default: 0)",
+    )
     parser.add_argument("--continue", dest="resume", action="store_true")
     parser.add_argument("--no-verify", action="store_true", help="Skip the final package gate")
     return parser.parse_args()
@@ -639,7 +763,7 @@ def main() -> int:
             if args.django_ref is None:
                 raise ApplyError("--django-ref is required unless --continue is used.")
             source_repo = repo_root()
-            state = create_candidate(source_repo, output, args.django_ref, args.revision)
+            state = create_candidate(source_repo, output, args.django_ref, args.patch)
         return apply_remaining(state, verify=not args.no_verify)
     except (ApplyError, subprocess.CalledProcessError) as error:
         print(f"error: {error}", file=sys.stderr)
