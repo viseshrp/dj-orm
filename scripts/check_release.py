@@ -112,7 +112,7 @@ def validate(root: Path, tag: str) -> list[str]:
         errors.append("working tree is not clean")
 
     changelog_pattern = re.compile(
-        rf"^## \\[{re.escape(version)}\\] - \\d{{4}}-\\d{{2}}-\\d{{2}}$",
+        rf"^## \[{re.escape(version)}\] - \d{{4}}-\d{{2}}-\d{{2}}$",
         re.MULTILINE,
     )
     changelog = (root / "CHANGELOG.md").read_text(encoding="utf-8")
