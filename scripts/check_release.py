@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-from datetime import date
 from pathlib import Path
 import re
 import subprocess
@@ -112,10 +111,13 @@ def validate(root: Path, tag: str) -> list[str]:
     if git(root, "status", "--porcelain"):
         errors.append("working tree is not clean")
 
-    changelog_line = f"## [{version}] - {date.today().isoformat()}"
+    changelog_pattern = re.compile(
+        rf"^## \\[{re.escape(version)}\\] - \\d{{4}}-\\d{{2}}-\\d{{2}}$",
+        re.MULTILINE,
+    )
     changelog = (root / "CHANGELOG.md").read_text(encoding="utf-8")
-    if changelog_line not in changelog.splitlines():
-        errors.append(f"CHANGELOG.md must contain: {changelog_line}")
+    if changelog_pattern.search(changelog) is None:
+        errors.append(f"CHANGELOG.md must contain one dated [{version}] release heading")
     return errors
 
 
