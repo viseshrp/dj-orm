@@ -31,6 +31,7 @@ tag="v$version"
 make release-check RELEASE_TAG="$tag"
 make check
 make test
+make test-external
 make build
 make check-dist
 make inspect-dist
