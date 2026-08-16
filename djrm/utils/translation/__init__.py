@@ -5,9 +5,13 @@ Internationalization support.
 from contextlib import ContextDecorator
 from decimal import ROUND_UP, Decimal
 
+from djrm._ext.imports import is_expected_missing_module
+
 try:
     from djrm.utils.autoreload import autoreload_started, file_changed
-except ImportError:
+except ModuleNotFoundError as error:
+    if not is_expected_missing_module(error, "djrm.utils.autoreload"):
+        raise
 
     class _SignalShim:
         def connect(self, *args, **kwargs):

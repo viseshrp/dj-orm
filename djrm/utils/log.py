@@ -3,11 +3,13 @@ import logging.config  # needed when logging_config doesn't start with logging.c
 import traceback
 from copy import copy
 
+from djrm._ext.imports import is_expected_missing_module
 from djrm.conf import settings
 from djrm.core.management.color import color_style
 from djrm.utils.module_loading import import_string
 
 request_logger = logging.getLogger("djrm.request")
+REMOVED_EXCEPTION_REPORTER = "djrm.views.debug.ExceptionReporter"
 
 # Default logging for Django. This sends an email to the site admins on every
 # HTTP 500 error. Depending on DEBUG, all other log records are either sent to
@@ -89,7 +91,12 @@ class AdminEmailHandler(logging.Handler):
         reporter_path = reporter_class or settings.DEFAULT_EXCEPTION_REPORTER
         try:
             self.reporter_class = import_string(reporter_path)
-        except ImportError:
+        except ModuleNotFoundError as error:
+            if (
+                reporter_path != REMOVED_EXCEPTION_REPORTER
+                or not is_expected_missing_module(error, "djrm.views.debug")
+            ):
+                raise
             self.reporter_class = ExceptionReporterFallback
 
     def emit(self, record):
@@ -138,14 +145,18 @@ class AdminEmailHandler(logging.Handler):
     def send_mail(self, subject, message, *args, **kwargs):
         try:
             from djrm.core import mail
-        except ImportError:
+        except ModuleNotFoundError as error:
+            if not is_expected_missing_module(error, "djrm.core.mail"):
+                raise
             return
         mail.mail_admins(subject, message, *args, connection=self.connection(), **kwargs)
 
     def connection(self):
         try:
             from djrm.core.mail import get_connection
-        except ImportError:
+        except ModuleNotFoundError as error:
+            if not is_expected_missing_module(error, "djrm.core.mail"):
+                raise
             return None
         return get_connection(backend=self.email_backend, fail_silently=True)
 

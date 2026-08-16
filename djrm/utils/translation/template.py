@@ -1,14 +1,91 @@
-import warnings
+from enum import Enum
 from io import StringIO
+import re
+import warnings
 
-from djrm.template.base import Lexer, TokenType
 from djrm.utils.regex_helper import _lazy_re_compile
+from djrm.utils.text import smart_split
 
 from . import TranslatorCommentWarning, trim_whitespace
 
 TRANSLATOR_COMMENT_MARK = "Translators"
 
 dot_re = _lazy_re_compile(r"\S")
+
+# ``templatize()`` only needs Django's lexical template boundary handling. The
+# rendering engine is intentionally outside djrm's scope, so keep the small
+# lexer here instead of importing the removed ``djrm.template`` package.
+BLOCK_TAG_START = "{%"
+VARIABLE_TAG_START = "{{"
+COMMENT_TAG_START = "{#"
+tag_re = re.compile(r"({%.*?%}|{{.*?}}|{#.*?#})")
+
+
+class TokenType(Enum):
+    TEXT = 0
+    VAR = 1
+    BLOCK = 2
+    COMMENT = 3
+
+
+class Token:
+    def __init__(self, token_type, contents, lineno):
+        self.token_type = token_type
+        self.contents = contents
+        self.lineno = lineno
+
+    def split_contents(self):
+        split = []
+        bits = smart_split(self.contents)
+        for bit in bits:
+            if bit.startswith(('_("', "_('")):
+                sentinel = bit[2] + ")"
+                trans_bit = [bit]
+                while not bit.endswith(sentinel):
+                    bit = next(bits)
+                    trans_bit.append(bit)
+                bit = " ".join(trans_bit)
+            split.append(bit)
+        return split
+
+
+class Lexer:
+    """Tokenize only the syntax needed by ``templatize()``."""
+
+    def __init__(self, template_string):
+        self.template_string = template_string
+        self.verbatim = False
+
+    def tokenize(self):
+        in_tag = False
+        lineno = 1
+        result = []
+        for token_string in tag_re.split(self.template_string):
+            if token_string:
+                result.append(self.create_token(token_string, lineno, in_tag))
+                lineno += token_string.count("\n")
+            in_tag = not in_tag
+        return result
+
+    def create_token(self, token_string, lineno, in_tag):
+        if in_tag:
+            token_start = token_string[0:2]
+            if token_start == BLOCK_TAG_START:
+                content = token_string[2:-2].strip()
+                if self.verbatim:
+                    if content != self.verbatim:
+                        return Token(TokenType.TEXT, token_string, lineno)
+                    self.verbatim = False
+                elif content[:9] in ("verbatim", "verbatim "):
+                    self.verbatim = f"end{content}"
+                return Token(TokenType.BLOCK, content, lineno)
+            if not self.verbatim:
+                content = token_string[2:-2].strip()
+                if token_start == VARIABLE_TAG_START:
+                    return Token(TokenType.VAR, content, lineno)
+                assert token_start == COMMENT_TAG_START
+                return Token(TokenType.COMMENT, content, lineno)
+        return Token(TokenType.TEXT, token_string, lineno)
 
 
 def blankout(src, char):

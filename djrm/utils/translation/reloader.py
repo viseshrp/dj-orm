@@ -2,11 +2,14 @@ from pathlib import Path
 
 from asgiref.local import Local
 
+from djrm._ext.imports import is_expected_missing_module
 from djrm.apps import apps
 
 try:
     from djrm.utils.autoreload import is_django_module
-except ImportError:
+except ModuleNotFoundError as error:
+    if not is_expected_missing_module(error, "djrm.utils.autoreload"):
+        raise
 
     def is_django_module(module):
         return module.__name__.startswith("djrm.")
