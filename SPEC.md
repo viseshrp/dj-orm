@@ -19,7 +19,6 @@
 - All Django 5.2 database backends: SQLite, PostgreSQL, MySQL, Oracle.
 - The `contrib.postgres` extension fields/functions/indexes/lookups/constraints.
 - The `contrib.contenttypes` framework (ContentType model, GenericForeignKey/GenericRelation).
-- The `contrib.gis` (GeoDjango) database layer (fields, functions, lookups, backends). **Deferred to a later milestone** — see §10.7.
 - The app registry (`djrm.apps`) and settings infrastructure (`djrm.conf`).
 - The signal dispatcher (`djrm.dispatch`).
 - All ORM model signals (`djrm.db.models.signals`): `pre_init`, `post_init`, `pre_save`, `post_save`, `pre_delete`, `post_delete`, `m2m_changed`, `class_prepared`, `pre_migrate`, `post_migrate`. These are core ORM extension points and must be fully preserved.
@@ -31,6 +30,7 @@
 ### What djrm is NOT
 
 - A web framework. No HTTP layer, no views, no URL routing, no middleware, no templates, no forms, no sessions, no auth/permissions, no admin, no caching framework, no static files, no ASGI/WSGI support.
+- A geospatial ORM. GeoDjango, spatial fields and functions, and spatial database backends are not included.
 - A compatibility shim. There is **no** `django` namespace. All imports use `djrm`.
 - A new API surface. No `djrm.configure()`, no `database_url` helper, no synthetic app concept. Users interact with the same Django API patterns they already know, under the `djrm.*` namespace.
 
@@ -168,7 +168,6 @@ The `DJANGO_SETTINGS_MODULE` environment variable is **unchanged** from Django. 
 | `djrm/contrib/__init__.py` | Container |
 | `djrm/contrib/contenttypes/` | ContentType model, GenericForeignKey — ORM feature; remove `admin.py`, `views.py`, `forms.py` |
 | `djrm/contrib/postgres/` | PostgreSQL-specific fields, functions, lookups, indexes, constraints; remove `forms/`, `templates/`, `jinja2/` |
-| `djrm/contrib/gis/` | **Deferred to a later milestone.** GeoDjango requires native GEOS/GDAL/PROJ libraries and has a heavy local-setup burden. Keeping it out of the initial release reduces risk. When added: retain only DB layer (`db/`, `geos/`, `gdal/`, `measure.py`, `geometry.py`, `ptr.py`, `management/`, `serializers/`, `utils/`); remove `admin/`, `feeds.py`, `forms/`, `sitemaps/`, `shortcuts.py`, `static/`, `templates/`, `views.py`. |
 | `djrm/test/` | Test utilities (`TestCase`, `TransactionTestCase`, etc.) — needed by the test suite; remove `client.py`, `selenium.py`, `html.py` |
 | `djrm/_ext/` | **New.** Fork-specific glue/patch code lives here (see §9) |
 
@@ -194,6 +193,7 @@ The `DJANGO_SETTINGS_MODULE` environment variable is **unchanged** from Django. 
 | `djrm/contrib/admin/` | Admin — web |
 | `djrm/contrib/admindocs/` | Admin docs — web |
 | `djrm/contrib/auth/` | Authentication — web |
+| `djrm/contrib/gis/` | GeoDjango and spatial database support — outside project scope |
 | `djrm/contrib/flatpages/` | Flatpages — web |
 | `djrm/contrib/humanize/` | Humanize — web |
 | `djrm/contrib/messages/` | Messages — web |
@@ -354,10 +354,6 @@ of the retained suite.
 
 `aggregation`, `aggregation_regress`, `annotations`, `backends`, `base`, `basic`, `bulk_create`, `composite_pk`, `constraints`, `contenttypes_tests`, `custom_columns`, `custom_lookups`, `custom_managers`, `custom_methods`, `custom_migration_operations`, `custom_pk`, `datatypes`, `dates`, `datetimes`, `db_functions`, `db_typecasts`, `db_utils`, `dbshell`, `defer`, `defer_regress`, `delete`, `delete_regress`, `distinct_on_fields`, `empty`, `empty_models`, `expressions`, `expressions_case`, `expressions_window`, `field_defaults`, `field_subclassing`, `filtered_relation`, `fixtures_model_package`, `force_insert_update`, `foreign_object`, `from_db_value`, `generic_relations`, `get_earliest_or_latest`, `get_or_create`, `indexes`, `inspectdb`, `introspection`, `invalid_models_tests`, `known_related_objects`, `lookup`, `m2m_and_m2o`, `m2m_intermediary`, `m2m_multiple`, `m2m_recursive`, `m2m_signals`, `m2m_through`, `m2o_recursive`, `many_to_many`, `many_to_one`, `many_to_one_null`, `max_lengths`, `migrate_signals`, `migration_test_data_persistence`, `migrations`, `migrations2`, `model_fields`, `model_indexes`, `model_inheritance`, `model_inheritance_regress`, `model_meta`, `model_options`, `model_package`, `model_regress`, `model_utils`, `multiple_database`, `mutually_referential`, `nested_foreign_keys`, `no_models`, `null_fk`, `null_fk_ordering`, `null_queries`, `one_to_one`, `or_lookups`, `order_with_respect_to`, `ordering`, `postgres_tests`, `prefetch_related`, `properties`, `proxy_model_inheritance`, `queries`, `queryset_pickle`, `raw_query`, `reserved_names`, `reverse_lookup`, `save_delete_hooks`, `schema`, `select_for_update`, `select_related`, `select_related_onetoone`, `select_related_regress`, `serializers`, `signals`, `str`, `string_lookup`, `transaction_hooks`, `transactions`, `unmanaged_models`, `update`, `update_only_fields`, `validation`, `validators`, `xor_lookups`
 
-**Deferred (GIS milestone):**
-
-- `gis_tests/` — deferred along with `contrib.gis` (see §10.7).
-
 **Partially kept:**
 
 - `async/` — Keep only: `test_async_queryset.py`, `test_async_model_methods.py`, `test_async_related_managers.py`. Remove: `test_async_auth.py`, `test_async_shortcuts.py`, and any other web-related async tests.
@@ -374,9 +370,9 @@ of the retained suite.
 
 ### 7.2 Removed test modules (73+ directories)
 
-All test directories related to web framework features:
+All test directories related to removed web-framework or geospatial features:
 
-`absolute_url_overrides`, `admin_autodiscover`, `admin_changelist`, `admin_checks`, `admin_custom_urls`, `admin_default_site`, `admin_docs`, `admin_filters`, `admin_inlines`, `admin_ordering`, `admin_registration`, `admin_scripts`, `admin_utils`, `admin_views`, `admin_widgets`, `asgi`, `auth_tests`, `builtin_server`, `cache`, `conditional_processing`, `context_processors`, `csrf_tests`, `decorators`, `file_storage`, `file_uploads`, `files`, `flatpages_tests`, `forms_tests`, `generic_inline_admin`, `generic_views`, `get_object_or_404`, `handlers`, `httpwrappers`, `humanize_tests`, `i18n`, `inline_formsets`, `logging_tests`, `mail`, `messages_tests`, `middleware`, `middleware_exceptions`, `model_forms`, `model_formsets`, `model_formsets_regress`, `modeladmin`, `pagination`, `project_template`, `redirects_tests`, `requests_tests`, `resolve_url`, `responses`, `sessions_tests`, `shell`, `shortcuts`, `signed_cookies_tests`, `signing`, `sitemaps_tests`, `sites_framework`, `sites_tests`, `staticfiles_tests`, `syndication_tests`, `template_backends`, `template_loader`, `template_tests`, `templates`, `test_client`, `test_client_regress`, `urlpatterns`, `urlpatterns_reverse`, `user_commands`, `view_tests`, `wsgi`
+`absolute_url_overrides`, `admin_autodiscover`, `admin_changelist`, `admin_checks`, `admin_custom_urls`, `admin_default_site`, `admin_docs`, `admin_filters`, `admin_inlines`, `admin_ordering`, `admin_registration`, `admin_scripts`, `admin_utils`, `admin_views`, `admin_widgets`, `asgi`, `auth_tests`, `builtin_server`, `cache`, `conditional_processing`, `context_processors`, `csrf_tests`, `decorators`, `file_storage`, `file_uploads`, `files`, `flatpages_tests`, `forms_tests`, `generic_inline_admin`, `generic_views`, `get_object_or_404`, `gis_tests`, `handlers`, `httpwrappers`, `humanize_tests`, `i18n`, `inline_formsets`, `logging_tests`, `mail`, `messages_tests`, `middleware`, `middleware_exceptions`, `model_forms`, `model_formsets`, `model_formsets_regress`, `modeladmin`, `pagination`, `project_template`, `redirects_tests`, `requests_tests`, `resolve_url`, `responses`, `sessions_tests`, `shell`, `shortcuts`, `signed_cookies_tests`, `signing`, `sitemaps_tests`, `sites_framework`, `sites_tests`, `staticfiles_tests`, `syndication_tests`, `template_backends`, `template_loader`, `template_tests`, `templates`, `test_client`, `test_client_regress`, `urlpatterns`, `urlpatterns_reverse`, `user_commands`, `view_tests`, `wsgi`
 
 Also remove: `admin_scripts/`, `app_loading/`, `bash_completion/`, `deprecation/`, `import_error_package/`, `sphinx/`, `test_runner/`, `test_runner_apps/`, `requirements/`
 
@@ -580,18 +576,13 @@ from djrm.core.checks import run_checks, Tags
 errors = run_checks(tags=[Tags.models, Tags.database])
 ```
 
-### 10.7 GeoDjango (`contrib.gis`) deferral
+### 10.7 GeoDjango (`contrib.gis`) exclusion
 
-GeoDjango's DB layer (spatial fields, functions, lookups, PostGIS/SpatiaLite backends) is a legitimate ORM feature. However, it requires native C libraries (GEOS, GDAL, PROJ) that make local setup painful — especially on macOS where dynamic linking, `brew` paths, and environment variables are common friction points.
-
-**Decision:** Defer `contrib.gis` to a later milestone. The initial release ships without it. When adding GIS support:
-
-- Keep only the DB layer: `db/`, `geos/`, `gdal/`, `measure.py`, `geometry.py`, `ptr.py`, `management/`, `serializers/`, `utils/`.
-- Remove web parts: `admin/`, `feeds.py`, `forms/`, `sitemaps/`, `shortcuts.py`, `static/`, `templates/`, `views.py`.
-- Document GEOS/GDAL/PROJ as hard prerequisites.
-- Add `gis_tests/` back to the test suite at that point.
-
-This does **not** affect API parity for non-GIS users.
+GeoDjango is permanently outside the djrm package contract. The distribution
+does not include spatial fields, functions, lookups, database backends, native
+library integrations, or `gis_tests`. The LTS application tool treats the
+upstream package and test directories as maintained deletions so a later Django
+tag cannot restore them implicitly.
 
 ### 10.8 `djrm.setup()` is unchanged
 

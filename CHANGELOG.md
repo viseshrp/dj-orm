@@ -5,6 +5,13 @@ upstream release notes for the exact tag named by each djrm release.
 
 ## Unreleased
 
+### Removed
+
+- Residual SpatiaLite, PostGIS adapter, and Oracle Spatial compatibility hooks
+  from the retained ORM and database backend code.
+- The GeoDjango roadmap. GIS packages, tests, backends, and native
+  integrations are permanently outside djrm's package contract.
+
 ### Fixed
 
 - PostgreSQL aggregate and field imports no longer fail because the web-only

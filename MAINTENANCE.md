@@ -101,10 +101,11 @@ The command performs these bounded operations:
    merge support.
 4. Applies clean additions, edits, and deletions automatically. Directories
    removed by the maintained fork stay removed, including files added upstream
-   after the recorded base. Gettext source catalogs remain pruned while compiled
-   runtime catalogs are retained. Reviewed packaging and CI files stay
-   fork-owned; incompatible changes in retained Django runtime code remain as
-   conflicts for human review.
+   after the recorded base. This permanently keeps `contrib.gis` and `gis_tests`
+   out of djrm. Gettext source catalogs remain pruned while compiled runtime
+   catalogs are retained. Reviewed packaging and CI files stay fork-owned;
+   incompatible changes in retained Django runtime code remain as conflicts for
+   human review.
 5. Computes the next SemVer package version, writes the exact upstream
    provenance, then runs the namespace, package, and retained-suite checks.
 
@@ -177,6 +178,9 @@ make release-check RELEASE_TAG=v0.1.0
 - the source is clean and contains no `django` package;
 - `djrm` is the configured distribution;
 - the changelog has a dated entry for the release.
+
+`make inspect-dist` also rejects any wheel or source archive containing
+`djrm.contrib.gis`.
 
 Run `make tag` only from a clean `main` branch that matches its configured
 remote. The tag workflow rebuilds and tests the exact tag, then creates a draft

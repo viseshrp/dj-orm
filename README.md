@@ -33,8 +33,8 @@ Release builds are published to PyPI. See
   `showmigrations`, `dumpdata`, and `loaddata`
 
 HTTP handling, URL routing, views, middleware, templates, forms, auth, admin,
-sessions, static files, and other web-facing components are not included. The
-package does not provide a compatibility `django` namespace.
+sessions, static files, GeoDjango, and spatial database support are not included.
+The package does not provide a compatibility `django` namespace.
 
 ## Minimal setup
 
