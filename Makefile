@@ -14,6 +14,7 @@ check: ## Check the lockfile and maintained project files
 	uv lock --check
 	uv run pre-commit run --all-files
 	uv run python scripts/check_path_case.py
+	uv run python scripts/audit_upstream_delta.py
 
 .PHONY: test-smoke
 test-smoke: install ## Run package and maintenance-tool smoke tests

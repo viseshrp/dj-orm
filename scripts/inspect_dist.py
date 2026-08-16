@@ -59,10 +59,12 @@ def inspect_sdist(sdist: Path) -> None:
     if any(name.endswith("/.github/PULL_REQUEST_TEMPLATE.md") for name in names):
         raise InspectionError("Source archive contains incorrectly cased PR template.")
     suffixes = {
+        ".djrm-upstream-delta.toml",
         ".github/pull_request_template.md",
         "README.md",
         "MAINTENANCE.md",
         "scripts/apply_django_lts.py",
+        "scripts/audit_upstream_delta.py",
         "scripts/check_path_case.py",
         "scripts/test_external_databases.py",
         "tests/runtests.py",

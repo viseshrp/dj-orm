@@ -101,6 +101,7 @@ packages = ["djrm"]
 [tool.hatch.build.targets.sdist]
 include = [
     ".djrm-maintenance.toml",
+    ".djrm-upstream-delta.toml",
     ".github/**",
     ".gitattributes",
     ".gitignore",
@@ -119,6 +120,7 @@ include = [
     "djrm/**",
     "pyproject.toml",
     "scripts/apply_django_lts.py",
+    "scripts/audit_upstream_delta.py",
     "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",
@@ -182,6 +184,7 @@ force-sort-within-sections = true
 include = [
     "djrm/_ext",
     "scripts/apply_django_lts.py",
+    "scripts/audit_upstream_delta.py",
     "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",

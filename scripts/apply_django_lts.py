@@ -31,6 +31,7 @@ SEMVER_RE = re.compile(
 )
 FORK_OWNED_PATHS = {
     CONFIG_NAME,
+    ".djrm-upstream-delta.toml",
     ".gitignore",
     ".pre-commit-config.yaml",
     "CHANGELOG.md",
@@ -43,6 +44,7 @@ FORK_OWNED_PATHS = {
     "codespell.txt",
     "pyproject.toml",
     "scripts/apply_django_lts.py",
+    "scripts/audit_upstream_delta.py",
     "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",

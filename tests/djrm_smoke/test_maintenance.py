@@ -23,6 +23,11 @@ from scripts.apply_django_lts import (
     parse_distribution_version,
     release_series,
 )
+from scripts.audit_upstream_delta import (
+    baseline_text,
+    syntax_dump,
+    validate_report,
+)
 from scripts.rename_namespace import rewrite_python
 
 LTS_VERSION_MAJORS = {"5.2": 0, "6.2": 1}
@@ -183,9 +188,11 @@ def test_reject_invalid_lts_version_major_mappings(mapping: dict[str, int]) -> N
     [
         ".github/workflows/main.yml",
         ".pre-commit-config.yaml",
+        ".djrm-upstream-delta.toml",
         "djrm/_ext/forms.py",
         "pyproject.toml",
         "scripts/apply_django_lts.py",
+        "scripts/audit_upstream_delta.py",
         "tests/djrm_smoke/test_distribution.py",
         "tox.ini",
     ],
@@ -329,6 +336,55 @@ def test_maintenance_config_records_distribution_and_template() -> None:
     assert config["lts_version_majors"] == LTS_VERSION_MAJORS
     assert config["release_version"] == package_version
     assert "namespace_commit" not in config
+
+
+def test_delta_audit_ignores_docstrings_only_for_executable_ast() -> None:
+    first = b'def example():\n    """first"""\n    return 1\n'
+    second = b'def example():\n    """second"""\n    return 1\n'
+
+    assert syntax_dump(first, executable=False) != syntax_dump(
+        second,
+        executable=False,
+    )
+    assert syntax_dump(first, executable=True) == syntax_dump(
+        second,
+        executable=True,
+    )
+
+
+def test_delta_baseline_round_trip_and_drift_detection() -> None:
+    report = {
+        "upstream_ref": "5.2.17",
+        "upstream_commit": "a" * 40,
+        "djrm": {
+            "common": 2,
+            "byte_differences": 1,
+            "raw_ast_differences": ["djrm/db.py"],
+            "executable_ast_differences": ["djrm/db.py"],
+            "non_ast_byte_differences": 0,
+            "upstream_only": 1,
+            "upstream_only_sha256": "b" * 64,
+            "fork_only": 1,
+            "fork_only_sha256": "c" * 64,
+        },
+        "tests": {
+            "common": 2,
+            "byte_differences": 0,
+            "raw_ast_differences": [],
+            "executable_ast_differences": [],
+            "non_ast_byte_differences": 0,
+            "upstream_only": 0,
+            "upstream_only_sha256": "d" * 64,
+            "fork_only": 0,
+            "fork_only_sha256": "d" * 64,
+        },
+    }
+    baseline = tomllib.loads(baseline_text(report))
+
+    assert validate_report(report, baseline) == []
+
+    report["djrm"]["executable_ast_differences"] = ["djrm/new_drift.py"]
+    assert validate_report(report, baseline) == ["djrm executable AST allowlist changed"]
 
 
 def test_namespace_rewrite_preserves_pre_312_fstring_syntax(tmp_path: Path) -> None:

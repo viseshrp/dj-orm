@@ -1,0 +1,72 @@
+schema = 1
+upstream_ref = "5.2.17"
+upstream_commit = "e802ada38b3ecf345915163bb6d7f008be411664"
+
+[djrm]
+max_byte_differences = 190
+max_raw_ast_differences = 32
+max_non_ast_byte_differences = 158
+upstream_only = 2959
+upstream_only_sha256 = "4b8d5e4a4013772c01706f33a63c79e56e93853b14ad0dbb5b3aab4705c476c5"
+fork_only = 5
+fork_only_sha256 = "8e6505cb07acd8f7b72ea7142ed6e0ca045269ab22d2538463282818fa7770c9"
+executable_ast_differences = [
+  "djrm/__init__.py",
+  "djrm/conf/__init__.py",
+  "djrm/contrib/postgres/fields/array.py",
+  "djrm/contrib/postgres/fields/hstore.py",
+  "djrm/contrib/postgres/fields/ranges.py",
+  "djrm/contrib/postgres/operations.py",
+  "djrm/core/checks/__init__.py",
+  "djrm/core/management/__init__.py",
+  "djrm/db/backends/base/creation.py",
+  "djrm/db/backends/base/operations.py",
+  "djrm/db/backends/mysql/features.py",
+  "djrm/db/backends/oracle/features.py",
+  "djrm/db/backends/sqlite3/creation.py",
+  "djrm/db/backends/sqlite3/features.py",
+  "djrm/db/models/base.py",
+  "djrm/db/models/fields/__init__.py",
+  "djrm/db/models/fields/files.py",
+  "djrm/db/models/fields/json.py",
+  "djrm/db/models/fields/related.py",
+  "djrm/db/models/functions/math.py",
+  "djrm/db/models/sql/compiler.py",
+  "djrm/test/__init__.py",
+  "djrm/test/runner.py",
+  "djrm/test/signals.py",
+  "djrm/test/testcases.py",
+  "djrm/test/utils.py",
+  "djrm/utils/log.py",
+  "djrm/utils/translation/__init__.py",
+  "djrm/utils/translation/reloader.py",
+  "djrm/utils/translation/template.py",
+]
+
+[tests]
+max_byte_differences = 302
+max_raw_ast_differences = 18
+max_non_ast_byte_differences = 284
+upstream_only = 1645
+upstream_only_sha256 = "333f852bcba7b10bfa0ed5a3ef38ea11b0ff56f7b7a994d354a42fb977564728"
+fork_only = 18
+fork_only_sha256 = "b9916f5ef592bf864555e8ec21a386be2e3e969bca85ef159f391ccbd11d941e"
+executable_ast_differences = [
+  "tests/aggregation_regress/tests.py",
+  "tests/backends/base/test_base.py",
+  "tests/backends/base/test_creation.py",
+  "tests/contenttypes_tests/models.py",
+  "tests/contenttypes_tests/test_models.py",
+  "tests/model_fields/test_textfield.py",
+  "tests/model_fields/tests.py",
+  "tests/model_inheritance_regress/tests.py",
+  "tests/postgres_tests/test_integration.py",
+  "tests/prefetch_related/tests.py",
+  "tests/queries/tests.py",
+  "tests/raw_query/tests.py",
+  "tests/runtests.py",
+  "tests/test_sqlite.py",
+  "tests/utils_tests/test_html.py",
+  "tests/utils_tests/test_module_loading.py",
+  "tests/utils_tests/test_text.py",
+]
