@@ -3,7 +3,7 @@
 import datetime
 import unittest
 
-from djorm.db.backends import utils as typecasts
+from djrm.db.backends import utils as typecasts
 
 TEST_CASES = {
     "typecast_date": (

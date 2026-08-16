@@ -6,7 +6,7 @@ This is a basic model with only two non-primary-key fields.
 
 import uuid
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Article(models.Model):

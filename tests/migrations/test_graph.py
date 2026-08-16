@@ -1,6 +1,6 @@
-from djorm.db.migrations.exceptions import CircularDependencyError, NodeNotFoundError
-from djorm.db.migrations.graph import DummyNode, MigrationGraph, Node
-from djorm.test import SimpleTestCase
+from djrm.db.migrations.exceptions import CircularDependencyError, NodeNotFoundError
+from djrm.db.migrations.graph import DummyNode, MigrationGraph, Node
+from djrm.test import SimpleTestCase
 
 
 class GraphTests(SimpleTestCase):

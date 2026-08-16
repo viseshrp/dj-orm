@@ -1,6 +1,6 @@
-from djorm.db.models.query_utils import PathInfo
-from djorm.db.models.sql import Query
-from djorm.test import TestCase
+from djrm.db.models.query_utils import PathInfo
+from djrm.db.models.sql import Query
+from djrm.test import TestCase
 
 from .models import Comment, Tenant, User
 

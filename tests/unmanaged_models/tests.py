@@ -1,5 +1,5 @@
-from djorm.db import connection
-from djorm.test import TestCase
+from djrm.db import connection
+from djrm.test import TestCase
 
 from .models import A01, A02, B01, B02, C01, C02, Managed1, Unmanaged2
 

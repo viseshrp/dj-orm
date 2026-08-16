@@ -2,7 +2,7 @@
 
 import uuid
 
-from djorm.db import models
+from djrm.db import models
 
 
 class NaturalKeyAnchorManager(models.Manager):

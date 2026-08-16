@@ -1,4 +1,4 @@
-from djorm.db.migrations.operations.base import Operation
+from djrm.db.migrations.operations.base import Operation
 
 
 class TestOperation(Operation):

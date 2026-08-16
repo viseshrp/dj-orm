@@ -12,7 +12,7 @@ Model inheritance exists in two varieties:
 Both styles are demonstrated here.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 #
 # Abstract base classes

@@ -1,8 +1,8 @@
 from datetime import datetime
 from operator import attrgetter
 
-from djorm.db.models import Q
-from djorm.test import TestCase
+from djrm.db.models import Q
+from djrm.test import TestCase
 
 from .models import Article
 

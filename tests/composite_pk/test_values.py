@@ -1,7 +1,7 @@
 from collections import namedtuple
 from uuid import UUID
 
-from djorm.test import TestCase
+from djrm.test import TestCase
 
 from .models import Comment, Post, Tenant, User
 

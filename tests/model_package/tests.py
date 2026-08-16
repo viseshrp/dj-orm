@@ -1,6 +1,6 @@
-from djorm.db import connection, models
-from djorm.db.backends.utils import truncate_name
-from djorm.test import TestCase
+from djrm.db import connection, models
+from djrm.db.backends.utils import truncate_name
+from djrm.test import TestCase
 
 from .models.article import Article, Site
 from .models.publication import Publication

@@ -3,13 +3,13 @@ from unittest import mock
 
 from asgiref.sync import markcoroutinefunction
 
-from djorm import dispatch
-from djorm.apps.registry import Apps
-from djorm.db import models
-from djorm.db.models import signals
-from djorm.dispatch import receiver
-from djorm.test import SimpleTestCase, TestCase
-from djorm.test.utils import isolate_apps
+from djrm import dispatch
+from djrm.apps.registry import Apps
+from djrm.db import models
+from djrm.db.models import signals
+from djrm.dispatch import receiver
+from djrm.test import SimpleTestCase, TestCase
+from djrm.test.utils import isolate_apps
 
 from .models import Author, Book, Car, Page, Person
 

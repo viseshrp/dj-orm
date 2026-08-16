@@ -4,9 +4,9 @@ SHELL := bash
 .PHONY: install
 install: ## Install the locked development environment
 	@if [ -f uv.lock ]; then \
-		uv sync --frozen --reinstall-package dj-orm; \
+		uv sync --frozen --reinstall-package djrm; \
 	else \
-		uv sync --reinstall-package dj-orm; \
+		uv sync --reinstall-package djrm; \
 	fi
 
 .PHONY: check
@@ -16,7 +16,7 @@ check: ## Check the lockfile and maintained project files
 
 .PHONY: test-smoke
 test-smoke: install ## Run package and maintenance-tool smoke tests
-	uv run python -m pytest tests/djorm_smoke
+	uv run python -m pytest tests/djrm_smoke
 
 .PHONY: test-upstream
 test-upstream: ## Run the retained ORM suite with SQLite

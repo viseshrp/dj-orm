@@ -1,5 +1,5 @@
-from djorm.conf import settings
-from djorm.db import migrations, models
+from djrm.conf import settings
+from djrm.db import migrations, models
 
 
 class Migration(migrations.Migration):

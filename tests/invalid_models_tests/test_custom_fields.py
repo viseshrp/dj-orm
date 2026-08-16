@@ -1,6 +1,6 @@
-from djorm.db import models
-from djorm.test import SimpleTestCase
-from djorm.test.utils import isolate_apps
+from djrm.db import models
+from djrm.test import SimpleTestCase
+from djrm.test.utils import isolate_apps
 
 
 @isolate_apps("invalid_models_tests")

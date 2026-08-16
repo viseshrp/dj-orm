@@ -1,5 +1,5 @@
-from djorm.db import IntegrityError, transaction
-from djorm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djrm.db import IntegrityError, transaction
+from djrm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
 
 from .fields import MyWrapper
 from .models import Bar, Business, CustomAutoFieldModel, Employee, Foo

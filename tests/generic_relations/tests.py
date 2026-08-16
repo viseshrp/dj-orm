@@ -1,8 +1,8 @@
-from djorm.contrib.contenttypes.models import ContentType
-from djorm.contrib.contenttypes.prefetch import GenericPrefetch
-from djorm.core.exceptions import FieldError
-from djorm.db.models import Q, prefetch_related_objects
-from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djrm.contrib.contenttypes.models import ContentType
+from djrm.contrib.contenttypes.prefetch import GenericPrefetch
+from djrm.core.exceptions import FieldError
+from djrm.db.models import Q, prefetch_related_objects
+from djrm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
 
 from .models import (
     AllowsNullGFK,

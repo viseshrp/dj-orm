@@ -1,10 +1,10 @@
 from math import ceil
 
-from djorm.db import connection, models
-from djorm.db.models import ProtectedError, Q, RestrictedError
-from djorm.db.models.deletion import Collector
-from djorm.db.models.sql.constants import GET_ITERATOR_CHUNK_SIZE
-from djorm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djrm.db import connection, models
+from djrm.db.models import ProtectedError, Q, RestrictedError
+from djrm.db.models.deletion import Collector
+from djrm.db.models.sql.constants import GET_ITERATOR_CHUNK_SIZE
+from djrm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
 
 from .models import (
     B1,

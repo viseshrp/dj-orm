@@ -1,5 +1,5 @@
-from djorm.db.models.base import ModelState, ModelStateFieldsCacheDescriptor
-from djorm.test import SimpleTestCase
+from djrm.db.models.base import ModelState, ModelStateFieldsCacheDescriptor
+from djrm.test import SimpleTestCase
 
 
 class ModelStateTests(SimpleTestCase):

@@ -1,8 +1,8 @@
 import unittest
 
-from djorm.core.management.color import no_style
-from djorm.db import connection, models
-from djorm.test import TransactionTestCase
+from djrm.core.management.color import no_style
+from djrm.db import connection, models
+from djrm.test import TransactionTestCase
 
 from ..models import Person, Tag
 

@@ -3,7 +3,7 @@ import threading
 import time
 from unittest import skipIf, skipUnless
 
-from djorm.db import (
+from djrm.db import (
     DatabaseError,
     Error,
     IntegrityError,
@@ -11,7 +11,7 @@ from djorm.db import (
     connection,
     transaction,
 )
-from djorm.test import (
+from djrm.test import (
     TestCase,
     TransactionTestCase,
     skipIfDBFeature,

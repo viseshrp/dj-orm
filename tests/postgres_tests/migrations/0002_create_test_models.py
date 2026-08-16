@@ -1,4 +1,4 @@
-from djorm.db import migrations, models
+from djrm.db import migrations, models
 
 from ..fields import (
     ArrayField,

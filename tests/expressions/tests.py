@@ -8,9 +8,9 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, TypeAlias
 from unittest import mock
 
-from djorm.core.exceptions import FieldError
-from djorm.db import DatabaseError, NotSupportedError, connection
-from djorm.db.models import (
+from djrm.core.exceptions import FieldError
+from djrm.db import DatabaseError, NotSupportedError, connection
+from djrm.db.models import (
     AutoField,
     Avg,
     BinaryField,
@@ -47,7 +47,7 @@ from djorm.db.models import (
     Variance,
     When,
 )
-from djorm.db.models.expressions import (
+from djrm.db.models.expressions import (
     Col,
     ColPairs,
     Combinable,
@@ -57,7 +57,7 @@ from djorm.db.models.expressions import (
     RawSQL,
     Ref,
 )
-from djorm.db.models.functions import (
+from djrm.db.models.functions import (
     Coalesce,
     Concat,
     ExtractDay,
@@ -68,17 +68,17 @@ from djorm.db.models.functions import (
     TruncDate,
     Upper,
 )
-from djorm.db.models.sql import constants
-from djorm.db.models.sql.datastructures import Join
-from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
-from djorm.test.utils import (
+from djrm.db.models.sql import constants
+from djrm.db.models.sql.datastructures import Join
+from djrm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djrm.test.utils import (
     Approximate,
     CaptureQueriesContext,
     isolate_apps,
     register_lookup,
 )
-from djorm.utils.functional import SimpleLazyObject
-from djorm.utils.version import PY314
+from djrm.utils.functional import SimpleLazyObject
+from djrm.utils.version import PY314
 
 from .models import (
     UUID,
@@ -1268,7 +1268,7 @@ class FTests(SimpleTestCase):
     def test_deconstruct(self):
         f = F("name")
         path, args, kwargs = f.deconstruct()
-        self.assertEqual(path, "djorm.db.models.F")
+        self.assertEqual(path, "djrm.db.models.F")
         self.assertEqual(args, (f.name,))
         self.assertEqual(kwargs, {})
 
@@ -2247,14 +2247,14 @@ class ValueTests(TestCase):
     def test_deconstruct(self):
         value = Value("name")
         path, args, kwargs = value.deconstruct()
-        self.assertEqual(path, "djorm.db.models.Value")
+        self.assertEqual(path, "djrm.db.models.Value")
         self.assertEqual(args, (value.value,))
         self.assertEqual(kwargs, {})
 
     def test_deconstruct_output_field(self):
         value = Value("name", output_field=CharField())
         path, args, kwargs = value.deconstruct()
-        self.assertEqual(path, "djorm.db.models.Value")
+        self.assertEqual(path, "djrm.db.models.Value")
         self.assertEqual(args, (value.value,))
         self.assertEqual(len(kwargs), 1)
         self.assertEqual(kwargs["output_field"].deconstruct(), CharField().deconstruct())

@@ -3,9 +3,9 @@ from decimal import Decimal
 from io import StringIO
 from ipaddress import IPv6Address
 
-from djorm.core.exceptions import ValidationError
-from djorm.test import SimpleTestCase
-from djorm.utils.ipv6 import (
+from djrm.core.exceptions import ValidationError
+from djrm.test import SimpleTestCase
+from djrm.utils.ipv6 import (
     MAX_IPV6_ADDRESS_LENGTH,
     clean_ipv6_address,
     is_valid_ipv6_address,

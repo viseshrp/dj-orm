@@ -3,7 +3,7 @@ Tests for the update() queryset method that allows in-place, multi-object
 updates.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class DataPoint(models.Model):

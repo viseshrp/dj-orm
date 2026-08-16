@@ -2,10 +2,10 @@ import json
 import unittest
 import xml.etree.ElementTree
 
-from djorm.db import NotSupportedError, connection, transaction
-from djorm.db.models import Count
-from djorm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
-from djorm.test.utils import CaptureQueriesContext
+from djrm.db import NotSupportedError, connection, transaction
+from djrm.db.models import Count
+from djrm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djrm.test.utils import CaptureQueriesContext
 
 from .models import Tag
 

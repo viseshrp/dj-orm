@@ -1,5 +1,5 @@
-import djorm.contrib.postgres.fields
-from djorm.db import migrations, models
+import djrm.contrib.postgres.fields
+from djrm.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -20,14 +20,14 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "char",
-                    djorm.contrib.postgres.fields.ArrayField(
+                    djrm.contrib.postgres.fields.ArrayField(
                         models.CharField(max_length=10), db_index=True, size=100
                     ),
                 ),
                 ("char2", models.CharField(max_length=11, db_index=True)),
                 (
                     "text",
-                    djorm.contrib.postgres.fields.ArrayField(models.TextField(), db_index=True),
+                    djrm.contrib.postgres.fields.ArrayField(models.TextField(), db_index=True),
                 ),
             ],
             options={},

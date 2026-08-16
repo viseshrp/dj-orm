@@ -5,10 +5,10 @@ To perform an OR lookup, or a lookup that combines ANDs and ORs, combine
 ``QuerySet`` objects using ``&`` and ``|`` operators.
 
 Alternatively, use positional arguments, and pass one or more expressions of
-clauses using the variable ``djorm.db.models.Q``.
+clauses using the variable ``djrm.db.models.Q``.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Article(models.Model):

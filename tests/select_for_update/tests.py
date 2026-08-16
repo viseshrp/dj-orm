@@ -4,8 +4,8 @@ from unittest import mock
 
 from multiple_database.routers import TestRouter
 
-from djorm.core.exceptions import FieldError
-from djorm.db import (
+from djrm.core.exceptions import FieldError
+from djrm.db import (
     DatabaseError,
     NotSupportedError,
     connection,
@@ -13,15 +13,15 @@ from djorm.db import (
     router,
     transaction,
 )
-from djorm.db.models import F, Value
-from djorm.db.models.functions import Concat
-from djorm.test import (
+from djrm.db.models import F, Value
+from djrm.db.models.functions import Concat
+from djrm.test import (
     TransactionTestCase,
     override_settings,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from djorm.test.utils import CaptureQueriesContext
+from djrm.test.utils import CaptureQueriesContext
 
 from .models import (
     City,

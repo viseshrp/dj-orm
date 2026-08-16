@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/project/dj-orm/
+      url: https://test.pypi.org/project/djrm/
     steps:
       - name: Check out main
         uses: actions/checkout@v7.0.1
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/dj-orm/
+      url: https://pypi.org/project/djrm/
     steps:
       - name: Check out exact release tag
         uses: actions/checkout@v7.0.1

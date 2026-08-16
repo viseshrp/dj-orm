@@ -1,8 +1,8 @@
-from djorm.core import checks
-from djorm.db import connection, models
-from djorm.db.models import F
-from djorm.test import TestCase, skipUnlessAnyDBFeature
-from djorm.test.utils import isolate_apps
+from djrm.core import checks
+from djrm.db import connection, models
+from djrm.db.models import F
+from djrm.test import TestCase, skipUnlessAnyDBFeature
+from djrm.test.utils import isolate_apps
 
 
 @isolate_apps("composite_pk")

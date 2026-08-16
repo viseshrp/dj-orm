@@ -2,14 +2,14 @@ import datetime
 from io import StringIO
 from unittest import mock
 
-from djorm.core.management.base import OutputWrapper
-from djorm.db.migrations.questioner import (
+from djrm.core.management.base import OutputWrapper
+from djrm.db.migrations.questioner import (
     InteractiveMigrationQuestioner,
     MigrationQuestioner,
 )
-from djorm.db.models import NOT_PROVIDED
-from djorm.test import SimpleTestCase
-from djorm.test.utils import override_settings
+from djrm.db.models import NOT_PROVIDED
+from djrm.test import SimpleTestCase
+from djrm.test.utils import override_settings
 
 
 class QuestionerTests(SimpleTestCase):

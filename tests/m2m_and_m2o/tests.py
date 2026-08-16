@@ -1,5 +1,5 @@
-from djorm.db.models import Q
-from djorm.test import TestCase
+from djrm.db.models import Q
+from djrm.test import TestCase
 
 from .models import Issue, StringReferenceModel, User
 

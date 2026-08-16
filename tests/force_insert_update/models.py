@@ -3,7 +3,7 @@ Tests for forcing insert and update queries (instead of Django's normal
 automatic behavior).
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Counter(models.Model):

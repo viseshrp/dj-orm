@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Re-apply the django -> djorm namespace rename after an upstream rebase."""
+"""Re-apply the django -> djrm namespace rename after an upstream rebase."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from pathlib import Path
 from shutil import move
 
 
-PYTHON_ROOTS = ("djorm", "tests")
+PYTHON_ROOTS = ("djrm", "tests")
 KNOWN_MODULE_PREFIXES = (
     "django.apps",
     "django.conf",
@@ -35,20 +35,20 @@ KNOWN_MODULE_PREFIXES = (
 STRING_EXACT = {"django-admin"}
 STRING_SKIP = {"DJANGO_SETTINGS_MODULE", "_django_version", "django-version"}
 PYPROJECT_REPLACEMENTS = {
-    'name = "Django"': 'name = "dj-orm"',
-    'django-admin = "django.core.management:execute_from_command_line"': 'djorm = "djorm.core.management:execute_from_command_line"',
-    'known_first_party = "django"': 'known_first_party = "djorm"',
-    'version = {attr = "django.__version__"}': 'version = {attr = "djorm.__version__"}',
-    'include = ["django*"]': 'include = ["djorm*"]',
+    'name = "Django"': 'name = "djrm"',
+    'django-admin = "django.core.management:execute_from_command_line"': 'djrm = "djrm.core.management:execute_from_command_line"',
+    'known_first_party = "django"': 'known_first_party = "djrm"',
+    'version = {attr = "django.__version__"}': 'version = {attr = "djrm.__version__"}',
+    'include = ["django*"]': 'include = ["djrm*"]',
 }
 
 
 def rename_repo_package_dir(repo_root: Path) -> bool:
     django_dir = repo_root / "django"
-    djorm_dir = repo_root / "djorm"
-    if djorm_dir.exists() or not django_dir.exists():
+    djrm_dir = repo_root / "djrm"
+    if djrm_dir.exists() or not django_dir.exists():
         return False
-    move(str(django_dir), str(djorm_dir))
+    move(str(django_dir), str(djrm_dir))
     return True
 
 
@@ -56,20 +56,20 @@ def rename_string_literal(value: str) -> str:
     if value in STRING_SKIP:
         return value
     if value in STRING_EXACT:
-        return "djorm"
+        return "djrm"
     if value.startswith(KNOWN_MODULE_PREFIXES):
-        return "djorm." + value[len("django.") :]
+        return "djrm." + value[len("django.") :]
     if "django.core.management:execute_from_command_line" in value:
         return value.replace(
             "django.core.management:execute_from_command_line",
-            "djorm.core.management:execute_from_command_line",
+            "djrm.core.management:execute_from_command_line",
         )
     if "django-admin" in value:
-        return value.replace("django-admin", "djorm")
+        return value.replace("django-admin", "djrm")
     module_pattern = "|".join(part.split(".", 1)[1] for part in KNOWN_MODULE_PREFIXES)
-    value = re.sub(r"(?<![A-Z_])from django(\.[\w.]+)? import", r"from djorm\1 import", value)
-    value = re.sub(r"(?<![A-Z_])import django(\.[\w.]+)?", r"import djorm\1", value)
-    value = re.sub(rf"(?<![A-Z_])django\.({module_pattern})\b", r"djorm.\1", value)
+    value = re.sub(r"(?<![A-Z_])from django(\.[\w.]+)? import", r"from djrm\1 import", value)
+    value = re.sub(r"(?<![A-Z_])import django(\.[\w.]+)?", r"import djrm\1", value)
+    value = re.sub(rf"(?<![A-Z_])django\.({module_pattern})\b", r"djrm.\1", value)
     return value
 
 
@@ -153,7 +153,7 @@ def rewrite_python(path: Path) -> bool:
                 or prev_nontrivia.string in {"import", "from", ","}
             )
             if import_head or dotted_access:
-                token_str = "djorm"
+                token_str = "djrm"
                 replace_token(token, token_str)
 
         current_stmt.append(token)
@@ -262,7 +262,7 @@ def verify_no_residuals(repo_root: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Re-apply the django -> djorm namespace rename after an upstream rebase."
+        description="Re-apply the django -> djrm namespace rename after an upstream rebase."
     )
     parser.add_argument("--check", action="store_true")
     parser.add_argument(

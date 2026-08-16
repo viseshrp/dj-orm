@@ -1,9 +1,9 @@
 from unittest import skipUnless
 
-from djorm.core import checks
-from djorm.db import connection, models
-from djorm.test import SimpleTestCase
-from djorm.test.utils import isolate_apps
+from djrm.core import checks
+from djrm.db import connection, models
+from djrm.test import SimpleTestCase
+from djrm.test.utils import isolate_apps
 
 
 @isolate_apps("invalid_models_tests")
@@ -64,7 +64,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
 
     @skipUnless(connection.vendor == "postgresql", "PostgreSQL specific SQL")
     def test_postgres_jsonfield_deprecated(self):
-        from djorm.contrib.postgres.fields import JSONField
+        from djrm.contrib.postgres.fields import JSONField
 
         class PostgresJSONFieldModel(models.Model):
             field = JSONField()
@@ -73,9 +73,9 @@ class DeprecatedFieldsTests(SimpleTestCase):
             PostgresJSONFieldModel.check(),
             [
                 checks.Error(
-                    "djorm.contrib.postgres.fields.JSONField is removed except "
+                    "djrm.contrib.postgres.fields.JSONField is removed except "
                     "for support in historical migrations.",
-                    hint="Use djorm.db.models.JSONField instead.",
+                    hint="Use djrm.db.models.JSONField instead.",
                     obj=PostgresJSONFieldModel._meta.get_field("field"),
                     id="fields.E904",
                 ),
@@ -84,7 +84,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
 
     @skipUnless(connection.vendor == "postgresql", "PostgreSQL specific SQL")
     def test_postgres_ci_fields_deprecated(self):
-        from djorm.contrib.postgres.fields import (
+        from djrm.contrib.postgres.fields import (
             ArrayField,
             CICharField,
             CIEmailField,
@@ -101,7 +101,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
             PostgresCIFieldsModel.check(),
             [
                 checks.Error(
-                    "djorm.contrib.postgres.fields.CICharField is removed except for "
+                    "djrm.contrib.postgres.fields.CICharField is removed except for "
                     "support in historical migrations.",
                     hint=(
                         'Use CharField(db_collation="…") with a case-insensitive '
@@ -111,7 +111,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
                     id="fields.E905",
                 ),
                 checks.Error(
-                    "djorm.contrib.postgres.fields.CIEmailField is removed except for "
+                    "djrm.contrib.postgres.fields.CIEmailField is removed except for "
                     "support in historical migrations.",
                     hint=(
                         'Use EmailField(db_collation="…") with a case-insensitive '
@@ -121,7 +121,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
                     id="fields.E906",
                 ),
                 checks.Error(
-                    "djorm.contrib.postgres.fields.CITextField is removed except for "
+                    "djrm.contrib.postgres.fields.CITextField is removed except for "
                     "support in historical migrations.",
                     hint=(
                         'Use TextField(db_collation="…") with a case-insensitive '
@@ -132,7 +132,7 @@ class DeprecatedFieldsTests(SimpleTestCase):
                 ),
                 checks.Error(
                     "Base field for array has errors:\n"
-                    "    djorm.contrib.postgres.fields.CITextField is removed except "
+                    "    djrm.contrib.postgres.fields.CITextField is removed except "
                     "for support in historical migrations. (fields.E907)",
                     obj=PostgresCIFieldsModel._meta.get_field("array_ci_text"),
                     id="postgres.E001",

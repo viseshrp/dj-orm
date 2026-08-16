@@ -1,5 +1,5 @@
-from djorm.db.models import F, Sum
-from djorm.test import TestCase
+from djrm.db.models import F, Sum
+from djrm.test import TestCase
 
 from .models import Product, Stock
 

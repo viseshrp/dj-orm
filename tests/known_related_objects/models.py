@@ -4,7 +4,7 @@ Existing related object instance caching.
 Queries are not redone when going back through known relations.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Tournament(models.Model):

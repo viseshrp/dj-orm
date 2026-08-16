@@ -5,7 +5,7 @@ These test that things behave sensibly for the rare corner-case of a model with
 no fields.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Empty(models.Model):

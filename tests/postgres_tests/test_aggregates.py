@@ -1,5 +1,5 @@
-from djorm.db import transaction
-from djorm.db.models import (
+from djrm.db import transaction
+from djrm.db.models import (
     CharField,
     F,
     Func,
@@ -11,17 +11,17 @@ from djorm.db.models import (
     Value,
     Window,
 )
-from djorm.db.models.fields.json import KeyTextTransform, KeyTransform
-from djorm.db.models.functions import Cast, Concat, LPad, Substr
-from djorm.test.utils import Approximate
-from djorm.utils import timezone
-from djorm.utils.deprecation import RemovedInDjango61Warning
+from djrm.db.models.fields.json import KeyTextTransform, KeyTransform
+from djrm.db.models.functions import Cast, Concat, LPad, Substr
+from djrm.test.utils import Approximate
+from djrm.utils import timezone
+from djrm.utils.deprecation import RemovedInDjango61Warning
 
 from . import PostgreSQLTestCase
 from .models import AggregateTestModel, HotelReservation, Room, StatTestModel
 
 try:
-    from djorm.contrib.postgres.aggregates import (
+    from djrm.contrib.postgres.aggregates import (
         ArrayAgg,
         BitAnd,
         BitOr,
@@ -43,7 +43,7 @@ try:
         StatAggregate,
         StringAgg,
     )
-    from djorm.contrib.postgres.fields import ArrayField
+    from djrm.contrib.postgres.fields import ArrayField
 except ImportError:
     pass  # psycopg2 is not installed
 

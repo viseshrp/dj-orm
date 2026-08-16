@@ -1,21 +1,21 @@
 import unittest
 from decimal import Decimal
 
-from djorm.db import connection
-from djorm.db.backends.signals import connection_created
-from djorm.db.migrations.writer import MigrationWriter
-from djorm.test import TestCase
-from djorm.test.utils import CaptureQueriesContext, modify_settings, override_settings
+from djrm.db import connection
+from djrm.db.backends.signals import connection_created
+from djrm.db.migrations.writer import MigrationWriter
+from djrm.test import TestCase
+from djrm.test.utils import CaptureQueriesContext, modify_settings, override_settings
 
 try:
-    from djorm.contrib.postgres.fields import (
+    from djrm.contrib.postgres.fields import (
         DateRangeField,
         DateTimeRangeField,
         DecimalRangeField,
         IntegerRangeField,
     )
-    from djorm.contrib.postgres.signals import get_hstore_oids
-    from djorm.db.backends.postgresql.psycopg_any import (
+    from djrm.contrib.postgres.signals import get_hstore_oids
+    from djrm.db.backends.postgresql.psycopg_any import (
         DateRange,
         DateTimeRange,
         DateTimeTZRange,
@@ -33,15 +33,15 @@ class PostgresConfigTests(TestCase):
         # "django.contrib.postgres" app.
         get_hstore_oids.cache_clear()
         with CaptureQueriesContext(connection) as captured_queries:
-            with override_settings(INSTALLED_APPS=["djorm.contrib.postgres"]):
+            with override_settings(INSTALLED_APPS=["djrm.contrib.postgres"]):
                 pass
         self.assertGreaterEqual(len(captured_queries), 1)
 
     def test_register_type_handlers_connection(self):
-        from djorm.contrib.postgres.signals import register_type_handlers
+        from djrm.contrib.postgres.signals import register_type_handlers
 
         self.assertNotIn(register_type_handlers, connection_created._live_receivers(None)[0])
-        with modify_settings(INSTALLED_APPS={"append": "djorm.contrib.postgres"}):
+        with modify_settings(INSTALLED_APPS={"append": "djrm.contrib.postgres"}):
             self.assertIn(register_type_handlers, connection_created._live_receivers(None)[0])
         self.assertNotIn(register_type_handlers, connection_created._live_receivers(None)[0])
 
@@ -65,7 +65,7 @@ class PostgresConfigTests(TestCase):
 
         assertNotSerializable()
         import_name = "psycopg.types.range" if is_psycopg3 else "psycopg2.extras"
-        with self.modify_settings(INSTALLED_APPS={"append": "djorm.contrib.postgres"}):
+        with self.modify_settings(INSTALLED_APPS={"append": "djrm.contrib.postgres"}):
             for default, test_field in tests:
                 with self.subTest(default=default):
                     field = test_field(default=default)
@@ -73,7 +73,7 @@ class PostgresConfigTests(TestCase):
                     self.assertEqual(
                         imports,
                         {
-                            "import djorm.contrib.postgres.fields.ranges",
+                            "import djrm.contrib.postgres.fields.ranges",
                             f"import {import_name}",
                         },
                     )

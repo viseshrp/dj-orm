@@ -1,10 +1,10 @@
 from operator import attrgetter
 
-from djorm.core.exceptions import FieldError, ValidationError
-from djorm.db import connection, models
-from djorm.db.models.query_utils import DeferredAttribute
-from djorm.test import SimpleTestCase, TestCase
-from djorm.test.utils import CaptureQueriesContext, isolate_apps
+from djrm.core.exceptions import FieldError, ValidationError
+from djrm.db import connection, models
+from djrm.db.models.query_utils import DeferredAttribute
+from djrm.test import SimpleTestCase, TestCase
+from djrm.test.utils import CaptureQueriesContext, isolate_apps
 
 from .models import (
     Base,

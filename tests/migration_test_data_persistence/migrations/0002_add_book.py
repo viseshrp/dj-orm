@@ -1,4 +1,4 @@
-from djorm.db import migrations
+from djrm.db import migrations
 
 
 def add_book(apps, schema_editor):

@@ -1,7 +1,7 @@
 import datetime
 
-from djorm.test import TestCase, override_settings
-from djorm.utils import timezone
+from djrm.test import TestCase, override_settings
+from djrm.utils import timezone
 
 from .models import Article, Category, Comment
 

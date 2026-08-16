@@ -6,7 +6,7 @@ To define a one-to-one relationship, use ``OneToOneField()``.
 In this example, a ``Place`` optionally can be a ``Restaurant``.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Place(models.Model):

@@ -1,8 +1,8 @@
 import re
 import unittest
 
-from djorm.test import SimpleTestCase
-from djorm.utils import regex_helper
+from djrm.test import SimpleTestCase
+from djrm.utils import regex_helper
 
 
 class NormalizeTests(unittest.TestCase):

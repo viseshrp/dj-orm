@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from unittest import TestCase, mock
 
-from djorm.core.exceptions import ValidationError
-from djorm.core.files.base import ContentFile
-from djorm.core.validators import (
+from djrm.core.exceptions import ValidationError
+from djrm.core.files.base import ContentFile
+from djrm.core.validators import (
     BaseValidator,
     DecimalValidator,
     DomainNameValidator,
@@ -33,7 +33,7 @@ from djorm.core.validators import (
     validate_slug,
     validate_unicode_slug,
 )
-from djorm.test import SimpleTestCase
+from djrm.test import SimpleTestCase
 
 try:
     from PIL import Image  # noqa

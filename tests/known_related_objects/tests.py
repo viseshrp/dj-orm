@@ -1,5 +1,5 @@
-from djorm.db.models import FilteredRelation
-from djorm.test import TestCase
+from djrm.db.models import FilteredRelation
+from djrm.test import TestCase
 
 from .models import Organiser, Pool, PoolStyle, Tournament
 

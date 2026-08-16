@@ -1,6 +1,6 @@
-from djorm.db import DEFAULT_DB_ALIAS, connection
-from djorm.db.models.sql import Query
-from djorm.test import SimpleTestCase
+from djrm.db import DEFAULT_DB_ALIAS, connection
+from djrm.db.models.sql import Query
+from djrm.test import SimpleTestCase
 
 from .models import Item
 

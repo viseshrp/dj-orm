@@ -1,10 +1,10 @@
 import uuid
 from decimal import Decimal
 
-from djorm.apps import apps
-from djorm.core.exceptions import ValidationError
-from djorm.db import IntegrityError, connection
-from djorm.db.models import (
+from djrm.apps import apps
+from djrm.core.exceptions import ValidationError
+from djrm.db import IntegrityError, connection
+from djrm.db.models import (
     CharField,
     F,
     FloatField,
@@ -12,9 +12,9 @@ from djorm.db.models import (
     IntegerField,
     Model,
 )
-from djorm.db.models.functions import Lower
-from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
-from djorm.test.utils import isolate_apps
+from djrm.db.models.functions import Lower
+from djrm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djrm.test.utils import isolate_apps
 
 from .models import (
     Foo,
@@ -109,7 +109,7 @@ class BaseGeneratedFieldTests(SimpleTestCase):
             expression=F("a") + F("b"), output_field=IntegerField(), db_persist=True
         )
         _, path, args, kwargs = field.deconstruct()
-        self.assertEqual(path, "djorm.db.models.GeneratedField")
+        self.assertEqual(path, "djrm.db.models.GeneratedField")
         self.assertEqual(args, [])
         self.assertEqual(kwargs["db_persist"], True)
         self.assertEqual(kwargs["expression"], F("a") + F("b"))

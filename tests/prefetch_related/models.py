@@ -1,10 +1,10 @@
 import uuid
 
-from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from djorm.contrib.contenttypes.models import ContentType
-from djorm.db import models
-from djorm.db.models.query import ModelIterable
-from djorm.utils.functional import cached_property
+from djrm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from djrm.contrib.contenttypes.models import ContentType
+from djrm.db import models
+from djrm.db.models.query import ModelIterable
+from djrm.utils.functional import cached_property
 
 
 class Author(models.Model):

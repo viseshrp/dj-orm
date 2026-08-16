@@ -1,7 +1,7 @@
-from djorm.db import connection
-from djorm.db.models import F, Value
-from djorm.db.models.functions import Collate
-from djorm.test import TestCase
+from djrm.db import connection
+from djrm.db.models import F, Value
+from djrm.db.models.functions import Collate
+from djrm.test import TestCase
 
 from ..models import Author
 

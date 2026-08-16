@@ -742,7 +742,7 @@ wheels = [
 ]
 
 [[package]]
-name = "dj-orm"
+name = "djrm"
 source = { editable = "." }
 dependencies = [
     { name = "asgiref" },

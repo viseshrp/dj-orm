@@ -1,9 +1,9 @@
 from operator import attrgetter
 
-from djorm.contrib.contenttypes.models import ContentType
-from djorm.db import models
-from djorm.db.models import Count
-from djorm.test import TestCase
+from djrm.contrib.contenttypes.models import ContentType
+from djrm.db import models
+from djrm.db.models import Count
+from djrm.test import TestCase
 
 from .models import (
     Base,

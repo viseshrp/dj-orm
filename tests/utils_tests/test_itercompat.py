@@ -1,14 +1,14 @@
 # RemovedInDjango60Warning: Remove this entire module.
 
-from djorm.test import SimpleTestCase
-from djorm.utils.deprecation import RemovedInDjango60Warning
-from djorm.utils.itercompat import is_iterable
+from djrm.test import SimpleTestCase
+from djrm.utils.deprecation import RemovedInDjango60Warning
+from djrm.utils.itercompat import is_iterable
 
 
 class TestIterCompat(SimpleTestCase):
     def test_is_iterable_deprecation(self):
         msg = (
-            "djorm.utils.itercompat.is_iterable() is deprecated. "
+            "djrm.utils.itercompat.is_iterable() is deprecated. "
             "Use isinstance(..., collections.abc.Iterable) instead."
         )
         with self.assertWarnsMessage(RemovedInDjango60Warning, msg) as ctx:

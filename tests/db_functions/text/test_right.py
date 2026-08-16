@@ -1,7 +1,7 @@
-from djorm.db import connection
-from djorm.db.models import IntegerField, Value
-from djorm.db.models.functions import Length, Lower, Right
-from djorm.test import TestCase
+from djrm.db import connection
+from djrm.db.models import IntegerField, Value
+from djrm.db.models.functions import Length, Lower, Right
+from djrm.test import TestCase
 
 from ..models import Author
 

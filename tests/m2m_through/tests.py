@@ -1,8 +1,8 @@
 from datetime import date, datetime, timedelta
 from operator import attrgetter
 
-from djorm.db import IntegrityError
-from djorm.test import TestCase
+from djrm.db import IntegrityError
+from djrm.test import TestCase
 
 from .models import (
     CustomMembership,

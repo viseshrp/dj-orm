@@ -2,21 +2,21 @@ import unittest
 
 from forms_tests.widget_tests.base import WidgetTest
 
-from djorm.db import connection
-from djorm.test import SimpleTestCase, TestCase, modify_settings
-from djorm.utils.functional import cached_property
+from djrm.db import connection
+from djrm.test import SimpleTestCase, TestCase, modify_settings
+from djrm.utils.functional import cached_property
 
 
 @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific tests")
 # To register type handlers and locate the widget's template.
-@modify_settings(INSTALLED_APPS={"append": "djorm.contrib.postgres"})
+@modify_settings(INSTALLED_APPS={"append": "djrm.contrib.postgres"})
 class PostgreSQLSimpleTestCase(SimpleTestCase):
     pass
 
 
 @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific tests")
 # To register type handlers and locate the widget's template.
-@modify_settings(INSTALLED_APPS={"append": "djorm.contrib.postgres"})
+@modify_settings(INSTALLED_APPS={"append": "djrm.contrib.postgres"})
 class PostgreSQLTestCase(TestCase):
     @cached_property
     def default_text_search_config(self):
@@ -32,6 +32,6 @@ class PostgreSQLTestCase(TestCase):
 
 @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific tests")
 # To locate the widget's template.
-@modify_settings(INSTALLED_APPS={"append": "djorm.contrib.postgres"})
+@modify_settings(INSTALLED_APPS={"append": "djrm.contrib.postgres"})
 class PostgreSQLWidgetTestCase(WidgetTest, PostgreSQLSimpleTestCase):
     pass

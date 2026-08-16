@@ -1,5 +1,5 @@
-from djorm.db import models
-from djorm.test import SimpleTestCase
+from djrm.db import models
+from djrm.test import SimpleTestCase
 
 from .models import AutoModel, BigAutoModel, SmallAutoModel
 from .test_integerfield import (

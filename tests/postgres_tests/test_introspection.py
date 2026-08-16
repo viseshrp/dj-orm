@@ -1,6 +1,6 @@
 from io import StringIO
 
-from djorm.core.management import call_command
+from djrm.core.management import call_command
 
 from . import PostgreSQLTestCase
 
@@ -21,12 +21,12 @@ class InspectDBTests(PostgreSQLTestCase):
         self.assertFieldsInModel(
             "postgres_tests_rangesmodel",
             [
-                "ints = djorm.contrib.postgres.fields.IntegerRangeField(blank=True, null=True)",
-                "bigints = djorm.contrib.postgres.fields.BigIntegerRangeField("
+                "ints = djrm.contrib.postgres.fields.IntegerRangeField(blank=True, null=True)",
+                "bigints = djrm.contrib.postgres.fields.BigIntegerRangeField("
                 "blank=True, null=True)",
-                "decimals = djorm.contrib.postgres.fields.DecimalRangeField(blank=True, null=True)",
-                "timestamps = djorm.contrib.postgres.fields.DateTimeRangeField("
+                "decimals = djrm.contrib.postgres.fields.DecimalRangeField(blank=True, null=True)",
+                "timestamps = djrm.contrib.postgres.fields.DateTimeRangeField("
                 "blank=True, null=True)",
-                "dates = djorm.contrib.postgres.fields.DateRangeField(blank=True, null=True)",
+                "dates = djrm.contrib.postgres.fields.DateRangeField(blank=True, null=True)",
             ],
         )

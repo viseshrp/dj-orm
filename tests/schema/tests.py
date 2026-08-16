@@ -5,18 +5,18 @@ from copy import copy
 from decimal import Decimal
 from unittest import mock
 
-from djorm.core.exceptions import FieldError
-from djorm.core.management.color import no_style
-from djorm.core.serializers.json import DjangoJSONEncoder
-from djorm.db import (
+from djrm.core.exceptions import FieldError
+from djrm.core.management.color import no_style
+from djrm.core.serializers.json import DjangoJSONEncoder
+from djrm.db import (
     DatabaseError,
     DataError,
     IntegrityError,
     OperationalError,
     connection,
 )
-from djorm.db.backends.utils import truncate_name
-from djorm.db.models import (
+from djrm.db.backends.utils import truncate_name
+from djrm.db.models import (
     CASCADE,
     PROTECT,
     AutoField,
@@ -53,8 +53,8 @@ from djorm.db.models import (
     UUIDField,
     Value,
 )
-from djorm.db.models.fields.json import KT, KeyTextTransform
-from djorm.db.models.functions import (
+from djrm.db.models.fields.json import KT, KeyTextTransform
+from djrm.db.models.functions import (
     Abs,
     Cast,
     Collate,
@@ -64,10 +64,10 @@ from djorm.db.models.functions import (
     Round,
     Upper,
 )
-from djorm.db.models.indexes import IndexExpression
-from djorm.db.transaction import TransactionManagementError, atomic
-from djorm.test import TransactionTestCase, skipIfDBFeature, skipUnlessDBFeature
-from djorm.test.utils import CaptureQueriesContext, isolate_apps, register_lookup
+from djrm.db.models.indexes import IndexExpression
+from djrm.db.transaction import TransactionManagementError, atomic
+from djrm.test import TransactionTestCase, skipIfDBFeature, skipUnlessDBFeature
+from djrm.test.utils import CaptureQueriesContext, isolate_apps, register_lookup
 
 from .fields import CustomManyToManyField, InheritedManyToManyField, MediumBlobField
 from .models import (
@@ -1343,7 +1343,7 @@ class SchemaTests(TransactionTestCase):
 
     @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific")
     def test_alter_field_with_custom_db_type(self):
-        from djorm.contrib.postgres.fields import ArrayField
+        from djrm.contrib.postgres.fields import ArrayField
 
         class Foo(Model):
             field = ArrayField(CharField(max_length=255))
@@ -1364,7 +1364,7 @@ class SchemaTests(TransactionTestCase):
     @isolate_apps("schema")
     @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific")
     def test_alter_array_field_decrease_base_field_length(self):
-        from djorm.contrib.postgres.fields import ArrayField
+        from djrm.contrib.postgres.fields import ArrayField
 
         class ArrayModel(Model):
             field = ArrayField(CharField(max_length=16))
@@ -1388,7 +1388,7 @@ class SchemaTests(TransactionTestCase):
     @isolate_apps("schema")
     @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL specific")
     def test_alter_array_field_decrease_nested_base_field_length(self):
-        from djorm.contrib.postgres.fields import ArrayField
+        from djrm.contrib.postgres.fields import ArrayField
 
         class ArrayModel(Model):
             field = ArrayField(ArrayField(CharField(max_length=16)))
@@ -1431,7 +1431,7 @@ class SchemaTests(TransactionTestCase):
         "supports_non_deterministic_collations",
     )
     def test_db_collation_arrayfield(self):
-        from djorm.contrib.postgres.fields import ArrayField
+        from djrm.contrib.postgres.fields import ArrayField
 
         ci_collation = self._add_ci_collation()
         cs_collation = "en-x-icu"
@@ -2990,7 +2990,7 @@ class SchemaTests(TransactionTestCase):
         new_field = CharField(max_length=255, unique=True)
         new_field.model = Author
         new_field.set_attributes_from_name("name")
-        with self.assertLogs("djorm.db.backends.schema", "DEBUG") as cm:
+        with self.assertLogs("djrm.db.backends.schema", "DEBUG") as cm:
             with connection.schema_editor() as editor:
                 editor.alter_field(Author, Author._meta.get_field("name"), new_field)
                 # One SQL statement is executed to alter the field.
@@ -3023,7 +3023,7 @@ class SchemaTests(TransactionTestCase):
         new_field = SlugField(max_length=75, unique=True)
         new_field.model = Tag
         new_field.set_attributes_from_name("slug")
-        with self.assertLogs("djorm.db.backends.schema", "DEBUG") as cm:
+        with self.assertLogs("djrm.db.backends.schema", "DEBUG") as cm:
             with connection.schema_editor() as editor:
                 editor.alter_field(Tag, Tag._meta.get_field("slug"), new_field)
                 # One SQL statement is executed to alter the field.
@@ -5159,8 +5159,8 @@ class SchemaTests(TransactionTestCase):
             editor.alter_field(Node, old_field, new_field, strict=True)
         self.assertForeignKeyExists(Node, "parent_id", Node._meta.db_table)
 
-    @mock.patch("djorm.db.backends.base.schema.datetime")
-    @mock.patch("djorm.db.backends.base.schema.timezone")
+    @mock.patch("djrm.db.backends.base.schema.datetime")
+    @mock.patch("djrm.db.backends.base.schema.timezone")
     def test_add_datefield_and_datetimefield_use_effective_default(
         self, mocked_datetime, mocked_tz
     ):

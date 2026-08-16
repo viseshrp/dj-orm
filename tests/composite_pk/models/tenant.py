@@ -1,6 +1,6 @@
 import uuid
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Tenant(models.Model):

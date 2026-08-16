@@ -1,4 +1,4 @@
-"""Tests related to djorm.db.backends that haven't been organized."""
+"""Tests related to djrm.db.backends that haven't been organized."""
 
 import datetime
 import threading
@@ -6,8 +6,8 @@ import unittest
 import warnings
 from unittest import mock
 
-from djorm.core.management.color import no_style
-from djorm.db import (
+from djrm.core.management.color import no_style
+from djrm.db import (
     DEFAULT_DB_ALIAS,
     DatabaseError,
     IntegrityError,
@@ -16,11 +16,11 @@ from djorm.db import (
     reset_queries,
     transaction,
 )
-from djorm.db.backends.base.base import BaseDatabaseWrapper
-from djorm.db.backends.signals import connection_created
-from djorm.db.backends.utils import CursorWrapper
-from djorm.db.models.sql.constants import CURSOR
-from djorm.test import (
+from djrm.db.backends.base.base import BaseDatabaseWrapper
+from djrm.db.backends.signals import connection_created
+from djrm.db.backends.utils import CursorWrapper
+from djrm.db.models.sql.constants import CURSOR
+from djrm.test import (
     TestCase,
     TransactionTestCase,
     override_settings,
@@ -558,7 +558,7 @@ class BackendTestCase(TransactionTestCase):
             BaseDatabaseWrapper.queries_limit = old_queries_limit
             new_connection.close()
 
-    @mock.patch("djorm.db.backends.utils.logger")
+    @mock.patch("djrm.db.backends.utils.logger")
     @override_settings(DEBUG=True)
     def test_queries_logger(self, mocked_logger):
         sql = "SELECT 1" + connection.features.bare_select_suffix
@@ -750,7 +750,7 @@ class ThreadTests(TransactionTestCase):
 
     def test_default_connection_thread_local(self):
         """
-        The default connection (i.e. djorm.db.connection) is different for
+        The default connection (i.e. djrm.db.connection) is different for
         each thread (#17258).
         """
         # Map connections by id because connections with identical aliases
@@ -763,7 +763,7 @@ class ThreadTests(TransactionTestCase):
         def runner():
             # Passing django.db.connection between threads doesn't work while
             # connections[DEFAULT_DB_ALIAS] does.
-            from djorm.db import connections
+            from djrm.db import connections
 
             connection = connections[DEFAULT_DB_ALIAS]
             # Allow thread sharing so the connection can be closed by the
@@ -801,7 +801,7 @@ class ThreadTests(TransactionTestCase):
             connections_dict[id(conn)] = conn
 
         def runner():
-            from djorm.db import connections
+            from djrm.db import connections
 
             for conn in connections.all():
                 # Allow thread sharing so the connection can be closed by the
@@ -836,7 +836,7 @@ class ThreadTests(TransactionTestCase):
 
         def do_thread():
             def runner(main_thread_connection):
-                from djorm.db import connections
+                from djrm.db import connections
 
                 connections["default"] = main_thread_connection
                 try:

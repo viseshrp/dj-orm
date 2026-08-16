@@ -1,8 +1,8 @@
 from unittest import mock, skipUnless
 
-from djorm.db import connection
-from djorm.db.backends.mysql.features import DatabaseFeatures
-from djorm.test import TestCase
+from djrm.db import connection
+from djrm.db.backends.mysql.features import DatabaseFeatures
+from djrm.test import TestCase
 
 
 @skipUnless(connection.vendor == "mysql", "MySQL tests")
@@ -12,10 +12,10 @@ class TestFeatures(TestCase):
         All storage engines except MyISAM support transactions.
         """
         del connection.features.supports_transactions
-        with mock.patch("djorm.db.connection.features._mysql_storage_engine", "InnoDB"):
+        with mock.patch("djrm.db.connection.features._mysql_storage_engine", "InnoDB"):
             self.assertTrue(connection.features.supports_transactions)
         del connection.features.supports_transactions
-        with mock.patch("djorm.db.connection.features._mysql_storage_engine", "MyISAM"):
+        with mock.patch("djrm.db.connection.features._mysql_storage_engine", "MyISAM"):
             self.assertFalse(connection.features.supports_transactions)
         del connection.features.supports_transactions
 

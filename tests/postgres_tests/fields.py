@@ -5,10 +5,10 @@ run with a backend other than PostgreSQL.
 
 import enum
 
-from djorm.db import models
+from djrm.db import models
 
 try:
-    from djorm.contrib.postgres.fields import (
+    from djrm.contrib.postgres.fields import (
         ArrayField,
         BigIntegerRangeField,
         DateRangeField,
@@ -17,7 +17,7 @@ try:
         HStoreField,
         IntegerRangeField,
     )
-    from djorm.contrib.postgres.search import SearchVector, SearchVectorField
+    from djrm.contrib.postgres.search import SearchVector, SearchVectorField
 except ImportError:
 
     class DummyArrayField(models.Field):

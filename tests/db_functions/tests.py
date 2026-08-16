@@ -1,8 +1,8 @@
-from djorm.db.models import CharField
-from djorm.db.models import Value as V
-from djorm.db.models.functions import Coalesce, Length, Upper
-from djorm.test import TestCase
-from djorm.test.utils import register_lookup
+from djrm.db.models import CharField
+from djrm.db.models import Value as V
+from djrm.db.models.functions import Coalesce, Length, Upper
+from djrm.test import TestCase
+from djrm.test.utils import register_lookup
 
 from .models import Author
 

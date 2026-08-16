@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Djorm release provenance, version, and repository state."""
+"""Validate djrm release provenance, version, and repository state."""
 
 from __future__ import annotations
 
@@ -28,10 +28,10 @@ def read_toml(path: Path) -> dict:
 
 
 def read_distribution_version(root: Path) -> str:
-    version_text = (root / "djorm" / "_version.py").read_text(encoding="utf-8")
+    version_text = (root / "djrm" / "_version.py").read_text(encoding="utf-8")
     match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']$', version_text, re.MULTILINE)
     if match is None:
-        raise ValueError("djorm/_version.py does not define one literal __version__ value")
+        raise ValueError("djrm/_version.py does not define one literal __version__ value")
     return match.group(1)
 
 
@@ -72,14 +72,14 @@ def read_lts_version_majors(maintenance: dict) -> dict[str, int] | None:
 def validate(root: Path, tag: str) -> list[str]:
     errors: list[str] = []
     project = read_toml(root / "pyproject.toml")
-    maintenance = read_toml(root / ".djorm-maintenance.toml")
+    maintenance = read_toml(root / ".djrm-maintenance.toml")
     version = read_distribution_version(root)
     match = SEMVER_RE.fullmatch(version)
 
-    if project["project"]["name"] != "dj-orm":
-        errors.append("pyproject.toml must publish the dj-orm distribution")
-    if maintenance.get("distribution") != "dj-orm":
-        errors.append("maintenance metadata must name the dj-orm distribution")
+    if project["project"]["name"] != "djrm":
+        errors.append("pyproject.toml must publish the djrm distribution")
+    if maintenance.get("distribution") != "djrm":
+        errors.append("maintenance metadata must name the djrm distribution")
     if maintenance.get("schema") != 3:
         errors.append("maintenance metadata must use schema 3")
     if tag != f"v{version}":

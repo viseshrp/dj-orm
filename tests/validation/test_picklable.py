@@ -1,7 +1,7 @@
 import pickle
 from unittest import TestCase
 
-from djorm.core.exceptions import ValidationError
+from djrm.core.exceptions import ValidationError
 
 
 class PickableValidationErrorTestCase(TestCase):

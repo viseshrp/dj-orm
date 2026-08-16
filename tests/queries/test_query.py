@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from djorm.core.exceptions import FieldError
-from djorm.db import DEFAULT_DB_ALIAS, connection
-from djorm.db.models import BooleanField, CharField, F, Q
-from djorm.db.models.expressions import (
+from djrm.core.exceptions import FieldError
+from djrm.db import DEFAULT_DB_ALIAS, connection
+from djrm.db.models import BooleanField, CharField, F, Q
+from djrm.db.models.expressions import (
     Col,
     Exists,
     ExpressionWrapper,
@@ -11,14 +11,14 @@ from djorm.db.models.expressions import (
     RawSQL,
     Value,
 )
-from djorm.db.models.fields.related_lookups import RelatedIsNull
-from djorm.db.models.functions import Lower
-from djorm.db.models.lookups import Exact, GreaterThan, IsNull, LessThan
-from djorm.db.models.sql.constants import SINGLE
-from djorm.db.models.sql.query import JoinPromoter, Query, get_field_names_from_opts
-from djorm.db.models.sql.where import AND, OR
-from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
-from djorm.test.utils import register_lookup
+from djrm.db.models.fields.related_lookups import RelatedIsNull
+from djrm.db.models.functions import Lower
+from djrm.db.models.lookups import Exact, GreaterThan, IsNull, LessThan
+from djrm.db.models.sql.constants import SINGLE
+from djrm.db.models.sql.query import JoinPromoter, Query, get_field_names_from_opts
+from djrm.db.models.sql.where import AND, OR
+from djrm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djrm.test.utils import register_lookup
 
 from .models import Author, Item, ObjectC, Ranking
 

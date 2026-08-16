@@ -4,7 +4,7 @@ Many-to-one relationships
 To define a many-to-one relationship, use ``ForeignKey()``.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Reporter(models.Model):

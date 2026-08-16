@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from djorm.core.exceptions import ValidationError
-from djorm.db import models
-from djorm.db.models.functions import Lower
+from djrm.core.exceptions import ValidationError
+from djrm.db import models
+from djrm.db.models.functions import Lower
 
 
 def validate_answer_to_universe(value):

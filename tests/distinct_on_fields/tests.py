@@ -1,8 +1,8 @@
-from djorm.db import connection
-from djorm.db.models import CharField, F, Max
-from djorm.db.models.functions import Lower
-from djorm.test import TestCase, skipUnlessDBFeature
-from djorm.test.utils import register_lookup
+from djrm.db import connection
+from djrm.db.models import CharField, F, Max
+from djrm.db.models.functions import Lower
+from djrm.test import TestCase, skipUnlessDBFeature
+from djrm.test.utils import register_lookup
 
 from .models import Celebrity, Fan, Staff, StaffTag, Tag
 

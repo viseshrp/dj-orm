@@ -1,5 +1,5 @@
-from djorm.db import models
-from djorm.test import TestCase
+from djrm.db import models
+from djrm.test import TestCase
 
 from .models import (
     Book,
@@ -553,7 +553,7 @@ class CustomManagerTests(TestCase):
         mgr = models.Manager()
         as_manager, mgr_path, qs_path, args, kwargs = mgr.deconstruct()
         self.assertFalse(as_manager)
-        self.assertEqual(mgr_path, "djorm.db.models.manager.Manager")
+        self.assertEqual(mgr_path, "djrm.db.models.manager.Manager")
         self.assertEqual(args, ())
         self.assertEqual(kwargs, {})
 
@@ -594,7 +594,7 @@ class CustomManagerTests(TestCase):
         mgr = CustomManager("arg")
         msg = (
             "Could not find manager BaseCustomManagerFromCustomQuerySet in "
-            "djorm.db.models.manager.\n"
+            "djrm.db.models.manager.\n"
             "Please note that you need to inherit from managers you "
             "dynamically generated with 'from_queryset()'."
         )

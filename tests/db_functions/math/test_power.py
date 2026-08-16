@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-from djorm.db.models.functions import Power
-from djorm.test import TestCase
+from djrm.db.models.functions import Power
+from djrm.test import TestCase
 
 from ..models import DecimalModel, FloatModel, IntegerModel
 

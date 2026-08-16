@@ -1,4 +1,4 @@
-from djorm.db import migrations, models
+from djrm.db import migrations, models
 
 
 def raise_error(apps, schema_editor):

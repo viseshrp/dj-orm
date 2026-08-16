@@ -1,6 +1,6 @@
-from djorm.db.models.signals import post_save, pre_save
-from djorm.test import TestCase
-from djorm.utils.deprecation import RemovedInDjango60Warning
+from djrm.db.models.signals import post_save, pre_save
+from djrm.test import TestCase
+from djrm.utils.deprecation import RemovedInDjango60Warning
 
 from .models import Account, Employee, Person, Profile, ProxyEmployee
 

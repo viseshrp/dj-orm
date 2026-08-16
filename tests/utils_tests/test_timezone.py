@@ -2,8 +2,8 @@ import datetime
 import zoneinfo
 from unittest import mock
 
-from djorm.test import SimpleTestCase, override_settings
-from djorm.utils import timezone
+from djrm.test import SimpleTestCase, override_settings
+from djrm.utils import timezone
 
 PARIS_ZI = zoneinfo.ZoneInfo("Europe/Paris")
 EAT = timezone.get_fixed_timezone(180)  # Africa/Nairobi
@@ -37,7 +37,7 @@ class TimezoneTests(SimpleTestCase):
         with timezone.override(EAT):
             self.assertEqual(timezone.localdate(aware), datetime.date(2014, 12, 31))
 
-        with mock.patch("djorm.utils.timezone.now", return_value=aware):
+        with mock.patch("djrm.utils.timezone.now", return_value=aware):
             self.assertEqual(timezone.localdate(timezone=EAT), datetime.date(2014, 12, 31))
             with timezone.override(EAT):
                 self.assertEqual(timezone.localdate(), datetime.date(2014, 12, 31))

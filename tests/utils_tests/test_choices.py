@@ -1,15 +1,15 @@
 import collections.abc
 from unittest import mock
 
-from djorm.db.models import TextChoices
-from djorm.test import SimpleTestCase
-from djorm.utils.choices import (
+from djrm.db.models import TextChoices
+from djrm.test import SimpleTestCase
+from djrm.utils.choices import (
     BaseChoiceIterator,
     CallableChoiceIterator,
     flatten_choices,
     normalize_choices,
 )
-from djorm.utils.translation import gettext_lazy as _
+from djrm.utils.translation import gettext_lazy as _
 
 
 class SimpleChoiceIterator(BaseChoiceIterator):

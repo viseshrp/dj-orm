@@ -1,10 +1,10 @@
 from io import StringIO
 
-from djorm.apps import apps
-from djorm.core import management
-from djorm.db import migrations
-from djorm.db.models import signals
-from djorm.test import TransactionTestCase, override_settings
+from djrm.apps import apps
+from djrm.core import management
+from djrm.db import migrations
+from djrm.db.models import signals
+from djrm.test import TransactionTestCase, override_settings
 
 APP_CONFIG = apps.get_app_config("migrate_signals")
 SIGNAL_ARGS = [

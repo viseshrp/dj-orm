@@ -1,8 +1,8 @@
 from decimal import Decimal
 from sys import float_info
 
-from djorm.test import SimpleTestCase
-from djorm.utils.numberformat import format as nformat
+from djrm.test import SimpleTestCase
+from djrm.utils.numberformat import format as nformat
 
 
 class TestNumberFormat(SimpleTestCase):

@@ -1,8 +1,8 @@
-from djorm.db import connection
-from djorm.db.models import CharField
-from djorm.db.models.functions import SHA1
-from djorm.test import TestCase
-from djorm.test.utils import register_lookup
+from djrm.db import connection
+from djrm.db.models import CharField
+from djrm.db.models.functions import SHA1
+from djrm.test import TestCase
+from djrm.test.utils import register_lookup
 
 from ..models import Author
 

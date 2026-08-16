@@ -1,6 +1,6 @@
-from djorm.db import IntegrityError, connection, transaction
-from djorm.test import TestCase
-from djorm.utils.deprecation import RemovedInDjango60Warning
+from djrm.db import IntegrityError, connection, transaction
+from djrm.test import TestCase
+from djrm.utils.deprecation import RemovedInDjango60Warning
 
 from .models import (
     Bar,

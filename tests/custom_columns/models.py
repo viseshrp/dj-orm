@@ -15,7 +15,7 @@ from the default generated name, use the ``db_table`` parameter on the
 
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Author(models.Model):

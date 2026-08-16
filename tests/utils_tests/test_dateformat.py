@@ -1,10 +1,10 @@
 from datetime import date, datetime, time, timezone, tzinfo
 
-from djorm.test import SimpleTestCase, override_settings
-from djorm.test.utils import TZ_SUPPORT, requires_tz_support
-from djorm.utils import dateformat, translation
-from djorm.utils.dateformat import format
-from djorm.utils.timezone import get_default_timezone, get_fixed_timezone, make_aware
+from djrm.test import SimpleTestCase, override_settings
+from djrm.test.utils import TZ_SUPPORT, requires_tz_support
+from djrm.utils import dateformat, translation
+from djrm.utils.dateformat import format
+from djrm.utils.timezone import get_default_timezone, get_fixed_timezone, make_aware
 
 
 @override_settings(TIME_ZONE="Europe/Copenhagen")

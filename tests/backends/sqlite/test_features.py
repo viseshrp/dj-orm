@@ -1,7 +1,7 @@
 from unittest import mock, skipUnless
 
-from djorm.db import OperationalError, connection
-from djorm.test import TestCase
+from djrm.db import OperationalError, connection
+from djrm.test import TestCase
 
 
 @skipUnless(connection.vendor == "sqlite", "SQLite tests.")

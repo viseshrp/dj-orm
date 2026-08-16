@@ -5,7 +5,7 @@ To execute arbitrary code around ``save()`` and ``delete()``, just subclass
 the methods.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Person(models.Model):

@@ -1,6 +1,6 @@
-from djorm.db import connection
-from djorm.db.backends.base.introspection import BaseDatabaseIntrospection
-from djorm.test import SimpleTestCase
+from djrm.db import connection
+from djrm.db.backends.base.introspection import BaseDatabaseIntrospection
+from djrm.test import SimpleTestCase
 
 
 class SimpleDatabaseIntrospectionTests(SimpleTestCase):

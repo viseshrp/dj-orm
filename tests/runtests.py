@@ -14,25 +14,25 @@ import warnings
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 try:
-    import djorm
+    import djrm
 except ImportError as e:
     raise RuntimeError(
-        "Djorm is not installed. Follow the setup instructions in CONTRIBUTING.md."
+        "djrm is not installed. Follow the setup instructions in CONTRIBUTING.md."
     ) from e
 else:
-    from djorm.apps import apps
-    from djorm.conf import settings
-    from djorm.db import connection, connections
-    from djorm.test import TestCase, TransactionTestCase
-    from djorm.test.runner import get_max_test_processes, parallel_type
-    from djorm.test.utils import NullTimeKeeper, TimeKeeper, get_runner
-    from djorm.utils.deprecation import (
+    from djrm.apps import apps
+    from djrm.conf import settings
+    from djrm.db import connection, connections
+    from djrm.test import TestCase, TransactionTestCase
+    from djrm.test.runner import get_max_test_processes, parallel_type
+    from djrm.test.utils import NullTimeKeeper, TimeKeeper, get_runner
+    from djrm.utils.deprecation import (
         RemovedInDjango60Warning,
         RemovedInDjango61Warning,
     )
-    from djorm.utils.functional import classproperty
-    from djorm.utils.log import DEFAULT_LOGGING
-    from djorm.utils.version import PY312, PYPY
+    from djrm.utils.functional import classproperty
+    from djrm.utils.log import DEFAULT_LOGGING
+    from djrm.utils.version import PY312, PYPY
 
 try:
     import MySQLdb
@@ -66,7 +66,7 @@ os.environ["COVERAGE_PROCESS_START"] = os.path.join(RUNTESTS_DIR, ".coveragerc")
 
 
 ALWAYS_INSTALLED_APPS = [
-    "djorm.contrib.contenttypes",
+    "djrm.contrib.contenttypes",
 ]
 
 
@@ -151,14 +151,14 @@ def setup_collect_tests(start_at, start_after, test_labels=None):
     log_config = copy.deepcopy(DEFAULT_LOGGING)
     # Filter out non-error logging so we don't have to capture it in lots of
     # tests.
-    log_config["loggers"]["djorm"]["level"] = "ERROR"
+    log_config["loggers"]["djrm"]["level"] = "ERROR"
     settings.LOGGING = log_config
     settings.SILENCED_SYSTEM_CHECKS = [
         "fields.W342",  # ForeignKey(unique=True) -> OneToOneField
     ]
 
     # Load all the ALWAYS_INSTALLED_APPS.
-    djorm.setup()
+    djrm.setup()
 
     test_modules = list(
         get_filtered_test_modules(
@@ -240,7 +240,7 @@ def django_tests(
         max_parallel = parallel
 
     if verbosity >= 1:
-        msg = "Testing against Django installed in '%s'" % os.path.dirname(djorm.__file__)
+        msg = "Testing against Django installed in '%s'" % os.path.dirname(djrm.__file__)
         if max_parallel > 1:
             msg += " with up to %d processes" % max_parallel
         print(msg)
@@ -249,7 +249,7 @@ def django_tests(
     test_labels, state = setup_run_tests(*process_setup_args)
     # Run the test suite, including the extra validation tests.
     if not hasattr(settings, "TEST_RUNNER"):
-        settings.TEST_RUNNER = "djorm.test.runner.DiscoverRunner"
+        settings.TEST_RUNNER = "djrm.test.runner.DiscoverRunner"
 
     if parallel in {0, "auto"}:
         # This doesn't work before django.setup() on some databases.

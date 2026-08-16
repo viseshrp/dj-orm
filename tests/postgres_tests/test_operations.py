@@ -2,20 +2,20 @@ import unittest
 
 from migrations.test_base import OperationTestBase, OptimizerTestBase
 
-from djorm.db import IntegrityError, NotSupportedError, connection, transaction
-from djorm.db.migrations.operations import RemoveIndex, RenameIndex
-from djorm.db.migrations.state import ProjectState
-from djorm.db.migrations.writer import OperationWriter
-from djorm.db.models import CheckConstraint, Index, Q, UniqueConstraint
-from djorm.db.utils import ProgrammingError
-from djorm.test import modify_settings, override_settings
-from djorm.test.utils import CaptureQueriesContext
+from djrm.db import IntegrityError, NotSupportedError, connection, transaction
+from djrm.db.migrations.operations import RemoveIndex, RenameIndex
+from djrm.db.migrations.state import ProjectState
+from djrm.db.migrations.writer import OperationWriter
+from djrm.db.models import CheckConstraint, Index, Q, UniqueConstraint
+from djrm.db.utils import ProgrammingError
+from djrm.test import modify_settings, override_settings
+from djrm.test.utils import CaptureQueriesContext
 
 from . import PostgreSQLTestCase
 
 try:
-    from djorm.contrib.postgres.indexes import BrinIndex, BTreeIndex
-    from djorm.contrib.postgres.operations import (
+    from djrm.contrib.postgres.indexes import BrinIndex, BTreeIndex
+    from djrm.contrib.postgres.operations import (
         AddConstraintNotValid,
         AddIndexConcurrently,
         BloomExtension,
@@ -390,10 +390,10 @@ class CreateCollationTests(OptimizerTestBase, PostgreSQLTestCase):
             deterministic=False,
         )
         buff, imports = OperationWriter(operation, indentation=0).serialize()
-        self.assertEqual(imports, {"import djorm.contrib.postgres.operations"})
+        self.assertEqual(imports, {"import djrm.contrib.postgres.operations"})
         self.assertEqual(
             buff,
-            "djorm.contrib.postgres.operations.CreateCollation(\n"
+            "djrm.contrib.postgres.operations.CreateCollation(\n"
             "    name='sample_collation',\n"
             "    locale='und-u-ks-level2',\n"
             "    provider='icu',\n"

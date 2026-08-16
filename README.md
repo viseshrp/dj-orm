@@ -1,12 +1,12 @@
-# djorm
+# djrm
 
-[![CI](https://github.com/viseshrp/dj-orm/actions/workflows/main.yml/badge.svg)](https://github.com/viseshrp/dj-orm/actions/workflows/main.yml)
-[![Python versions](https://img.shields.io/pypi/pyversions/dj-orm.svg?logo=python&logoColor=white)](https://pypi.org/project/dj-orm/)
-[![Coverage](https://codecov.io/gh/viseshrp/dj-orm/branch/main/graph/badge.svg)](https://codecov.io/gh/viseshrp/dj-orm)
+[![CI](https://github.com/viseshrp/djrm/actions/workflows/main.yml/badge.svg)](https://github.com/viseshrp/djrm/actions/workflows/main.yml)
+[![Python versions](https://img.shields.io/pypi/pyversions/djrm.svg?logo=python&logoColor=white)](https://pypi.org/project/djrm/)
+[![Coverage](https://codecov.io/gh/viseshrp/djrm/branch/main/graph/badge.svg)](https://codecov.io/gh/viseshrp/djrm)
 [![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 
-`djorm` packages Django's ORM, migration framework, and database backends as a
-standalone library. It keeps the retained Django APIs under the `djorm` import
+`djrm` packages Django's ORM, migration framework, and database backends as a
+standalone library. It keeps the retained Django APIs under the `djrm` import
 namespace and omits the web framework.
 
 This is an independent fork. It is not an official Django Software Foundation
@@ -14,22 +14,21 @@ project.
 
 ## Installation
 
-The distribution is named `dj-orm` because the unrelated `djorm` project name
-is already registered on PyPI. The Python namespace and command remain `djorm`.
+The distribution, Python import namespace, and command are all named `djrm`.
 
 ```console
-python -m pip install dj-orm
+python -m pip install djrm
 ```
 
-No production package has been published yet. Builds from the current branch
-are development artifacts; see [Maintenance and releases](#maintenance-and-releases).
+Release builds are published to PyPI. See
+[Maintenance and releases](#maintenance-and-releases) for the release policy.
 
 ## Included
 
 - Models, fields, querysets, managers, expressions, and aggregations
 - Schema migrations and data migrations
 - SQLite, PostgreSQL, MySQL, and Oracle backends
-- `djorm.contrib.contenttypes` and `djorm.contrib.postgres`
+- `djrm.contrib.contenttypes` and `djrm.contrib.postgres`
 - Database-focused commands including `makemigrations`, `migrate`,
   `showmigrations`, `dumpdata`, and `loaddata`
 
@@ -40,32 +39,32 @@ package does not provide a compatibility `django` namespace.
 ## Minimal setup
 
 ```python
-import djorm
-from djorm.conf import settings
+import djrm
+from djrm.conf import settings
 
 settings.configure(
     DATABASES={
         "default": {
-            "ENGINE": "djorm.db.backends.sqlite3",
+            "ENGINE": "djrm.db.backends.sqlite3",
             "NAME": ":memory:",
         }
     },
-    DEFAULT_AUTO_FIELD="djorm.db.models.BigAutoField",
+    DEFAULT_AUTO_FIELD="djrm.db.models.BigAutoField",
     INSTALLED_APPS=[],
 )
-djorm.setup()
+djrm.setup()
 ```
 
 Commands use the same settings conventions as Django:
 
 ```console
 export DJANGO_SETTINGS_MODULE=myproject.settings
-djorm migrate
-python -m djorm showmigrations
+djrm migrate
+python -m djrm showmigrations
 ```
 
 `DJANGO_SETTINGS_MODULE` keeps its upstream name. Only Python import paths move
-from `django.*` to `djorm.*`.
+from `django.*` to `djrm.*`.
 
 ## Development
 
@@ -87,13 +86,13 @@ make check-dist
 from an exact official Django release tag and use SemVer:
 
 ```text
-Django 5.2.17 -> dj-orm 0.1.0
-Django 6.2    -> dj-orm 1.0.0
+Django 5.2.17 -> djrm 0.1.0
+Django 6.2    -> djrm 1.0.0
 ```
 
-Djorm `0.x` corresponds to Django 5.2 LTS, `1.x` corresponds to Django 6.2 LTS,
+djrm `0.x` corresponds to Django 5.2 LTS, `1.x` corresponds to Django 6.2 LTS,
 and each later LTS gets the next major. Within an LTS line, a newer Django patch
-tag increments the Djorm minor; a Djorm-only fix from the same tag increments
+tag increments the djrm minor; a djrm-only fix from the same tag increments
 the patch. The exact Django tag is recorded as release provenance. The update
 tool creates a separate worktree, performs the namespace conversion, applies
 the reviewed fork tree delta with a three-way merge, and stops for human review
@@ -102,7 +101,7 @@ when upstream changed retained code incompatibly.
 ```console
 uv run python scripts/apply_django_lts.py \
   --django-ref 5.2.17 \
-  --output ../djorm-5.2.17
+  --output ../djrm-5.2.17
 ```
 
 See [MAINTENANCE.md](MAINTENANCE.md) for the branch model, release gate, conflict

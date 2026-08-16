@@ -1,9 +1,9 @@
-from djorm.apps import apps
-from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from djorm.core.exceptions import FieldDoesNotExist
-from djorm.db.models import CharField, Field, ForeignObjectRel, ManyToManyField
-from djorm.db.models.options import EMPTY_RELATION_TREE, IMMUTABLE_WARNING
-from djorm.test import SimpleTestCase, override_settings
+from djrm.apps import apps
+from djrm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from djrm.core.exceptions import FieldDoesNotExist
+from djrm.db.models import CharField, Field, ForeignObjectRel, ManyToManyField
+from djrm.db.models.options import EMPTY_RELATION_TREE, IMMUTABLE_WARNING
+from djrm.test import SimpleTestCase, override_settings
 
 from .models import (
     AbstractPerson,

@@ -1,7 +1,7 @@
 import itertools
 
-from djorm.db.models import F
-from djorm.db.models.fields.tuple_lookups import (
+from djrm.db.models import F
+from djrm.db.models.fields.tuple_lookups import (
     TupleExact,
     TupleGreaterThan,
     TupleGreaterThanOrEqual,
@@ -10,8 +10,8 @@ from djorm.db.models.fields.tuple_lookups import (
     TupleLessThan,
     TupleLessThanOrEqual,
 )
-from djorm.db.models.lookups import In
-from djorm.test import TestCase, skipUnlessDBFeature
+from djrm.db.models.lookups import In
+from djrm.test import TestCase, skipUnlessDBFeature
 
 from .models import Contact, Customer
 

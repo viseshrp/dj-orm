@@ -1,7 +1,7 @@
 # Changelog
 
-This file records Djorm-specific changes. Django changes remain documented in the
-upstream release notes for the exact tag named by each Djorm release.
+This file records djrm-specific changes. Django changes remain documented in the
+upstream release notes for the exact tag named by each djrm release.
 
 ## Unreleased
 
@@ -9,7 +9,7 @@ upstream release notes for the exact tag named by each Djorm release.
 
 ### Added
 
-- A `dj-orm` distribution with wheel and source-archive builds.
+- A `djrm` distribution with wheel and source-archive builds.
 - The first release, based on the exact Django `5.2.17` tag.
 - A scripted Django LTS application workflow with resumable conflict handling.
 - A manual, `main`-only TestPyPI publishing job; production publishing remains
@@ -19,13 +19,13 @@ upstream release notes for the exact tag named by each Djorm release.
 
 ### Changed
 
-- The public distribution name is `dj-orm`; imports and the CLI remain `djorm`.
+- The distribution, import namespace, and CLI are all named `djrm`.
 - Release versions now use SemVer: `0.x` maps to Django 5.2 LTS, `1.x` maps to
-  Django 6.2 LTS, and later LTS lines increment the Djorm major.
+  Django 6.2 LTS, and later LTS lines increment the djrm major.
 - Removed inherited Django documentation, browser tooling, maintainer scripts,
   and other files outside the standalone ORM project.
 - The LTS updater now removes new upstream files that appear inside directories
-  intentionally pruned by Djorm.
+  intentionally pruned by djrm.
 - Removed gettext source catalogs from the package while retaining compiled
   runtime translations.
 - Removed orphaned test apps, fixtures, and web-only runner options left after

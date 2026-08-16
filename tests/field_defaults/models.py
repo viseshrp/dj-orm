@@ -12,9 +12,9 @@ field.
 from datetime import datetime
 from decimal import Decimal
 
-from djorm.db import models
-from djorm.db.models.functions import Coalesce, ExtractYear, Now, Pi
-from djorm.db.models.lookups import GreaterThan
+from djrm.db import models
+from djrm.db.models.functions import Coalesce, ExtractYear, Now, Pi
+from djrm.db.models.lookups import GreaterThan
 
 
 class Article(models.Model):

@@ -2,9 +2,9 @@ import datetime
 from decimal import Decimal
 from unittest import mock
 
-from djorm.core.exceptions import FieldError
-from djorm.db import NotSupportedError, connection
-from djorm.db.models import (
+from djrm.core.exceptions import FieldError
+from djrm.db import NotSupportedError, connection
+from djrm.db.models import (
     Avg,
     Case,
     Count,
@@ -24,8 +24,8 @@ from djorm.db.models import (
     WindowFrame,
     WindowFrameExclusion,
 )
-from djorm.db.models.fields.json import KeyTextTransform, KeyTransform
-from djorm.db.models.functions import (
+from djrm.db.models.fields.json import KeyTextTransform, KeyTransform
+from djrm.db.models.functions import (
     Cast,
     CumeDist,
     DenseRank,
@@ -41,9 +41,9 @@ from djorm.db.models.functions import (
     RowNumber,
     Upper,
 )
-from djorm.db.models.lookups import Exact
-from djorm.test import SimpleTestCase, TestCase, skipIfDBFeature, skipUnlessDBFeature
-from djorm.test.utils import CaptureQueriesContext
+from djrm.db.models.lookups import Exact
+from djrm.test import SimpleTestCase, TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djrm.test.utils import CaptureQueriesContext
 
 from .models import Classification, Detail, Employee, PastEmployeeDepartment
 

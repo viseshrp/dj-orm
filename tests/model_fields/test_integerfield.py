@@ -1,9 +1,9 @@
 from unittest import SkipTest
 
-from djorm.core import validators
-from djorm.core.exceptions import ValidationError
-from djorm.db import IntegrityError, connection, models
-from djorm.test import SimpleTestCase, TestCase
+from djrm.core import validators
+from djrm.core.exceptions import ValidationError
+from djrm.db import IntegrityError, connection, models
+from djrm.test import SimpleTestCase, TestCase
 
 from .models import (
     BigIntegerModel,

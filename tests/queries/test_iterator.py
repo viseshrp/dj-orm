@@ -1,9 +1,9 @@
 import datetime
 from unittest import mock
 
-from djorm.db import connections
-from djorm.db.models.sql.compiler import cursor_iter
-from djorm.test import TestCase
+from djrm.db import connections
+from djrm.db.models.sql.compiler import cursor_iter
+from djrm.test import TestCase
 
 from .models import Article
 
@@ -25,7 +25,7 @@ class QuerySetIteratorTests(TestCase):
     def test_default_iterator_chunk_size(self):
         qs = Article.objects.iterator()
         with mock.patch(
-            "djorm.db.models.sql.compiler.cursor_iter", side_effect=cursor_iter
+            "djrm.db.models.sql.compiler.cursor_iter", side_effect=cursor_iter
         ) as cursor_iter_mock:
             next(qs)
         self.assertEqual(cursor_iter_mock.call_count, 1)
@@ -36,7 +36,7 @@ class QuerySetIteratorTests(TestCase):
         batch_size = 3
         qs = Article.objects.iterator(chunk_size=batch_size)
         with mock.patch(
-            "djorm.db.models.sql.compiler.cursor_iter", side_effect=cursor_iter
+            "djrm.db.models.sql.compiler.cursor_iter", side_effect=cursor_iter
         ) as cursor_iter_mock:
             next(qs)
         self.assertEqual(cursor_iter_mock.call_count, 1)

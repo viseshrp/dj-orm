@@ -1,11 +1,11 @@
 import unittest
 from typing import TYPE_CHECKING
 
-from djorm.utils import inspect
-from djorm.utils.version import PY314
+from djrm.utils import inspect
+from djrm.utils.version import PY314
 
 if TYPE_CHECKING:
-    from djorm.utils.safestring import SafeString
+    from djrm.utils.safestring import SafeString
 
 
 class Person:

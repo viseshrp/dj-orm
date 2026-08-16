@@ -7,9 +7,9 @@ isn't always a good idea, so the ``depth`` argument control how many "levels"
 the select-related behavior will traverse.
 """
 
-from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from djorm.contrib.contenttypes.models import ContentType
-from djorm.db import models
+from djrm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from djrm.contrib.contenttypes.models import ContentType
+from djrm.db import models
 
 # Who remembers high school biology?
 

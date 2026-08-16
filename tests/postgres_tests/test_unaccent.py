@@ -1,4 +1,4 @@
-from djorm.db import connection
+from djrm.db import connection
 
 from . import PostgreSQLTestCase
 from .models import CharFieldModel, TextFieldModel

@@ -1,5 +1,5 @@
-from djorm.db.models.functions import Lag, Lead, NthValue, Ntile
-from djorm.test import SimpleTestCase
+from djrm.db.models.functions import Lag, Lead, NthValue, Ntile
+from djrm.test import SimpleTestCase
 
 
 class ValidationTests(SimpleTestCase):

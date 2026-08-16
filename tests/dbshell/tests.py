@@ -1,9 +1,9 @@
 from unittest import mock
 
-from djorm.core.management import call_command
-from djorm.core.management.base import CommandError
-from djorm.db import connection
-from djorm.test import SimpleTestCase
+from djrm.core.management import call_command
+from djrm.core.management.base import CommandError
+from djrm.db import connection
+from djrm.test import SimpleTestCase
 
 
 class DbshellCommandTestCase(SimpleTestCase):

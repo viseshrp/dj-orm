@@ -1,9 +1,9 @@
 from datetime import datetime
 from unittest import mock
 
-from djorm.db.models import DateTimeField, Value
-from djorm.db.models.lookups import Lookup, YearLookup
-from djorm.test import SimpleTestCase
+from djrm.db.models import DateTimeField, Value
+from djrm.db.models.lookups import Lookup, YearLookup
+from djrm.test import SimpleTestCase
 
 
 class CustomLookup(Lookup):

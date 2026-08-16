@@ -4,9 +4,9 @@ from datetime import datetime
 
 from asgiref.sync import async_to_sync, sync_to_async
 
-from djorm.db import NotSupportedError, connection
-from djorm.db.models import Prefetch, Sum
-from djorm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djrm.db import NotSupportedError, connection
+from djrm.db.models import Prefetch, Sum
+from djrm.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
 
 from .models import RelatedModel, SimpleModel
 

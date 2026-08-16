@@ -4,7 +4,7 @@ Using properties on models
 Use properties on models just like on any other Python object.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Person(models.Model):

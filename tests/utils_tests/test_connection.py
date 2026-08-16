@@ -1,5 +1,5 @@
-from djorm.test import SimpleTestCase
-from djorm.utils.connection import BaseConnectionHandler
+from djrm.test import SimpleTestCase
+from djrm.utils.connection import BaseConnectionHandler
 
 
 class BaseConnectionHandlerTests(SimpleTestCase):

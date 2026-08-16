@@ -1,7 +1,7 @@
-from djorm.apps import apps
-from djorm.conf import settings
-from djorm.db import connection
-from djorm.test import TransactionTestCase, skipIfDBFeature, skipUnlessDBFeature
+from djrm.apps import apps
+from djrm.conf import settings
+from djrm.db import connection
+from djrm.test import TransactionTestCase, skipIfDBFeature, skipUnlessDBFeature
 
 from .models.tablespaces import (
     Article,

@@ -1,8 +1,8 @@
 from unittest import mock
 
-from djorm.db import connection
-from djorm.db.backends.base.client import BaseDatabaseClient
-from djorm.test import SimpleTestCase
+from djrm.db import connection
+from djrm.db.backends.base.client import BaseDatabaseClient
+from djrm.test import SimpleTestCase
 
 
 class SimpleDatabaseClientTests(SimpleTestCase):

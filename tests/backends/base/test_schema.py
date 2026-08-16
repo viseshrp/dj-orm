@@ -1,6 +1,6 @@
-from djorm.db import models
-from djorm.db.backends.base.schema import BaseDatabaseSchemaEditor
-from djorm.test import SimpleTestCase
+from djrm.db import models
+from djrm.db.backends.base.schema import BaseDatabaseSchemaEditor
+from djrm.test import SimpleTestCase
 
 
 class SchemaEditorTests(SimpleTestCase):

@@ -1,6 +1,6 @@
-from djorm.core import management
-from djorm.core.management import CommandError
-from djorm.test import TestCase
+from djrm.core import management
+from djrm.core.management import CommandError
+from djrm.test import TestCase
 
 from .models import Article
 

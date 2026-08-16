@@ -1,9 +1,9 @@
 import datetime
 import pickle
 
-import djorm
-from djorm.db import models
-from djorm.test import TestCase
+import djrm
+from djrm.db import models
+from djrm.test import TestCase
 
 from .models import (
     BinaryFieldModel,
@@ -338,7 +338,7 @@ class PickleabilityTestCase(TestCase):
         qs = Group.previous_django_version_objects.all()
         msg = (
             "Pickled queryset instance's Django version 1.0 does not match "
-            "the current version %s." % djorm.__version__
+            "the current version %s." % djrm.__version__
         )
         with self.assertRaisesMessage(RuntimeWarning, msg):
             pickle.loads(pickle.dumps(qs))

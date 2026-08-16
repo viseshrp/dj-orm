@@ -4,8 +4,8 @@ Various complex queries that have been problematic in the past.
 
 import datetime
 
-from djorm.db import models
-from djorm.db.models.functions import Now
+from djrm.db import models
+from djrm.db.models.functions import Now
 
 
 class DumbCategory(models.Model):

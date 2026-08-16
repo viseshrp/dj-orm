@@ -1,5 +1,5 @@
-from djorm.db.models import Count, Max, Q
-from djorm.test import TestCase
+from djrm.db.models import Count, Max, Q
+from djrm.test import TestCase
 
 from .models import Comment, Tenant, User
 

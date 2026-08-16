@@ -1,6 +1,6 @@
-from djorm.test import SimpleTestCase
-from djorm.utils.functional import cached_property, classproperty, lazy
-from djorm.utils.version import PY312
+from djrm.test import SimpleTestCase
+from djrm.utils.functional import cached_property, classproperty, lazy
+from djrm.utils.version import PY312
 
 
 class FunctionalTests(SimpleTestCase):

@@ -1,8 +1,8 @@
 import datetime
 
-from djorm.db import connection
-from djorm.test import TestCase, skipUnlessDBFeature
-from djorm.test.utils import CaptureQueriesContext
+from djrm.db import connection
+from djrm.test import TestCase, skipUnlessDBFeature
+from djrm.test.utils import CaptureQueriesContext
 
 from .models import DumbCategory, NonIntegerPKReturningModel, ReturningModel
 

@@ -1,5 +1,5 @@
-from djorm.db.models.utils import create_namedtuple_class
-from djorm.test import SimpleTestCase
+from djrm.db.models.utils import create_namedtuple_class
+from djrm.test import SimpleTestCase
 
 
 class NamedTupleClassTests(SimpleTestCase):

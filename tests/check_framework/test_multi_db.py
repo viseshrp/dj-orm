@@ -1,8 +1,8 @@
 from unittest import mock
 
-from djorm.db import connections, models
-from djorm.test import SimpleTestCase
-from djorm.test.utils import isolate_apps, override_settings
+from djrm.db import connections, models
+from djrm.test import SimpleTestCase
+from djrm.test.utils import isolate_apps, override_settings
 
 
 class TestRouter:

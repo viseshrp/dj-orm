@@ -2,12 +2,12 @@ import os
 import shutil
 from unittest import skipIf
 
-from djorm.core.exceptions import ImproperlyConfigured
-from djorm.core.files import File
-from djorm.core.files.images import ImageFile
-from djorm.db.models import signals
-from djorm.test import TestCase
-from djorm.test.testcases import SerializeMixin
+from djrm.core.exceptions import ImproperlyConfigured
+from djrm.core.files import File
+from djrm.core.files.images import ImageFile
+from djrm.db.models import signals
+from djrm.test import TestCase
+from djrm.test.testcases import SerializeMixin
 
 try:
     from .models import Image

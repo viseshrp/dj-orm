@@ -1,6 +1,6 @@
-from djorm.db.models import IntegerField, Value
-from djorm.db.models.functions import Left, Lower
-from djorm.test import TestCase
+from djrm.db.models import IntegerField, Value
+from djrm.db.models.functions import Left, Lower
+from djrm.test import TestCase
 
 from ..models import Author
 

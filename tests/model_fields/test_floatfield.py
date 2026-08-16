@@ -1,5 +1,5 @@
-from djorm.db import transaction
-from djorm.test import TestCase
+from djrm.db import transaction
+from djrm.test import TestCase
 
 from .models import FloatModel
 

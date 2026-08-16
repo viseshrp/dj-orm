@@ -1,6 +1,6 @@
 import datetime
 
-from djorm.test import TestCase, skipIfDBFeature
+from djrm.test import TestCase, skipIfDBFeature
 
 from .models import Donut, RumBaba
 

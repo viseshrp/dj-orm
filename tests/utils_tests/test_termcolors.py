@@ -1,6 +1,6 @@
 import unittest
 
-from djorm.utils.termcolors import (
+from djrm.utils.termcolors import (
     DARK_PALETTE,
     DEFAULT_PALETTE,
     LIGHT_PALETTE,

@@ -1,5 +1,5 @@
-from djorm.db import models
-from djorm.db.models.functions import Coalesce, Lower
+from djrm.db import models
+from djrm.db.models.functions import Coalesce, Lower
 
 
 class Product(models.Model):

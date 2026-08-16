@@ -4,9 +4,9 @@ import re
 from decimal import Decimal
 from itertools import chain
 
-from djorm.core.exceptions import FieldError
-from djorm.db import connection
-from djorm.db.models import (
+from djrm.core.exceptions import FieldError
+from djrm.db import connection
+from djrm.db.models import (
     Avg,
     Case,
     Count,
@@ -32,8 +32,8 @@ from djorm.db.models import (
     When,
     Window,
 )
-from djorm.db.models.expressions import Func, RawSQL
-from djorm.db.models.functions import (
+from djrm.db.models.expressions import Func, RawSQL
+from djrm.db.models.functions import (
     Cast,
     Coalesce,
     Greatest,
@@ -45,10 +45,10 @@ from djorm.db.models.functions import (
     TruncDate,
     TruncHour,
 )
-from djorm.test import TestCase
-from djorm.test.testcases import skipUnlessDBFeature
-from djorm.test.utils import Approximate, CaptureQueriesContext
-from djorm.utils import timezone
+from djrm.test import TestCase
+from djrm.test.testcases import skipUnlessDBFeature
+from djrm.test.utils import Approximate, CaptureQueriesContext
+from djrm.utils import timezone
 
 from .models import Author, Book, Publisher, Store
 

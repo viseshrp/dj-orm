@@ -1,5 +1,5 @@
-from djorm.core.exceptions import FieldError
-from djorm.test import SimpleTestCase, TestCase
+from djrm.core.exceptions import FieldError
+from djrm.test import SimpleTestCase, TestCase
 
 from .models import (
     Bookmark,

@@ -1,5 +1,5 @@
-from djorm.db import models
-from djorm.utils import timezone
+from djrm.db import models
+from djrm.utils import timezone
 
 
 class Article(models.Model):

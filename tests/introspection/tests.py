@@ -1,6 +1,6 @@
-from djorm.db import DatabaseError, connection
-from djorm.db.models import Index
-from djorm.test import TransactionTestCase, skipUnlessDBFeature
+from djrm.db import DatabaseError, connection
+from djrm.db.models import Index
+from djrm.test import TransactionTestCase, skipUnlessDBFeature
 
 from .models import (
     Article,

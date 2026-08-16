@@ -13,7 +13,7 @@ The ordering attribute is not required. If you leave it off, ordering will be
 undefined -- not random, just undefined.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Author(models.Model):

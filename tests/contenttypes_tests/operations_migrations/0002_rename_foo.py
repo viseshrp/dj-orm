@@ -1,4 +1,4 @@
-from djorm.db import migrations
+from djrm.db import migrations
 
 
 def assert_foo_contenttype_not_cached(apps, schema_editor):

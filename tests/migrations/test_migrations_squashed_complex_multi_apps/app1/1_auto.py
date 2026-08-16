@@ -1,4 +1,4 @@
-from djorm.db import migrations
+from djrm.db import migrations
 
 
 class Migration(migrations.Migration):

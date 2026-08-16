@@ -2,9 +2,9 @@ import zoneinfo
 from datetime import datetime, timedelta
 from datetime import timezone as datetime_timezone
 
-from djorm.conf import settings
-from djorm.db import DataError, OperationalError
-from djorm.db.models import (
+from djrm.conf import settings
+from djrm.db import DataError, OperationalError
+from djrm.db.models import (
     DateField,
     DateTimeField,
     F,
@@ -14,7 +14,7 @@ from djorm.db.models import (
     Subquery,
     TimeField,
 )
-from djorm.db.models.functions import (
+from djrm.db.models.functions import (
     Extract,
     ExtractDay,
     ExtractHour,
@@ -39,13 +39,13 @@ from djorm.db.models.functions import (
     TruncWeek,
     TruncYear,
 )
-from djorm.test import (
+from djrm.test import (
     TestCase,
     override_settings,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from djorm.utils import timezone
+from djrm.utils import timezone
 
 from ..models import Author, DTModel, Fan
 

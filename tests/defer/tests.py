@@ -1,5 +1,5 @@
-from djorm.core.exceptions import FieldDoesNotExist, FieldError
-from djorm.test import SimpleTestCase, TestCase
+from djrm.core.exceptions import FieldDoesNotExist, FieldError
+from djrm.test import SimpleTestCase, TestCase
 
 from .models import (
     BigChild,

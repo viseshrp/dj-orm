@@ -1,5 +1,5 @@
-from djorm.db import IntegrityError
-from djorm.test import TestCase, skipUnlessDBFeature
+from djrm.db import IntegrityError
+from djrm.test import TestCase, skipUnlessDBFeature
 
 from .models import Post, Tenant, User
 

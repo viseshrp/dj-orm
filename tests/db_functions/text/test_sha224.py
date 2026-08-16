@@ -1,10 +1,10 @@
 import unittest
 
-from djorm.db import NotSupportedError, connection
-from djorm.db.models import CharField
-from djorm.db.models.functions import SHA224
-from djorm.test import TestCase
-from djorm.test.utils import register_lookup
+from djrm.db import NotSupportedError, connection
+from djrm.db.models import CharField
+from djrm.db.models.functions import SHA224
+from djrm.test import TestCase
+from djrm.test.utils import register_lookup
 
 from ..models import Author
 

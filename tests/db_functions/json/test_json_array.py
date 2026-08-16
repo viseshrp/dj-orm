@@ -1,11 +1,11 @@
 import unittest
 
-from djorm.db import NotSupportedError, connection
-from djorm.db.models import CharField, F, Value
-from djorm.db.models.functions import Cast, JSONArray, JSONObject, Lower
-from djorm.test import TestCase
-from djorm.test.testcases import skipIfDBFeature, skipUnlessDBFeature
-from djorm.utils import timezone
+from djrm.db import NotSupportedError, connection
+from djrm.db.models import CharField, F, Value
+from djrm.db.models.functions import Cast, JSONArray, JSONObject, Lower
+from djrm.test import TestCase
+from djrm.test.testcases import skipIfDBFeature, skipUnlessDBFeature
+from djrm.utils import timezone
 
 from ..models import Article, Author
 

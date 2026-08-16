@@ -4,7 +4,7 @@ Tests for F() query expression syntax.
 
 import uuid
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Manager(models.Model):

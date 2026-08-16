@@ -1,10 +1,10 @@
 import datetime
 
-from djorm.core.exceptions import FieldDoesNotExist
-from djorm.db.models import F, IntegerField, Value
-from djorm.db.models.functions import Coalesce, Lower
-from djorm.db.utils import IntegrityError
-from djorm.test import TestCase, override_settings, skipUnlessDBFeature
+from djrm.core.exceptions import FieldDoesNotExist
+from djrm.db.models import F, IntegerField, Value
+from djrm.db.models.functions import Coalesce, Lower
+from djrm.db.utils import IntegrityError
+from djrm.test import TestCase, override_settings, skipUnlessDBFeature
 
 from .models import (
     Article,

@@ -1,4 +1,4 @@
-from djorm.core.management.commands.makemigrations import (
+from djrm.core.management.commands.makemigrations import (
     Command as MakeMigrationsCommand,
 )
 

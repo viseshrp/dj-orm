@@ -2,15 +2,15 @@ import copy
 import unittest
 from unittest import mock
 
-from djorm.core.exceptions import ImproperlyConfigured
-from djorm.db import DatabaseError, NotSupportedError, ProgrammingError, connection
-from djorm.db.models import BooleanField
-from djorm.test import TestCase, TransactionTestCase
+from djrm.core.exceptions import ImproperlyConfigured
+from djrm.db import DatabaseError, NotSupportedError, ProgrammingError, connection
+from djrm.db.models import BooleanField
+from djrm.test import TestCase, TransactionTestCase
 
 from ..models import Square, VeryLongModelNameZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 
 try:
-    from djorm.db.backends.oracle.oracledb_any import is_oracledb
+    from djrm.db.backends.oracle.oracledb_any import is_oracledb
 except ImportError:
     is_oracledb = False
 
@@ -188,7 +188,7 @@ class TransactionalTests(TransactionTestCase):
                 cursor.execute('DROP TRIGGER "TRG_NO_DATA_FOUND"')
 
     def test_password_with_at_sign(self):
-        from djorm.db.backends.oracle.base import Database
+        from djrm.db.backends.oracle.base import Database
 
         old_password = connection.settings_dict["PASSWORD"]
         connection.settings_dict["PASSWORD"] = "p@ssword"

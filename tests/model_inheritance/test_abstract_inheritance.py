@@ -1,10 +1,10 @@
-from djorm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from djorm.contrib.contenttypes.models import ContentType
-from djorm.core.checks import Error
-from djorm.core.exceptions import FieldDoesNotExist, FieldError
-from djorm.db import models
-from djorm.test import SimpleTestCase
-from djorm.test.utils import isolate_apps
+from djrm.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from djrm.contrib.contenttypes.models import ContentType
+from djrm.core.checks import Error
+from djrm.core.exceptions import FieldDoesNotExist, FieldError
+from djrm.db import models
+from djrm.test import SimpleTestCase
+from djrm.test.utils import isolate_apps
 
 
 @isolate_apps("model_inheritance")

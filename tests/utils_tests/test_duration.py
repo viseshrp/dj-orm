@@ -1,8 +1,8 @@
 import datetime
 import unittest
 
-from djorm.utils.dateparse import parse_duration
-from djorm.utils.duration import (
+from djrm.utils.dateparse import parse_duration
+from djrm.utils.duration import (
     duration_iso_string,
     duration_microseconds,
     duration_string,

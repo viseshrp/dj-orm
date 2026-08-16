@@ -1,7 +1,7 @@
 import io
 
-from djorm.core.management import call_command
-from djorm.test import TestCase
+from djrm.core.management import call_command
+from djrm.test import TestCase
 
 
 class CoreCommandsNoOutputTests(TestCase):

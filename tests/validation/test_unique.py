@@ -1,10 +1,10 @@
 import datetime
 import unittest
 
-from djorm.apps.registry import Apps
-from djorm.core.exceptions import ValidationError
-from djorm.db import models
-from djorm.test import TestCase
+from djrm.apps.registry import Apps
+from djrm.core.exceptions import ValidationError
+from djrm.db import models
+from djrm.test import TestCase
 
 from .models import (
     CustomPKModel,

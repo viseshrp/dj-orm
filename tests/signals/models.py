@@ -2,7 +2,7 @@
 Testing signals before/after saving and deleting.
 """
 
-from djorm.db import models
+from djrm.db import models
 
 
 class Person(models.Model):

@@ -1,6 +1,6 @@
-from djorm.db.models import F, Value
-from djorm.db.models.functions import Concat, Replace
-from djorm.test import TestCase
+from djrm.db.models import F, Value
+from djrm.db.models.functions import Concat, Replace
+from djrm.test import TestCase
 
 from ..models import Author
 

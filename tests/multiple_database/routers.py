@@ -1,4 +1,4 @@
-from djorm.db import DEFAULT_DB_ALIAS
+from djrm.db import DEFAULT_DB_ALIAS
 
 
 class TestRouter:

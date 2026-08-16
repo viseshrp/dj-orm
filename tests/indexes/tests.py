@@ -1,18 +1,18 @@
 import datetime
 from unittest import skipUnless
 
-from djorm.conf import settings
-from djorm.db import connection
-from djorm.db.models import CASCADE, CharField, ForeignKey, Index, Q
-from djorm.db.models.functions import Lower
-from djorm.test import (
+from djrm.conf import settings
+from djrm.db import connection
+from djrm.db.models import CASCADE, CharField, ForeignKey, Index, Q
+from djrm.db.models.functions import Lower
+from djrm.test import (
     TestCase,
     TransactionTestCase,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from djorm.test.utils import override_settings
-from djorm.utils import timezone
+from djrm.test.utils import override_settings
+from djrm.utils import timezone
 
 from .models import Article, ArticleTranslation, IndexedArticle2
 

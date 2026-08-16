@@ -1,10 +1,10 @@
-from djorm.apps import apps
-from djorm.contrib.contenttypes.models import ContentType, ContentTypeManager
-from djorm.contrib.contenttypes.prefetch import GenericPrefetch
-from djorm.db import models
-from djorm.db.migrations.state import ModelState, ProjectState
-from djorm.test import TestCase, override_settings
-from djorm.test.utils import isolate_apps
+from djrm.apps import apps
+from djrm.contrib.contenttypes.models import ContentType, ContentTypeManager
+from djrm.contrib.contenttypes.prefetch import GenericPrefetch
+from djrm.db import models
+from djrm.db.migrations.state import ModelState, ProjectState
+from djrm.test import TestCase, override_settings
+from djrm.test.utils import isolate_apps
 
 from .models import Author, ConcreteModel, FooWithUrl, ProxyModel
 

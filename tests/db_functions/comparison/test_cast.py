@@ -2,10 +2,10 @@ import datetime
 import decimal
 import unittest
 
-from djorm.db import connection, models
-from djorm.db.models.functions import Cast
-from djorm.test import TestCase, ignore_warnings, skipUnlessDBFeature
-from djorm.test.utils import CaptureQueriesContext
+from djrm.db import connection, models
+from djrm.db.models.functions import Cast
+from djrm.test import TestCase, ignore_warnings, skipUnlessDBFeature
+from djrm.test.utils import CaptureQueriesContext
 
 from ..models import Author, DTModel, Fan, FloatModel
 
@@ -33,7 +33,7 @@ class CastTests(TestCase):
 
         # Silence "Truncated incorrect CHAR(1) value: 'Bob'".
 
-    @ignore_warnings(module="djorm.db.backends.mysql.base")
+    @ignore_warnings(module="djrm.db.backends.mysql.base")
     @skipUnlessDBFeature("supports_cast_with_precision")
     def test_cast_to_char_field_with_max_length(self):
         names = Author.objects.annotate(cast_string=Cast("name", models.CharField(max_length=1)))

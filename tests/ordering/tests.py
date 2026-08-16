@@ -1,8 +1,8 @@
 from datetime import datetime
 from operator import attrgetter
 
-from djorm.core.exceptions import FieldError
-from djorm.db.models import (
+from djrm.core.exceptions import FieldError
+from djrm.db.models import (
     CharField,
     Count,
     DateTimeField,
@@ -14,8 +14,8 @@ from djorm.db.models import (
     Subquery,
     Value,
 )
-from djorm.db.models.functions import Length, Upper
-from djorm.test import TestCase
+from djrm.db.models.functions import Length, Upper
+from djrm.test import TestCase
 
 from .models import (
     Article,

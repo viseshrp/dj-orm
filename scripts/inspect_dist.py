@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inspect and install Djorm distribution artifacts."""
+"""Inspect and install djrm distribution artifacts."""
 
 from __future__ import annotations
 
@@ -27,10 +27,10 @@ def inspect_wheel(wheel: Path) -> None:
     with zipfile.ZipFile(wheel) as archive:
         names = set(archive.namelist())
     required = {
-        "djorm/__init__.py",
-        "djorm/_version.py",
-        "djorm/db/models/__init__.py",
-        "djorm/core/management/__init__.py",
+        "djrm/__init__.py",
+        "djrm/_version.py",
+        "djrm/db/models/__init__.py",
+        "djrm/core/management/__init__.py",
     }
     missing = sorted(required - names)
     if missing:
@@ -41,8 +41,8 @@ def inspect_wheel(wheel: Path) -> None:
         raise InspectionError("Wheel contains gettext source catalogs.")
     if not any(name.endswith("/LC_MESSAGES/django.mo") for name in names):
         raise InspectionError("Wheel does not contain compiled translation catalogs.")
-    if not any("dj_orm-" in name and name.endswith(".dist-info/METADATA") for name in names):
-        raise InspectionError("Wheel metadata directory is not normalized from dj-orm.")
+    if not any("djrm-" in name and name.endswith(".dist-info/METADATA") for name in names):
+        raise InspectionError("Wheel metadata directory is not normalized from djrm.")
 
 
 def inspect_sdist(sdist: Path) -> None:
@@ -56,7 +56,7 @@ def inspect_sdist(sdist: Path) -> None:
         "README.md",
         "MAINTENANCE.md",
         "scripts/apply_django_lts.py",
-        "tests/djorm_smoke/test_distribution.py",
+        "tests/djrm_smoke/test_distribution.py",
     }
     for suffix in suffixes:
         if not any(name.endswith(f"/{suffix}") for name in names):
@@ -67,7 +67,7 @@ def isolated_install(wheel: Path) -> None:
     uv = shutil.which("uv")
     if uv is None:
         raise InspectionError("uv is required for the isolated wheel check.")
-    with tempfile.TemporaryDirectory(prefix="djorm-wheel-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="djrm-wheel-") as temp_dir:
         environment = Path(temp_dir) / ".venv"
         subprocess.run([uv, "venv", str(environment)], check=True)
         python = environment / (
@@ -78,24 +78,24 @@ def isolated_install(wheel: Path) -> None:
         subprocess.run([uv, "pip", "install", "--python", str(python), str(wheel)], check=True)
         script = """
 from importlib.metadata import version
-import djorm
-from djorm.conf import settings
+import djrm
+from djrm.conf import settings
 
 settings.configure(
-    DATABASES={"default": {"ENGINE": "djorm.db.backends.sqlite3", "NAME": ":memory:"}},
+    DATABASES={"default": {"ENGINE": "djrm.db.backends.sqlite3", "NAME": ":memory:"}},
     INSTALLED_APPS=[],
 )
-djorm.setup()
-from djorm.db import models
-from djorm.utils.translation import activate, gettext
+djrm.setup()
+from djrm.db import models
+from djrm.utils.translation import activate, gettext
 assert models.Model is not None
 activate("fr")
 assert gettext("January") == "janvier"
-print(version("dj-orm"))
+print(version("djrm"))
 """
         subprocess.run([str(python), "-c", script], check=True)
-        djorm_command = python.parent / ("djorm.exe" if python.suffix == ".exe" else "djorm")
-        subprocess.run([str(djorm_command), "--help"], check=True, stdout=subprocess.DEVNULL)
+        djrm_command = python.parent / ("djrm.exe" if python.suffix == ".exe" else "djrm")
+        subprocess.run([str(djrm_command), "--help"], check=True, stdout=subprocess.DEVNULL)
 
 
 def main() -> int:

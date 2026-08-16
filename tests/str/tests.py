@@ -1,8 +1,8 @@
 import datetime
 
-from djorm.db import models
-from djorm.test import TestCase
-from djorm.test.utils import isolate_apps
+from djrm.db import models
+from djrm.test import TestCase
+from djrm.test.utils import isolate_apps
 
 from .models import InternationalArticle
 

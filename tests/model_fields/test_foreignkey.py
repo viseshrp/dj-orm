@@ -1,11 +1,11 @@
 from decimal import Decimal
 
-from djorm.apps import apps
-from djorm.core import checks
-from djorm.core.exceptions import FieldError
-from djorm.db import models
-from djorm.test import TestCase, skipIfDBFeature
-from djorm.test.utils import isolate_apps
+from djrm.apps import apps
+from djrm.core import checks
+from djrm.core.exceptions import FieldError
+from djrm.db import models
+from djrm.test import TestCase, skipIfDBFeature
+from djrm.test.utils import isolate_apps
 
 from .models import Bar, FkToChar, Foo, PrimaryKeyCharModel
 

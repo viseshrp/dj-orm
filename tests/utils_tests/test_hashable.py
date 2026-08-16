@@ -1,5 +1,5 @@
-from djorm.test import SimpleTestCase
-from djorm.utils.hashable import make_hashable
+from djrm.test import SimpleTestCase
+from djrm.utils.hashable import make_hashable
 
 
 class TestHashable(SimpleTestCase):

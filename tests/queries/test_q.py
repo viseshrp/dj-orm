@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from djorm.core.exceptions import FieldError
-from djorm.db import connection
-from djorm.db.models import (
+from djrm.core.exceptions import FieldError
+from djrm.db import connection
+from djrm.db.models import (
     BooleanField,
     Exists,
     ExpressionWrapper,
@@ -11,16 +11,16 @@ from djorm.db.models import (
     Q,
     Value,
 )
-from djorm.db.models.expressions import NegatedExpression, RawSQL
-from djorm.db.models.functions import ExtractDay, Lower, TruncDate
-from djorm.db.models.lookups import (
+from djrm.db.models.expressions import NegatedExpression, RawSQL
+from djrm.db.models.functions import ExtractDay, Lower, TruncDate
+from djrm.db.models.lookups import (
     Exact,
     IntegerFieldExact,
     IntegerLessThanOrEqual,
     IsNull,
 )
-from djorm.db.models.sql.where import NothingNode
-from djorm.test import SimpleTestCase, TestCase
+from djrm.db.models.sql.where import NothingNode
+from djrm.test import SimpleTestCase, TestCase
 
 from .models import Tag
 
@@ -101,7 +101,7 @@ class QTests(SimpleTestCase):
     def test_deconstruct(self):
         q = Q(price__gt=F("discounted_price"))
         path, args, kwargs = q.deconstruct()
-        self.assertEqual(path, "djorm.db.models.Q")
+        self.assertEqual(path, "djrm.db.models.Q")
         self.assertEqual(args, (("price__gt", F("discounted_price")),))
         self.assertEqual(kwargs, {})
 
@@ -387,7 +387,7 @@ class QCheckTests(TestCase):
         return True.
         """
         q = Q(RawSQL("price > %s", params=(20,), output_field=BooleanField()))
-        with self.assertLogs("djorm.db.models", "WARNING") as cm:
+        with self.assertLogs("djrm.db.models", "WARNING") as cm:
             self.assertIs(q.check({"price": 10}), True)
         self.assertIn(
             f"Got a database error calling check() on {q!r}: ",

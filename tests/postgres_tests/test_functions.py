@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from time import sleep
 
-from djorm.contrib.postgres.functions import RandomUUID, TransactionNow
+from djrm.contrib.postgres.functions import RandomUUID, TransactionNow
 
 from . import PostgreSQLTestCase
 from .models import NowTestModel, UUIDTestModel

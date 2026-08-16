@@ -4,9 +4,9 @@ from decimal import Decimal
 from operator import attrgetter, itemgetter
 from uuid import UUID
 
-from djorm.core.exceptions import FieldError
-from djorm.db import connection
-from djorm.db.models import (
+from djrm.core.exceptions import FieldError
+from djrm.db import connection
+from djrm.db.models import (
     BinaryField,
     BooleanField,
     Case,
@@ -23,7 +23,7 @@ from djorm.db.models import (
     Value,
     When,
 )
-from djorm.test import SimpleTestCase, TestCase
+from djrm.test import SimpleTestCase, TestCase
 
 from .models import CaseTestModel, Client, FKCaseTestModel, O2OCaseTestModel
 

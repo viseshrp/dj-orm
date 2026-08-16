@@ -1,8 +1,8 @@
 import copy
 import unittest
 
-from djorm.db.models.sql import AND, OR
-from djorm.utils.tree import Node
+from djrm.db.models.sql import AND, OR
+from djrm.utils.tree import Node
 
 
 class NodeTests(unittest.TestCase):

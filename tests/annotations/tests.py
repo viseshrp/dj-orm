@@ -3,9 +3,9 @@ from decimal import Decimal
 from itertools import chain
 from unittest import skipUnless
 
-from djorm.core.exceptions import FieldDoesNotExist, FieldError
-from djorm.db import connection
-from djorm.db.models import (
+from djrm.core.exceptions import FieldDoesNotExist, FieldError
+from djrm.db import connection
+from djrm.db.models import (
     BooleanField,
     Case,
     CharField,
@@ -28,8 +28,8 @@ from djorm.db.models import (
     Value,
     When,
 )
-from djorm.db.models.expressions import RawSQL
-from djorm.db.models.functions import (
+from djrm.db.models.expressions import RawSQL
+from djrm.db.models.functions import (
     Cast,
     Coalesce,
     ExtractYear,
@@ -38,9 +38,9 @@ from djorm.db.models.functions import (
     Lower,
     Trim,
 )
-from djorm.db.models.sql.query import get_field_names_from_opts
-from djorm.test import TestCase, skipUnlessDBFeature
-from djorm.test.utils import register_lookup
+from djrm.db.models.sql.query import get_field_names_from_opts
+from djrm.test import TestCase, skipUnlessDBFeature
+from djrm.test.utils import register_lookup
 
 from .models import (
     Author,

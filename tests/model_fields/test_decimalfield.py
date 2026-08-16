@@ -2,10 +2,10 @@ import math
 from decimal import Decimal
 from unittest import mock
 
-from djorm.core import validators
-from djorm.core.exceptions import ValidationError
-from djorm.db import connection, models
-from djorm.test import TestCase
+from djrm.core import validators
+from djrm.core.exceptions import ValidationError
+from djrm.db import connection, models
+from djrm.test import TestCase
 
 from .models import BigD, Foo
 

@@ -1,7 +1,7 @@
-from djorm.db.models.fields.mixins import FieldCacheMixin
-from djorm.test import SimpleTestCase
-from djorm.utils.deprecation import RemovedInDjango60Warning
-from djorm.utils.functional import cached_property
+from djrm.db.models.fields.mixins import FieldCacheMixin
+from djrm.test import SimpleTestCase
+from djrm.utils.deprecation import RemovedInDjango60Warning
+from djrm.utils.functional import cached_property
 
 from .models import Foo
 

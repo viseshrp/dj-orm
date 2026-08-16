@@ -1,6 +1,6 @@
-from djorm.db.models import Value as V
-from djorm.db.models.functions import Lower, StrIndex, Substr, Upper
-from djorm.test import TestCase
+from djrm.db.models import Value as V
+from djrm.db.models.functions import Lower, StrIndex, Substr, Upper
+from djrm.test import TestCase
 
 from ..models import Author
 

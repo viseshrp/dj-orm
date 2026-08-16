@@ -1,5 +1,5 @@
-from djorm.db import DatabaseError, IntegrityError, models, transaction
-from djorm.test import TestCase
+from djrm.db import DatabaseError, IntegrityError, models, transaction
+from djrm.test import TestCase
 
 from .models import (
     Counter,

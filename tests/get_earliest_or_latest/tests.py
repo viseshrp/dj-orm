@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from djorm.db.models import Avg
-from djorm.test import TestCase
+from djrm.db.models import Avg
+from djrm.test import TestCase
 
 from .models import Article, Comment, IndexErrorArticle, Person
 

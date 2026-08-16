@@ -1,7 +1,7 @@
-from djorm.db.models import F, IntegerField
-from djorm.db.models.functions import Chr, Left, Ord
-from djorm.test import TestCase
-from djorm.test.utils import register_lookup
+from djrm.db.models import F, IntegerField
+from djrm.db.models.functions import Chr, Left, Ord
+from djrm.test import TestCase
+from djrm.test.utils import register_lookup
 
 from ..models import Author
 

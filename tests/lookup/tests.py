@@ -4,9 +4,9 @@ from math import ceil
 from operator import attrgetter
 from unittest import mock, skipUnless
 
-from djorm.core.exceptions import FieldError
-from djorm.db import connection, models
-from djorm.db.models import (
+from djrm.core.exceptions import FieldError
+from djrm.db import connection, models
+from djrm.db.models import (
     BooleanField,
     Case,
     Exists,
@@ -19,8 +19,8 @@ from djorm.db.models import (
     Value,
     When,
 )
-from djorm.db.models.functions import Abs, Cast, Length, Substr
-from djorm.db.models.lookups import (
+from djrm.db.models.functions import Abs, Cast, Length, Substr
+from djrm.db.models.lookups import (
     Exact,
     GreaterThan,
     GreaterThanOrEqual,
@@ -29,8 +29,8 @@ from djorm.db.models.lookups import (
     LessThan,
     LessThanOrEqual,
 )
-from djorm.test import TestCase, skipUnlessDBFeature
-from djorm.test.utils import isolate_apps, register_lookup
+from djrm.test import TestCase, skipUnlessDBFeature
+from djrm.test.utils import isolate_apps, register_lookup
 
 from .models import (
     Article,

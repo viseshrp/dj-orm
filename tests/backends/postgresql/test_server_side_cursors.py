@@ -3,16 +3,16 @@ import unittest
 from collections import namedtuple
 from contextlib import contextmanager
 
-from djorm.db import connection, models
-from djorm.db.utils import ProgrammingError
-from djorm.test import TestCase
-from djorm.test.utils import garbage_collect
-from djorm.utils.version import PYPY
+from djrm.db import connection, models
+from djrm.db.utils import ProgrammingError
+from djrm.test import TestCase
+from djrm.test.utils import garbage_collect
+from djrm.utils.version import PYPY
 
 from ..models import Person
 
 try:
-    from djorm.db.backends.postgresql.psycopg_any import is_psycopg3
+    from djrm.db.backends.postgresql.psycopg_any import is_psycopg3
 except ImportError:
     is_psycopg3 = False
 

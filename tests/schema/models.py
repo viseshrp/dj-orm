@@ -1,5 +1,5 @@
-from djorm.apps.registry import Apps
-from djorm.db import models
+from djrm.apps.registry import Apps
+from djrm.db import models
 
 # Because we want to test creation and deletion of these as separate things,
 # these models are all inserted into a separate Apps so the main test

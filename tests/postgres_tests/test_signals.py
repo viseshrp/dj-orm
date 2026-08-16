@@ -1,9 +1,9 @@
-from djorm.db import connection
+from djrm.db import connection
 
 from . import PostgreSQLTestCase
 
 try:
-    from djorm.contrib.postgres.signals import (
+    from djrm.contrib.postgres.signals import (
         get_citext_oids,
         get_hstore_oids,
         register_type_handlers,

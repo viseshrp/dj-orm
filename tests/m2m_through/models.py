@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from djorm.db import models
+from djrm.db import models
 
 
 # M2M described on one of the models

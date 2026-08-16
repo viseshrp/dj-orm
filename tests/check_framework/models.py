@@ -1,5 +1,5 @@
-from djorm.core.checks import register
-from djorm.db import models
+from djrm.core.checks import register
+from djrm.db import models
 
 
 class SimpleModel(models.Model):

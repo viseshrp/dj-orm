@@ -1,7 +1,7 @@
-from djorm.db.models import Value
-from djorm.db.models.functions import StrIndex
-from djorm.test import TestCase
-from djorm.utils import timezone
+from djrm.db.models import Value
+from djrm.db.models.functions import StrIndex
+from djrm.test import TestCase
+from djrm.utils import timezone
 
 from ..models import Article, Author
 

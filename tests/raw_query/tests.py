@@ -1,9 +1,9 @@
 from datetime import date
 from decimal import Decimal
 
-from djorm.core.exceptions import FieldDoesNotExist
-from djorm.db.models.query import RawQuerySet
-from djorm.test import TestCase, skipUnlessDBFeature
+from djrm.core.exceptions import FieldDoesNotExist
+from djrm.db.models.query import RawQuerySet
+from djrm.test import TestCase, skipUnlessDBFeature
 
 from .models import (
     Author,
@@ -38,7 +38,7 @@ class RawQueryTests(TestCase):
             opening_line=(
                 "On an evening in the latter part of May a middle-aged man "
                 "was walking homeward from Shaston to the village of Marlott, "
-                "in the adjormining Vale of Blakemore, or Blackmoor."
+                "in the adjrmining Vale of Blakemore, or Blackmoor."
             ),
         )
         cls.b3 = Book.objects.create(

@@ -1,6 +1,6 @@
 import unittest
 
-from djorm.test import TestCase
+from djrm.test import TestCase
 
 from .models import PersonWithCustomMaxLengths, PersonWithDefaultMaxLengths
 

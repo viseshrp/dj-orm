@@ -1,6 +1,6 @@
 from order_with_respect_to.base_tests import BaseOrderWithRespectToTests
 
-from djorm.test import TestCase
+from djrm.test import TestCase
 
 from .models import Answer, Post, Question
 

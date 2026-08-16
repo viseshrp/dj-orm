@@ -1,5 +1,5 @@
-from djorm.db import connection
-from djorm.db.backends.ddl_references import (
+from djrm.db import connection
+from djrm.db.backends.ddl_references import (
     Columns,
     Expressions,
     ForeignKeyName,
@@ -7,11 +7,11 @@ from djorm.db.backends.ddl_references import (
     Statement,
     Table,
 )
-from djorm.db.models import ExpressionList, F
-from djorm.db.models.functions import Upper
-from djorm.db.models.indexes import IndexExpression
-from djorm.db.models.sql import Query
-from djorm.test import SimpleTestCase, TransactionTestCase
+from djrm.db.models import ExpressionList, F
+from djrm.db.models.functions import Upper
+from djrm.db.models.indexes import IndexExpression
+from djrm.db.models.sql import Query
+from djrm.test import SimpleTestCase, TransactionTestCase
 
 from .models import Person
 

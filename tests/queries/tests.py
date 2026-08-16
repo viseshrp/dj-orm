@@ -5,15 +5,15 @@ import unittest
 from itertools import chain
 from operator import attrgetter
 
-from djorm.core.exceptions import EmptyResultSet, FieldError, FullResultSet
-from djorm.db import DEFAULT_DB_ALIAS, connection
-from djorm.db.models import CharField, Count, Exists, F, Max, OuterRef, Q
-from djorm.db.models.expressions import RawSQL
-from djorm.db.models.functions import ExtractYear, Length, LTrim
-from djorm.db.models.sql.constants import LOUTER
-from djorm.db.models.sql.where import AND, OR, NothingNode, WhereNode
-from djorm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
-from djorm.test.utils import CaptureQueriesContext, register_lookup
+from djrm.core.exceptions import EmptyResultSet, FieldError, FullResultSet
+from djrm.db import DEFAULT_DB_ALIAS, connection
+from djrm.db.models import CharField, Count, Exists, F, Max, OuterRef, Q
+from djrm.db.models.expressions import RawSQL
+from djrm.db.models.functions import ExtractYear, Length, LTrim
+from djrm.db.models.sql.constants import LOUTER
+from djrm.db.models.sql.where import AND, OR, NothingNode, WhereNode
+from djrm.test import SimpleTestCase, TestCase, skipUnlessDBFeature
+from djrm.test.utils import CaptureQueriesContext, register_lookup
 
 from .models import (
     FK1,

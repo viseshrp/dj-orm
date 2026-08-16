@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
-from djorm.db import connection
-from djorm.db.models import TextField
-from djorm.db.models.functions import Cast, Now
-from djorm.test import TestCase
-from djorm.utils import timezone
+from djrm.db import connection
+from djrm.db.models import TextField
+from djrm.db.models.functions import Cast, Now
+from djrm.test import TestCase
+from djrm.utils import timezone
 
 from ..models import Article
 

@@ -1,16 +1,16 @@
 import unittest
 import uuid
 
-from djorm.core.checks import Error
-from djorm.core.checks import Warning as DjangoWarning
-from djorm.db import connection, models
-from djorm.db.models.functions import Coalesce, LPad, Pi
-from djorm.test import SimpleTestCase, TestCase, skipIfDBFeature, skipUnlessDBFeature
-from djorm.test.utils import isolate_apps, override_settings
-from djorm.utils.functional import lazy
-from djorm.utils.timezone import now
-from djorm.utils.translation import gettext_lazy as _
-from djorm.utils.version import get_docs_version
+from djrm.core.checks import Error
+from djrm.core.checks import Warning as DjangoWarning
+from djrm.db import connection, models
+from djrm.db.models.functions import Coalesce, LPad, Pi
+from djrm.test import SimpleTestCase, TestCase, skipIfDBFeature, skipUnlessDBFeature
+from djrm.test.utils import isolate_apps, override_settings
+from djrm.utils.functional import lazy
+from djrm.utils.timezone import now
+from djrm.utils.translation import gettext_lazy as _
+from djrm.utils.version import get_docs_version
 
 
 @isolate_apps("invalid_models_tests")
@@ -424,7 +424,7 @@ class CharFieldTests(TestCase):
 
     @unittest.skipUnless(connection.vendor == "mysql", "Test valid only for MySQL")
     def test_too_long_char_field_under_mysql(self):
-        from djorm.db.backends.mysql.validation import DatabaseValidation
+        from djrm.db.backends.mysql.validation import DatabaseValidation
 
         class Model(models.Model):
             field = models.CharField(unique=True, max_length=256)
@@ -518,7 +518,7 @@ class DateFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    "as default, use `djorm.utils.timezone.now`",
+                    "as default, use `djrm.utils.timezone.now`",
                     obj=field_dt,
                     id="fields.W161",
                 ),
@@ -527,7 +527,7 @@ class DateFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    "as default, use `djorm.utils.timezone.now`",
+                    "as default, use `djrm.utils.timezone.now`",
                     obj=field_d,
                     id="fields.W161",
                 ),
@@ -563,7 +563,7 @@ class DateTimeFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    "as default, use `djorm.utils.timezone.now`",
+                    "as default, use `djrm.utils.timezone.now`",
                     obj=field_dt,
                     id="fields.W161",
                 ),
@@ -572,7 +572,7 @@ class DateTimeFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    "as default, use `djorm.utils.timezone.now`",
+                    "as default, use `djrm.utils.timezone.now`",
                     obj=field_d,
                     id="fields.W161",
                 ),
@@ -898,7 +898,7 @@ class TimeFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    "as default, use `djorm.utils.timezone.now`",
+                    "as default, use `djrm.utils.timezone.now`",
                     obj=fields[0],
                     id="fields.W161",
                 ),
@@ -907,7 +907,7 @@ class TimeFieldTests(SimpleTestCase):
                     hint="It seems you set a fixed date / time / datetime "
                     "value as default for this field. This may not be "
                     "what you want. If you want to have the current date "
-                    "as default, use `djorm.utils.timezone.now`",
+                    "as default, use `djrm.utils.timezone.now`",
                     obj=fields[1],
                     id="fields.W161",
                 ),
@@ -917,7 +917,7 @@ class TimeFieldTests(SimpleTestCase):
                         "It seems you set a fixed date / time / datetime value as "
                         "default for this field. This may not be what you want. "
                         "If you want to have the current date as default, use "
-                        "`djorm.utils.timezone.now`"
+                        "`djrm.utils.timezone.now`"
                     ),
                     obj=fields[2],
                     id="fields.W161",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the maintained Djorm tree delta to an exact Django LTS tag."""
+"""Apply the maintained djrm tree delta to an exact Django LTS tag."""
 
 from __future__ import annotations
 
@@ -21,8 +21,8 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10
     import tomli as tomllib
 
 
-CONFIG_NAME = ".djorm-maintenance.toml"
-STATE_NAME = "djorm-apply-state.json"
+CONFIG_NAME = ".djrm-maintenance.toml"
+STATE_NAME = "djrm-apply-state.json"
 FINAL_TAG_RE = re.compile(r"^(?P<parts>\d+(?:\.\d+){0,2})$")
 SEMVER_RE = re.compile(
     r"^(?P<major>0|[1-9]\d*)\."
@@ -50,7 +50,7 @@ FORK_OWNED_PATHS = {
     "tox.ini",
     "uv.lock",
 }
-FORK_OWNED_PREFIXES = (".github/", "djorm/_ext/", "tests/djorm_smoke/")
+FORK_OWNED_PREFIXES = (".github/", "djrm/_ext/", "tests/djrm_smoke/")
 PRUNED_SUFFIXES = (".po",)
 
 
@@ -129,8 +129,8 @@ def read_config(source_repo: Path) -> dict[str, Any]:
     missing = sorted(required - config.keys())
     if missing:
         raise ApplyError(f"Missing {CONFIG_NAME} fields: {', '.join(missing)}")
-    if config["distribution"] != "dj-orm":
-        raise ApplyError(f"{CONFIG_NAME} must configure the dj-orm distribution.")
+    if config["distribution"] != "djrm":
+        raise ApplyError(f"{CONFIG_NAME} must configure the djrm distribution.")
     if config["application"] != "tree-delta":
         raise ApplyError(f"{CONFIG_NAME} must configure tree-delta application.")
     lts_version_majors(config)
@@ -201,7 +201,7 @@ def assert_configured_lts(django_ref: str, config: dict[str, Any]) -> None:
 def parse_distribution_version(version: str) -> tuple[int, int, int]:
     match = SEMVER_RE.fullmatch(version)
     if match is None:
-        raise ApplyError("The Djorm distribution version must be SemVer such as 0.1.0.")
+        raise ApplyError("The djrm distribution version must be SemVer such as 0.1.0.")
     return (
         int(match.group("major")),
         int(match.group("minor")),
@@ -210,7 +210,7 @@ def parse_distribution_version(version: str) -> tuple[int, int, int]:
 
 
 def read_distribution_version(source_repo: Path) -> str:
-    version_path = source_repo / "djorm" / "_version.py"
+    version_path = source_repo / "djrm" / "_version.py"
     version_text = version_path.read_text(encoding="utf-8")
     match = re.search(
         r'^__version__\s*=\s*["\']([^"\']+)["\']$',
@@ -232,7 +232,7 @@ def distribution_version(
     version_majors: dict[str, int],
 ) -> str:
     if patch < 0:
-        raise ApplyError("The Djorm SemVer patch must be zero or greater.")
+        raise ApplyError("The djrm SemVer patch must be zero or greater.")
 
     current_upstream = normalize_upstream_version(current_django_ref)
     target_upstream = normalize_upstream_version(django_ref)
@@ -244,7 +244,7 @@ def distribution_version(
         raise ApplyError("Both current and target Django series must have SemVer major mappings.")
     if current_major != version_majors[current_series]:
         raise ApplyError(
-            f"Djorm {current_version} does not map to Django {current_series} "
+            f"djrm {current_version} does not map to Django {current_series} "
             "in maintenance metadata."
         )
     if target_upstream < current_upstream:
@@ -272,7 +272,7 @@ def distribution_version(
 
 def assert_source_ready(source_repo: Path, config: dict[str, Any]) -> str:
     if git(source_repo, "status", "--porcelain"):
-        raise ApplyError("The Djorm source checkout must be clean before applying an LTS tag.")
+        raise ApplyError("The djrm source checkout must be clean before applying an LTS tag.")
     expected_url = str(config["upstream_url"])
     remote = str(config["upstream_remote"])
     actual_url = git(source_repo, "remote", "get-url", remote, check=False)
@@ -308,8 +308,8 @@ def assert_base_commit(source_repo: Path, base_commit: str, source_head: str) ->
 
 
 def create_renamed_base_tree(source_repo: Path, base_commit: str) -> str:
-    """Create the canonical djorm tree for the configured upstream base."""
-    temporary_root = Path(tempfile.mkdtemp(prefix="djorm-base-"))
+    """Create the canonical djrm tree for the configured upstream base."""
+    temporary_root = Path(tempfile.mkdtemp(prefix="djrm-base-"))
     worktree = temporary_root / "worktree"
     added = False
     try:
@@ -357,7 +357,7 @@ def save_state(output: Path, state: ApplyState) -> None:
 def load_state(output: Path) -> ApplyState:
     path = state_path(output)
     if not path.is_file():
-        raise ApplyError(f"No interrupted Djorm application state exists for {output}.")
+        raise ApplyError(f"No interrupted djrm application state exists for {output}.")
     return ApplyState(**json.loads(path.read_text(encoding="utf-8")))
 
 
@@ -375,7 +375,7 @@ def create_candidate(
     current_version = read_distribution_version(source_repo)
     if current_version != config["release_version"]:
         raise ApplyError(
-            f"djorm/_version.py and {CONFIG_NAME} must record the same release version."
+            f"djrm/_version.py and {CONFIG_NAME} must record the same release version."
         )
     release_version = distribution_version(
         django_ref,
@@ -425,7 +425,7 @@ def run_namespace_step(output: Path, source_repo: Path) -> str:
     )
     run(["git", "add", "-A"], cwd=output, capture=True)
     run(
-        ["git", "commit", "-m", "[namespace] Generate the djorm namespace"],
+        ["git", "commit", "-m", "[namespace] Generate the djrm namespace"],
         cwd=output,
         capture=True,
     )
@@ -510,7 +510,7 @@ def merged_tree(source_repo: Path, output: Path, state: ApplyState) -> tuple[str
     )
     if result.returncode not in {0, 1}:
         detail = result.stderr.decode(errors="replace").strip() or "unknown Git error"
-        raise ApplyError(f"Could not merge the maintained Djorm delta: {detail}")
+        raise ApplyError(f"Could not merge the maintained djrm delta: {detail}")
     fields = [field.decode() for field in result.stdout.split(b"\0") if field]
     if not fields:
         raise ApplyError("Git did not produce a merged tree.")
@@ -575,9 +575,9 @@ def commit_delta(output: Path) -> None:
         capture=True,
     )
     if staged.returncode == 0:
-        raise ApplyError("The maintained Djorm delta produced no staged changes.")
+        raise ApplyError("The maintained djrm delta produced no staged changes.")
     run(
-        ["git", "commit", "-m", "[fork] Apply the maintained dj-orm delta"],
+        ["git", "commit", "-m", "[fork] Apply the maintained djrm delta"],
         cwd=output,
         capture=True,
     )
@@ -585,7 +585,7 @@ def commit_delta(output: Path) -> None:
 
 def report_conflicts(output: Path, unresolved: list[str]) -> None:
     print(
-        "Upstream changed retained Djorm code. Resolve and stage these paths:",
+        "Upstream changed retained djrm code. Resolve and stage these paths:",
         file=sys.stderr,
     )
     for file_name in unresolved:
@@ -598,7 +598,7 @@ def report_conflicts(output: Path, unresolved: list[str]) -> None:
 
 
 def update_version_file(output: Path, version: str) -> None:
-    version_path = output / "djorm" / "_version.py"
+    version_path = output / "djrm" / "_version.py"
     original = version_path.read_text(encoding="utf-8")
     rewritten, count = re.subn(
         r'^__version__\s*=\s*["\'][^"\']+["\']$',
@@ -622,7 +622,7 @@ def write_generated_config(output: Path, state: ApplyState) -> None:
     text = "\n".join(
         [
             "schema = 3",
-            'distribution = "dj-orm"',
+            'distribution = "djrm"',
             'application = "tree-delta"',
             f'yapc_commit = "{source_config["yapc_commit"]}"',
             'upstream_remote = "upstream"',
@@ -653,7 +653,7 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
         ):
             run(command, cwd=output, capture=False)
 
-    allowed_changes = {CONFIG_NAME, "djorm/_version.py"}
+    allowed_changes = {CONFIG_NAME, "djrm/_version.py"}
     changed_paths = set(git(output, "diff", "--name-only").splitlines())
     changed_paths.update(git(output, "diff", "--cached", "--name-only").splitlines())
     changed_paths.update(git(output, "ls-files", "--others", "--exclude-standard").splitlines())
@@ -661,7 +661,7 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
     if unexpected:
         raise ApplyError("Verification changed unexpected files: " + ", ".join(unexpected))
 
-    run(["git", "add", CONFIG_NAME, "djorm/_version.py"], cwd=output, capture=True)
+    run(["git", "add", CONFIG_NAME, "djrm/_version.py"], cwd=output, capture=True)
     staged_diff = run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=output,
@@ -671,7 +671,7 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
     if staged_diff.returncode == 0:
         raise ApplyError("Generated provenance and version did not change.")
     run(
-        ["git", "commit", "-m", f"[lts] Base Djorm on Django {state.django_ref}"],
+        ["git", "commit", "-m", f"[lts] Base djrm on Django {state.django_ref}"],
         cwd=output,
         capture=False,
     )
@@ -743,7 +743,7 @@ def parse_args() -> argparse.Namespace:
         dest="patch",
         type=int,
         default=0,
-        help="SemVer patch for a Djorm-only rebuild (default: 0)",
+        help="SemVer patch for a djrm-only rebuild (default: 0)",
     )
     parser.add_argument("--continue", dest="resume", action="store_true")
     parser.add_argument("--no-verify", action="store_true", help="Skip the final package gate")

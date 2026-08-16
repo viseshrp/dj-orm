@@ -1,8 +1,8 @@
 from operator import attrgetter
 
-from djorm.db import models
-from djorm.test import SimpleTestCase, TestCase
-from djorm.test.utils import isolate_apps
+from djrm.db import models
+from djrm.test import SimpleTestCase, TestCase
+from djrm.test.utils import isolate_apps
 
 from .base_tests import BaseOrderWithRespectToTests
 from .models import Answer, Dimension, Entity, Post, Question

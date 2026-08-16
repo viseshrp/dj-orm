@@ -1,9 +1,9 @@
 import datetime
 from unittest import skipUnless
 
-from djorm.core.exceptions import FieldError
-from djorm.db import connection
-from djorm.test import TestCase, override_settings
+from djrm.core.exceptions import FieldError
+from djrm.db import connection
+from djrm.test import TestCase, override_settings
 
 from .models import Article, Category, Comment
 

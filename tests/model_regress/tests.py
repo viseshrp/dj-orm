@@ -2,12 +2,12 @@ import copy
 import datetime
 from operator import attrgetter
 
-from djorm.core.exceptions import ValidationError
-from djorm.db import models, router
-from djorm.db.models.sql import InsertQuery
-from djorm.test import TestCase, skipUnlessDBFeature
-from djorm.test.utils import isolate_apps
-from djorm.utils.timezone import get_fixed_timezone
+from djrm.core.exceptions import ValidationError
+from djrm.db import models, router
+from djrm.db.models.sql import InsertQuery
+from djrm.test import TestCase, skipUnlessDBFeature
+from djrm.test.utils import isolate_apps
+from djrm.utils.timezone import get_fixed_timezone
 
 from .models import (
     Article,

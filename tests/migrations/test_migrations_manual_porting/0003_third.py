@@ -1,4 +1,4 @@
-from djorm.db import migrations
+from djrm.db import migrations
 
 
 def forwards(apps, schema_editor):

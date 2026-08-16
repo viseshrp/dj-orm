@@ -1,9 +1,9 @@
-from djorm.db.backends.sqlite3._functions import (
+from djrm.db.backends.sqlite3._functions import (
     _sqlite_date_trunc,
     _sqlite_datetime_trunc,
     _sqlite_time_trunc,
 )
-from djorm.test import SimpleTestCase
+from djrm.test import SimpleTestCase
 
 
 class FunctionTests(SimpleTestCase):

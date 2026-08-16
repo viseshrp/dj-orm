@@ -1,12 +1,12 @@
-"Tests for djorm.db.utils."
+"Tests for djrm.db.utils."
 
 import unittest
 
-from djorm.core.exceptions import ImproperlyConfigured
-from djorm.db import DEFAULT_DB_ALIAS, ProgrammingError, connection
-from djorm.db.utils import ConnectionHandler, load_backend
-from djorm.test import SimpleTestCase, TestCase
-from djorm.utils.connection import ConnectionDoesNotExist
+from djrm.core.exceptions import ImproperlyConfigured
+from djrm.db import DEFAULT_DB_ALIAS, ProgrammingError, connection
+from djrm.db.utils import ConnectionHandler, load_backend
+from djrm.test import SimpleTestCase, TestCase
+from djrm.utils.connection import ConnectionDoesNotExist
 
 
 class ConnectionHandlerTests(SimpleTestCase):
@@ -24,7 +24,7 @@ class ConnectionHandlerTests(SimpleTestCase):
 
     def assertImproperlyConfigured(self, DATABASES):
         conns = ConnectionHandler(DATABASES)
-        self.assertEqual(conns[DEFAULT_DB_ALIAS].settings_dict["ENGINE"], "djorm.db.backends.dummy")
+        self.assertEqual(conns[DEFAULT_DB_ALIAS].settings_dict["ENGINE"], "djrm.db.backends.dummy")
         msg = (
             "settings.DATABASES is improperly configured. Please supply the "
             "ENGINE value. Check settings documentation for more details."
@@ -51,7 +51,7 @@ class ConnectionHandlerTests(SimpleTestCase):
         msg = "The connection 'nonexistent' doesn't exist."
         conns = ConnectionHandler(
             {
-                DEFAULT_DB_ALIAS: {"ENGINE": "djorm.db.backends.dummy"},
+                DEFAULT_DB_ALIAS: {"ENGINE": "djrm.db.backends.dummy"},
             }
         )
         with self.assertRaisesMessage(ConnectionDoesNotExist, msg):
@@ -61,7 +61,7 @@ class ConnectionHandlerTests(SimpleTestCase):
 class DatabaseErrorWrapperTests(TestCase):
     @unittest.skipUnless(connection.vendor == "postgresql", "PostgreSQL test")
     def test_reraising_backend_specific_database_exception(self):
-        from djorm.db.backends.postgresql.psycopg_any import is_psycopg3
+        from djrm.db.backends.postgresql.psycopg_any import is_psycopg3
 
         with connection.cursor() as cursor:
             msg = 'table "X" does not exist'
@@ -82,7 +82,7 @@ class LoadBackendTests(SimpleTestCase):
         msg = (
             "'foo' isn't an available database backend or couldn't be "
             "imported. Check the above exception. To use one of the built-in "
-            "backends, use 'djorm.db.backends.XXX', where XXX is one of:\n"
+            "backends, use 'djrm.db.backends.XXX', where XXX is one of:\n"
             "    'mysql', 'oracle', 'postgresql', 'sqlite3'"
         )
         with self.assertRaisesMessage(ImproperlyConfigured, msg) as cm:

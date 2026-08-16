@@ -1,7 +1,7 @@
 import unittest
 
-from djorm.db import connection
-from djorm.test import TestCase
+from djrm.db import connection
+from djrm.test import TestCase
 
 from ..models import Person
 

@@ -1,6 +1,6 @@
-from djorm.db import connection
-from djorm.db.models import Max
-from djorm.test import TestCase
+from djrm.db import connection
+from djrm.db.models import Max
+from djrm.test import TestCase
 
 from .models import Cash, CashModel
 

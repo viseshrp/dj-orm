@@ -1,7 +1,7 @@
 import random
 import string
 
-from djorm.db import models
+from djrm.db import models
 
 
 class MyWrapper:

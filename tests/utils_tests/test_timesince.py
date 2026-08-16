@@ -1,11 +1,11 @@
 import datetime
 import zoneinfo
 
-from djorm.test import TestCase
-from djorm.test.utils import override_settings, requires_tz_support
-from djorm.utils import timezone, translation
-from djorm.utils.timesince import timesince, timeuntil
-from djorm.utils.translation import npgettext_lazy
+from djrm.test import TestCase
+from djrm.test.utils import override_settings, requires_tz_support
+from djrm.utils import timezone, translation
+from djrm.utils.timesince import timesince, timeuntil
+from djrm.utils.translation import npgettext_lazy
 
 
 class TimesinceTests(TestCase):

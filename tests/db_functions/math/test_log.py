@@ -1,8 +1,8 @@
 import math
 from decimal import Decimal
 
-from djorm.db.models.functions import Log
-from djorm.test import TestCase
+from djrm.db.models.functions import Log
+from djrm.test import TestCase
 
 from ..models import DecimalModel, FloatModel, IntegerModel
 

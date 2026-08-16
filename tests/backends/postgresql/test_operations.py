@@ -1,10 +1,10 @@
 import unittest
 
-from djorm.core.management.color import no_style
-from djorm.db import connection
-from djorm.db.models.expressions import Col
-from djorm.db.models.functions import Cast
-from djorm.test import SimpleTestCase
+from djrm.core.management.color import no_style
+from djrm.db import connection
+from djrm.db.models.expressions import Col
+from djrm.db.models.functions import Cast
+from djrm.test import SimpleTestCase
 
 from ..models import Author, Book, Person, Tag
 

@@ -1,17 +1,17 @@
 from math import ceil
 from operator import attrgetter
 
-from djorm.core.exceptions import FieldDoesNotExist
-from djorm.db import (
+from djrm.core.exceptions import FieldDoesNotExist
+from djrm.db import (
     IntegrityError,
     NotSupportedError,
     OperationalError,
     ProgrammingError,
     connection,
 )
-from djorm.db.models import FileField, Value
-from djorm.db.models.functions import Lower, Now
-from djorm.test import (
+from djrm.db.models import FileField, Value
+from djrm.db.models.functions import Lower, Now
+from djrm.test import (
     TestCase,
     override_settings,
     skipIfDBFeature,

@@ -7,18 +7,18 @@ from contextlib import contextmanager
 from pathlib import Path
 from unittest import mock
 
-from djorm.core.exceptions import ImproperlyConfigured
-from djorm.db import (
+from djrm.core.exceptions import ImproperlyConfigured
+from djrm.db import (
     DEFAULT_DB_ALIAS,
     NotSupportedError,
     connection,
     connections,
     transaction,
 )
-from djorm.db.models import Aggregate, Avg, StdDev, Sum, Variance
-from djorm.db.utils import ConnectionHandler
-from djorm.test import SimpleTestCase, TestCase, TransactionTestCase, override_settings
-from djorm.test.utils import CaptureQueriesContext, isolate_apps
+from djrm.db.models import Aggregate, Avg, StdDev, Sum, Variance
+from djrm.db.utils import ConnectionHandler
+from djrm.test import SimpleTestCase, TestCase, TransactionTestCase, override_settings
+from djrm.test.utils import CaptureQueriesContext, isolate_apps
 
 from ..models import Item, Object, Square
 
@@ -61,7 +61,7 @@ class Tests(TestCase):
 
     def test_memory_db_test_name(self):
         """A named in-memory db should be allowed where supported."""
-        from djorm.db.backends.sqlite3.base import DatabaseWrapper
+        from djrm.db.backends.sqlite3.base import DatabaseWrapper
 
         settings_dict = {
             "TEST": {
@@ -94,7 +94,7 @@ class Tests(TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             settings_dict = {
                 "default": {
-                    "ENGINE": "djorm.db.backends.sqlite3",
+                    "ENGINE": "djrm.db.backends.sqlite3",
                     "NAME": Path(tmp) / "test.db",
                 },
             }
@@ -113,7 +113,7 @@ class Tests(TestCase):
     def test_init_command(self):
         settings_dict = {
             "default": {
-                "ENGINE": "djorm.db.backends.sqlite3",
+                "ENGINE": "djrm.db.backends.sqlite3",
                 "NAME": ":memory:",
                 "OPTIONS": {
                     "init_command": "PRAGMA synchronous=3; PRAGMA cache_size=2000;",

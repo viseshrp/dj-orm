@@ -1,10 +1,10 @@
-from djorm.apps.registry import apps
-from djorm.conf import settings
-from djorm.contrib.contenttypes import management as contenttypes_management
-from djorm.contrib.contenttypes.models import ContentType
-from djorm.core.management import call_command
-from djorm.db import migrations, models
-from djorm.test import TransactionTestCase, override_settings
+from djrm.apps.registry import apps
+from djrm.conf import settings
+from djrm.contrib.contenttypes import management as contenttypes_management
+from djrm.contrib.contenttypes.models import ContentType
+from djrm.core.management import call_command
+from djrm.db import migrations, models
+from djrm.test import TransactionTestCase, override_settings
 
 
 @override_settings(
@@ -17,7 +17,7 @@ class ContentTypeOperationsTests(TransactionTestCase):
     databases = {"default", "other"}
     available_apps = [
         "contenttypes_tests",
-        "djorm.contrib.contenttypes",
+        "djrm.contrib.contenttypes",
     ]
 
     class TestRouter:

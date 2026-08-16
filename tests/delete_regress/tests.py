@@ -1,8 +1,8 @@
 import datetime
 
-from djorm.db import connection, models, transaction
-from djorm.db.models import Exists, OuterRef
-from djorm.test import (
+from djrm.db import connection, models, transaction
+from djrm.db.models import Exists, OuterRef
+from djrm.test import (
     SimpleTestCase,
     TestCase,
     TransactionTestCase,

@@ -1,9 +1,9 @@
 from unittest import mock
 
-from djorm.db import migrations
+from djrm.db import migrations
 
 try:
-    from djorm.contrib.postgres.operations import CryptoExtension
+    from djrm.contrib.postgres.operations import CryptoExtension
 except ImportError:
     CryptoExtension = mock.Mock()
 

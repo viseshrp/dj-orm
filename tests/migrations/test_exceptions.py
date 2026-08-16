@@ -1,5 +1,5 @@
-from djorm.db.migrations.exceptions import NodeNotFoundError
-from djorm.test import SimpleTestCase
+from djrm.db.migrations.exceptions import NodeNotFoundError
+from djrm.test import SimpleTestCase
 
 
 class ExceptionTests(SimpleTestCase):

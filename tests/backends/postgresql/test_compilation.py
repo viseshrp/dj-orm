@@ -1,10 +1,10 @@
 import unittest
 from datetime import date
 
-from djorm.db import connection
-from djorm.db.models.expressions import RawSQL
-from djorm.db.utils import DataError
-from djorm.test import TestCase
+from djrm.db import connection
+from djrm.db.models.expressions import RawSQL
+from djrm.db.utils import DataError
+from djrm.test import TestCase
 
 from ..models import Article, Reporter, Square
 

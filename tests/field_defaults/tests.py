@@ -2,10 +2,10 @@ from datetime import datetime
 from decimal import Decimal
 from math import pi
 
-from djorm.core.exceptions import ValidationError
-from djorm.db import connection
-from djorm.db.models import Case, F, FloatField, Value, When
-from djorm.db.models.expressions import (
+from djrm.core.exceptions import ValidationError
+from djrm.db import connection
+from djrm.db.models import Case, F, FloatField, Value, When
+from djrm.db.models.expressions import (
     Expression,
     ExpressionList,
     ExpressionWrapper,
@@ -13,16 +13,16 @@ from djorm.db.models.expressions import (
     OrderByList,
     RawSQL,
 )
-from djorm.db.models.functions import Collate
-from djorm.db.models.lookups import GreaterThan
-from djorm.test import (
+from djrm.db.models.functions import Collate
+from djrm.db.models.lookups import GreaterThan
+from djrm.test import (
     SimpleTestCase,
     TestCase,
     override_settings,
     skipIfDBFeature,
     skipUnlessDBFeature,
 )
-from djorm.utils import timezone
+from djrm.utils import timezone
 
 from .models import (
     Article,

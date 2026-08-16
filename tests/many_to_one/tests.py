@@ -1,11 +1,11 @@
 import datetime
 from copy import deepcopy
 
-from djorm.core.exceptions import FieldError, MultipleObjectsReturned
-from djorm.db import IntegrityError, models, transaction
-from djorm.test import TestCase
-from djorm.utils.deprecation import RemovedInDjango60Warning
-from djorm.utils.translation import gettext_lazy
+from djrm.core.exceptions import FieldError, MultipleObjectsReturned
+from djrm.db import IntegrityError, models, transaction
+from djrm.test import TestCase
+from djrm.utils.deprecation import RemovedInDjango60Warning
+from djrm.utils.translation import gettext_lazy
 
 from .models import (
     Article,

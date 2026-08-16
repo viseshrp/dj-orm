@@ -1,11 +1,11 @@
 import datetime
 from unittest import mock
 
-from djorm.contrib.postgres.indexes import OpClass
-from djorm.core.checks import Error
-from djorm.core.exceptions import ValidationError
-from djorm.db import IntegrityError, connection, transaction
-from djorm.db.models import (
+from djrm.contrib.postgres.indexes import OpClass
+from djrm.core.checks import Error
+from djrm.core.exceptions import ValidationError
+from djrm.db import IntegrityError, connection, transaction
+from djrm.db.models import (
     CASCADE,
     CharField,
     CheckConstraint,
@@ -20,24 +20,24 @@ from djorm.db.models import (
     Q,
     UniqueConstraint,
 )
-from djorm.db.models.fields.json import KeyTextTransform
-from djorm.db.models.functions import Cast, Left, Lower
-from djorm.test import skipUnlessDBFeature
-from djorm.test.utils import isolate_apps
-from djorm.utils import timezone
+from djrm.db.models.fields.json import KeyTextTransform
+from djrm.db.models.functions import Cast, Left, Lower
+from djrm.test import skipUnlessDBFeature
+from djrm.test.utils import isolate_apps
+from djrm.utils import timezone
 
 from . import PostgreSQLTestCase
 from .models import HotelReservation, IntegerArrayModel, RangesModel, Room, Scene
 
 try:
-    from djorm.contrib.postgres.constraints import ExclusionConstraint
-    from djorm.contrib.postgres.fields import (
+    from djrm.contrib.postgres.constraints import ExclusionConstraint
+    from djrm.contrib.postgres.fields import (
         DateTimeRangeField,
         IntegerRangeField,
         RangeBoundary,
         RangeOperators,
     )
-    from djorm.db.backends.postgresql.psycopg_any import DateRange, NumericRange
+    from djrm.db.backends.postgresql.psycopg_any import DateRange, NumericRange
 except ImportError:
     pass
 
@@ -583,7 +583,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             ],
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
+        self.assertEqual(path, "djrm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -606,7 +606,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             ],
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
+        self.assertEqual(path, "djrm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -630,7 +630,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             condition=Q(cancelled=False),
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
+        self.assertEqual(path, "djrm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -651,7 +651,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             deferrable=Deferrable.DEFERRED,
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
+        self.assertEqual(path, "djrm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,
@@ -669,7 +669,7 @@ class ExclusionConstraintTests(PostgreSQLTestCase):
             include=["cancelled", "room"],
         )
         path, args, kwargs = constraint.deconstruct()
-        self.assertEqual(path, "djorm.contrib.postgres.constraints.ExclusionConstraint")
+        self.assertEqual(path, "djrm.contrib.postgres.constraints.ExclusionConstraint")
         self.assertEqual(args, ())
         self.assertEqual(
             kwargs,

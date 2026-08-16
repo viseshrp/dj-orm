@@ -1,7 +1,7 @@
-from djorm.core.exceptions import FieldError
-from djorm.db import connection
-from djorm.db.models import F
-from djorm.test import TestCase
+from djrm.core.exceptions import FieldError
+from djrm.db import connection
+from djrm.db.models import F
+from djrm.test import TestCase
 
 from .models import Comment, Tenant, TimeStamped, Token, User
 

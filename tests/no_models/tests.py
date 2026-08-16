@@ -1,5 +1,5 @@
-from djorm.apps import apps
-from djorm.test import SimpleTestCase
+from djrm.apps import apps
+from djrm.test import SimpleTestCase
 
 
 class NoModelTests(SimpleTestCase):

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from djorm.core.exceptions import ValidationError
-from djorm.db import models
+from djrm.core.exceptions import ValidationError
+from djrm.db import models
 
 
 class ValidationMessagesTest(TestCase):

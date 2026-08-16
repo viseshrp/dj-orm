@@ -3,12 +3,12 @@ import os
 import sys
 from datetime import datetime
 
-from djorm.core.exceptions import SuspiciousOperation
-from djorm.core.serializers.json import DjangoJSONEncoder
-from djorm.test import SimpleTestCase
-from djorm.utils.deprecation import RemovedInDjango60Warning
-from djorm.utils.functional import lazystr
-from djorm.utils.html import (
+from djrm.core.exceptions import SuspiciousOperation
+from djrm.core.serializers.json import DjangoJSONEncoder
+from djrm.test import SimpleTestCase
+from djrm.utils.deprecation import RemovedInDjango60Warning
+from djrm.utils.functional import lazystr
+from djrm.utils.html import (
     conditional_escape,
     escape,
     escapejs,
@@ -22,7 +22,7 @@ from djorm.utils.html import (
     strip_tags,
     urlize,
 )
-from djorm.utils.safestring import mark_safe
+from djrm.utils.safestring import mark_safe
 
 
 class TestUtilsHtml(SimpleTestCase):
@@ -356,8 +356,8 @@ class TestUtilsHtml(SimpleTestCase):
                 "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3Ddjango",
             ),
             (
-                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3Ddjorm",
-                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3Ddjorm",
+                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3Ddjrm",
+                "http://example.com/?q=http%3A%2F%2Fexample.com%2F%3Fx%3D1%26q%3Ddjrm",
             ),
             ("http://.www.f oo.bar/", "http://.www.f%20oo.bar/"),
             ('http://example.com">', "http://example.com%22%3E"),

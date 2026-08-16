@@ -1,9 +1,9 @@
 import datetime
 
-from djorm.db import models
-from djorm.test import SimpleTestCase, TestCase, override_settings, skipUnlessDBFeature
-from djorm.test.utils import requires_tz_support
-from djorm.utils import timezone
+from djrm.db import models
+from djrm.test import SimpleTestCase, TestCase, override_settings, skipUnlessDBFeature
+from djrm.test.utils import requires_tz_support
+from djrm.utils import timezone
 
 from .models import DateTimeModel
 

@@ -2,9 +2,9 @@ import unittest
 from contextlib import contextmanager
 from unittest import mock
 
-from djorm.core.exceptions import ImproperlyConfigured
-from djorm.db import NotSupportedError, connection
-from djorm.test import TestCase, override_settings
+from djrm.core.exceptions import ImproperlyConfigured
+from djrm.db import NotSupportedError, connection
+from djrm.test import TestCase, override_settings
 
 
 @contextmanager

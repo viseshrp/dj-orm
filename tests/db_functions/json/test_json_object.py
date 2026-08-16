@@ -1,9 +1,9 @@
-from djorm.db import NotSupportedError
-from djorm.db.models import F, Value
-from djorm.db.models.functions import JSONObject, Lower
-from djorm.test import TestCase
-from djorm.test.testcases import skipIfDBFeature, skipUnlessDBFeature
-from djorm.utils import timezone
+from djrm.db import NotSupportedError
+from djrm.db.models import F, Value
+from djrm.db.models.functions import JSONObject, Lower
+from djrm.test import TestCase
+from djrm.test.testcases import skipIfDBFeature, skipUnlessDBFeature
+from djrm.utils import timezone
 
 from ..models import Article, Author
 

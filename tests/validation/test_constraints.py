@@ -1,5 +1,5 @@
-from djorm.core.exceptions import ValidationError
-from djorm.test import TestCase, skipUnlessDBFeature
+from djrm.core.exceptions import ValidationError
+from djrm.test import TestCase, skipUnlessDBFeature
 
 from .models import (
     ChildProduct,

@@ -1,14 +1,14 @@
 from unittest.mock import MagicMock, patch
 
-from djorm.db import DEFAULT_DB_ALIAS, connection, connections, transaction
-from djorm.db.backends.base.base import BaseDatabaseWrapper
-from djorm.test import (
+from djrm.db import DEFAULT_DB_ALIAS, connection, connections, transaction
+from djrm.db.backends.base.base import BaseDatabaseWrapper
+from djrm.test import (
     SimpleTestCase,
     TestCase,
     TransactionTestCase,
     skipUnlessDBFeature,
 )
-from djorm.test.utils import CaptureQueriesContext, override_settings
+from djrm.test.utils import CaptureQueriesContext, override_settings
 
 from ..models import Person, Square
 
@@ -65,7 +65,7 @@ class DatabaseWrapperLoggingTests(TransactionTestCase):
     def test_commit_debug_log(self):
         conn = connections[DEFAULT_DB_ALIAS]
         with CaptureQueriesContext(conn):
-            with self.assertLogs("djorm.db.backends", "DEBUG") as cm:
+            with self.assertLogs("djrm.db.backends", "DEBUG") as cm:
                 with transaction.atomic():
                     Person.objects.create(first_name="first", last_name="last")
 
@@ -73,13 +73,13 @@ class DatabaseWrapperLoggingTests(TransactionTestCase):
                 self.assertEqual(conn.queries_log[-3]["sql"], "BEGIN")
                 self.assertRegex(
                     cm.output[0],
-                    r"DEBUG:djorm.db.backends:\(\d+\.\d{3}\) "
+                    r"DEBUG:djrm.db.backends:\(\d+\.\d{3}\) "
                     rf"BEGIN; args=None; alias={DEFAULT_DB_ALIAS}",
                 )
                 self.assertEqual(conn.queries_log[-1]["sql"], "COMMIT")
                 self.assertRegex(
                     cm.output[-1],
-                    r"DEBUG:djorm.db.backends:\(\d+\.\d{3}\) "
+                    r"DEBUG:djrm.db.backends:\(\d+\.\d{3}\) "
                     rf"COMMIT; args=None; alias={DEFAULT_DB_ALIAS}",
                 )
 
@@ -87,7 +87,7 @@ class DatabaseWrapperLoggingTests(TransactionTestCase):
     def test_rollback_debug_log(self):
         conn = connections[DEFAULT_DB_ALIAS]
         with CaptureQueriesContext(conn):
-            with self.assertLogs("djorm.db.backends", "DEBUG") as cm:
+            with self.assertLogs("djrm.db.backends", "DEBUG") as cm:
                 with self.assertRaises(Exception), transaction.atomic():
                     Person.objects.create(first_name="first", last_name="last")
                     raise Exception("Force rollback")
@@ -95,12 +95,12 @@ class DatabaseWrapperLoggingTests(TransactionTestCase):
                 self.assertEqual(conn.queries_log[-1]["sql"], "ROLLBACK")
                 self.assertRegex(
                     cm.output[-1],
-                    r"DEBUG:djorm.db.backends:\(\d+\.\d{3}\) "
+                    r"DEBUG:djrm.db.backends:\(\d+\.\d{3}\) "
                     rf"ROLLBACK; args=None; alias={DEFAULT_DB_ALIAS}",
                 )
 
     def test_no_logs_without_debug(self):
-        with self.assertNoLogs("djorm.db.backends", "DEBUG"):
+        with self.assertNoLogs("djrm.db.backends", "DEBUG"):
             with self.assertRaises(Exception), transaction.atomic():
                 Person.objects.create(first_name="first", last_name="last")
                 raise Exception("Force rollback")

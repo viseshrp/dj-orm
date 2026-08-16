@@ -1,6 +1,6 @@
-from djorm.db import connection, models
-from djorm.db.models.functions import Lower
-from djorm.utils.functional import SimpleLazyObject
+from djrm.db import connection, models
+from djrm.db.models.functions import Lower
+from djrm.utils.functional import SimpleLazyObject
 
 
 class People(models.Model):
