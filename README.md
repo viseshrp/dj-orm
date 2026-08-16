@@ -74,11 +74,18 @@ Install [uv](https://docs.astral.sh/uv/), then run:
 make install
 make check
 make test
+make test-external
 make build
 make check-dist
 ```
 
 `make test` runs the package smoke tests and the retained SQLite ORM suite.
+`make test-external` runs migrations and complex ORM queries against disposable
+PostgreSQL, MySQL, and Oracle Docker services, exercises SQLite alongside them,
+and opens each backend's real command-line client through `djrm dbshell`. It
+also verifies that the intentionally unsupported GIS namespace stays absent.
+Docker removes the containers, volumes, network, and local runner image when
+the test finishes or fails.
 
 ## Maintenance and releases
 

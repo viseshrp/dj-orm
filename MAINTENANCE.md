@@ -163,6 +163,7 @@ A candidate can be tagged only when all of these pass:
 ```console
 make check
 make test
+make test-external
 make build
 make check-dist
 make inspect-dist
@@ -181,6 +182,14 @@ make release-check RELEASE_TAG=v0.1.0
 
 `make inspect-dist` also rejects any wheel or source archive containing
 `djrm.contrib.gis`.
+
+`make test-external` is the database compatibility gate. It uses disposable
+Docker services for PostgreSQL, MySQL, and Oracle; runs the same migration,
+transaction, JSON, aggregation, subquery, window-function, locking, and
+introspection scenarios on those backends and SQLite; exercises the real
+`sqlite3`, `psql`, `mysql`, and SQL*Plus clients through `djrm dbshell`; and
+confirms that GIS remains unavailable. The command cleans up its containers,
+volumes, network, and local runner image even after a failure.
 
 Run `make tag` only from a clean `main` branch that matches its configured
 remote. The tag workflow rebuilds and tests the exact tag, then creates a draft

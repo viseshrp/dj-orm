@@ -123,7 +123,9 @@ include = [
     "scripts/inspect_dist.py",
     "scripts/rename_namespace.py",
     "scripts/tag_release.sh",
+    "scripts/test_external_databases.py",
     "tests/djrm_smoke/**",
+    "tests/e2e/**",
     "tox.ini",
     "uv.lock",
 ]
@@ -170,6 +172,7 @@ ignore = ["SIM108"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/djrm_smoke/*" = ["S101"]
+"tests/e2e/*" = ["S101"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["djrm", "scripts", "tests"]

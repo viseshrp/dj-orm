@@ -60,7 +60,9 @@ def inspect_sdist(sdist: Path) -> None:
         "README.md",
         "MAINTENANCE.md",
         "scripts/apply_django_lts.py",
+        "scripts/test_external_databases.py",
         "tests/djrm_smoke/test_distribution.py",
+        "tests/e2e/compose.yaml",
     }
     for suffix in suffixes:
         if not any(name.endswith(f"/{suffix}") for name in names):
