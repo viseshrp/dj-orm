@@ -1,5 +1,5 @@
 name: Setup Python environment
-description: Install Python, uv, and the locked Djorm development environment
+description: Install Python, uv, and the locked djrm development environment
 
 inputs:
   python-version:

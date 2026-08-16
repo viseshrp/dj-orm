@@ -1,12 +1,12 @@
 # Maintenance and release policy
 
-This document is the source of truth for updating and distributing Djorm.
+This document is the source of truth for updating and distributing djrm.
 
 ## Decisions
 
 ### Release unit
 
-Djorm follows supported Django LTS lines. It publishes a build for the initial
+djrm follows supported Django LTS lines. It publishes a build for the initial
 LTS tag and for every patch or security tag in that LTS line. It does not track
 non-LTS Django feature releases.
 
@@ -15,49 +15,48 @@ line. The automation creates an isolated candidate branch named
 `release/django-<tag>` in a separate local worktree. After the full gate passes,
 the candidate tree is merged into `main`; release tags are cut from `main`.
 
-Release tags and distribution versions use SemVer. Each Djorm major is assigned
+Release tags and distribution versions use SemVer. Each djrm major is assigned
 to one reviewed Django LTS series:
 
-| Django tag | Djorm version | Meaning |
+| Django tag | djrm version | Meaning |
 | --- | --- | --- |
 | `5.2.17` | `0.1.0` | First release in the Django 5.2 LTS line |
-| `5.2.17` | `0.1.1` | Djorm-only fix from the same Django tag |
+| `5.2.17` | `0.1.1` | djrm-only fix from the same Django tag |
 | `5.2.18` | `0.2.0` | First release from the next Django 5.2 patch tag |
 | `6.2` | `1.0.0` | First release in the Django 6.2 LTS line |
 
 The mapping is append-only and recorded in `lts_version_majors` in
-`.djorm-maintenance.toml`: Djorm `0.x` corresponds to Django 5.2 LTS, `1.x`
-corresponds to Django 6.2 LTS, and each later reviewed LTS gets the next Djorm
-major. Within one LTS line, the Djorm minor increments when the upstream Django
-tag advances. The patch increments only for a Djorm-only release from the same
+`.djrm-maintenance.toml`: djrm `0.x` corresponds to Django 5.2 LTS, `1.x`
+corresponds to Django 6.2 LTS, and each later reviewed LTS gets the next djrm
+major. Within one LTS line, the djrm minor increments when the upstream Django
+tag advances. The patch increments only for a djrm-only release from the same
 Django tag. The exact upstream tag remains in the maintenance metadata instead
 of being encoded in the package version. Pre-release Django tags are never
-production Djorm releases.
+production djrm releases.
 
 ### Distribution identity
 
-- PyPI distribution: `dj-orm`
-- Python import namespace: `djorm`
-- Console command: `djorm`
-- Repository: `https://github.com/viseshrp/dj-orm`
+- PyPI distribution: `djrm`
+- Python import namespace: `djrm`
+- Console command: `djrm`
+- Repository: `https://github.com/viseshrp/djrm`
 
-The `djorm` name on PyPI belongs to an unrelated project, so this repository must
-never attempt to publish that distribution name. A release check enforces
-`dj-orm` before tagging or publishing.
+The release gate enforces the same `djrm` identity across project metadata,
+artifacts, imports, and the CLI before tagging or publishing.
 
 ### Source and support
 
 The `upstream` Git remote must point to `https://github.com/django/django.git`.
 Every production candidate starts from an exact upstream tag, not the tip of a
-stable branch. This makes the source reproducible and lets users map a Djorm build
+stable branch. This makes the source reproducible and lets users map a djrm build
 to Django security advisories.
 
-Djorm carries the same Python floor and runtime dependency bounds as its upstream
+djrm carries the same Python floor and runtime dependency bounds as its upstream
 LTS tag unless a retained module requires a documented exception. Optional
 database drivers remain user-selected extras.
 
 Support for an LTS line ends when upstream Django ends extended support. An old
-Djorm release remains installable, but it does not receive independent security
+djrm release remains installable, but it does not receive independent security
 backports after that date.
 
 ### Packaging scaffold
@@ -68,36 +67,36 @@ Cookiecutter 2.7.1:
 
 ```console
 uv run --project ../yapc cookiecutter ../yapc --no-input \
-  project_name=djorm \
+  project_name=djrm \
   project_description="Django ORM, migrations, and database backends as a standalone library." \
   cli_tool=y codecov=y git_init=n github_actions=y
 ```
 
 The rendered project is a comparison baseline, not an overlay to copy blindly.
-Djorm adapts its package name to `dj-orm`, retains the upstream-derived `djorm/`
-tree, and scopes formatters to fork-owned files. To adopt a later YAPC version,
-render it into a temporary directory, review the infrastructure diff, and
-update `yapc_commit` in `.djorm-maintenance.toml`. Routine Django LTS application
-does not require rerendering YAPC; the updater applies the reviewed package
-infrastructure with the maintained fork delta.
+This fork adds the upstream-derived `djrm/` tree and scopes formatters to
+fork-owned files. To adopt a later YAPC version, render it into a temporary
+directory, review the infrastructure diff, and update `yapc_commit` in
+`.djrm-maintenance.toml`. Routine Django LTS application does not require
+rerendering YAPC; the updater applies the reviewed package infrastructure with
+the maintained fork delta.
 
 ## Mechanical application
 
-Run the tool from a clean Djorm source branch:
+Run the tool from a clean djrm source branch:
 
 ```console
 uv run python scripts/apply_django_lts.py \
   --django-ref 5.2.17 \
-  --output ../djorm-5.2.17
+  --output ../djrm-5.2.17
 ```
 
 The command performs these bounded operations:
 
 1. Fetches the exact tag from the official `upstream` remote and verifies that
    the ref is a final release in the reviewed `lts_version_majors` mapping in
-   `.djorm-maintenance.toml`.
+   `.djrm-maintenance.toml`.
 2. Creates `release/django-<tag>` in a separate Git worktree.
-3. Regenerates a canonical `djorm` tree for both the recorded upstream base and
+3. Regenerates a canonical `djrm` tree for both the recorded upstream base and
    the new tag, then applies their reviewed fork delta with Git's three-way
    merge support.
 4. Applies clean additions, edits, and deletions automatically. Directories
@@ -124,7 +123,7 @@ After resolving and staging every conflict, resume from the source checkout:
 ```console
 uv run python scripts/apply_django_lts.py \
   --continue \
-  --output ../djorm-5.2.17
+  --output ../djrm-5.2.17
 ```
 
 Do not use `git checkout --ours` or `--theirs` across all content conflicts.
@@ -137,19 +136,19 @@ Use the same command with the final LTS tag, for example `6.2`. The first run is
 expected to stop where Django changed retained modules. Resolve those files,
 finish the gate, and merge the generated candidate tree into `main`. Before any
 later series, append its officially announced series identifier and the next
-Djorm major to `lts_version_majors` in `.djorm-maintenance.toml`; the tool never
+djrm major to `lts_version_majors` in `.djrm-maintenance.toml`; the tool never
 guesses future LTS numbering. Never reorder or renumber an existing mapping.
 Update `SPEC.md` only when the retained module contract or supported Python
 versions changed.
 
-For a Djorm-only fix without a newer Django tag, pass a patch number greater
+For a djrm-only fix without a newer Django tag, pass a patch number greater
 than the current one:
 
 ```console
 uv run python scripts/apply_django_lts.py \
   --django-ref 5.2.17 \
   --patch 1 \
-  --output ../djorm-0.1.1
+  --output ../djrm-0.1.1
 ```
 
 The first application of a newer Django tag must use patch `0`. The updater
@@ -176,7 +175,7 @@ make release-check RELEASE_TAG=v0.1.0
 - the package and maintenance metadata record the same version and exact Django
   tag;
 - the source is clean and contains no `django` package;
-- `dj-orm` is the configured distribution;
+- `djrm` is the configured distribution;
 - the changelog has a dated entry for the release.
 
 Run `make tag` only from a clean `main` branch that matches its configured
@@ -189,7 +188,7 @@ GitHub release.
 
 Before the first release:
 
-1. Confirm `dj-orm` is still available on PyPI.
+1. Confirm `djrm` is still available on PyPI.
 2. Add a project-scoped PyPI token as the GitHub environment secret
    `PYPI_TOKEN` in the `pypi` environment.
 3. Add a TestPyPI token as the GitHub environment secret `TEST_PYPI_TOKEN` in
@@ -205,6 +204,6 @@ builds and checks artifacts but cannot publish them.
 
 ## Current branch status
 
-`main` is based on the exact Django `5.2.17` tag and is prepared as Djorm
+`main` is based on the exact Django `5.2.17` tag and is prepared as djrm
 `0.1.0`. It remains unreleased until `v0.1.0` is created, its draft GitHub
 release passes review, and a maintainer publishes that release.
