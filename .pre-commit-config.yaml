@@ -1,7 +1,7 @@
 default_language_version:
   python: python3.14
 
-files: ^(\.djrm-maintenance\.toml$|\.djrm-upstream-delta\.toml$|\.github/|\.gitattributes$|\.gitignore$|\.pre-commit-config\.yaml$|CHANGELOG\.md$|CONTRIBUTING\.md$|MAINTENANCE\.md$|Makefile$|README\.md$|SPEC\.md$|codecov\.yml$|codespell\.txt$|djrm/_ext/|djrm/_version\.py$|pyproject\.toml$|scripts/apply_django_lts\.py$|scripts/audit_upstream_delta\.py$|scripts/check_coverage\.py$|scripts/check_path_case\.py$|scripts/check_release\.py$|scripts/inspect_dist\.py$|scripts/tag_release\.sh$|scripts/test_external_databases\.py$|tests/djrm_smoke/|tests/e2e/|tox\.ini$|uv\.lock$)
+files: ^(\.djrm-maintenance\.toml$|\.djrm-upstream-delta\.toml$|\.github/|\.gitattributes$|\.gitignore$|\.pre-commit-config\.yaml$|CHANGELOG\.md$|CONTRIBUTING\.md$|LIBRARY_AUDIT\.md$|MAINTENANCE\.md$|Makefile$|README\.md$|SPEC\.md$|codecov\.yml$|codespell\.txt$|djrm/_ext/|djrm/_version\.py$|pyproject\.toml$|scripts/apply_django_lts\.py$|scripts/audit_upstream_delta\.py$|scripts/check_coverage\.py$|scripts/check_path_case\.py$|scripts/check_release\.py$|scripts/inspect_dist\.py$|scripts/tag_release\.sh$|scripts/test_external_databases\.py$|tests/djrm_smoke/|tests/e2e/|tox\.ini$|uv\.lock$)
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -20,7 +20,7 @@ repos:
     hooks:
       - id: markdownlint
         args: [--fix, --disable, MD024, MD033, MD041]
-        files: ^(CHANGELOG|CONTRIBUTING|MAINTENANCE|README|SPEC)\.md$
+        files: ^(CHANGELOG|CONTRIBUTING|LIBRARY_AUDIT|MAINTENANCE|README|SPEC)\.md$
 
   - repo: local
     hooks:
@@ -65,4 +65,4 @@ repos:
         name: codespell
         entry: codespell
         language: system
-        files: ^(CHANGELOG|CONTRIBUTING|MAINTENANCE|README|SPEC)\.md$|^scripts/.*\.(py|sh|md)$
+        files: ^(CHANGELOG|CONTRIBUTING|LIBRARY_AUDIT|MAINTENANCE|README|SPEC)\.md$|^scripts/.*\.(py|sh|md)$

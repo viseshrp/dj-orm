@@ -36,6 +36,7 @@ FORK_OWNED_PATHS = {
     ".pre-commit-config.yaml",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
+    "LIBRARY_AUDIT.md",
     "MAINTENANCE.md",
     "Makefile",
     "README.md",
@@ -657,7 +658,11 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
         ):
             run(command, cwd=output, capture=False)
 
-    allowed_changes = {CONFIG_NAME, "djrm/_version.py"}
+    allowed_changes = {
+        CONFIG_NAME,
+        ".djrm-upstream-delta.toml",
+        "djrm/_version.py",
+    }
     changed_paths = set(git(output, "diff", "--name-only").splitlines())
     changed_paths.update(git(output, "diff", "--cached", "--name-only").splitlines())
     changed_paths.update(git(output, "ls-files", "--others", "--exclude-standard").splitlines())
@@ -665,7 +670,7 @@ def finalize(output: Path, state: ApplyState, *, verify: bool) -> None:
     if unexpected:
         raise ApplyError("Verification changed unexpected files: " + ", ".join(unexpected))
 
-    run(["git", "add", CONFIG_NAME, "djrm/_version.py"], cwd=output, capture=True)
+    run(["git", "add", *sorted(allowed_changes)], cwd=output, capture=True)
     staged_diff = run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=output,

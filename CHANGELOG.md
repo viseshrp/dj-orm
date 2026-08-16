@@ -5,6 +5,36 @@ upstream release notes for the exact tag named by each djrm release.
 
 ## Unreleased
 
+### Added
+
+- A machine-readable upstream-delta baseline and audit gate for byte, AST,
+  executable-AST, fork-only, and pruned-upstream path drift.
+- Enforced coverage floors for retained source, intentionally modified runtime
+  files, and fork maintenance/release tooling.
+- A physical-path casing gate and artifact regression tests for release
+  provenance and package contents.
+
+### Changed
+
+- Source archives now contain the full retained test runner, settings, fixtures,
+  and suite, so `make test` runs from an unpacked sdist.
+- Release builds clear only `dist/` before building, preventing stale versions
+  from contaminating artifact inspection.
+- Exact-tag CI, TestPyPI, and PyPI paths now require the Docker-backed external
+  database gate.
+- The specification now describes the implemented ORM compatibility contract
+  and explicit boundaries instead of promising parity for every importable
+  retained name.
+
+### Fixed
+
+- `djrm.utils.translation.templatize()` no longer imports the removed template
+  engine and matches Django 5.2 lexical extraction behavior.
+- Optional-module fallbacks now suppress only deliberately removed modules;
+  internal import defects and missing custom exception reporters propagate.
+- Source distributions use the tracked lowercase pull-request template path on
+  case-insensitive and case-sensitive filesystems.
+
 ## [0.1.1] - 2026-08-16
 
 ### Added

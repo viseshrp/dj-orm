@@ -190,6 +190,7 @@ def test_reject_invalid_lts_version_major_mappings(mapping: dict[str, int]) -> N
         ".pre-commit-config.yaml",
         ".djrm-upstream-delta.toml",
         "djrm/_ext/forms.py",
+        "LIBRARY_AUDIT.md",
         "pyproject.toml",
         "scripts/apply_django_lts.py",
         "scripts/audit_upstream_delta.py",

@@ -111,6 +111,7 @@ include = [
     "CONTRIBUTING.md",
     "LICENSE",
     "LICENSE.python",
+    "LIBRARY_AUDIT.md",
     "MAINTENANCE.md",
     "Makefile",
     "README.md",

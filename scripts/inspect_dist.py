@@ -61,6 +61,7 @@ def inspect_sdist(sdist: Path) -> None:
     suffixes = {
         ".djrm-upstream-delta.toml",
         ".github/pull_request_template.md",
+        "LIBRARY_AUDIT.md",
         "README.md",
         "MAINTENANCE.md",
         "scripts/apply_django_lts.py",

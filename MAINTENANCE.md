@@ -107,7 +107,8 @@ The command performs these bounded operations:
    incompatible changes in retained Django runtime code remain as conflicts for
    human review.
 5. Computes the next SemVer package version, writes the exact upstream
-   provenance, then runs the namespace, package, and retained-suite checks.
+   provenance, then runs the namespace, delta, package, and retained-suite
+   checks.
 
 The source checkout is never switched or rewritten. The tool refuses a dirty
 source or output directory that already exists. This tree-delta design keeps
@@ -130,6 +131,38 @@ uv run python scripts/apply_django_lts.py \
 Do not use `git checkout --ours` or `--theirs` across all content conflicts.
 That can silently discard an upstream security fix or restore a removed web
 dependency.
+
+### Review an upstream-delta change
+
+The candidate carries `.djrm-upstream-delta.toml`, a machine-readable baseline
+for the exact upstream tag. `make check` compares the candidate with its
+namespace-normalized Django source and reports:
+
+- common byte differences;
+- raw and executable AST differences;
+- non-AST byte drift;
+- fork-only paths; and
+- upstream-only paths, including maintained deletions.
+
+An exact new upstream tag changes the recorded provenance, and an upstream file
+added under a pruned directory changes the upstream-only path digest. The
+candidate therefore stops before finalization until that report is reviewed.
+From the candidate worktree, inspect the current report:
+
+```console
+uv run python scripts/audit_upstream_delta.py --json
+```
+
+Resolve any unexpected executable change or new retained file. When every
+change is intended, record the reviewed result:
+
+```console
+uv run python scripts/audit_upstream_delta.py --write-baseline
+```
+
+Then resume from the source checkout with `--continue`. The final LTS commit
+includes the updated baseline. Do not write a new baseline merely to make the
+count gate green.
 
 ### New LTS series
 
@@ -181,7 +214,9 @@ make release-check RELEASE_TAG=v0.1.0
 - the changelog has a dated entry for the release.
 
 `make inspect-dist` also rejects any wheel or source archive containing
-`djrm.contrib.gis`.
+`djrm.contrib.gis`. It verifies tracked path casing and confirms that the
+source archive includes the retained test runner, settings, fixtures, and
+suite. `make build` starts from an empty `dist/` directory.
 
 `make test-external` is the database compatibility gate. It uses disposable
 Docker services for PostgreSQL, MySQL, and Oracle; runs the same migration,
@@ -192,10 +227,11 @@ confirms that GIS remains unavailable. The command cleans up its containers,
 volumes, network, and local runner image even after a failure.
 
 Run `make tag` only from a clean `main` branch that matches its configured
-remote. The tag workflow rebuilds and tests the exact tag, then creates a draft
-GitHub release with the wheel and source archive. The separate release workflow
-publishes those verified files to PyPI only after a maintainer publishes the
-GitHub release.
+remote. The tag workflow rebuilds the exact tag, runs the external database
+gate for that exact commit, and creates a draft GitHub release with the wheel
+and source archive. The TestPyPI workflow independently runs the same external
+gate. The production workflow reruns it from the release tag before publishing
+the verified files to PyPI.
 
 ## PyPI setup
 

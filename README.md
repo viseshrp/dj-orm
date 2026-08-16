@@ -36,6 +36,10 @@ HTTP handling, URL routing, views, middleware, templates, forms, auth, admin,
 sessions, static files, GeoDjango, and spatial database support are not included.
 The package does not provide a compatibility `django` namespace.
 
+[SPEC.md](SPEC.md) defines the precise compatibility contract, including lazy
+form conversion errors, URL-prefix behavior, test-helper limits, logging
+fallbacks, and the supported standalone `templatize()` translation helper.
+
 ## Minimal setup
 
 ```python
@@ -74,12 +78,14 @@ Install [uv](https://docs.astral.sh/uv/), then run:
 make install
 make check
 make test
+make coverage
 make test-external
 make build
 make check-dist
 ```
 
 `make test` runs the package smoke tests and the retained SQLite ORM suite.
+`make coverage` enforces global, modified-runtime, and fork-tooling baselines.
 `make test-external` runs migrations and complex ORM queries against disposable
 PostgreSQL, MySQL, and Oracle Docker services, exercises SQLite alongside them,
 and opens each backend's real command-line client through `djrm dbshell`. It
@@ -103,7 +109,9 @@ tag increments the djrm minor; a djrm-only fix from the same tag increments
 the patch. The exact Django tag is recorded as release provenance. The update
 tool creates a separate worktree, performs the namespace conversion, applies
 the reviewed fork tree delta with a three-way merge, and stops for human review
-when upstream changed retained code incompatibly.
+when upstream changed retained code incompatibly. A machine-readable delta
+baseline also stops unexpected executable changes, wider byte drift, and new
+paths under maintained deletions.
 
 ```console
 uv run python scripts/apply_django_lts.py \

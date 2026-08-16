@@ -112,6 +112,7 @@ def write_sdist(path: Path, *, include_runner: bool = True) -> None:
     suffixes = {
         ".djrm-upstream-delta.toml",
         ".github/pull_request_template.md",
+        "LIBRARY_AUDIT.md",
         "README.md",
         "MAINTENANCE.md",
         "djrm/conf/locale/fr/LC_MESSAGES/django.mo",
