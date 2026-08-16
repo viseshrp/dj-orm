@@ -33,6 +33,17 @@ assert models.Model is not None
     assert result.returncode == 0, result.stderr
 
 
+def test_removed_url_prefix_helpers_are_safe() -> None:
+    from djrm._ext.setup_helpers import (
+        add_script_prefix_if_available,
+        set_script_prefix_if_available,
+    )
+
+    assert add_script_prefix_if_available("relative") == "relative"
+    assert add_script_prefix_if_available("/absolute") == "/absolute"
+    set_script_prefix_if_available(None)
+
+
 def test_removed_forms_fail_only_when_formfield_is_requested() -> None:
     from djrm.db import models
 

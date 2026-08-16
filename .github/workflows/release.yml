@@ -33,6 +33,7 @@ jobs:
         run: |
           make check
           make test
+          make test-external
           make build
           make check-dist
           make inspect-dist
@@ -73,6 +74,7 @@ jobs:
       - name: Recheck release and artifacts
         run: |
           make release-check RELEASE_TAG="$RELEASE_TAG"
+          make test-external
           make check-dist
           make inspect-dist
         env:

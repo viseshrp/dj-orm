@@ -121,6 +121,7 @@ include = [
     "pyproject.toml",
     "scripts/apply_django_lts.py",
     "scripts/audit_upstream_delta.py",
+    "scripts/check_coverage.py",
     "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",
@@ -153,6 +154,7 @@ branch = true
 source = ["djrm"]
 
 [tool.coverage.report]
+fail_under = 63
 show_missing = true
 skip_covered = true
 exclude_lines = [
@@ -163,6 +165,51 @@ exclude_lines = [
 
 [tool.coverage.xml]
 output = "coverage.xml"
+
+[tool.djrm.coverage]
+modified_floor = 65
+fork_floor = 44
+modified_paths = [
+    "djrm/__init__.py",
+    "djrm/conf/__init__.py",
+    "djrm/contrib/postgres/fields/array.py",
+    "djrm/contrib/postgres/fields/hstore.py",
+    "djrm/contrib/postgres/fields/ranges.py",
+    "djrm/contrib/postgres/operations.py",
+    "djrm/core/checks/__init__.py",
+    "djrm/core/management/__init__.py",
+    "djrm/db/backends/base/creation.py",
+    "djrm/db/backends/base/operations.py",
+    "djrm/db/backends/mysql/features.py",
+    "djrm/db/backends/oracle/features.py",
+    "djrm/db/backends/sqlite3/creation.py",
+    "djrm/db/backends/sqlite3/features.py",
+    "djrm/db/models/base.py",
+    "djrm/db/models/fields/__init__.py",
+    "djrm/db/models/fields/files.py",
+    "djrm/db/models/fields/json.py",
+    "djrm/db/models/fields/related.py",
+    "djrm/db/models/functions/math.py",
+    "djrm/db/models/sql/compiler.py",
+    "djrm/test/__init__.py",
+    "djrm/test/runner.py",
+    "djrm/test/signals.py",
+    "djrm/test/testcases.py",
+    "djrm/test/utils.py",
+    "djrm/utils/log.py",
+    "djrm/utils/translation/__init__.py",
+    "djrm/utils/translation/reloader.py",
+    "djrm/utils/translation/template.py",
+]
+fork_paths = [
+    "djrm/_ext/*.py",
+    "scripts/apply_django_lts.py",
+    "scripts/audit_upstream_delta.py",
+    "scripts/check_path_case.py",
+    "scripts/check_release.py",
+    "scripts/inspect_dist.py",
+    "scripts/rename_namespace.py",
+]
 
 [tool.ruff]
 target-version = "py310"
@@ -185,6 +232,7 @@ include = [
     "djrm/_ext",
     "scripts/apply_django_lts.py",
     "scripts/audit_upstream_delta.py",
+    "scripts/check_coverage.py",
     "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",

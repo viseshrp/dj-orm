@@ -65,6 +65,7 @@ def inspect_sdist(sdist: Path) -> None:
         "MAINTENANCE.md",
         "scripts/apply_django_lts.py",
         "scripts/audit_upstream_delta.py",
+        "scripts/check_coverage.py",
         "scripts/check_path_case.py",
         "scripts/test_external_databases.py",
         "tests/runtests.py",

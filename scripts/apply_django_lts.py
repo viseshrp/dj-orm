@@ -45,6 +45,7 @@ FORK_OWNED_PATHS = {
     "pyproject.toml",
     "scripts/apply_django_lts.py",
     "scripts/audit_upstream_delta.py",
+    "scripts/check_coverage.py",
     "scripts/check_path_case.py",
     "scripts/check_release.py",
     "scripts/inspect_dist.py",

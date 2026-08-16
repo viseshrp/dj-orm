@@ -44,13 +44,13 @@ executable_ast_differences = [
 ]
 
 [tests]
-max_byte_differences = 302
+max_byte_differences = 303
 max_raw_ast_differences = 18
-max_non_ast_byte_differences = 284
+max_non_ast_byte_differences = 285
 upstream_only = 1645
 upstream_only_sha256 = "333f852bcba7b10bfa0ed5a3ef38ea11b0ff56f7b7a994d354a42fb977564728"
-fork_only = 18
-fork_only_sha256 = "b9916f5ef592bf864555e8ec21a386be2e3e969bca85ef159f391ccbd11d941e"
+fork_only = 19
+fork_only_sha256 = "8373ecb40a58d3e02b0ae160c19e5ec29ba7d7a737a34c0ccd8538664df6c7e5"
 executable_ast_differences = [
   "tests/aggregation_regress/tests.py",
   "tests/backends/base/test_base.py",

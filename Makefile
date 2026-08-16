@@ -33,9 +33,16 @@ test-external: ## Run Docker-backed SQLite, PostgreSQL, MySQL, and Oracle E2E te
 
 .PHONY: coverage
 coverage: ## Run the retained suite with coverage data
+	rm -rf tests/.coverages
 	uv run coverage erase
 	uv run coverage run tests/runtests.py --settings=test_sqlite -v0 --parallel=1
+	uv run coverage combine --append tests/.coverages
+	uv run coverage report --format=total
+	uv run python scripts/check_coverage.py --data-file=.coverage --target=modified
 	uv run coverage xml
+	uv run coverage erase --data-file=.coverage.fork
+	uv run coverage run --data-file=.coverage.fork --branch --source=djrm._ext,scripts -m pytest -q tests/djrm_smoke
+	uv run python scripts/check_coverage.py --data-file=.coverage.fork --target=fork
 
 .PHONY: test-matrix
 test-matrix: ## Run tox across supported Python versions
@@ -75,7 +82,7 @@ publish-test: ## Publish verified artifacts to TestPyPI
 
 .PHONY: clean
 clean: ## Remove generated build and test artifacts
-	rm -rf build dist .coverage coverage.xml coverage-html .pytest_cache
+	rm -rf build dist .coverage .coverage.fork coverage.xml coverage-html .pytest_cache tests/.coverages
 
 .PHONY: help
 help:

@@ -3,8 +3,8 @@ branch = True
 concurrency = multiprocessing,thread
 data_file = ${RUNTESTS_DIR-.}/.coverages/.coverage
 omit =
-    */django/utils/autoreload.py
-source = django
+    */djrm/utils/autoreload.py
+source = djrm
 
 [report]
 ignore_errors = True
