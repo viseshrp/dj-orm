@@ -74,6 +74,11 @@ def test_source_has_no_django_package() -> None:
     assert not (root / "django").exists()
 
 
+def test_source_has_no_gis_package() -> None:
+    root = Path(__file__).resolve().parents[2]
+    assert not (root / "djrm" / "contrib" / "gis").exists()
+
+
 def test_source_contains_compiled_translation_catalogs_only() -> None:
     root = Path(__file__).resolve().parents[2]
     locale_root = root / "djrm" / "conf" / "locale"

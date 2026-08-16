@@ -200,13 +200,24 @@ def test_lts_application_reviews_retained_runtime_conflicts() -> None:
 
 def test_lts_application_keeps_fully_deleted_directories_pruned() -> None:
     baseline_paths = {
+        "djrm/contrib/gis/__init__.py",
+        "djrm/contrib/gis/db/models/fields.py",
+        "djrm/contrib/postgres/__init__.py",
+        "djrm/db/models/query.py",
         "tests/gis_tests/geos_tests/test_geos.py",
         "tests/gis_tests/test_runner.py",
         "tests/model_tests/test_models.py",
     }
-    source_paths = {"tests/model_tests/test_models.py"}
+    source_paths = {
+        "djrm/contrib/postgres/__init__.py",
+        "djrm/db/models/query.py",
+        "tests/model_tests/test_models.py",
+    }
 
-    assert fully_deleted_directory_prefixes(baseline_paths, source_paths) == ("tests/gis_tests/",)
+    assert fully_deleted_directory_prefixes(baseline_paths, source_paths) == (
+        "tests/gis_tests/",
+        "djrm/contrib/gis/",
+    )
 
 
 def test_lts_application_collapses_nested_deleted_directories() -> None:

@@ -685,13 +685,6 @@ class BaseDatabaseOperations:
         """
         return "%s"
 
-    def modify_insert_params(self, placeholder, params):
-        """
-        Allow modification of insert parameters. Needed for Oracle Spatial
-        backend due to #10888.
-        """
-        return params
-
     def integer_field_range(self, internal_type):
         """
         Given an integer field internal type (e.g. 'PositiveIntegerField'),

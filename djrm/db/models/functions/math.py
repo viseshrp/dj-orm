@@ -1,8 +1,6 @@
 import math
 
 from djrm.db.models.expressions import Func, Value
-from djrm.db.models.fields import FloatField, IntegerField
-from djrm.db.models.functions import Cast
 from djrm.db.models.functions.mixins import (
     FixDecimalInputMixin,
     NumericOutputFieldMixin,
@@ -33,31 +31,6 @@ class ATan(NumericOutputFieldMixin, Transform):
 class ATan2(NumericOutputFieldMixin, Func):
     function = "ATAN2"
     arity = 2
-
-    def as_sqlite(self, compiler, connection, **extra_context):
-        if not getattr(connection.ops, "spatialite", False) or connection.ops.spatial_version >= (
-            5,
-            0,
-            0,
-        ):
-            return self.as_sql(compiler, connection)
-            # This function is usually ATan2(y, x), returning the inverse tangent
-            # of y / x, but it's ATan2(x, y) on SpatiaLite < 5.0.0.
-            # Cast integers to float to avoid inconsistent/buggy behavior if the
-            # arguments are mixed between integer and float or decimal.
-            # https://www.gaia-gis.it/fossil/libspatialite/tktview?name=0f72cca3a2
-        clone = self.copy()
-        clone.set_source_expressions(
-            [
-                (
-                    Cast(expression, FloatField())
-                    if isinstance(expression.output_field, IntegerField)
-                    else expression
-                )
-                for expression in self.get_source_expressions()[::-1]
-            ]
-        )
-        return clone.as_sql(compiler, connection, **extra_context)
 
 
 class Ceil(Transform):
@@ -114,15 +87,6 @@ class Ln(NumericOutputFieldMixin, Transform):
 class Log(FixDecimalInputMixin, NumericOutputFieldMixin, Func):
     function = "LOG"
     arity = 2
-
-    def as_sqlite(self, compiler, connection, **extra_context):
-        if not getattr(connection.ops, "spatialite", False):
-            return self.as_sql(compiler, connection)
-            # This function is usually Log(b, x) returning the logarithm of x to
-            # the base b, but on SpatiaLite it's Log(x, b).
-        clone = self.copy()
-        clone.set_source_expressions(self.get_source_expressions()[::-1])
-        return clone.as_sql(compiler, connection, **extra_context)
 
 
 class Mod(FixDecimalInputMixin, NumericOutputFieldMixin, Func):

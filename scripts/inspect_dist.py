@@ -37,6 +37,8 @@ def inspect_wheel(wheel: Path) -> None:
         raise InspectionError(f"Wheel is missing required paths: {', '.join(missing)}")
     if any(name.startswith("django/") for name in names):
         raise InspectionError("Wheel contains a forbidden django package.")
+    if any(name.startswith("djrm/contrib/gis/") for name in names):
+        raise InspectionError("Wheel contains the excluded GIS package.")
     if any(name.endswith(".po") for name in names):
         raise InspectionError("Wheel contains gettext source catalogs.")
     if not any(name.endswith("/LC_MESSAGES/django.mo") for name in names):
@@ -48,6 +50,8 @@ def inspect_wheel(wheel: Path) -> None:
 def inspect_sdist(sdist: Path) -> None:
     with tarfile.open(sdist, "r:gz") as archive:
         names = archive.getnames()
+    if any("/djrm/contrib/gis/" in f"/{name}" for name in names):
+        raise InspectionError("Source archive contains the excluded GIS package.")
     if any(name.endswith(".po") for name in names):
         raise InspectionError("Source archive contains gettext source catalogs.")
     if not any(name.endswith("/LC_MESSAGES/django.mo") for name in names):

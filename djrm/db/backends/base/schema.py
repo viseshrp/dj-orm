@@ -199,8 +199,7 @@ class BaseDatabaseSchemaEditor:
 
     def table_sql(self, model):
         """Take a model and return its table definition."""
-        # Add any unique_togethers (always deferred, as some fields might be
-        # created afterward, like geometry fields with some backends).
+        # Add any unique_togethers after their fields have been created.
         for field_names in model._meta.unique_together:
             fields = [model._meta.get_field(field) for field in field_names]
             self.deferred_sql.append(self._create_unique_sql(model, fields))
@@ -1324,7 +1323,7 @@ class BaseDatabaseSchemaEditor:
         """
         Hook to specialize column type alteration for different backends,
         for cases when a creation type is different to an alteration type
-        (e.g. SERIAL in PostgreSQL, PostGIS fields).
+        (e.g. SERIAL in PostgreSQL).
 
         Return a 2-tuple of: an SQL fragment of (sql, params) to insert into
         an ALTER TABLE statement and a list of extra (sql, params) tuples to

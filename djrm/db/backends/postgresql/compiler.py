@@ -49,8 +49,7 @@ class SQLInsertCompiler(BaseSQLInsertCompiler):
             # the array.
             or any(hasattr(field, "get_placeholder") for field in fields)
             # Fields that don't use standard internal types might not be
-            # unnest'able (e.g. array and geometry types are known to be
-            # problematic).
+            # unnest'able (e.g. array and custom types can be problematic).
             or any(
                 (field.target_field if field.is_relation else field).get_internal_type()
                 not in self.connection.data_types

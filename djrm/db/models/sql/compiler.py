@@ -1622,19 +1622,11 @@ class SQLInsertCompiler(SQLCompiler):
             # This is an expression, let's compile it.
             sql, params = self.compile(val)
         elif get_placeholder is not None:
-            # Some fields (e.g. geo fields) need special munging before
-            # they can be inserted.
+            # Some custom fields need special munging before they can be inserted.
             sql, params = get_placeholder(val, self, self.connection), [val]
         else:
             # Return the common case for the placeholder
             sql, params = "%s", [val]
-
-            # The following hook is only used by Oracle Spatial, which sometimes
-            # needs to yield 'NULL' and [] as its placeholder and params instead
-            # of '%s' and [None]. The 'NULL' placeholder is produced earlier by
-            # OracleOperations.get_geom_placeholder(). The following line removes
-            # the corresponding None parameter. See ticket #10888.
-        params = self.connection.ops.modify_insert_params(sql, params)
 
         return sql, params
 
