@@ -30,8 +30,10 @@ upstream release notes for the exact tag named by each djrm release.
 - Settings changes now invalidate retained app-command, translation, and
   storage singletons correctly.
 - The source compile gate now excludes Django's deliberately invalid
-  test-runner syntax-error fixture while continuing to compile every real
-  source and test module.
+  test-runner syntax-error fixture on every supported operating system while
+  continuing to compile every real source and test module.
+- SQLite versions before 3.47 now skip the quoted-key JSON path assertion that
+  the database itself cannot satisfy; SQLite 3.47 and later still run it.
 
 ## [0.1.2] - 2026-08-16
 

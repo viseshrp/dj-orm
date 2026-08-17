@@ -853,6 +853,14 @@ class TestQuerying(TestCase):
                     self.assertSequenceEqual(results, [obj])
 
     def test_lookups_special_chars_double_quotes(self):
+        if (
+            connection.vendor == "sqlite"
+            and connection.Database.sqlite_version_info < (3, 47)
+        ):
+            self.skipTest(
+                "SQLite 3.47+ is required for JSON paths containing escaped "
+                "double quotes."
+            )
         test_keys = [
             'double"',
             "m\\i@x. m🤡'a,t{{{ch}}}e?d$\"'es\uffff'ca\uffff'pe",
