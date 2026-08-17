@@ -20,12 +20,32 @@ def run(script: str, backend: str | None = None) -> None:
     )
 
 
+def run_retained_suite(backend: str) -> None:
+    environment = dict(os.environ)
+    environment["DJRM_E2E_BACKEND"] = backend
+    subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tests" / "runtests.py"),
+            "--settings=e2e.full_suite_settings",
+            "--verbosity=1",
+            "--parallel=1",
+        ],
+        cwd=ROOT,
+        env=environment,
+        check=True,
+    )
+    print(f"DJRM_{backend.upper()}_RETAINED_SUITE_OK")
+
+
 def main() -> int:
     run("verify_gis_exclusion.py")
     for backend in ("sqlite", "postgresql", "mysql", "oracle"):
         run("exercise_backend.py", backend)
     for backend in ("sqlite", "postgresql", "mysql"):
         run("verify_dbshell.py", backend)
+    for backend in ("postgresql", "mysql", "oracle"):
+        run_retained_suite(backend)
     return 0
 
 

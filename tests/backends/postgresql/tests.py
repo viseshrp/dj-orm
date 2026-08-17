@@ -521,19 +521,19 @@ class Tests(TestCase):
     @unittest.skipIf(is_psycopg3, "psycopg2 specific test")
     def test_copy_to_expert_cursors(self):
         out = StringIO()
-        copy_expert_sql = "COPY django_session TO STDOUT (FORMAT CSV, HEADER)"
+        copy_expert_sql = "COPY backends_person TO STDOUT (FORMAT CSV, HEADER)"
         with connection.cursor() as cursor:
             cursor.copy_expert(copy_expert_sql, out)
-            cursor.copy_to(out, "django_session")
+            cursor.copy_to(out, "backends_person")
         self.assertEqual(
             [q["sql"] for q in connection.queries],
-            [copy_expert_sql, "COPY django_session TO STDOUT"],
+            [copy_expert_sql, "COPY backends_person TO STDOUT"],
         )
 
     @override_settings(DEBUG=True)
     @unittest.skipUnless(is_psycopg3, "psycopg3 specific test")
     def test_copy_cursors(self):
-        copy_sql = "COPY django_session TO STDOUT (FORMAT CSV, HEADER)"
+        copy_sql = "COPY backends_person TO STDOUT (FORMAT CSV, HEADER)"
         with connection.cursor() as cursor:
             with cursor.copy(copy_sql) as copy:
                 for row in copy:

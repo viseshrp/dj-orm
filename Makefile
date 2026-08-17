@@ -28,7 +28,7 @@ test-upstream: ## Run the retained ORM suite with SQLite
 test: test-smoke test-upstream ## Run all local tests
 
 .PHONY: test-external
-test-external: ## Run Docker-backed SQLite, PostgreSQL, MySQL, and Oracle E2E tests
+test-external: ## Run backend E2E checks and the full retained suite on external databases
 	uv run python scripts/test_external_databases.py
 
 .PHONY: coverage

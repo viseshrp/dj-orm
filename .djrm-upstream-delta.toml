@@ -4,8 +4,8 @@ upstream_commit = "e802ada38b3ecf345915163bb6d7f008be411664"
 
 [djrm]
 max_byte_differences = 191
-max_raw_ast_differences = 32
-max_non_ast_byte_differences = 159
+max_raw_ast_differences = 30
+max_non_ast_byte_differences = 161
 upstream_only = 2956
 upstream_only_sha256 = "408a4f641d5c50f133c950ab9077d751889d52a067055e44c87d345ca6e04266"
 fork_only = 5
@@ -21,8 +21,6 @@ executable_ast_differences = [
   "djrm/core/management/__init__.py",
   "djrm/db/backends/base/creation.py",
   "djrm/db/backends/base/operations.py",
-  "djrm/db/backends/mysql/features.py",
-  "djrm/db/backends/oracle/features.py",
   "djrm/db/backends/sqlite3/creation.py",
   "djrm/db/backends/sqlite3/features.py",
   "djrm/db/models/base.py",
@@ -45,18 +43,19 @@ executable_ast_differences = [
 
 [tests]
 max_byte_differences = 341
-max_raw_ast_differences = 46
-max_non_ast_byte_differences = 295
+max_raw_ast_differences = 50
+max_non_ast_byte_differences = 291
 upstream_only = 1467
 upstream_only_sha256 = "2aabcf0dfe6abcf09bf01f395249d1e41321d14d3c34f0d9d91e49700d73fa42"
-fork_only = 31
-fork_only_sha256 = "a410c2e8aff8be6cf66bcb28277c0efa2a1e00b321971373bb60f04f7b178d77"
+fork_only = 32
+fork_only_sha256 = "953e18c187bed7083e82921f5bfc907632b5ea95acbf3a2f381bd3d2305de600"
 executable_ast_differences = [
   "tests/aggregation_regress/tests.py",
   "tests/apps/apps.py",
   "tests/apps/tests.py",
   "tests/backends/base/test_base.py",
   "tests/backends/base/test_creation.py",
+  "tests/backends/postgresql/tests.py",
   "tests/contenttypes_tests/models.py",
   "tests/contenttypes_tests/test_models.py",
   "tests/field_deconstruction/tests.py",
@@ -80,6 +79,9 @@ executable_ast_differences = [
   "tests/model_fields/test_textfield.py",
   "tests/model_fields/tests.py",
   "tests/model_inheritance_regress/tests.py",
+  "tests/postgres_tests/__init__.py",
+  "tests/postgres_tests/test_array.py",
+  "tests/postgres_tests/test_indexes.py",
   "tests/postgres_tests/test_integration.py",
   "tests/prefetch_related/tests.py",
   "tests/proxy_models/tests.py",

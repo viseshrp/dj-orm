@@ -19,7 +19,9 @@ RUN python -m pip install \
     "asgiref>=3.8.1" \
     "mysqlclient>=2.1.1" \
     "oracledb>=1.3.2" \
-    "psycopg[binary]>=3.1.8" \
+    "Pillow>=9.1.0" \
+    "psycopg[binary,pool]>=3.1.8" \
+    "PyYAML>=5.1" \
     "sqlparse>=0.3.1"
 
 CMD ["python", "tests/e2e/run_container.py"]

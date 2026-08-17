@@ -41,7 +41,7 @@ class IndexTestMixin:
         path, args, kwargs = index.deconstruct()
         self.assertEqual(
             path,
-            f"django.contrib.postgres.indexes.{self.index_class.__name__}",
+            f"djrm.contrib.postgres.indexes.{self.index_class.__name__}",
         )
         self.assertEqual(args, (Lower("title"),))
         self.assertEqual(kwargs, {"name": name})
