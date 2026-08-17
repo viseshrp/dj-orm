@@ -79,6 +79,7 @@ TEST_HELPER_PACKAGES = {
 }
 
 ORM_TEST_HELPER_CONSUMERS = {
+    "contenttypes_tests",
     "field_deconstruction",
     "fixtures",
     "fixtures_regress",

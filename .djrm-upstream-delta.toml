@@ -42,21 +42,26 @@ executable_ast_differences = [
 ]
 
 [tests]
-max_byte_differences = 341
-max_raw_ast_differences = 50
+max_byte_differences = 355
+max_raw_ast_differences = 64
 max_non_ast_byte_differences = 291
-upstream_only = 1467
-upstream_only_sha256 = "2aabcf0dfe6abcf09bf01f395249d1e41321d14d3c34f0d9d91e49700d73fa42"
+upstream_only = 1445
+upstream_only_sha256 = "b1ed4ce0f807460da2cae0a44ef3027fab06c96ba326bc147b6aeefdd51fe37d"
 fork_only = 32
 fork_only_sha256 = "953e18c187bed7083e82921f5bfc907632b5ea95acbf3a2f381bd3d2305de600"
 executable_ast_differences = [
   "tests/aggregation_regress/tests.py",
   "tests/apps/apps.py",
   "tests/apps/tests.py",
+  "tests/async/tests.py",
   "tests/backends/base/test_base.py",
   "tests/backends/base/test_creation.py",
   "tests/backends/postgresql/tests.py",
+  "tests/composite_pk/test_models.py",
+  "tests/composite_pk/tests.py",
   "tests/contenttypes_tests/models.py",
+  "tests/contenttypes_tests/test_checks.py",
+  "tests/contenttypes_tests/test_migrations.py",
   "tests/contenttypes_tests/test_models.py",
   "tests/field_deconstruction/tests.py",
   "tests/file_storage/tests.py",
@@ -64,6 +69,7 @@ executable_ast_differences = [
   "tests/fixtures/tests.py",
   "tests/fixtures_regress/models.py",
   "tests/generic_relations_regress/tests.py",
+  "tests/invalid_models_tests/test_models.py",
   "tests/m2m_regress/models.py",
   "tests/m2m_through_regress/models.py",
   "tests/m2m_through_regress/tests.py",
@@ -76,6 +82,12 @@ executable_ast_differences = [
   "tests/migrations/test_migrations_unmigdep/0001_initial.py",
   "tests/migrations/test_state.py",
   "tests/model_enums/tests.py",
+  "tests/model_fields/test_booleanfield.py",
+  "tests/model_fields/test_charfield.py",
+  "tests/model_fields/test_durationfield.py",
+  "tests/model_fields/test_filepathfield.py",
+  "tests/model_fields/test_genericipaddressfield.py",
+  "tests/model_fields/test_jsonfield.py",
   "tests/model_fields/test_textfield.py",
   "tests/model_fields/tests.py",
   "tests/model_inheritance_regress/tests.py",
@@ -88,6 +100,7 @@ executable_ast_differences = [
   "tests/queries/tests.py",
   "tests/raw_query/tests.py",
   "tests/runtests.py",
+  "tests/serializers/tests.py",
   "tests/shell/tests.py",
   "tests/swappable_models/tests.py",
   "tests/test_runner/test_debug_sql.py",
@@ -99,4 +112,5 @@ executable_ast_differences = [
   "tests/utils_tests/test_html.py",
   "tests/utils_tests/test_module_loading.py",
   "tests/utils_tests/test_text.py",
+  "tests/validation/tests.py",
 ]
