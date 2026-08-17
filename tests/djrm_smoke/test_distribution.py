@@ -216,7 +216,17 @@ def test_source_compiles_on_supported_python(tmp_path: Path) -> None:
     environment = dict(os.environ)
     environment["PYTHONPYCACHEPREFIX"] = str(tmp_path / "pycache")
     result = subprocess.run(
-        [sys.executable, "-m", "compileall", "-q", "-f", "djrm", "tests"],
+        [
+            sys.executable,
+            "-m",
+            "compileall",
+            "-q",
+            "-f",
+            "-x",
+            r"tests/test_runner_apps/tagged/tests_syntax_error\.py$",
+            "djrm",
+            "tests",
+        ],
         cwd=root,
         env=environment,
         text=True,
