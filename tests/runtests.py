@@ -80,12 +80,14 @@ TEST_HELPER_PACKAGES = {
 
 ORM_TEST_HELPER_CONSUMERS = {
     "contenttypes_tests",
+    "extra_regress",
     "field_deconstruction",
     "fixtures",
     "fixtures_regress",
     "m2m_regress",
     "m2m_through_regress",
     "migrations",
+    "multiple_database",
 }
 
 
