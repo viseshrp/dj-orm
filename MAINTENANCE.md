@@ -22,6 +22,8 @@ to one reviewed Django LTS series:
 | --- | --- | --- |
 | `5.2.17` | `0.1.0` | First release in the Django 5.2 LTS line |
 | `5.2.17` | `0.1.1` | djrm-only fix from the same Django tag |
+| `5.2.17` | `0.1.2` | Audit and release-gate remediation from the same Django tag |
+| `5.2.17` | `0.1.3` | Complete non-GIS ORM workflows and backend validation |
 | `5.2.18` | `0.2.0` | First release from the next Django 5.2 patch tag |
 | `6.2` | `1.0.0` | First release in the Django 6.2 LTS line |
 
@@ -175,14 +177,14 @@ guesses future LTS numbering. Never reorder or renumber an existing mapping.
 Update `SPEC.md` only when the retained module contract or supported Python
 versions changed.
 
-For a djrm-only fix without a newer Django tag, pass a patch number greater
-than the current one:
+For example, preparing the `0.1.3` djrm-only fix from `0.1.2` without a newer
+Django tag used:
 
 ```console
 uv run python scripts/apply_django_lts.py \
   --django-ref 5.2.17 \
-  --patch 1 \
-  --output ../djrm-0.1.1
+  --patch 3 \
+  --output ../djrm-0.1.3
 ```
 
 The first application of a newer Django tag must use patch `0`. The updater
@@ -200,7 +202,7 @@ make test-external
 make build
 make check-dist
 make inspect-dist
-make release-check RELEASE_TAG=v0.1.0
+make release-check RELEASE_TAG=vX.Y.Z
 ```
 
 `make release-check` verifies:

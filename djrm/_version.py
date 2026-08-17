@@ -4,4 +4,4 @@
 This value identifies the independently distributed djrm build.
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"

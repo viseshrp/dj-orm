@@ -5,6 +5,34 @@ upstream release notes for the exact tag named by each djrm release.
 
 ## Unreleased
 
+## [0.1.3] - 2026-08-17
+
+### Added
+
+- Complete retained ORM regression coverage for migrations, serializers,
+  fields, composite primary keys, multi-database routing, content types,
+  validation, legacy query APIs, and non-GIS PostgreSQL extensions.
+- An opt-in `postgresql-pool` extra that installs Psycopg 3 and
+  `psycopg_pool` without enlarging ordinary PostgreSQL installations.
+- The retained async-safety deployment check for
+  `DJANGO_ALLOW_ASYNC_UNSAFE`.
+
+### Changed
+
+- The Docker release gate now runs the full retained suite against PostgreSQL,
+  MySQL, and Oracle in addition to backend exercises and real database shells.
+- ORM tests that previously depended on the removed auth application now use
+  narrow ORM-only helper models.
+
+### Fixed
+
+- Restored the ORM-facing `check`, `shell`, and `test` management workflows.
+- Settings changes now invalidate retained app-command, translation, and
+  storage singletons correctly.
+- The source compile gate now excludes Django's deliberately invalid
+  test-runner syntax-error fixture while continuing to compile every real
+  source and test module.
+
 ## [0.1.2] - 2026-08-16
 
 ### Added
