@@ -9,8 +9,19 @@ from djrm.db.utils import ConnectionRouter
 from djrm.dispatch import Signal, receiver
 from djrm.utils import timezone
 from djrm.utils.formats import FORMAT_SETTINGS, reset_format_cache
+from djrm.utils.functional import empty
 
 template_rendered = Signal()
+
+
+@receiver(setting_changed)
+def update_installed_apps(*, setting, **kwargs):
+    if setting == "INSTALLED_APPS":
+        from djrm.core.management import get_commands
+        from djrm.utils.translation import trans_real
+
+        get_commands.cache_clear()
+        trans_real._translations = {}
 
 
 @receiver(setting_changed)
@@ -35,6 +46,20 @@ def update_connections_time_zone(*, setting, **kwargs):
             except AttributeError:
                 pass
             conn.ensure_timezone()
+
+
+@receiver(setting_changed)
+def storages_changed(*, setting, **kwargs):
+    if setting == "STORAGES":
+        from djrm.core.files.storage import default_storage, storages
+
+        try:
+            del storages.backends
+        except AttributeError:
+            pass
+        storages._backends = None
+        storages._storages = {}
+        default_storage._wrapped = empty
 
 
 @receiver(setting_changed)
