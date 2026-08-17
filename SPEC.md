@@ -150,7 +150,7 @@ djrm showmigrations
 | `djrm.conf` | Lazy settings and global defaults |
 | `djrm.db` | ORM, migrations, connections, routers, transactions, and backends |
 | `djrm.dispatch` | Signals and receiver decorator |
-| `djrm.core.checks` | Registry plus command, database, and model checks |
+| `djrm.core.checks` | Registry plus async-safety, command, database, and model checks |
 | `djrm.core.management` | Command framework and retained commands |
 | `djrm.core.serializers` | Python, JSON, JSONL, XML, and optional YAML serializers |
 | `djrm.core.files` | Storage support required by `FileField` and `ImageField` |
@@ -207,6 +207,7 @@ registered checks.
 | `djrm[oracle]` | Oracle driver |
 | `djrm[postgresql]` | Psycopg 3 |
 | `djrm[postgresql-legacy]` | Psycopg 2 |
+| `djrm[postgresql-pool]` | Psycopg 3 and its connection-pool package |
 | `djrm[yaml]` | YAML serializer |
 
 ## 5. Excluded runtime surface

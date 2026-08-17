@@ -23,6 +23,18 @@ python -m pip install djrm
 Release builds are published to PyPI. See
 [Maintenance and releases](#maintenance-and-releases) for the release policy.
 
+Database and field integrations are optional extras, for example:
+
+```console
+python -m pip install "djrm[postgresql]"
+python -m pip install "djrm[postgresql-pool]"
+python -m pip install "djrm[mysql]"
+python -m pip install "djrm[oracle]"
+```
+
+The pooling extra installs Psycopg 3 plus `psycopg_pool`; it is separate so a
+standard PostgreSQL installation does not carry an unused pool dependency.
+
 ## Included
 
 - Models, fields, querysets, managers, expressions, and aggregations

@@ -47,8 +47,8 @@ max_raw_ast_differences = 72
 max_non_ast_byte_differences = 291
 upstream_only = 1427
 upstream_only_sha256 = "7388a0d3c051b3056b0dd780ecdaec7dc4cae70ac0def44ea5a8203b3b4e3da4"
-fork_only = 32
-fork_only_sha256 = "953e18c187bed7083e82921f5bfc907632b5ea95acbf3a2f381bd3d2305de600"
+fork_only = 33
+fork_only_sha256 = "4306d0c93e216de3164276a543f1d629b9e4e60df5d52bbd0b60adb9a5ed862e"
 executable_ast_differences = [
   "tests/aggregation_regress/tests.py",
   "tests/apps/apps.py",
