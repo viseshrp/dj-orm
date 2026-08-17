@@ -962,14 +962,11 @@ includes these fixes and additions, so they are not open findings:
   prepares 0.1.1 and removes that version collision for future builds.
 - The guarded tag helper now invokes `make test-external`.
 
-## Work left after remediation
+## Release disposition
 
 No F1-F9 code, documentation, maintenance, artifact, or CI remediation remains.
-Two release/operations steps are separate from closing the findings:
-
-1. Push the focused remediation commits and require exact-SHA GitHub CI to pass.
-2. Prepare and publish `0.1.2` when authorized. Published `0.1.1` is
-   immutable and still contains the original `templatize()` defect.
+The complete remediation is assigned to `0.1.2`. Published `0.1.1` is immutable
+and still contains the original `templatize()` defect.
 
 Future Django tags still require the normal generated-candidate review. That is
 the maintained update process, not an open audit defect.

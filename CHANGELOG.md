@@ -5,6 +5,8 @@ upstream release notes for the exact tag named by each djrm release.
 
 ## Unreleased
 
+## [0.1.2] - 2026-08-16
+
 ### Added
 
 - A machine-readable upstream-delta baseline and audit gate for byte, AST,

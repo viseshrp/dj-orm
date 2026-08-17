@@ -8,4 +8,4 @@ upstream_ref = "5.2.17"
 upstream_series = "5.2"
 lts_version_majors = { "5.2" = 0, "6.2" = 1 }
 upstream_base_commit = "e802ada38b3ecf345915163bb6d7f008be411664"
-release_version = "0.1.1"
+release_version = "0.1.2"
