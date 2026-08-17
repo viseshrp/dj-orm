@@ -42,11 +42,11 @@ executable_ast_differences = [
 ]
 
 [tests]
-max_byte_differences = 360
-max_raw_ast_differences = 69
+max_byte_differences = 362
+max_raw_ast_differences = 71
 max_non_ast_byte_differences = 291
-upstream_only = 1436
-upstream_only_sha256 = "fc13b4a52cc5789eb34b54c77d5a152061b819850bf58ea98d6c8c27bc1512c3"
+upstream_only = 1434
+upstream_only_sha256 = "39969008dfa9650589efbd47035c56ab57f5909474ede7a83aeb07ff12a16ad2"
 fork_only = 32
 fork_only_sha256 = "953e18c187bed7083e82921f5bfc907632b5ea95acbf3a2f381bd3d2305de600"
 executable_ast_differences = [
@@ -98,8 +98,10 @@ executable_ast_differences = [
   "tests/multiple_database/tests.py",
   "tests/postgres_tests/__init__.py",
   "tests/postgres_tests/test_array.py",
+  "tests/postgres_tests/test_hstore.py",
   "tests/postgres_tests/test_indexes.py",
   "tests/postgres_tests/test_integration.py",
+  "tests/postgres_tests/test_ranges.py",
   "tests/prefetch_related/tests.py",
   "tests/proxy_models/tests.py",
   "tests/queries/tests.py",
