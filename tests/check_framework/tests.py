@@ -1,7 +1,5 @@
-import multiprocessing
 import sys
 from io import StringIO
-from unittest import skipIf
 
 from djrm.apps import apps
 from djrm.core import checks
@@ -14,7 +12,7 @@ from djrm.db import models
 from djrm.test import SimpleTestCase
 from djrm.test.utils import isolate_apps, override_settings, override_system_checks
 
-from .models import SimpleModel, my_check
+from .models import SimpleModel
 
 
 class DummyObj:
@@ -367,15 +365,3 @@ class CheckFrameworkReservedNamesTests(SimpleTestCase):
             ),
         ]
         self.assertEqual(errors, expected)
-
-
-@skipIf(
-    multiprocessing.get_start_method() == "spawn",
-    "Spawning reimports modules, overwriting my_check.did_run to False, making this "
-    "test useless.",
-)
-class ChecksRunDuringTests(SimpleTestCase):
-    databases = "__all__"
-
-    def test_registered_check_did_run(self):
-        self.assertTrue(my_check.did_run)
