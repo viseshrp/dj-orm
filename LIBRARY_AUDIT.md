@@ -2,6 +2,181 @@
 
 <!-- markdownlint-disable MD013 -->
 
+## Current verification: unreleased 0.1.3 candidate
+
+- **Status:** Pass; three fresh passes complete with no open ORM-retention finding
+- **Verification date:** 2026-08-17 EDT
+- **Repository and branch:** `viseshrp/djrm`, `main`
+- **Verified implementation tip:** `8e7e2e299157410a8dc550067886d58b7929096c`
+- **Exact upstream base:** Django `5.2.17`, commit
+  `e802ada38b3ecf345915163bb6d7f008be411664`
+- **Published release at audit start:** `0.1.2`
+- **Next release target:** `0.1.3`; prepared locally only, with no tag, push,
+  GitHub release, TestPyPI upload, or PyPI upload authorized by this audit
+
+### Current conclusion
+
+djrm now retains Django 5.2.17's complete non-GIS ORM, migration, schema,
+serialization, content-types, and database-backend implementation needed for
+standalone end-to-end use. The entire normalized upstream `django/db` tree is
+present under `djrm/db`; no source path is missing from `djrm/apps`,
+`djrm/core/serializers`, `djrm/core/files`, or `djrm/dispatch`. The supported
+SQLite, PostgreSQL, MySQL, and Oracle paths pass their complete retained suites.
+
+The package remains an ORM library rather than a reduced Django web framework.
+Forms, auth, admin, HTTP, URLs, views, templates, sessions, static files,
+servers, and GIS are intentionally absent. Their absence does not remove an ORM
+execution path. Model `.formfield()` methods remain import-compatible but raise
+the documented forms-unavailable error when a caller explicitly crosses that
+boundary.
+
+No default dependency can be removed without removing retained ORM behavior.
+`asgiref` implements async model/queryset/relation APIs and signal dispatch;
+`sqlparse` is used by database operations and SQLite/MySQL introspection; and
+Windows-only `tzdata` supplies timezone data used by model fields and database
+conversion. Database drivers, image support, YAML, and PostgreSQL pooling stay
+optional extras.
+
+### Pass 1: source and scope closure
+
+The namespace-normalized Django tag was compared path-for-path with the tracked
+runtime.
+
+| Surface | Result |
+| --- | --- |
+| `djrm/db` | Complete upstream path parity, including ORM, migrations, schema editors, routers, transactions, expressions, fields, and all four backends |
+| `djrm/apps` | Complete upstream path parity |
+| `djrm/core/serializers` | Complete upstream path parity for Python, JSON, JSONL, XML, and YAML |
+| `djrm/core/files` | Complete upstream path parity for `FileField`/`ImageField` storage support |
+| `djrm/dispatch` | Complete upstream path parity, including async signals |
+| `djrm/contrib/contenttypes` | ORM models, generic relations, migrations, management, and runtime catalogs retained; admin/forms/views and source `.po` files excluded |
+| `djrm/contrib/postgres` | All non-GIS fields, lookups, indexes, constraints, aggregates, operations, search, and validators retained; forms/widgets/templates and source `.po` files excluded |
+| `djrm/core/checks` | Async-safety, command, database, and model checks retained; cache, web security, templates, URLs, and other web-only checks excluded |
+| Management commands | Complete ORM workflow retained; translation authoring, cache-table, server, email, and project-template commands excluded |
+| GIS | Entire package, tests, spatial backend hooks, and native integrations absent |
+
+The current machine-readable delta contains 705 common runtime paths, 5
+fork-only paths, and 2,955 intentionally omitted upstream paths. It records 28
+reviewed executable-AST differences. The tracked runtime has 710 files, of
+which 444 are Python files totaling 82,476 lines.
+
+The only missing upstream files inside otherwise retained test applications are
+web/form adapters such as content-type views, generic-relation forms, proxy
+admin modules, storage URLs, and timezone forms/admin URLs. No remaining
+upstream-only test file exercises a retained ORM subsystem without crossing an
+excluded boundary.
+
+### Pass 2: behavior and regression closure
+
+The audit restored regression areas that had been pruned more broadly than the
+runtime contract:
+
+- `check`, `shell`, and `test` ORM management workflows;
+- settings-change invalidation for app commands, translations, and storage
+  singletons;
+- the complete non-GIS field, query, relation, expression, aggregation,
+  constraint, serialization, fixture, content-type, validation, and composite
+  primary-key coverage;
+- migration autodetection, graph loading, execution, optimization, operations,
+  state, recorder, multi-database, and command coverage;
+- multi-database routing, cross-database relations, fixtures, and legacy
+  `.extra()` query regressions;
+- PostgreSQL HStore and range-field ORM coverage without forms/widgets; and
+- async ORM safety checks, system-check command/registry behavior,
+  `ValidationError`, and backend version parsing.
+
+The final validation results are:
+
+| Gate | Result |
+| --- | --- |
+| Package, maintenance, release-tool, and smoke tests | 92 passed |
+| SQLite retained suite | 7,753 tests; 488 skipped; 4 expected failures |
+| PostgreSQL 17.11 retained suite | 8,274 tests; 223 skipped; 6 expected failures |
+| MySQL 8.4.10 retained suite | 7,755 tests; 400 skipped; 3 expected failures |
+| Oracle Free 23.26 retained suite | 7,755 tests; 495 skipped; 5 expected failures |
+| Backend ORM exercises | SQLite, PostgreSQL, MySQL, and Oracle passed |
+| Real database shells | `sqlite3`, `psql`, `mysql`, and the SQL*Plus-compatible Oracle path passed |
+| GIS exclusion | Passed in source, package, and Docker gates |
+| Import closure | 441 retained modules imported with content types and available optional drivers; MySQL's host-only import was superseded by the complete Docker suite |
+| Quality and delta gate | Lock, pre-commit, Ruff, ty, Bandit, pip-audit, codespell, path casing, and upstream delta passed |
+
+Backend skip counts are capability-based upstream skips, not hidden failures.
+Expected failures are the upstream suite's declared expected-failure cases.
+
+### Pass 3: minimality, dependencies, and release readiness
+
+The default dependency contract is deliberately small:
+
+| Dependency | Why it remains |
+| --- | --- |
+| `asgiref>=3.8.1` | Async QuerySet/model/relation methods, async signal dispatch, task-local connections, and async-safety enforcement |
+| `sqlparse>=0.3.1` | SQL splitting/formatting and SQLite/MySQL schema introspection used by retained backend behavior |
+| `tzdata; sys_platform == 'win32'` | Upstream timezone database fallback for date/time model and backend conversion behavior |
+
+All other install-time integrations are optional and ORM-specific:
+
+- `images`: Pillow for `ImageField`;
+- `yaml`: PyYAML for the YAML serializer;
+- `mysql`: `mysqlclient`;
+- `oracle`: `oracledb`;
+- `postgresql`: Psycopg 3;
+- `postgresql-legacy`: Psycopg 2; and
+- `postgresql-pool`: Psycopg 3 plus `psycopg_pool`.
+
+The pooling extra is separate from the ordinary PostgreSQL extra so full
+pooling functionality is available without making an unused pool a default or
+ordinary PostgreSQL dependency.
+
+### Retained end-to-end ORM contract
+
+- App loading, app registries, settings, setup, signals, and content types.
+- Model construction and metadata, abstract/proxy/multi-table inheritance,
+  composite primary keys, managers, querysets, custom lookups/transforms, and
+  async ORM methods.
+- All non-GIS built-in fields, file/image storage integration, generated fields,
+  constraints, indexes, relations, generic relations, expressions, functions,
+  aggregates, subqueries, windows, raw queries, bulk APIs, and transactions.
+- Migration autodetection, graph/state machinery, loaders, executors, recorders,
+  optimizers, operations, writers, schema editors, fake/plan/rollback paths, and
+  multi-database routing.
+- SQLite, PostgreSQL, MySQL, and Oracle creation, clients, features,
+  introspection, operations, schema editing, pooling where supported, and
+  `dbshell` behavior.
+- Python/JSON/JSONL/XML/YAML serialization, natural keys, fixtures, and data
+  migration support.
+- ORM-facing checks plus `check`, `dbshell`, `diffsettings`, `dumpdata`,
+  `flush`, `inspectdb`, `loaddata`, `makemigrations`, `migrate`,
+  `optimizemigration`, `shell`, `showmigrations`, SQL inspection/reset commands,
+  `squashmigrations`, and `test`.
+
+### Intentionally excluded contract
+
+- GeoDjango, spatial fields/lookups/functions/aggregates, spatial backends,
+  GIS tests, and native GIS libraries.
+- Forms and model-form integration, including PostgreSQL form fields/widgets.
+- Auth, admin, messages, sessions, sites, flatpages, redirects, sitemaps,
+  static files, and other web applications.
+- HTTP request/response handling, URL routing, views, middleware, templates,
+  ASGI/WSGI handlers, development servers, mail, cache, pagination, and project
+  scaffolding.
+- Web-only management commands, source translation catalogs/authoring commands,
+  Django's documentation site, JavaScript tooling, and browser test suites.
+- A compatibility `django` import namespace.
+
+### Release boundary
+
+The implementation fixes are committed locally in focused commits after the
+published `0.1.2` release. The candidate must still receive the normal version,
+changelog, artifact, and release-check preparation. This audit does not
+authorize pushing `main`, creating `v0.1.3`, creating a GitHub release, or
+publishing to TestPyPI/PyPI.
+
+## Historical 0.1.1 audit snapshot
+
+The remainder of this file preserves the original 0.1.1 audit and remediation
+record. Statements below describe that immutable historical snapshot; the
+current verification above is authoritative for the 0.1.3 candidate.
+
 - **Audit status:** Three passes complete
 - **Snapshot time:** 2026-08-16 13:41:34 EDT
 - **Repository:** `viseshrp/djrm`
