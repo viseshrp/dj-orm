@@ -6,8 +6,8 @@ upstream_commit = "e802ada38b3ecf345915163bb6d7f008be411664"
 max_byte_differences = 191
 max_raw_ast_differences = 30
 max_non_ast_byte_differences = 161
-upstream_only = 2956
-upstream_only_sha256 = "408a4f641d5c50f133c950ab9077d751889d52a067055e44c87d345ca6e04266"
+upstream_only = 2955
+upstream_only_sha256 = "00c4cc68345b9e96df4fe62b5e9ad8192b6584b8d24d27b1bb149740399a925c"
 fork_only = 5
 fork_only_sha256 = "8e6505cb07acd8f7b72ea7142ed6e0ca045269ab22d2538463282818fa7770c9"
 executable_ast_differences = [
@@ -42,11 +42,11 @@ executable_ast_differences = [
 ]
 
 [tests]
-max_byte_differences = 362
-max_raw_ast_differences = 71
+max_byte_differences = 363
+max_raw_ast_differences = 72
 max_non_ast_byte_differences = 291
-upstream_only = 1434
-upstream_only_sha256 = "39969008dfa9650589efbd47035c56ab57f5909474ede7a83aeb07ff12a16ad2"
+upstream_only = 1427
+upstream_only_sha256 = "7388a0d3c051b3056b0dd780ecdaec7dc4cae70ac0def44ea5a8203b3b4e3da4"
 fork_only = 32
 fork_only_sha256 = "953e18c187bed7083e82921f5bfc907632b5ea95acbf3a2f381bd3d2305de600"
 executable_ast_differences = [
@@ -57,6 +57,7 @@ executable_ast_differences = [
   "tests/backends/base/test_base.py",
   "tests/backends/base/test_creation.py",
   "tests/backends/postgresql/tests.py",
+  "tests/check_framework/tests.py",
   "tests/composite_pk/test_models.py",
   "tests/composite_pk/tests.py",
   "tests/contenttypes_tests/models.py",

@@ -17,6 +17,7 @@ from .registry import Tags, register, run_checks, tag_exists
 
 
 # Import these to force registration of retained ORM/DB checks.
+import_module("djrm.core.checks.async_checks")
 import_module("djrm.core.checks.commands")
 import_module("djrm.core.checks.database")
 import_module("djrm.core.checks.model_checks")
