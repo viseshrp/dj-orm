@@ -29,8 +29,8 @@ Release builds are published to PyPI. See
 - Schema migrations and data migrations
 - SQLite, PostgreSQL, MySQL, and Oracle backends
 - `djrm.contrib.contenttypes` and `djrm.contrib.postgres`
-- Database-focused commands including `makemigrations`, `migrate`,
-  `showmigrations`, `dumpdata`, and `loaddata`
+- ORM-focused commands including `check`, `makemigrations`, `migrate`,
+  `showmigrations`, `dumpdata`, `loaddata`, `shell`, and `test`
 
 HTTP handling, URL routing, views, middleware, templates, forms, auth, admin,
 sessions, static files, GeoDjango, and spatial database support are not included.
@@ -65,6 +65,9 @@ Commands use the same settings conventions as Django:
 export DJANGO_SETTINGS_MODULE=myproject.settings
 djrm migrate
 python -m djrm showmigrations
+djrm check --database default
+djrm shell
+djrm test
 ```
 
 `DJANGO_SETTINGS_MODULE` keeps its upstream name. Only Python import paths move

@@ -30,7 +30,8 @@ The supported scope includes:
 - content types and generic relations;
 - app registry, settings, model signals, dispatch, database-oriented system
   checks, serializers, and file-backed model fields;
-- database and data-management commands; and
+- database and data-management commands;
+- project checks, an ORM-aware shell, and test discovery; and
 - the ORM-focused test infrastructure used by the retained suite.
 
 The project is not a web framework or geospatial ORM. HTTP handling, URLs,
@@ -168,6 +169,7 @@ They do not make those subsystems available.
 
 ### Retained management commands
 
+- `check`
 - `dbshell`
 - `diffsettings`
 - `dumpdata`
@@ -177,13 +179,15 @@ They do not make those subsystems available.
 - `makemigrations`
 - `migrate`
 - `optimizemigration`
+- `shell`
 - `showmigrations`
 - `sqlflush`
 - `sqlmigrate`
 - `sqlsequencereset`
 - `squashmigrations`
+- `test`
 
-The `check` command is not shipped. ORM checks remain available through:
+ORM checks are available from the command line or programmatically:
 
 ```python
 from djrm.core.checks import Tags, run_checks

@@ -3,11 +3,11 @@ upstream_ref = "5.2.17"
 upstream_commit = "e802ada38b3ecf345915163bb6d7f008be411664"
 
 [djrm]
-max_byte_differences = 190
+max_byte_differences = 191
 max_raw_ast_differences = 32
-max_non_ast_byte_differences = 158
-upstream_only = 2959
-upstream_only_sha256 = "4b8d5e4a4013772c01706f33a63c79e56e93853b14ad0dbb5b3aab4705c476c5"
+max_non_ast_byte_differences = 159
+upstream_only = 2956
+upstream_only_sha256 = "408a4f641d5c50f133c950ab9077d751889d52a067055e44c87d345ca6e04266"
 fork_only = 5
 fork_only_sha256 = "8e6505cb07acd8f7b72ea7142ed6e0ca045269ab22d2538463282818fa7770c9"
 executable_ast_differences = [
@@ -49,8 +49,8 @@ max_raw_ast_differences = 18
 max_non_ast_byte_differences = 285
 upstream_only = 1645
 upstream_only_sha256 = "333f852bcba7b10bfa0ed5a3ef38ea11b0ff56f7b7a994d354a42fb977564728"
-fork_only = 19
-fork_only_sha256 = "8373ecb40a58d3e02b0ae160c19e5ec29ba7d7a737a34c0ccd8538664df6c7e5"
+fork_only = 20
+fork_only_sha256 = "db9e8e11a6d8c1436e76956425d531349b7277904b8ae559564b6043eb892c5d"
 executable_ast_differences = [
   "tests/aggregation_regress/tests.py",
   "tests/backends/base/test_base.py",
