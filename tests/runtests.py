@@ -70,7 +70,10 @@ ALWAYS_INSTALLED_APPS = [
 ]
 
 TEST_HELPER_PACKAGES = {
+    "djrm_smoke",
+    "e2e",
     "import_error_package",
+    "orm_test_migrations",
     "orm_test_helpers",
     "test_runner_apps",
 }
@@ -81,6 +84,7 @@ ORM_TEST_HELPER_CONSUMERS = {
     "fixtures_regress",
     "m2m_regress",
     "m2m_through_regress",
+    "migrations",
 }
 
 
@@ -159,8 +163,9 @@ def setup_collect_tests(start_at, start_after, test_labels=None):
     settings.LANGUAGE_CODE = "en"
     settings.MIDDLEWARE = []
     settings.MIGRATION_MODULES = {
-        # This lets us skip creating migrations for the test models as many of
-        # them depend on one of the following contrib applications.
+        # Keep content types out of serialized rollback fixtures, matching the
+        # upstream test suite. orm_test_migrations still creates the migration
+        # recorder table for targeted migration-suite runs.
         "contenttypes": None,
     }
     log_config = copy.deepcopy(DEFAULT_LOGGING)
@@ -200,6 +205,8 @@ def setup_run_tests(verbosity, start_at, start_after, test_labels=None):
 
     if ORM_TEST_HELPER_CONSUMERS.intersection(test_modules):
         settings.INSTALLED_APPS.append("orm_test_helpers")
+    if "migrations" in test_modules:
+        settings.INSTALLED_APPS.append("orm_test_migrations")
 
     installed_apps = set(get_installed())
     for app in test_modules:

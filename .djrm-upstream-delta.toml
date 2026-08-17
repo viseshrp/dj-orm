@@ -44,13 +44,13 @@ executable_ast_differences = [
 ]
 
 [tests]
-max_byte_differences = 334
-max_raw_ast_differences = 39
+max_byte_differences = 341
+max_raw_ast_differences = 46
 max_non_ast_byte_differences = 295
-upstream_only = 1477
-upstream_only_sha256 = "cf7d6f1ef57423d764b499d9cb9c6ddc68db61723beb475d72094135db8b5cff"
-fork_only = 28
-fork_only_sha256 = "3743224247dfd8841a84f89d099b2789cec117255008045d8d5eb72bf82cd184"
+upstream_only = 1467
+upstream_only_sha256 = "2aabcf0dfe6abcf09bf01f395249d1e41321d14d3c34f0d9d91e49700d73fa42"
+fork_only = 31
+fork_only_sha256 = "a410c2e8aff8be6cf66bcb28277c0efa2a1e00b321971373bb60f04f7b178d77"
 executable_ast_differences = [
   "tests/aggregation_regress/tests.py",
   "tests/apps/apps.py",
@@ -69,6 +69,13 @@ executable_ast_differences = [
   "tests/m2m_through_regress/models.py",
   "tests/m2m_through_regress/tests.py",
   "tests/managers_regress/tests.py",
+  "tests/migrations/test_autodetector.py",
+  "tests/migrations/test_base.py",
+  "tests/migrations/test_commands.py",
+  "tests/migrations/test_executor.py",
+  "tests/migrations/test_loader.py",
+  "tests/migrations/test_migrations_unmigdep/0001_initial.py",
+  "tests/migrations/test_state.py",
   "tests/model_enums/tests.py",
   "tests/model_fields/test_textfield.py",
   "tests/model_fields/tests.py",

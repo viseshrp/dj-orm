@@ -32,6 +32,11 @@ class User(models.Model):
         return self.username
 
 
+class AuthUser(models.Model):
+    class Meta:
+        swappable = "AUTH_USER_MODEL"
+
+
 class PermissionManager(models.Manager):
     def get_by_natural_key(self, codename, app_label, model):
         return self.get(
