@@ -1,0 +1,54 @@
+[
+    {
+        "pk": "1",
+        "model": "fixtures.visa",
+        "fields": {
+            "person": [
+                "Django Reinhardt"
+            ],
+            "permissions": [
+                [
+                    "add_user",
+                    "orm_test_helpers",
+                    "user"
+                ],
+                [
+                    "change_user",
+                    "orm_test_helpers",
+                    "user"
+                ],
+                [
+                    "delete_user",
+                    "orm_test_helpers",
+                    "user"
+                ]
+            ]
+        }
+    },
+    {
+        "pk": "2",
+        "model": "fixtures.visa",
+        "fields": {
+            "person": [
+                "Stephane Grappelli"
+            ],
+            "permissions": [
+                [
+                    "add_user",
+                    "orm_test_helpers",
+                    "user"
+                ]
+            ]
+        }
+    },
+    {
+        "pk": "3",
+        "model": "fixtures.visa",
+        "fields": {
+            "person": [
+                "Prince"
+            ],
+            "permissions": []
+        }
+    }
+]

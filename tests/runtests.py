@@ -69,6 +69,20 @@ ALWAYS_INSTALLED_APPS = [
     "djrm.contrib.contenttypes",
 ]
 
+TEST_HELPER_PACKAGES = {
+    "import_error_package",
+    "orm_test_helpers",
+    "test_runner_apps",
+}
+
+ORM_TEST_HELPER_CONSUMERS = {
+    "field_deconstruction",
+    "fixtures",
+    "fixtures_regress",
+    "m2m_regress",
+    "m2m_through_regress",
+}
+
 
 def get_test_modules():
     """Scan the tests directory and yield top-level test modules."""
@@ -78,6 +92,7 @@ def get_test_modules():
                 "." in entry.name
                 or entry.is_file()
                 or not os.path.exists(os.path.join(entry.path, "__init__.py"))
+                or entry.name in TEST_HELPER_PACKAGES
             ):
                 continue
             if entry.name == "postgres_tests" and connection.vendor != "postgresql":
@@ -182,6 +197,9 @@ def get_installed():
 
 def setup_run_tests(verbosity, start_at, start_after, test_labels=None):
     test_modules, state = setup_collect_tests(start_at, start_after, test_labels=test_labels)
+
+    if ORM_TEST_HELPER_CONSUMERS.intersection(test_modules):
+        settings.INSTALLED_APPS.append("orm_test_helpers")
 
     installed_apps = set(get_installed())
     for app in test_modules:
