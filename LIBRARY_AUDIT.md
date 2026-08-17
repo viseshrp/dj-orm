@@ -8,6 +8,7 @@
 - **Verification date:** 2026-08-17 EDT
 - **Repository and branch:** `viseshrp/djrm`, `main`
 - **Verified implementation tip:** `8e7e2e299157410a8dc550067886d58b7929096c`
+- **Release-preparation commit:** `e801fbabef` (`[release] Prepare djrm 0.1.3`)
 - **Exact upstream base:** Django `5.2.17`, commit
   `e802ada38b3ecf345915163bb6d7f008be411664`
 - **Published release at audit start:** `0.1.2`
@@ -90,7 +91,7 @@ The final validation results are:
 | Gate | Result |
 | --- | --- |
 | Package, maintenance, release-tool, and smoke tests | 92 passed |
-| SQLite retained suite | 7,753 tests; 488 skipped; 4 expected failures |
+| SQLite retained suite | 7,753 tests; 487 skipped; 4 expected failures |
 | PostgreSQL 17.11 retained suite | 8,274 tests; 223 skipped; 6 expected failures |
 | MySQL 8.4.10 retained suite | 7,755 tests; 400 skipped; 3 expected failures |
 | Oracle Free 23.26 retained suite | 7,755 tests; 495 skipped; 5 expected failures |
@@ -99,6 +100,9 @@ The final validation results are:
 | GIS exclusion | Passed in source, package, and Docker gates |
 | Import closure | 441 retained modules imported with content types and available optional drivers; MySQL's host-only import was superseded by the complete Docker suite |
 | Quality and delta gate | Lock, pre-commit, Ruff, ty, Bandit, pip-audit, codespell, path casing, and upstream delta passed |
+| Coverage | 75% overall, 73.35% modified-runtime, and 45.38% fork-tooling coverage; all enforced floors passed |
+| Release validation | `v0.1.3` metadata/provenance check passed on a clean tree |
+| Candidate artifacts | `djrm-0.1.3-py3-none-any.whl` and `djrm-0.1.3.tar.gz` built, passed Twine, content inspection, and isolated wheel installation |
 
 Backend skip counts are capability-based upstream skips, not hidden failures.
 Expected failures are the upstream suite's declared expected-failure cases.
@@ -165,11 +169,12 @@ ordinary PostgreSQL dependency.
 
 ### Release boundary
 
-The implementation fixes are committed locally in focused commits after the
-published `0.1.2` release. The candidate must still receive the normal version,
-changelog, artifact, and release-check preparation. This audit does not
-authorize pushing `main`, creating `v0.1.3`, creating a GitHub release, or
-publishing to TestPyPI/PyPI.
+The implementation fixes and `0.1.3` version/changelog preparation are committed
+locally in focused commits after the published `0.1.2` release. The clean-tree
+release validator, local tests, coverage floors, external database matrix,
+artifact build, Twine check, archive inspection, and isolated wheel install all
+pass. This audit does not authorize pushing `main`, creating `v0.1.3`, creating
+a GitHub release, or publishing to TestPyPI/PyPI.
 
 ## Historical 0.1.1 audit snapshot
 
